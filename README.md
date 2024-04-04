@@ -86,6 +86,14 @@ Finally, the last example foes to the tensor flow reposiutory and gets the data 
 `cd tensorflow && git log --since='Jan 1 2024' --until='Mar 31 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog-first-trimester-2024.IN `
 
 
+- Now lets analyse some data.
+
+`./scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
+or
+`python3 scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
+
+
+
 
 
 
