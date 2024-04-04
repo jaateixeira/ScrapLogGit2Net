@@ -36,6 +36,12 @@ git log --pretty=format:"%an;%ae;%ad"  --name-only
 
 `git log --pretty=format:"%an;%ae;%ad"  --name-only > tensorFlowGitLog.IN`
 
+If you are lost by this point, time to learn about Git
+`$man git`
+`$man git log`
+
+
+
 Congratulations you should have your raw data ready for analysis with ScrapLogGit2Net
 
 
