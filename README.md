@@ -21,7 +21,7 @@ Social networks capturing who codes who who in software project
 
 - First you clone the GIT repository
 
-`$ git https://github.com/tensorflow/tensorflow.git`
+`$ git clone https://github.com/tensorflow/tensorflow.git`
 
 
 
