@@ -19,5 +19,9 @@ Social networks capturing who codes who who in software project
 
 # How to use it  #
 
-First you clone the project 
+- First you clone the GIT repository
+
+`$ git https://github.com/tensorflow/tensorflow.git`
+
+
 
