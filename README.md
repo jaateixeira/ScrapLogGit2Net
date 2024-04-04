@@ -81,6 +81,13 @@ And this example you check what developers did on 1st of April 2024
 
 `$git log --since='Mar 31 2024' --until='Apr 1 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only`
 
+Finally, the last example foes to the tensor flow reposiutory and gets the data to study the  first trimester for 2024
+
+`cd tensorflow && git log --since='Jan 1 2024' --until='Mar 31 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog-first-trimester-2024.IN `
+
+
+
+
 
 
 
