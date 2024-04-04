@@ -45,24 +45,24 @@ If you are lost by this point, time to learn about Git
 Congratulations you should have your raw data ready for analysis with ScrapLogGit2Net
 
 
-Look at you INPUT Data 
+Look at you INPUT data.  As you can see from the 4 April 2024 sample from TensorFlow, you get time.stamped data on who changed what files. Note that gardner@tensorflow.org is a bot. Not a developer that directly commits code. 
 
-     A. Unique TensorFlower;gardener@tensorflow.org;Thu Apr 4 02:03:02 2024 -0700
-tensorflow/python/compat/compat.py
+     A. Unique TensorFlower;gardener@tensorflow.org;Wed Apr 3 22:39:37 2024 -0700
+     tensorflow/core/tfrt/saved_model/tests/BUILD
+     tensorflow/core/tfrt/saved_model/tests/saved_model_test.cc
 
-	A. Unique TensorFlower;gardener@tensorflow.org;Thu Apr 4 02:02:37 2024 -0700
-tensorflow/core/public/version.h
+     Doyeon Kim;doyeonkim@google.com;Wed Apr 3 20:54:06 2024 -0700
+     tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
+     tensorflow/compiler/mlir/quantization/stablehlo/python/integration_test/quantize_model_test.py
+     tensorflow/compiler/mlir/quantization/stablehlo/python/quantization.py
+     tensorflow/compiler/mlir/quantization/stablehlo/quantization_config.proto
 
-	A. Unique TensorFlower;gardener@tensorflow.org;Thu Apr 4 01:44:42 2024 -0700
-	third_party/triton/cl617812302.patch
-	third_party/triton/cl619146327.patch
-	third_party/triton/cl619443019.patch
-	third_party/triton/workspace.bzl
-	third_party/xla/third_party/triton/cl617812302.patch
-	third_party/xla/third_party/triton/cl619146327.patch
-	third_party/xla/third_party/triton/cl619443019.patch
-	third_party/xla/third_party/triton/workspace.bzl
+     Jiyoun (Jen) Ha;jiyounha@google.com;Wed Apr 3 18:50:32 2024 -0700
+     tensorflow/lite/core/subgraph.cc
 
-	Adrian Kuegel;akuegel@google.com;Thu Apr 4 01:33:36 2024 -0700
-	third_party/xla/xla/service/gpu/BUILD
+     Doyeon Kim;doyeonkim@google.com;Wed Apr 3 17:46:07 2024 -0700
+     tensorflow/compiler/mlir/lite/quantization/stablehlo/BUILD
+     tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
 
+
+What ScrapLogGit2Net does is to parse this time-stamps and associate developers that co-edited the same source-code file in a social network. 
