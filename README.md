@@ -83,7 +83,8 @@ Dates must be in strict ISO format (YYYY-MM-DDThh:mm:ss e.g. 2021-04-20T13:30:00
 
 So to check the logs for first of April 2024 run:
 
-`$git log --pretty=format:"==%an;%ae;%ad=="  --name-only` | awk '$1 >= "2024-05-01T:00:00:00" && $1 <= "2024-05-01T:23:59:59" { print $2 }' | git log --no-walk --stdin
+`$ cd tensorflow 
+`$ git log --pretty=format:"==%an;%ae;%ad=="  --name-only` | awk '$1 >= "2024-05-01T:00:00:00" && $1 <= "2024-05-01T:23:59:59" { print $2 }' | git log --no-walk --stdin
 
 
 
