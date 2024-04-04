@@ -72,21 +72,14 @@ Note the example year covers almost 10 years of commit logs in the TensorFlow pr
 
 `$git log --pretty=format:"==%an;%ae;%ad=="  --name-only`
 
-Based on https://stackoverflow.com/questions/37311494/how-to-get-git-to-show-commits-m here is what you need to run instead 
+In the following example you are checking commit logs between 1st and 4th of April 2021 
 
-`$git log --pretty=format:"==%an;%ae;%ad=="  --name-only` | \
-    awk '$1 >= "<after-date>" && $1 <= "<before-date>" { print $2 }' | \
-    git log --no-walk --stdin
-
-
-Dates must be in strict ISO format (YYYY-MM-DDThh:mm:ss e.g. 2021-04-20T13:30:00)
-
-So to check the logs for first of April 2024 run:
-
-`$ cd tensorflow`
+`$git log --since='Apr 1 2021' --until='Apr 4 2021' --pretty=format:"==%an;%ae;%ad=="  --name-only`
+q
+And this example you check what developers did on 1st of April 2024
 
 
-`$ git log --pretty=format:"==%an;%ae;%ad=="  --name-only | awk '$1 >= "2024-05-01T:00:00:00" && $1 <= "2024-05-01T:23:59:59" { print $2 }' | git log --no-walk --stdin`
+`$git log --since='Mar 31 2024' --until='Apr 1 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only`
 
 
 
