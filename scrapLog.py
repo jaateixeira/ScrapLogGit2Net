@@ -5073,20 +5073,20 @@ def main():
 
     elif (LOAD_MODE == 1):
         changeLogData = load_changeLogData(args.lser)
-        print "1st SUCESS Change log loaded from ", args.lser, " "
+        print ("1st SUCESS Change log loaded from ", args.lser, " ")
 
         if len(changeLogData) < 1:
-            print "to small loaded change log, len <1"
+            print ("to small loaded change log, len <1")
             sys.exit()
 
         # print_changeLogData()
 
     else:
-        print "ERROR: In what mode are we afer all= No SAVE,LOAD or RAW"
+        print ("ERROR: In what mode are we afer all= No SAVE,LOAD or RAW")
         sys.exit()
 
     if (SAVE_MODE == 1):
-        print "Saving file"
+        print ("Saving file")
         save_changeLogData(args.sser)
 
     # Agregate by file ...
@@ -5229,11 +5229,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print "Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes
-        print "Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10
+        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
+        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10 )
 
-        print "Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"
-        print "Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"
+        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";" ) 
+        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";" ) 
 
         nodesiip1.append(nnodes)
         nodesiip1Top10.append(nnodestop10)
@@ -5304,11 +5304,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print "Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes
-        print "Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10
+        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
+        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
 
-        print "Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"
-        print "Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"
+        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
+        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
 
         nodesim1ip1.append(nnodes)
         nodesim1ip1Top10.append(nnodestop10)
@@ -5322,33 +5322,33 @@ def main():
     for r in releases:
         (name, nc) = r
         rname.append(name + ";")
-    print "rname", rname[::-1]
+    print ("rname", rname[::-1])
 
     # For all nodes
-    print "\t ALL NODES "
+    print ("\ ALL NODES ")
 
-    print "nodesiip1", nodesiip1[::-1]
-    print "nodesiim1p1", nodesim1ip1[::-1]
-    print "diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1]
-    print "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1]
+    print ("nodesiip1", nodesiip1[::-1]) 
+    print ("nodesiim1p1", nodesim1ip1[::-1])
+    print ("diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
+    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
 
-    print "edgesiip1", edgesiip1[::-1]
-    print "edgesim1ip1", edgesim1ip1[::-1]
-    print "diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1]
-    print "% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1]
+    print ("edgesiip1", edgesiip1[::-1])
+    print ("edgesim1ip1", edgesim1ip1[::-1])
+    print ("diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
+    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1]) 
 
     # For top 10 onlys
-    print "\t TOP 10 NODES "
+    print ("\t TOP 10 NODES ")
 
-    print "nodesiip1Top10",  nodesiip1Top10[::-1]
-    print "nodesim1ip1Top10", nodesim1ip1Top10[::-1]
-    print "diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1]
-    print "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1]
+    print ("nodesiip1Top10",  nodesiip1Top10[::-1])
+    print ("nodesim1ip1Top10", nodesim1ip1Top10[::-1])
+    print ("diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
+    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
 
-    print "edgesiip1Top10", edgesiip1Top10[::-1]
-    print "edgesim1ip1Top10", edgesim1ip1Top10[::-1]
-    print "diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1]
-    print "% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1]
+    print ("edgesiip1Top10", edgesiip1Top10[::-1])
+    print ("edgesim1ip1Top10", edgesim1ip1Top10[::-1])
+    print ("diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
+    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
 
     print("")
     print("FINNISHED " + str(datetime.now()))
@@ -5788,21 +5788,21 @@ def save_changeLogData(filename):
     print('Saving changeLog to file ' + str(filename) + '')
 
     if (SAVE_MODE != 1):
-        print "ERROR, not in saving mode"
+        print ("ERROR, not in saving mode")
         sys.exit()
 
     with open(filename, 'wb') as fp:
         pickle.dump(changeLogData, fp)
 
-    print "DONE changelog saved in ", filename, "NICE :)"
+    print ("DONE changelog saved in ", filename, "NICE :)")
     sys.exit()
 
 
 # load and return	 the changeLogData data scraped into a filename
 def load_changeLogData(filename):
-    print ""
-    print "TODO"
-    print "Loading changeLog from  file [", filename, "]"
+    print ("")
+    print ("TODO")
+    print ("Loading changeLog from  file [", filename, "]")
 
     with open(filename, 'rb') as fp:
         changeLogData = pickle.load(fp)
@@ -6053,13 +6053,13 @@ def main():
         DEBUG_MODE = 1
 
     if args.lser:
-        print " loanding and processing [lser=", args.lser, "]"
-        print "not implmented yet"
+        print (" loanding and processing [lser=", args.lser, "]")
+        print ("not implmented yet")
         LOAD_MODE = 1
         RAW_MODE = 0
         SAVE_MODE = 0
     elif args.sser and args.raw:
-        print " processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]"
+        print (" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]")
         SAVE_MODE = 1
         RAW_MODE = 1
         LOAD_MODE = 0
@@ -6067,14 +6067,14 @@ def main():
         RAW_MODE = 1
         LOAD_MODE = 0
         SAVE_MODE = 0
-        print " processing [raw=", args.raw, "]"
+        print (" processing [raw=", args.raw, "]")
     else:
-        print "unrecognized argumets ... see --help"
+        print ("unrecognized argumets ... see --help")
         sys.exit()
 
     if RAW_MODE == 1:
         # if we are not in load mode, we need to strap the log
-        print "Scrapping changeLog from ", args.raw
+        print ("Scrapping changeLog from ", args.raw)
         t0 = datetime.now()
         print("STARTING the scrap of changeLog file " +
               args.raw + " on " + str(t0))
@@ -6140,20 +6140,20 @@ def main():
 
     elif (LOAD_MODE == 1):
         changeLogData = load_changeLogData(args.lser)
-        print "1st SUCESS Change log loaded from ", args.lser, " "
+        print ("1st SUCESS Change log loaded from ", args.lser, " ")
 
         if len(changeLogData) < 1:
-            print "to small loaded change log, len <1"
+            print( "to small loaded change log, len <1")
             sys.exit()
 
         # print_changeLogData()
 
     else:
-        print "ERROR: In what mode are we afer all= No SAVE,LOAD or RAW"
+        print ("ERROR: In what mode are we afer all= No SAVE,LOAD or RAW")
         sys.exit()
 
     if (SAVE_MODE == 1):
-        print "Saving file"
+        print ("Saving file")
         save_changeLogData(args.sser)
 
     # Agregate by file ...
@@ -6296,11 +6296,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print "Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes
-        print "Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10
+        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes) 
+        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10) 
 
-        print "Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"
-        print "Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"
+        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
+        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";") 
 
         nodesiip1.append(nnodes)
         nodesiip1Top10.append(nnodestop10)
@@ -6371,11 +6371,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print "Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes
-        print "Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10
+        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
+        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
 
-        print "Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"
-        print "Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"
+        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
+        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
 
         nodesim1ip1.append(nnodes)
         nodesim1ip1Top10.append(nnodestop10)
@@ -6389,7 +6389,7 @@ def main():
     for r in releases:
         (name, nc) = r
         rname.append(name + ";")
-    print "rname", rname[::-1]
+    print ("rname", rname[::-1])
 
     # For all nodes
     print "\t ALL NODES "
