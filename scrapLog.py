@@ -4252,28 +4252,28 @@ def main():
     # For all nodes
     print( "\t ALL NODES ")
 
-    print "nodesiip1", nodesiip1[::-1]
-    print "nodesiim1p1", nodesim1ip1[::-1]
-    print "diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1]
-    print "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1]
+    print("nodesiip1", nodesiip1[::-1])
+    print("nodesiim1p1", nodesim1ip1[::-1])
+    print( "diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
+    print( "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
 
-    print "edgesiip1", edgesiip1[::-1]
-    print "edgesim1ip1", edgesim1ip1[::-1]
-    print "diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1]
-    print "% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1]
+    print ("edgesiip1", edgesiip1[::-1])
+    print ("edgesim1ip1", edgesim1ip1[::-1])
+    print ("diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
+    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1])
 
     # For top 10 onlys
-    print "\t TOP 10 NODES "
+    print ("\t TOP 10 NODES ")
 
-    print "nodesiip1Top10",  nodesiip1Top10[::-1]
-    print "nodesim1ip1Top10", nodesim1ip1Top10[::-1]
-    print "diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1]
-    print "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1]
+    print ("nodesiip1Top10",  nodesiip1Top10[::-1])
+    print ("nodesim1ip1Top10", nodesim1ip1Top10[::-1])
+    print ("diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
+    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
 
-    print "edgesiip1Top10", edgesiip1Top10[::-1]
-    print "edgesim1ip1Top10", edgesim1ip1Top10[::-1]
-    print "diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1]
-    print "% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1]
+    print ("edgesiip1Top10", edgesiip1Top10[::-1])
+    print ("edgesim1ip1Top10", edgesim1ip1Top10[::-1])
+    print ("diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
+    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
 
     print("")
     print("FINNISHED " + str(datetime.now()))
@@ -4986,13 +4986,13 @@ def main():
         DEBUG_MODE = 1
 
     if args.lser:
-        print " loanding and processing [lser=", args.lser, "]"
-        print "not implmented yet"
+        print (" loanding and processing [lser=", args.lser, "]")
+        print ("not implmented yet")
         LOAD_MODE = 1
         RAW_MODE = 0
         SAVE_MODE = 0
     elif args.sser and args.raw:
-        print " processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]"
+        print (" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]")
         SAVE_MODE = 1
         RAW_MODE = 1
         LOAD_MODE = 0
@@ -5000,14 +5000,14 @@ def main():
         RAW_MODE = 1
         LOAD_MODE = 0
         SAVE_MODE = 0
-        print " processing [raw=", args.raw, "]"
+        print (" processing [raw=", args.raw, "]")
     else:
-        print "unrecognized argumets ... see --help"
+        print ("unrecognized argumets ... see --help")
         sys.exit()
 
     if RAW_MODE == 1:
         # if we are not in load mode, we need to strap the log
-        print "Scrapping changeLog from ", args.raw
+        print ("Scrapping changeLog from ", args.raw)
         t0 = datetime.now()
         print("STARTING the scrap of changeLog file " +
               args.raw + " on " + str(t0))
