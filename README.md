@@ -14,7 +14,7 @@ A git repository
 
 
 # Outputs #
-Social networks capturing who codes who who in software project 
+Social networks capturing who codes who who in a repository (not a software project can have multiple repositories) 
 
 # How it works #
 
@@ -45,7 +45,24 @@ If you are lost by this point, time to learn about Git
 Congratulations you should have your raw data ready for analysis with ScrapLogGit2Net
 
 
+Look at you INPUT Data 
 
+     A. Unique TensorFlower;gardener@tensorflow.org;Thu Apr 4 02:03:02 2024 -0700
+tensorflow/python/compat/compat.py
 
+	A. Unique TensorFlower;gardener@tensorflow.org;Thu Apr 4 02:02:37 2024 -0700
+tensorflow/core/public/version.h
 
+	A. Unique TensorFlower;gardener@tensorflow.org;Thu Apr 4 01:44:42 2024 -0700
+	third_party/triton/cl617812302.patch
+	third_party/triton/cl619146327.patch
+	third_party/triton/cl619443019.patch
+	third_party/triton/workspace.bzl
+	third_party/xla/third_party/triton/cl617812302.patch
+	third_party/xla/third_party/triton/cl619146327.patch
+	third_party/xla/third_party/triton/cl619443019.patch
+	third_party/xla/third_party/triton/workspace.bzl
+
+	Adrian Kuegel;akuegel@google.com;Thu Apr 4 01:33:36 2024 -0700
+	third_party/xla/xla/service/gpu/BUILD
 
