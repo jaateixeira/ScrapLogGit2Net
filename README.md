@@ -19,7 +19,7 @@ Social networks capturing who codes who who in a repository (not a software proj
 # How it works #
 
 It uses the commit logs of a git repository
-git log --pretty=format:"%an;%ae;%ad"  --name-only
+`$git log --pretty=format:"==%an;%ae;%ad=="  --name-only`
 
 
 # How to use it  #
@@ -34,7 +34,7 @@ git log --pretty=format:"%an;%ae;%ad"  --name-only
 
 
 
-`git log --pretty=format:"%an;%ae;%ad"  --name-only > tensorFlowGitLog.IN`
+`git log --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog.IN`
 
 If you are lost by this point, time to learn about Git
 `$man git`
@@ -65,4 +65,25 @@ Look at you INPUT data.  As you can see from the 4 April 2024 sample from Tensor
      tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
 
 
-What ScrapLogGit2Net does is to parse this time-stamps and associate developers that co-edited the same source-code file in a social network. 
+What ScrapLogGit2Net does is to parse this time-stamps and associate developers that co-edited the same source-code file in a social network.
+
+Note the example year covers almost 10 years of commit logs in the TensorFlow project. It might be wise to narrow down the time window you want to analyse.
+
+
+`$git log --pretty=format:"==%an;%ae;%ad=="  --name-only`
+
+Based on https://stackoverflow.com/questions/37311494/how-to-get-git-to-show-commits-m here is what you need to run instead 
+
+`$git log --pretty=format:"==%an;%ae;%ad=="  --name-only` | \
+    awk '$1 >= "<after-date>" && $1 <= "<before-date>" { print $2 }' | \
+    git log --no-walk --stdin
+
+
+Dates must be in strict ISO format (YYYY-MM-DDThh:mm:ss e.g. 2021-04-20T13:30:00)
+
+So to check the logs for first of April 2024 run:
+
+`$git log --pretty=format:"==%an;%ae;%ad=="  --name-only` | \
+    awk '$1 >= "2024-05-01T:00:00:00" && $1 <= "2024-05-01T:23:59:59" { print $2 }' | \
+    git log --no-walk --stdin
+
