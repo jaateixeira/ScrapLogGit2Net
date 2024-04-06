@@ -6,6 +6,10 @@
 # 
 
 
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import map
+from six.moves import range
 print ("this is pyhton")
 
 # scraplog save with serialzie
@@ -19,7 +23,7 @@ import itertools
 import argparse
 
 try:
-	import cPickle as pickle
+	import six.moves.cPickle as pickle
 except:
 	import pickle
 
@@ -30,7 +34,7 @@ import networkMeasures
 
 import JISA2015specificAnalysis
 
-print ("Executing " + str(sys.argv)) 
+print(("Executing " + str(sys.argv))) 
 
 # Global parameters 
 
@@ -102,7 +106,7 @@ def getAffiliationFromEmail(email):
 
     if match == None or match == []:
         print ("ERROR unable to extract affiliation from email. Wrong email format?")
-        print ("match=["+str(match)+"]")
+        print(("match=["+str(match)+"]"))
         sys.exit()
 
     "implement an exception for IBM as their emails come from multiple domains" 
@@ -113,7 +117,7 @@ def getAffiliationFromEmail(email):
         
         if match[0] not in ibm_email_domains_prefix:
             print ("ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
-            print ("march=["+str(match[0])+"]")
+            print(("march=["+str(match[0])+"]"))
             sys.exit()
 
         #print ("affiliation(" + email + ")=[ibm]") 
@@ -152,18 +156,18 @@ def getDateEmailAffiliation(line):
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
         if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line:
             print ("WARNING exceptional code commit header Exception 1 ")
-            print ("LINE number "+str(stats['nlines'])+" ["+ line + "] double ;; <- name and email together on commit header")
+            print(("LINE number "+str(stats['nlines'])+" ["+ line + "] double ;; <- name and email together on commit header"))
 
             name_pattern = re.compile('^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             match = name_pattern.findall(line)
-            print ("match=["+str(match)+"]")
+            print(("match=["+str(match)+"]"))
 
         # Exception 2: If there is not name in the commit 
         # there is no spaces before the email (@)
         elif  ' ' not in line[0:atIndex] and '==Launchpad' not in line:
                   
             print ("WARNING exceptional code commit header Exception 2 ")
-            print ("LINE number "+str(stats['nlines'])+" ["+ line + "] no name, just an email")
+            print(("LINE number "+str(stats['nlines'])+" ["+ line + "] no name, just an email"))
 
             name_pattern = re.compile('^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             tmpmatch = name_pattern.findall(line)
@@ -178,7 +182,7 @@ def getDateEmailAffiliation(line):
         #==Launchpad Translations on behalf of nova-core;;Sat Sep 3 05:50:53 2011 +0000
         elif "==Launchpad" in line:
             print ("WARNING exceptional code commit header Exception 3 ")
-            print ("LINE number "+str(stats['nlines'])+" ["+ line + "] Lauchpad bot")
+            print(("LINE number "+str(stats['nlines'])+" ["+ line + "] Lauchpad bot"))
             
             name_pattern = re.compile('^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             tmpmatch = name_pattern.findall(line)
@@ -197,7 +201,7 @@ def getDateEmailAffiliation(line):
         else: 
             print("Error, unable to extract developer name, email or date from commit block")
             print("Regular expression not captured")
-            print("Line=["+line+"]")
+            print(("Line=["+line+"]"))
             sys.exit()    
     
     
@@ -215,7 +219,7 @@ def getDateEmailAffiliation(line):
     email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
  
     if (email_pattern.search(email)== None):
-        print ("WARNING commiter ["+email+"] have an invalidName")
+        print(("WARNING commiter ["+email+"] have an invalidName"))
         print ("Adding .com? to the end")
         email+=".com?"
     
@@ -295,7 +299,7 @@ def scrapBlock( block):
 # Format end date should be  "Oct 11 2014" "MMM DD YYYY"
 
 def filterChangeLogDataByDate ( startDate, endDate ):
-    print ("Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]")
+    print(("Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]"))
 
     # are they dates? 
     
@@ -336,7 +340,7 @@ def filterChangeLogDataByDate ( startDate, endDate ):
         # If there is no regulae expression match
         if (match == []):
             print ("ERROR: Change log date is not on proper format")
-            print ("date_ match=["+str(match)+"]")
+            print(("date_ match=["+str(match)+"]"))
             sys.exit()
         
         weekday = match[0][0]
@@ -404,10 +408,10 @@ def print_changeLogData ():
                 af = change[0][2]
                 files = change [1]
 
-                print ("On " + date + " " + email + " from " + af + " worked on the following files:" )
+                print(("On " + date + " " + email + " from " + af + " worked on the following files:" ))
 
                 for file in files:
-                        print ("[" + file + "]")
+                        print(("[" + file + "]"))
 
 
 # save the changeLogData data scraped into a filename  
@@ -418,7 +422,7 @@ def save_changeLogData (filename):
 
         print ("")
         print ("TODO")
-        print ('Saving changeLog to file ' +  str(filename) + '')
+        print(('Saving changeLog to file ' +  str(filename) + ''))
 
         if (SAVE_MODE != 1):
                 print ("ERROR, not in saving mode")
@@ -427,7 +431,7 @@ def save_changeLogData (filename):
         with open(filename, 'wb') as fp:
                 pickle.dump(changeLogData, fp)
 
-        print ("DONE changelog saved in ", filename, "NICE :)")
+        print(("DONE changelog saved in ", filename, "NICE :)"))
         sys.exit()
 
 
@@ -435,7 +439,7 @@ def save_changeLogData (filename):
 def load_changeLogData (filename):
         print ("")
         print ("TODO")
-        print ("Loading changeLog from  file [", filename , "]")
+        print(("Loading changeLog from  file [", filename , "]"))
         print ("test")
         with open(filename, 'rb') as fp:
                 changeLogData= pickle.load(fp)
@@ -456,10 +460,10 @@ def print_agreByFileContributors():
             exit()
         
 
-        print ("The file " + fileName + "was changed by following [" + str(len(authorEmails))+ "]contributors" )
+        print(("The file " + fileName + "was changed by following [" + str(len(authorEmails))+ "]contributors" ))
         
         for email in authorEmails:
-            print ("[" + email + "]")
+            print(("[" + email + "]"))
 
 
 # print a list of contributor connected to each other cause they worked on a common files
@@ -475,7 +479,7 @@ def print_agreByConnWSF():
         contributorsPair = connection[0]
         fileName = connection[1]
         
-        print ("Contributors " + str (contributorsPair) + " connected by collaborating on file [" + fileName + "]")
+        print(("Contributors " + str (contributorsPair) + " connected by collaborating on file [" + fileName + "]"))
 
 
 # Agregate by file and its contributors
@@ -594,8 +598,8 @@ def print_unique_connections():
 
     print ("\t------/------\n")
     for (dev1,dev2)  in  uniqueConnections:
-        print ("\t" + dev1 + " collaborated  with " + dev2)
-    print ("\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) +"]")
+        print(("\t" + dev1 + " collaborated  with " + dev2))
+    print(("\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) +"]"))
     print ("\t------/------\n")
 
 
@@ -621,11 +625,11 @@ def getAffiliations():
 def print_Affiliations():
     print ("\nPrinting author affiliations:\n ")
     for author  in  affiliations:
-        print ("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
     print ("\nPrinting network-author affiliations:\n ")
     for author  in  networked_affiliations:
-        print ("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 def reprocess():
@@ -684,13 +688,13 @@ def main():
                 DEBUG_MODE=1
 
         if args.lser:
-                print ("loanding and processing [lser=",args.lser,"]")
+                print(("loanding and processing [lser=",args.lser,"]"))
                 print ("not implmented yet")
                 LOAD_MODE=1 
                 RAW_MODE=0
                 SAVE_MODE=0
         elif args.sser and args.raw:
-                print ("processing [raw=",args.raw,"]", " and saving [sser=", args.sser, "]")
+                print(("processing [raw=",args.raw,"]", " and saving [sser=", args.sser, "]"))
                 SAVE_MODE=1
                 RAW_MODE=1
                 LOAD_MODE=0 
@@ -698,16 +702,16 @@ def main():
                 RAW_MODE=1
                 LOAD_MODE=0
                 SAVE_MODE=0
-                print ("processing [raw=",args.raw,"]")
+                print(("processing [raw=",args.raw,"]"))
         else: 
                 print ("unrecognized argumets ... see --help")
                 sys.exit()
 
         if RAW_MODE == 1:
                 ##  if we are not in load mode, we need to strap the log	
-                print ("Scrapping changeLog from ", args.raw )
+                print(("Scrapping changeLog from ", args.raw ))
                 t0 = datetime.now()
-                print ("STARTING the scrap of changeLog file " + args.raw + " on " +  str(t0))
+                print(("STARTING the scrap of changeLog file " + args.raw + " on " +  str(t0)))
 
 
                 ## Opening the files 
@@ -763,7 +767,7 @@ def main():
                             continue
                         else:
                             print ("ERROR: not a file path. Commit blocs not starting with == must be file paths") 
-                            print ("ERROR processing line ["+str(stats['nlines'])+"]"+ "line=["+line+"]")
+                            print(("ERROR processing line ["+str(stats['nlines'])+"]"+ "line=["+line+"]"))
                             sys.exit()
                     else:
                         print ("ERROR: Something wrong with the changeLog blocks L 107") 
@@ -778,7 +782,7 @@ def main():
 
         elif (LOAD_MODE == 1):	
                 changeLogData = load_changeLogData(args.lser) 
-                print ("1st SUCESS Change log loaded from ", args.lser, " ")
+                print(("1st SUCESS Change log loaded from ", args.lser, " "))
 
                 if len(changeLogData) < 1:
                         print ("to small loaded change log, len <1" )
@@ -932,21 +936,21 @@ def main():
         for i in range (len(releases)-1):
                 (release_name, release_date) = releases[i]
                 prior_release_date= releases[i+1][1]
-                print ("\t --- Filtering change log data for [" + str(prior_release_date)+ "] <--> ["+ str(release_date)+"]")
+                print(("\t --- Filtering change log data for [" + str(prior_release_date)+ "] <--> ["+ str(release_date)+"]"))
                 changeLogData=filterChangeLogDataByDate (prior_release_date,release_date)
                 reprocess() 
-                print("\t --- Filtering by date is done. [" + str (sizeOriginalChangeLogData-len(changeLogData)) +"] changeLogs removed due their change date")
+                print(("\t --- Filtering by date is done. [" + str (sizeOriginalChangeLogData-len(changeLogData)) +"] changeLogs removed due their change date"))
 
                 nnodes= len(JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
                 nnodestop10 = len(JISA2015specificAnalysis.getNodesBetweenDates4SelectedFirmsDatesInConnList(uniqueConnections, networked_affiliations, top10))
                 nedges =  len(uniqueConnections)
                 nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(uniqueConnections,networked_affiliations, top10))
 
-                print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nnodes )
-                print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10  )
+                print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nnodes ))
+                print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10  ))
 
-                print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nedges, ";"	)
-                print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nedgestop10, ";"	)
+                print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nedges, ";"	))
+                print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nedgestop10, ";"	))
                 
                 nodesiip1.append(nnodes)
                 nodesiip1Top10.append(nnodestop10)
@@ -1003,10 +1007,10 @@ def main():
         for i in range (len(releasesm1)-1):
                 (release_name, release_date) = releases[i]
                 prior_release_date= releasesm1[i+1][1]
-                print ("\t --- Filtering change log data for [" + str(prior_release_date)+ "] <--> ["+ str(release_date)+"]")
+                print(("\t --- Filtering change log data for [" + str(prior_release_date)+ "] <--> ["+ str(release_date)+"]"))
                 changeLogData=filterChangeLogDataByDate (prior_release_date,release_date)
                 reprocess() 
-                print("\t --- Filtering by date is done. [" + str (sizeOriginalChangeLogData-len(changeLogData)) +"] changeLogs removed due their change date")
+                print(("\t --- Filtering by date is done. [" + str (sizeOriginalChangeLogData-len(changeLogData)) +"] changeLogs removed due their change date"))
 
                 nnodes= len(JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
                 nnodestop10 = len(JISA2015specificAnalysis.getNodesBetweenDates4SelectedFirmsDatesInConnList(uniqueConnections, networked_affiliations, top10))
@@ -1014,11 +1018,11 @@ def main():
                 nedges=len(uniqueConnections) 
                 nedgestop10= len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(uniqueConnections,networked_affiliations, top10))
 
-                print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nnodes )
-                print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10 )
+                print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nnodes ))
+                print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10 ))
                 
-                print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nedges, ";"	)
-                print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nedgestop10, ";")
+                print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nedges, ";"	))
+                print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ",nedgestop10, ";"))
                 
                 nodesim1ip1.append(nnodes) 
                 nodesim1ip1Top10.append(nnodestop10) 
@@ -1032,49 +1036,49 @@ def main():
         for r in releases:
                 (name, nc) = r  
                 rname.append(name + ";")
-        print ("rname",rname[::-1])
+        print(("rname",rname[::-1]))
 
 
         # For all nodes 
         print ("\t ALL NODES ")
         
-        print ("nodesiip1" , nodesiip1[::-1] )
-        print ("nodesiim1p1" , nodesim1ip1[::-1])
-        print ("diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
-        print (" % captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
+        print(("nodesiip1" , nodesiip1[::-1] ))
+        print(("nodesiim1p1" , nodesim1ip1[::-1]))
+        print(("diff capture nodes less 1 month", list(map(int.__sub__, nodesiip1, nodesim1ip1))[::-1]))
+        print((" % captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1]))[::-1]))
 
-        print ("edgesiip1", edgesiip1[::-1])        
-        print ("edgesim1ip1", edgesim1ip1[::-1])
-        print ("diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
-        print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1])
+        print(("edgesiip1", edgesiip1[::-1]))        
+        print(("edgesim1ip1", edgesim1ip1[::-1]))
+        print(("diff edges less 1 month", list(map(int.__sub__, edgesiip1, edgesim1ip1))[::-1]))
+        print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1]))[::-1]))
 
         # For top 10 onlys
         print ("\t TOP 10 NODES ")
 
-        print ("nodesiip1Top10",  nodesiip1Top10[::-1])
-        print ("nodesim1ip1Top10", nodesim1ip1Top10[::-1])
-        print ("diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
-        print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
+        print(("nodesiip1Top10",  nodesiip1Top10[::-1]))
+        print(("nodesim1ip1Top10", nodesim1ip1Top10[::-1]))
+        print(("diff nodes top10 less 1 month", list(map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10))[::-1]))
+        print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10]))[::-1]))
         
-        print ("dgesiip1Top10", edgesiip1Top10[::-1])
-        print ("dgesim1ip1Top10", edgesim1ip1Top10[::-1])
-        print ("iff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
-        print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
+        print(("dgesiip1Top10", edgesiip1Top10[::-1]))
+        print(("dgesim1ip1Top10", edgesim1ip1Top10[::-1]))
+        print(("iff edfes top10 less 1 month", list(map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10))[::-1]))
+        print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10]))[::-1]))
 
 
         print ("")
-        print ("FINNISHED " + str(datetime.now()))
+        print(("FINNISHED " + str(datetime.now())))
         
         if (LOAD_MODE != 1):
-                print ("TOTAL TIME " + str(datetime.now() - t0))
+                print(("TOTAL TIME " + str(datetime.now() - t0)))
 
         # Ending stats
 
-        print ("Number of analized lines [" +  str(stats['nlines']) + "]")
-        print ("Number of analized changelog blocks [" +  str(stats['nBlocks']) + "]")
-        print ("Number of analized changelog blocks changing code files [" +  str(stats['nBlocksChagingCode']) + "?]")
-        print ("Number of analized changelog blocks not changing code files (i.e. testCases)[" +  str(stats['nBlocksNotChangingCode']) + "?]")
-        print ("Number of files affected by the commits reported by change log[" +  str(stats['nChangedFiles']) + "]")
+        print(("Number of analized lines [" +  str(stats['nlines']) + "]"))
+        print(("Number of analized changelog blocks [" +  str(stats['nBlocks']) + "]"))
+        print(("Number of analized changelog blocks changing code files [" +  str(stats['nBlocksChagingCode']) + "?]"))
+        print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" +  str(stats['nBlocksNotChangingCode']) + "?]"))
+        print(("Number of files affected by the commits reported by change log[" +  str(stats['nChangedFiles']) + "]"))
 
 if __name__ == "__main__":
     main()
@@ -1103,12 +1107,12 @@ print("this is pyhton")
 
 
 try:
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 except:
     import pickle
 
 
-print("Executing " + str(sys.argv))
+print(("Executing " + str(sys.argv)))
 
 # Global parameters
 
@@ -1182,7 +1186,7 @@ def getAffiliationFromEmail(email):
 
     if match == None or match == []:
         print("ERROR unable to extract affiliation from email. Wrong email format?")
-        print("match=["+str(match)+"]")
+        print(("match=["+str(match)+"]"))
         sys.exit()
 
     "implement an exception for IBM as their emails come from multiple domains"
@@ -1194,7 +1198,7 @@ def getAffiliationFromEmail(email):
         if match[0] not in ibm_email_domains_prefix:
             print(
                 "ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
-            print("march=["+str(match[0])+"]")
+            print(("march=["+str(match[0])+"]"))
             sys.exit()
 
         # print ("affiliation(" + email + ")=[ibm]")
@@ -1233,21 +1237,21 @@ def getDateEmailAffiliation(line):
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
         if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line:
             print("WARNING exceptional code commit header Exception 1 ")
-            print("LINE number "+str(stats['nlines'])+" [" + line +
-                  "] double ;; <- name and email together on commit header")
+            print(("LINE number "+str(stats['nlines'])+" [" + line +
+                  "] double ;; <- name and email together on commit header"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             match = name_pattern.findall(line)
-            print("match=["+str(match)+"]")
+            print(("match=["+str(match)+"]"))
 
         # Exception 2: If there is not name in the commit
         # there is no spaces before the email (@)
         elif ' ' not in line[0:atIndex] and '==Launchpad' not in line:
 
             print("WARNING exceptional code commit header Exception 2 ")
-            print("LINE number "+str(stats['nlines']) +
-                  " [" + line + "] no name, just an email")
+            print(("LINE number "+str(stats['nlines']) +
+                  " [" + line + "] no name, just an email"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -1263,8 +1267,8 @@ def getDateEmailAffiliation(line):
         # ==Launchpad Translations on behalf of nova-core;;Sat Sep 3 05:50:53 2011 +0000
         elif "==Launchpad" in line:
             print("WARNING exceptional code commit header Exception 3 ")
-            print("LINE number " +
-                  str(stats['nlines'])+" [" + line + "] Lauchpad bot")
+            print(("LINE number " +
+                  str(stats['nlines'])+" [" + line + "] Lauchpad bot"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -1283,7 +1287,7 @@ def getDateEmailAffiliation(line):
             print(
                 "Error, unable to extract developer name, email or date from commit block")
             print("Regular expression not captured")
-            print("Line=["+line+"]")
+            print(("Line=["+line+"]"))
             sys.exit()
 
     name = match[0][0]
@@ -1298,7 +1302,7 @@ def getDateEmailAffiliation(line):
     email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
 
     if (email_pattern.search(email) == None):
-        print("WARNING commiter ["+email+"] have an invalidName")
+        print(("WARNING commiter ["+email+"] have an invalidName"))
         print("Adding .com? to the end")
         email += ".com?"
 
@@ -1375,8 +1379,8 @@ def scrapBlock(block):
 # Format end date should be  "Oct 11 2014" "MMM DD YYYY"
 
 def filterChangeLogDataByDate(startDate, endDate):
-    print(
-        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]")
+    print((
+        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]"))
 
     # are they dates?
 
@@ -1417,7 +1421,7 @@ def filterChangeLogDataByDate(startDate, endDate):
         # If there is no regulae expression match
         if (match == []):
             print("ERROR: Change log date is not on proper format")
-            print("date_ match=["+str(match)+"]")
+            print(("date_ match=["+str(match)+"]"))
             sys.exit()
 
         weekday = match[0][0]
@@ -1486,11 +1490,11 @@ def print_changeLogData():
         af = change[0][2]
         files = change[1]
 
-        print("On " + date + " " + email + " from " +
-              af + " worked on the following files:")
+        print(("On " + date + " " + email + " from " +
+              af + " worked on the following files:"))
 
         for file in files:
-            print("[" + file + "]")
+            print(("[" + file + "]"))
 
 
 # save the changeLogData data scraped into a filename
@@ -1501,7 +1505,7 @@ def save_changeLogData(filename):
 
     print("")
     print("TODO")
-    print('Saving changeLog to file ' + str(filename) + '')
+    print(('Saving changeLog to file ' + str(filename) + ''))
 
     if (SAVE_MODE != 1):
         print ("ERROR, not in saving mode")
@@ -1510,7 +1514,7 @@ def save_changeLogData(filename):
     with open(filename, 'wb') as fp:
         pickle.dump(changeLogData, fp)
 
-    print ("DONE changelog saved in ", filename, "NICE :)")
+    print(("DONE changelog saved in ", filename, "NICE :)"))
     sys.exit()
 
 
@@ -1518,7 +1522,7 @@ def save_changeLogData(filename):
 def load_changeLogData(filename):
     print ("")
     print ("TODO")
-    print ("Loading changeLog from  file [", filename, "]")
+    print(("Loading changeLog from  file [", filename, "]"))
 
     with open(filename, 'rb') as fp:
         changeLogData = pickle.load(fp)
@@ -1539,11 +1543,11 @@ def print_agreByFileContributors():
             print("ERROR: File without contrubutors !!")
             exit()
 
-        print("The file " + fileName +
-              "was changed by following [" + str(len(authorEmails)) + "]contributors")
+        print(("The file " + fileName +
+              "was changed by following [" + str(len(authorEmails)) + "]contributors"))
 
         for email in authorEmails:
-            print("[" + email + "]")
+            print(("[" + email + "]"))
 
 
 # print a list of contributor connected to each other cause they worked on a common files
@@ -1558,8 +1562,8 @@ def print_agreByConnWSF():
         contributorsPair = connection[0]
         fileName = connection[1]
 
-        print("Contributors " + str(contributorsPair) +
-              " connected by collaborating on file [" + fileName + "]")
+        print(("Contributors " + str(contributorsPair) +
+              " connected by collaborating on file [" + fileName + "]"))
 
 
 # Agregate by file and its contributors
@@ -1672,9 +1676,9 @@ def print_unique_connections():
 
     print("\t------/------\n")
     for (dev1, dev2) in uniqueConnections:
-        print("\t" + dev1 + " collaborated  with " + dev2)
-    print(
-        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]")
+        print(("\t" + dev1 + " collaborated  with " + dev2))
+    print((
+        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]"))
     print("\t------/------\n")
 
 
@@ -1700,11 +1704,11 @@ def getAffiliations():
 def print_Affiliations():
     print("\nPrinting author affiliations:\n ")
     for author in affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
     print("\nPrinting network-author affiliations:\n ")
     for author in networked_affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 
@@ -1769,13 +1773,13 @@ def main():
         DEBUG_MODE = 1
 
     if args.lser:
-        print ("loanding and processing [lser=", args.lser, "]")
+        print(("loanding and processing [lser=", args.lser, "]"))
         print ("not implmented yet")
         LOAD_MODE = 1
         RAW_MODE = 0
         SAVE_MODE = 0
     elif args.sser and args.raw:
-        print (" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]")
+        print((" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]"))
         SAVE_MODE = 1
         RAW_MODE = 1
         LOAD_MODE = 0
@@ -1783,17 +1787,17 @@ def main():
         RAW_MODE = 1
         LOAD_MODE = 0
         SAVE_MODE = 0
-        print (" processing [raw=", args.raw, "]")
+        print((" processing [raw=", args.raw, "]"))
     else:
         print ("unrecognized argumets ... see --help")
         sys.exit()
 
     if RAW_MODE == 1:
         # if we are not in load mode, we need to strap the log
-        print ("Scrapping changeLog from ", args.raw)
+        print(("Scrapping changeLog from ", args.raw))
         t0 = datetime.now()
-        print("STARTING the scrap of changeLog file " +
-              args.raw + " on " + str(t0))
+        print(("STARTING the scrap of changeLog file " +
+              args.raw + " on " + str(t0)))
 
         # Opening the files
 
@@ -1842,8 +1846,8 @@ def main():
                 else:
                     print(
                         "ERROR: not a file path. Commit blocs not starting with == must be file paths")
-                    print(
-                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]")
+                    print((
+                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]"))
                     sys.exit()
             else:
                 print("ERROR: Something wrong with the changeLog blocks L 107")
@@ -1856,7 +1860,7 @@ def main():
 
     elif (LOAD_MODE == 1):
         changeLogData = load_changeLogData(args.lser)
-        print ("1st SUCESS Change log loaded from ", args.lser, " ")
+        print(("1st SUCESS Change log loaded from ", args.lser, " "))
 
         if len(changeLogData) < 1:
             print ("to small loaded change log, len <1")
@@ -1996,13 +2000,13 @@ def main():
     for i in range(len(releases)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releases[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -2012,11 +2016,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10) 
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)) 
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesiip1.append(nnodes)
         nodesiip1Top10.append(nnodestop10)
@@ -2070,13 +2074,13 @@ def main():
     for i in range(len(releasesm1)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releasesm1[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -2087,11 +2091,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesim1ip1.append(nnodes)
         nodesim1ip1Top10.append(nnodestop10)
@@ -2105,51 +2109,51 @@ def main():
     for r in releases:
         (name, nc) = r
         rname.append(name + ";")
-    print ("rname", rname[::-1])
+    print(("rname", rname[::-1]))
 
     # For all nodes
     print( "\t ALL NODES ")
 
-    print ("nodesiip1", nodesiip1[::-1])
-    print ("nodesiim1p1", nodesim1ip1[::-1])
-    print ("diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
-    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
+    print(("nodesiip1", nodesiip1[::-1]))
+    print(("nodesiim1p1", nodesim1ip1[::-1]))
+    print(("diff capture nodes less 1 month", list(map(int.__sub__, nodesiip1, nodesim1ip1))[::-1]))
+    print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1]))[::-1]))
 
-    print ("edgesiip1", edgesiip1[::-1])
-    print ("edgesim1ip1", edgesim1ip1[::-1])
-    print ("diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1]) 
+    print(("edgesiip1", edgesiip1[::-1]))
+    print(("edgesim1ip1", edgesim1ip1[::-1]))
+    print(("diff edges less 1 month", list(map(int.__sub__, edgesiip1, edgesim1ip1))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1]))[::-1])) 
 
     # For top 10 onlys
     print ("\t TOP 10 NODES ")
 
-    print ("nodesiip1Top10",  nodesiip1Top10[::-1])
-    print ("nodesim1ip1Top10", nodesim1ip1Top10[::-1])
-    print ("diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
-    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
+    print(("nodesiip1Top10",  nodesiip1Top10[::-1]))
+    print(("nodesim1ip1Top10", nodesim1ip1Top10[::-1]))
+    print(("diff nodes top10 less 1 month", list(map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10))[::-1]))
+    print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10]))[::-1]))
 
-    print ("edgesiip1Top10", edgesiip1Top10[::-1])
-    print ("edgesim1ip1Top10", edgesim1ip1Top10[::-1])
-    print ("diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
+    print(("edgesiip1Top10", edgesiip1Top10[::-1]))
+    print(("edgesim1ip1Top10", edgesim1ip1Top10[::-1]))
+    print(("diff edfes top10 less 1 month", list(map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10]))[::-1]))
 
     print("")
-    print("FINNISHED " + str(datetime.now()))
+    print(("FINNISHED " + str(datetime.now())))
 
     if (LOAD_MODE != 1):
-        print("TOTAL TIME " + str(datetime.now() - t0))
+        print(("TOTAL TIME " + str(datetime.now() - t0)))
 
     # Ending stats
 
-    print("Number of analized lines [" + str(stats['nlines']) + "]")
-    print(
-        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]")
-    print("Number of analized changelog blocks changing code files [" + str(
-        stats['nBlocksChagingCode']) + "?]")
-    print("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
-        stats['nBlocksNotChangingCode']) + "?]")
-    print("Number of files affected by the commits reported by change log[" + str(
-        stats['nChangedFiles']) + "]")
+    print(("Number of analized lines [" + str(stats['nlines']) + "]"))
+    print((
+        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]"))
+    print(("Number of analized changelog blocks changing code files [" + str(
+        stats['nBlocksChagingCode']) + "?]"))
+    print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
+        stats['nBlocksNotChangingCode']) + "?]"))
+    print(("Number of files affected by the commits reported by change log[" + str(
+        stats['nChangedFiles']) + "]"))
 
 
 if __name__ == "__main__":
@@ -2178,12 +2182,12 @@ print("this is pyhton")
 
 
 try:
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 except:
     import pickle
 
 
-print("Executing " + str(sys.argv))
+print(("Executing " + str(sys.argv)))
 
 # Global parameters
 
@@ -2257,7 +2261,7 @@ def getAffiliationFromEmail(email):
 
     if match == None or match == []:
         print("ERROR unable to extract affiliation from email. Wrong email format?")
-        print("match=["+str(match)+"]")
+        print(("match=["+str(match)+"]"))
         sys.exit()
 
     "implement an exception for IBM as their emails come from multiple domains"
@@ -2269,7 +2273,7 @@ def getAffiliationFromEmail(email):
         if match[0] not in ibm_email_domains_prefix:
             print(
                 "ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
-            print("march=["+str(match[0])+"]")
+            print(("march=["+str(match[0])+"]"))
             sys.exit()
 
         # print ("affiliation(" + email + ")=[ibm]")
@@ -2308,21 +2312,21 @@ def getDateEmailAffiliation(line):
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
         if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line:
             print("WARNING exceptional code commit header Exception 1 ")
-            print("LINE number "+str(stats['nlines'])+" [" + line +
-                  "] double ;; <- name and email together on commit header")
+            print(("LINE number "+str(stats['nlines'])+" [" + line +
+                  "] double ;; <- name and email together on commit header"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             match = name_pattern.findall(line)
-            print("match=["+str(match)+"]")
+            print(("match=["+str(match)+"]"))
 
         # Exception 2: If there is not name in the commit
         # there is no spaces before the email (@)
         elif ' ' not in line[0:atIndex] and '==Launchpad' not in line:
 
             print("WARNING exceptional code commit header Exception 2 ")
-            print("LINE number "+str(stats['nlines']) +
-                  " [" + line + "] no name, just an email")
+            print(("LINE number "+str(stats['nlines']) +
+                  " [" + line + "] no name, just an email"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -2338,8 +2342,8 @@ def getDateEmailAffiliation(line):
         # ==Launchpad Translations on behalf of nova-core;;Sat Sep 3 05:50:53 2011 +0000
         elif "==Launchpad" in line:
             print("WARNING exceptional code commit header Exception 3 ")
-            print("LINE number " +
-                  str(stats['nlines'])+" [" + line + "] Lauchpad bot")
+            print(("LINE number " +
+                  str(stats['nlines'])+" [" + line + "] Lauchpad bot"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -2358,7 +2362,7 @@ def getDateEmailAffiliation(line):
             print(
                 "Error, unable to extract developer name, email or date from commit block")
             print("Regular expression not captured")
-            print("Line=["+line+"]")
+            print(("Line=["+line+"]"))
             sys.exit()
 
     name = match[0][0]
@@ -2373,7 +2377,7 @@ def getDateEmailAffiliation(line):
     email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
 
     if (email_pattern.search(email) == None):
-        print("WARNING commiter ["+email+"] have an invalidName")
+        print(("WARNING commiter ["+email+"] have an invalidName"))
         print("Adding .com? to the end")
         email += ".com?"
 
@@ -2450,8 +2454,8 @@ def scrapBlock(block):
 # Format end date should be  "Oct 11 2014" "MMM DD YYYY"
 
 def filterChangeLogDataByDate(startDate, endDate):
-    print(
-        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]")
+    print((
+        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]"))
 
     # are they dates?
 
@@ -2492,7 +2496,7 @@ def filterChangeLogDataByDate(startDate, endDate):
         # If there is no regulae expression match
         if (match == []):
             print("ERROR: Change log date is not on proper format")
-            print("date_ match=["+str(match)+"]")
+            print(("date_ match=["+str(match)+"]"))
             sys.exit()
 
         weekday = match[0][0]
@@ -2561,11 +2565,11 @@ def print_changeLogData():
         af = change[0][2]
         files = change[1]
 
-        print("On " + date + " " + email + " from " +
-              af + " worked on the following files:")
+        print(("On " + date + " " + email + " from " +
+              af + " worked on the following files:"))
 
         for file in files:
-            print("[" + file + "]")
+            print(("[" + file + "]"))
 
 
 # save the changeLogData data scraped into a filename
@@ -2576,7 +2580,7 @@ def save_changeLogData(filename):
 
     print("")
     print("TODO")
-    print('Saving changeLog to file ' + str(filename) + '')
+    print(('Saving changeLog to file ' + str(filename) + ''))
 
     if (SAVE_MODE != 1):
         print ("ERROR, not in saving mode")
@@ -2585,7 +2589,7 @@ def save_changeLogData(filename):
     with open(filename, 'wb') as fp:
         pickle.dump(changeLogData, fp)
 
-    print ("DONE changelog saved in ", filename, "NICE :)")
+    print(("DONE changelog saved in ", filename, "NICE :)"))
     sys.exit()
 
 
@@ -2593,7 +2597,7 @@ def save_changeLogData(filename):
 def load_changeLogData(filename):
     print ("")
     print ("TODO")
-    print ("Loading changeLog from  file [", filename, "]")
+    print(("Loading changeLog from  file [", filename, "]"))
 
     with open(filename, 'rb') as fp:
         changeLogData = pickle.load(fp)
@@ -2614,11 +2618,11 @@ def print_agreByFileContributors():
             print("ERROR: File without contrubutors !!")
             exit()
 
-        print("The file " + fileName +
-              "was changed by following [" + str(len(authorEmails)) + "]contributors")
+        print(("The file " + fileName +
+              "was changed by following [" + str(len(authorEmails)) + "]contributors"))
 
         for email in authorEmails:
-            print("[" + email + "]")
+            print(("[" + email + "]"))
 
 
 # print a list of contributor connected to each other cause they worked on a common files
@@ -2633,8 +2637,8 @@ def print_agreByConnWSF():
         contributorsPair = connection[0]
         fileName = connection[1]
 
-        print("Contributors " + str(contributorsPair) +
-              " connected by collaborating on file [" + fileName + "]")
+        print(("Contributors " + str(contributorsPair) +
+              " connected by collaborating on file [" + fileName + "]"))
 
 
 # Agregate by file and its contributors
@@ -2747,9 +2751,9 @@ def print_unique_connections():
 
     print("\t------/------\n")
     for (dev1, dev2) in uniqueConnections:
-        print("\t" + dev1 + " collaborated  with " + dev2)
-    print(
-        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]")
+        print(("\t" + dev1 + " collaborated  with " + dev2))
+    print((
+        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]"))
     print("\t------/------\n")
 
 
@@ -2775,11 +2779,11 @@ def getAffiliations():
 def print_Affiliations():
     print("\nPrinting author affiliations:\n ")
     for author in affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
     print("\nPrinting network-author affiliations:\n ")
     for author in networked_affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 
@@ -2844,13 +2848,13 @@ def main():
         DEBUG_MODE = 1
 
     if args.lser:
-        print (" loanding and processing [lser=", args.lser, "]")
+        print((" loanding and processing [lser=", args.lser, "]"))
         print ("not implmented yet")
         LOAD_MODE = 1
         RAW_MODE = 0
         SAVE_MODE = 0
     elif args.sser and args.raw:
-        print (" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]")
+        print((" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]"))
         SAVE_MODE = 1
         RAW_MODE = 1
         LOAD_MODE = 0
@@ -2858,17 +2862,17 @@ def main():
         RAW_MODE = 1
         LOAD_MODE = 0
         SAVE_MODE = 0
-        print (" processing [raw=", args.raw, "]")
+        print((" processing [raw=", args.raw, "]"))
     else:
         print ("unrecognized argumets ... see --help")
         sys.exit()
 
     if RAW_MODE == 1:
         # if we are not in load mode, we need to strap the log
-        print ("Scrapping changeLog from ", args.raw)
+        print(("Scrapping changeLog from ", args.raw))
         t0 = datetime.now()
-        print("STARTING the scrap of changeLog file " +
-              args.raw + " on " + str(t0))
+        print(("STARTING the scrap of changeLog file " +
+              args.raw + " on " + str(t0)))
 
         # Opening the files
 
@@ -2917,8 +2921,8 @@ def main():
                 else:
                     print(
                         "ERROR: not a file path. Commit blocs not starting with == must be file paths")
-                    print(
-                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]")
+                    print((
+                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]"))
                     sys.exit()
             else:
                 print("ERROR: Something wrong with the changeLog blocks L 107")
@@ -2931,7 +2935,7 @@ def main():
 
     elif (LOAD_MODE == 1):
         changeLogData = load_changeLogData(args.lser)
-        print ("1st SUCESS Change log loaded from ", args.lser, " ")
+        print(("1st SUCESS Change log loaded from ", args.lser, " "))
 
         if len(changeLogData) < 1:
             print ("to small loaded change log, len <1")
@@ -3071,13 +3075,13 @@ def main():
     for i in range(len(releases)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releases[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -3087,11 +3091,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesiip1.append(nnodes)
         nodesiip1Top10.append(nnodestop10)
@@ -3145,13 +3149,13 @@ def main():
     for i in range(len(releasesm1)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releasesm1[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -3162,11 +3166,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesim1ip1.append(nnodes)
         nodesim1ip1Top10.append(nnodestop10)
@@ -3180,51 +3184,51 @@ def main():
     for r in releases:
         (name, nc) = r
         rname.append(name + ";")
-    print ("rname", rname[::-1])
+    print(("rname", rname[::-1]))
 
     # For all nodes
     print ("\t ALL NODES ")
 
-    print ("nodesiip1", nodesiip1[::-1])
-    print ("nodesiim1p1", nodesim1ip1[::-1])
-    print ("diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
-    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
+    print(("nodesiip1", nodesiip1[::-1]))
+    print(("nodesiim1p1", nodesim1ip1[::-1]))
+    print(("diff capture nodes less 1 month", list(map(int.__sub__, nodesiip1, nodesim1ip1))[::-1]))
+    print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1]))[::-1]))
 
-    print ("edgesiip1", edgesiip1[::-1])
-    print ("edgesim1ip1", edgesim1ip1[::-1])
-    print ("diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1])
+    print(("edgesiip1", edgesiip1[::-1]))
+    print(("edgesim1ip1", edgesim1ip1[::-1]))
+    print(("diff edges less 1 month", list(map(int.__sub__, edgesiip1, edgesim1ip1))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1]))[::-1]))
 
     # For top 10 onlys
     print ("\t TOP 10 NODES ")
 
-    print ("nodesiip1Top10",  nodesiip1Top10[::-1])
-    print ("nodesim1ip1Top10", nodesim1ip1Top10[::-1])
-    print ("diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
-    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
+    print(("nodesiip1Top10",  nodesiip1Top10[::-1]))
+    print(("nodesim1ip1Top10", nodesim1ip1Top10[::-1]))
+    print(("diff nodes top10 less 1 month", list(map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10))[::-1]))
+    print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10]))[::-1]))
 
-    print ("edgesiip1Top10", edgesiip1Top10[::-1])
-    print ("edgesim1ip1Top10", edgesim1ip1Top10[::-1])
-    print ("diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
+    print(("edgesiip1Top10", edgesiip1Top10[::-1]))
+    print(("edgesim1ip1Top10", edgesim1ip1Top10[::-1]))
+    print(("diff edfes top10 less 1 month", list(map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10]))[::-1]))
 
     print("")
-    print("FINNISHED " + str(datetime.now()))
+    print(("FINNISHED " + str(datetime.now())))
 
     if (LOAD_MODE != 1):
-        print("TOTAL TIME " + str(datetime.now() - t0))
+        print(("TOTAL TIME " + str(datetime.now() - t0)))
 
     # Ending stats
 
-    print("Number of analized lines [" + str(stats['nlines']) + "]")
-    print(
-        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]")
-    print("Number of analized changelog blocks changing code files [" + str(
-        stats['nBlocksChagingCode']) + "?]")
-    print("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
-        stats['nBlocksNotChangingCode']) + "?]")
-    print("Number of files affected by the commits reported by change log[" + str(
-        stats['nChangedFiles']) + "]")
+    print(("Number of analized lines [" + str(stats['nlines']) + "]"))
+    print((
+        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]"))
+    print(("Number of analized changelog blocks changing code files [" + str(
+        stats['nBlocksChagingCode']) + "?]"))
+    print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
+        stats['nBlocksNotChangingCode']) + "?]"))
+    print(("Number of files affected by the commits reported by change log[" + str(
+        stats['nChangedFiles']) + "]"))
 
 
 if __name__ == "__main__":
@@ -3245,12 +3249,12 @@ print("this is pyhton")
 
 
 try:
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 except:
     import pickle
 
 
-print("Executing " + str(sys.argv))
+print(("Executing " + str(sys.argv)))
 
 # Global parameters
 
@@ -3324,7 +3328,7 @@ def getAffiliationFromEmail(email):
 
     if match == None or match == []:
         print("ERROR unable to extract affiliation from email. Wrong email format?")
-        print("match=["+str(match)+"]")
+        print(("match=["+str(match)+"]"))
         sys.exit()
 
     "implement an exception for IBM as their emails come from multiple domains"
@@ -3336,7 +3340,7 @@ def getAffiliationFromEmail(email):
         if match[0] not in ibm_email_domains_prefix:
             print(
                 "ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
-            print("march=["+str(match[0])+"]")
+            print(("march=["+str(match[0])+"]"))
             sys.exit()
 
         # print ("affiliation(" + email + ")=[ibm]")
@@ -3375,21 +3379,21 @@ def getDateEmailAffiliation(line):
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
         if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line:
             print("WARNING exceptional code commit header Exception 1 ")
-            print("LINE number "+str(stats['nlines'])+" [" + line +
-                  "] double ;; <- name and email together on commit header")
+            print(("LINE number "+str(stats['nlines'])+" [" + line +
+                  "] double ;; <- name and email together on commit header"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             match = name_pattern.findall(line)
-            print("match=["+str(match)+"]")
+            print(("match=["+str(match)+"]"))
 
         # Exception 2: If there is not name in the commit
         # there is no spaces before the email (@)
         elif ' ' not in line[0:atIndex] and '==Launchpad' not in line:
 
             print("WARNING exceptional code commit header Exception 2 ")
-            print("LINE number "+str(stats['nlines']) +
-                  " [" + line + "] no name, just an email")
+            print(("LINE number "+str(stats['nlines']) +
+                  " [" + line + "] no name, just an email"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -3405,8 +3409,8 @@ def getDateEmailAffiliation(line):
         # ==Launchpad Translations on behalf of nova-core;;Sat Sep 3 05:50:53 2011 +0000
         elif "==Launchpad" in line:
             print("WARNING exceptional code commit header Exception 3 ")
-            print("LINE number " +
-                  str(stats['nlines'])+" [" + line + "] Lauchpad bot")
+            print(("LINE number " +
+                  str(stats['nlines'])+" [" + line + "] Lauchpad bot"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -3425,7 +3429,7 @@ def getDateEmailAffiliation(line):
             print(
                 "Error, unable to extract developer name, email or date from commit block")
             print("Regular expression not captured")
-            print("Line=["+line+"]")
+            print(("Line=["+line+"]"))
             sys.exit()
 
     name = match[0][0]
@@ -3440,7 +3444,7 @@ def getDateEmailAffiliation(line):
     email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
 
     if (email_pattern.search(email) == None):
-        print("WARNING commiter ["+email+"] have an invalidName")
+        print(("WARNING commiter ["+email+"] have an invalidName"))
         print("Adding .com? to the end")
         email += ".com?"
 
@@ -3517,8 +3521,8 @@ def scrapBlock(block):
 # Format end date should be  "Oct 11 2014" "MMM DD YYYY"
 
 def filterChangeLogDataByDate(startDate, endDate):
-    print(
-        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]")
+    print((
+        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]"))
 
     # are they dates?
 
@@ -3559,7 +3563,7 @@ def filterChangeLogDataByDate(startDate, endDate):
         # If there is no regulae expression match
         if (match == []):
             print("ERROR: Change log date is not on proper format")
-            print("date_ match=["+str(match)+"]")
+            print(("date_ match=["+str(match)+"]"))
             sys.exit()
 
         weekday = match[0][0]
@@ -3628,11 +3632,11 @@ def print_changeLogData():
         af = change[0][2]
         files = change[1]
 
-        print("On " + date + " " + email + " from " +
-              af + " worked on the following files:")
+        print(("On " + date + " " + email + " from " +
+              af + " worked on the following files:"))
 
         for file in files:
-            print("[" + file + "]")
+            print(("[" + file + "]"))
 
 
 # save the changeLogData data scraped into a filename
@@ -3643,7 +3647,7 @@ def save_changeLogData(filename):
 
     print("")
     print("TODO")
-    print('Saving changeLog to file ' + str(filename) + '')
+    print(('Saving changeLog to file ' + str(filename) + ''))
 
     if (SAVE_MODE != 1):
         print ("ERROR, not in saving mode")
@@ -3652,7 +3656,7 @@ def save_changeLogData(filename):
     with open(filename, 'wb') as fp:
         pickle.dump(changeLogData, fp)
 
-    print ("DONE changelog saved in ", filename, "NICE :)")
+    print(("DONE changelog saved in ", filename, "NICE :)"))
     sys.exit()
 
 
@@ -3660,7 +3664,7 @@ def save_changeLogData(filename):
 def load_changeLogData(filename):
     print ("")
     print ("TODO")
-    print ("Loading changeLog from  file [", filename, "]")
+    print(("Loading changeLog from  file [", filename, "]"))
 
     with open(filename, 'rb') as fp:
         changeLogData = pickle.load(fp)
@@ -3681,11 +3685,11 @@ def print_agreByFileContributors():
             print("ERROR: File without contrubutors !!")
             exit()
 
-        print("The file " + fileName +
-              "was changed by following [" + str(len(authorEmails)) + "]contributors")
+        print(("The file " + fileName +
+              "was changed by following [" + str(len(authorEmails)) + "]contributors"))
 
         for email in authorEmails:
-            print("[" + email + "]")
+            print(("[" + email + "]"))
 
 
 # print a list of contributor connected to each other cause they worked on a common files
@@ -3700,8 +3704,8 @@ def print_agreByConnWSF():
         contributorsPair = connection[0]
         fileName = connection[1]
 
-        print("Contributors " + str(contributorsPair) +
-              " connected by collaborating on file [" + fileName + "]")
+        print(("Contributors " + str(contributorsPair) +
+              " connected by collaborating on file [" + fileName + "]"))
 
 
 # Agregate by file and its contributors
@@ -3814,9 +3818,9 @@ def print_unique_connections():
 
     print("\t------/------\n")
     for (dev1, dev2) in uniqueConnections:
-        print("\t" + dev1 + " collaborated  with " + dev2)
-    print(
-        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]")
+        print(("\t" + dev1 + " collaborated  with " + dev2))
+    print((
+        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]"))
     print("\t------/------\n")
 
 
@@ -3842,11 +3846,11 @@ def getAffiliations():
 def print_Affiliations():
     print("\nPrinting author affiliations:\n ")
     for author in affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
     print("\nPrinting network-author affiliations:\n ")
     for author in networked_affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 
@@ -3911,13 +3915,13 @@ def main():
         DEBUG_MODE = 1
 
     if args.lser:
-        print (" loanding and processing [lser=", args.lser, "]")
+        print((" loanding and processing [lser=", args.lser, "]"))
         print ("not implmented yet")
         LOAD_MODE = 1
         RAW_MODE = 0
         SAVE_MODE = 0
     elif args.sser and args.raw:
-        print (" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]")
+        print((" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]"))
         SAVE_MODE = 1
         RAW_MODE = 1
         LOAD_MODE = 0
@@ -3925,17 +3929,17 @@ def main():
         RAW_MODE = 1
         LOAD_MODE = 0
         SAVE_MODE = 0
-        print( " processing [raw=", args.raw, "]")
+        print(( " processing [raw=", args.raw, "]"))
     else:
         print ("unrecognized argumets ... see --help")
         sys.exit()
 
     if RAW_MODE == 1:
         # if we are not in load mode, we need to strap the log
-        print ("Scrapping changeLog from ", args.raw)
+        print(("Scrapping changeLog from ", args.raw))
         t0 = datetime.now()
-        print("STARTING the scrap of changeLog file " +
-              args.raw + " on " + str(t0))
+        print(("STARTING the scrap of changeLog file " +
+              args.raw + " on " + str(t0)))
 
         # Opening the files
 
@@ -3984,8 +3988,8 @@ def main():
                 else:
                     print(
                         "ERROR: not a file path. Commit blocs not starting with == must be file paths")
-                    print(
-                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]")
+                    print((
+                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]"))
                     sys.exit()
             else:
                 print("ERROR: Something wrong with the changeLog blocks L 107")
@@ -3998,7 +4002,7 @@ def main():
 
     elif (LOAD_MODE == 1):
         changeLogData = load_changeLogData(args.lser)
-        print ("1st SUCESS Change log loaded from ", args.lser, " ")
+        print(("1st SUCESS Change log loaded from ", args.lser, " "))
 
         if len(changeLogData) < 1:
             print ("to small loaded change log, len <1")
@@ -4138,13 +4142,13 @@ def main():
     for i in range(len(releases)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releases[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -4154,11 +4158,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesiip1.append(nnodes)
         nodesiip1Top10.append(nnodestop10)
@@ -4212,13 +4216,13 @@ def main():
     for i in range(len(releasesm1)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releasesm1[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -4229,11 +4233,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";") 
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")) 
 
         nodesim1ip1.append(nnodes)
         nodesim1ip1Top10.append(nnodestop10)
@@ -4247,51 +4251,51 @@ def main():
     for r in releases:
         (name, nc) = r
         rname.append(name + ";")
-    print ("rname", rname[::-1])
+    print(("rname", rname[::-1]))
 
     # For all nodes
     print( "\t ALL NODES ")
 
-    print("nodesiip1", nodesiip1[::-1])
-    print("nodesiim1p1", nodesim1ip1[::-1])
-    print( "diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
-    print( "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
+    print(("nodesiip1", nodesiip1[::-1]))
+    print(("nodesiim1p1", nodesim1ip1[::-1]))
+    print(( "diff capture nodes less 1 month", list(map(int.__sub__, nodesiip1, nodesim1ip1))[::-1]))
+    print(( "% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1]))[::-1]))
 
-    print ("edgesiip1", edgesiip1[::-1])
-    print ("edgesim1ip1", edgesim1ip1[::-1])
-    print ("diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1])
+    print(("edgesiip1", edgesiip1[::-1]))
+    print(("edgesim1ip1", edgesim1ip1[::-1]))
+    print(("diff edges less 1 month", list(map(int.__sub__, edgesiip1, edgesim1ip1))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1]))[::-1]))
 
     # For top 10 onlys
     print ("\t TOP 10 NODES ")
 
-    print ("nodesiip1Top10",  nodesiip1Top10[::-1])
-    print ("nodesim1ip1Top10", nodesim1ip1Top10[::-1])
-    print ("diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
-    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
+    print(("nodesiip1Top10",  nodesiip1Top10[::-1]))
+    print(("nodesim1ip1Top10", nodesim1ip1Top10[::-1]))
+    print(("diff nodes top10 less 1 month", list(map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10))[::-1]))
+    print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10]))[::-1]))
 
-    print ("edgesiip1Top10", edgesiip1Top10[::-1])
-    print ("edgesim1ip1Top10", edgesim1ip1Top10[::-1])
-    print ("diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
+    print(("edgesiip1Top10", edgesiip1Top10[::-1]))
+    print(("edgesim1ip1Top10", edgesim1ip1Top10[::-1]))
+    print(("diff edfes top10 less 1 month", list(map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10]))[::-1]))
 
     print("")
-    print("FINNISHED " + str(datetime.now()))
+    print(("FINNISHED " + str(datetime.now())))
 
     if (LOAD_MODE != 1):
-        print("TOTAL TIME " + str(datetime.now() - t0))
+        print(("TOTAL TIME " + str(datetime.now() - t0)))
 
     # Ending stats
 
-    print("Number of analized lines [" + str(stats['nlines']) + "]")
-    print(
-        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]")
-    print("Number of analized changelog blocks changing code files [" + str(
-        stats['nBlocksChagingCode']) + "?]")
-    print("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
-        stats['nBlocksNotChangingCode']) + "?]")
-    print("Number of files affected by the commits reported by change log[" + str(
-        stats['nChangedFiles']) + "]")
+    print(("Number of analized lines [" + str(stats['nlines']) + "]"))
+    print((
+        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]"))
+    print(("Number of analized changelog blocks changing code files [" + str(
+        stats['nBlocksChagingCode']) + "?]"))
+    print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
+        stats['nBlocksNotChangingCode']) + "?]"))
+    print(("Number of files affected by the commits reported by change log[" + str(
+        stats['nChangedFiles']) + "]"))
 
 
 if __name__ == "__main__":
@@ -4320,12 +4324,12 @@ print("this is pyhton")
 
 
 try:
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 except:
     import pickle
 
 
-print("Executing " + str(sys.argv))
+print(("Executing " + str(sys.argv)))
 
 # Global parameters
 
@@ -4399,7 +4403,7 @@ def getAffiliationFromEmail(email):
 
     if match == None or match == []:
         print("ERROR unable to extract affiliation from email. Wrong email format?")
-        print("match=["+str(match)+"]")
+        print(("match=["+str(match)+"]"))
         sys.exit()
 
     "implement an exception for IBM as their emails come from multiple domains"
@@ -4411,7 +4415,7 @@ def getAffiliationFromEmail(email):
         if match[0] not in ibm_email_domains_prefix:
             print(
                 "ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
-            print("march=["+str(match[0])+"]")
+            print(("march=["+str(match[0])+"]"))
             sys.exit()
 
         # print ("affiliation(" + email + ")=[ibm]")
@@ -4450,21 +4454,21 @@ def getDateEmailAffiliation(line):
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
         if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line:
             print("WARNING exceptional code commit header Exception 1 ")
-            print("LINE number "+str(stats['nlines'])+" [" + line +
-                  "] double ;; <- name and email together on commit header")
+            print(("LINE number "+str(stats['nlines'])+" [" + line +
+                  "] double ;; <- name and email together on commit header"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             match = name_pattern.findall(line)
-            print("match=["+str(match)+"]")
+            print(("match=["+str(match)+"]"))
 
         # Exception 2: If there is not name in the commit
         # there is no spaces before the email (@)
         elif ' ' not in line[0:atIndex] and '==Launchpad' not in line:
 
             print("WARNING exceptional code commit header Exception 2 ")
-            print("LINE number "+str(stats['nlines']) +
-                  " [" + line + "] no name, just an email")
+            print(("LINE number "+str(stats['nlines']) +
+                  " [" + line + "] no name, just an email"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -4480,8 +4484,8 @@ def getDateEmailAffiliation(line):
         # ==Launchpad Translations on behalf of nova-core;;Sat Sep 3 05:50:53 2011 +0000
         elif "==Launchpad" in line:
             print("WARNING exceptional code commit header Exception 3 ")
-            print("LINE number " +
-                  str(stats['nlines'])+" [" + line + "] Lauchpad bot")
+            print(("LINE number " +
+                  str(stats['nlines'])+" [" + line + "] Lauchpad bot"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -4500,7 +4504,7 @@ def getDateEmailAffiliation(line):
             print(
                 "Error, unable to extract developer name, email or date from commit block")
             print("Regular expression not captured")
-            print("Line=["+line+"]")
+            print(("Line=["+line+"]"))
             sys.exit()
 
     name = match[0][0]
@@ -4515,7 +4519,7 @@ def getDateEmailAffiliation(line):
     email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
 
     if (email_pattern.search(email) == None):
-        print("WARNING commiter ["+email+"] have an invalidName")
+        print(("WARNING commiter ["+email+"] have an invalidName"))
         print("Adding .com? to the end")
         email += ".com?"
 
@@ -4592,8 +4596,8 @@ def scrapBlock(block):
 # Format end date should be  "Oct 11 2014" "MMM DD YYYY"
 
 def filterChangeLogDataByDate(startDate, endDate):
-    print(
-        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]")
+    print((
+        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]"))
 
     # are they dates?
 
@@ -4634,7 +4638,7 @@ def filterChangeLogDataByDate(startDate, endDate):
         # If there is no regulae expression match
         if (match == []):
             print("ERROR: Change log date is not on proper format")
-            print("date_ match=["+str(match)+"]")
+            print(("date_ match=["+str(match)+"]"))
             sys.exit()
 
         weekday = match[0][0]
@@ -4703,11 +4707,11 @@ def print_changeLogData():
         af = change[0][2]
         files = change[1]
 
-        print("On " + date + " " + email + " from " +
-              af + " worked on the following files:")
+        print(("On " + date + " " + email + " from " +
+              af + " worked on the following files:"))
 
         for file in files:
-            print("[" + file + "]")
+            print(("[" + file + "]"))
 
 
 # save the changeLogData data scraped into a filename
@@ -4718,7 +4722,7 @@ def save_changeLogData(filename):
 
     print("")
     print("TODO")
-    print('Saving changeLog to file ' + str(filename) + '')
+    print(('Saving changeLog to file ' + str(filename) + ''))
 
     if (SAVE_MODE != 1):
         print("ERROR, not in saving mode")
@@ -4727,7 +4731,7 @@ def save_changeLogData(filename):
     with open(filename, 'wb') as fp:
         pickle.dump(changeLogData, fp)
 
-    print("DONE changelog saved in ", filename, "NICE :)")
+    print(("DONE changelog saved in ", filename, "NICE :)"))
     sys.exit()
 
 
@@ -4735,7 +4739,7 @@ def save_changeLogData(filename):
 def load_changeLogData(filename):
     print("")
     print("TODO")
-    print("Loading changeLog from  file [", filename, "]")
+    print(("Loading changeLog from  file [", filename, "]"))
 
     with open(filename, 'rb') as fp:
         changeLogData = pickle.load(fp)
@@ -4756,11 +4760,11 @@ def print_agreByFileContributors():
             print("ERROR: File without contrubutors !!")
             exit()
 
-        print("The file " + fileName +
-              "was changed by following [" + str(len(authorEmails)) + "]contributors")
+        print(("The file " + fileName +
+              "was changed by following [" + str(len(authorEmails)) + "]contributors"))
 
         for email in authorEmails:
-            print("[" + email + "]")
+            print(("[" + email + "]"))
 
 
 # print a list of contributor connected to each other cause they worked on a common files
@@ -4775,8 +4779,8 @@ def print_agreByConnWSF():
         contributorsPair = connection[0]
         fileName = connection[1]
 
-        print("Contributors " + str(contributorsPair) +
-              " connected by collaborating on file [" + fileName + "]")
+        print(("Contributors " + str(contributorsPair) +
+              " connected by collaborating on file [" + fileName + "]"))
 
 
 # Agregate by file and its contributors
@@ -4889,9 +4893,9 @@ def print_unique_connections():
 
     print("\t------/------\n")
     for (dev1, dev2) in uniqueConnections:
-        print("\t" + dev1 + " collaborated  with " + dev2)
-    print(
-        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]")
+        print(("\t" + dev1 + " collaborated  with " + dev2))
+    print((
+        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]"))
     print("\t------/------\n")
 
 
@@ -4917,11 +4921,11 @@ def getAffiliations():
 def print_Affiliations():
     print("\nPrinting author affiliations:\n ")
     for author in affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
     print("\nPrinting network-author affiliations:\n ")
     for author in networked_affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 
@@ -4986,13 +4990,13 @@ def main():
         DEBUG_MODE = 1
 
     if args.lser:
-        print (" loanding and processing [lser=", args.lser, "]")
+        print((" loanding and processing [lser=", args.lser, "]"))
         print ("not implmented yet")
         LOAD_MODE = 1
         RAW_MODE = 0
         SAVE_MODE = 0
     elif args.sser and args.raw:
-        print (" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]")
+        print((" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]"))
         SAVE_MODE = 1
         RAW_MODE = 1
         LOAD_MODE = 0
@@ -5000,17 +5004,17 @@ def main():
         RAW_MODE = 1
         LOAD_MODE = 0
         SAVE_MODE = 0
-        print (" processing [raw=", args.raw, "]")
+        print((" processing [raw=", args.raw, "]"))
     else:
         print ("unrecognized argumets ... see --help")
         sys.exit()
 
     if RAW_MODE == 1:
         # if we are not in load mode, we need to strap the log
-        print ("Scrapping changeLog from ", args.raw)
+        print(("Scrapping changeLog from ", args.raw))
         t0 = datetime.now()
-        print("STARTING the scrap of changeLog file " +
-              args.raw + " on " + str(t0))
+        print(("STARTING the scrap of changeLog file " +
+              args.raw + " on " + str(t0)))
 
         # Opening the files
 
@@ -5059,8 +5063,8 @@ def main():
                 else:
                     print(
                         "ERROR: not a file path. Commit blocs not starting with == must be file paths")
-                    print(
-                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]")
+                    print((
+                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]"))
                     sys.exit()
             else:
                 print("ERROR: Something wrong with the changeLog blocks L 107")
@@ -5073,7 +5077,7 @@ def main():
 
     elif (LOAD_MODE == 1):
         changeLogData = load_changeLogData(args.lser)
-        print ("1st SUCESS Change log loaded from ", args.lser, " ")
+        print(("1st SUCESS Change log loaded from ", args.lser, " "))
 
         if len(changeLogData) < 1:
             print ("to small loaded change log, len <1")
@@ -5213,13 +5217,13 @@ def main():
     for i in range(len(releases)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releases[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -5229,11 +5233,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10 )
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10 ))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";" ) 
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";" ) 
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";" )) 
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";" )) 
 
         nodesiip1.append(nnodes)
         nodesiip1Top10.append(nnodestop10)
@@ -5287,13 +5291,13 @@ def main():
     for i in range(len(releasesm1)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releasesm1[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -5304,11 +5308,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesim1ip1.append(nnodes)
         nodesim1ip1Top10.append(nnodestop10)
@@ -5322,51 +5326,51 @@ def main():
     for r in releases:
         (name, nc) = r
         rname.append(name + ";")
-    print ("rname", rname[::-1])
+    print(("rname", rname[::-1]))
 
     # For all nodes
     print ("\ ALL NODES ")
 
-    print ("nodesiip1", nodesiip1[::-1]) 
-    print ("nodesiim1p1", nodesim1ip1[::-1])
-    print ("diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
-    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
+    print(("nodesiip1", nodesiip1[::-1])) 
+    print(("nodesiim1p1", nodesim1ip1[::-1]))
+    print(("diff capture nodes less 1 month", list(map(int.__sub__, nodesiip1, nodesim1ip1))[::-1]))
+    print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1]))[::-1]))
 
-    print ("edgesiip1", edgesiip1[::-1])
-    print ("edgesim1ip1", edgesim1ip1[::-1])
-    print ("diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1]) 
+    print(("edgesiip1", edgesiip1[::-1]))
+    print(("edgesim1ip1", edgesim1ip1[::-1]))
+    print(("diff edges less 1 month", list(map(int.__sub__, edgesiip1, edgesim1ip1))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1]))[::-1])) 
 
     # For top 10 onlys
     print ("\t TOP 10 NODES ")
 
-    print ("nodesiip1Top10",  nodesiip1Top10[::-1])
-    print ("nodesim1ip1Top10", nodesim1ip1Top10[::-1])
-    print ("diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
-    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
+    print(("nodesiip1Top10",  nodesiip1Top10[::-1]))
+    print(("nodesim1ip1Top10", nodesim1ip1Top10[::-1]))
+    print(("diff nodes top10 less 1 month", list(map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10))[::-1]))
+    print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10]))[::-1]))
 
-    print ("edgesiip1Top10", edgesiip1Top10[::-1])
-    print ("edgesim1ip1Top10", edgesim1ip1Top10[::-1])
-    print ("diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
+    print(("edgesiip1Top10", edgesiip1Top10[::-1]))
+    print(("edgesim1ip1Top10", edgesim1ip1Top10[::-1]))
+    print(("diff edfes top10 less 1 month", list(map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10]))[::-1]))
 
     print("")
-    print("FINNISHED " + str(datetime.now()))
+    print(("FINNISHED " + str(datetime.now())))
 
     if (LOAD_MODE != 1):
-        print("TOTAL TIME " + str(datetime.now() - t0))
+        print(("TOTAL TIME " + str(datetime.now() - t0)))
 
     # Ending stats
 
-    print("Number of analized lines [" + str(stats['nlines']) + "]")
-    print(
-        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]")
-    print("Number of analized changelog blocks changing code files [" + str(
-        stats['nBlocksChagingCode']) + "?]")
-    print("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
-        stats['nBlocksNotChangingCode']) + "?]")
-    print("Number of files affected by the commits reported by change log[" + str(
-        stats['nChangedFiles']) + "]")
+    print(("Number of analized lines [" + str(stats['nlines']) + "]"))
+    print((
+        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]"))
+    print(("Number of analized changelog blocks changing code files [" + str(
+        stats['nBlocksChagingCode']) + "?]"))
+    print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
+        stats['nBlocksNotChangingCode']) + "?]"))
+    print(("Number of files affected by the commits reported by change log[" + str(
+        stats['nChangedFiles']) + "]"))
 
 
 if __name__ == "__main__":
@@ -5387,12 +5391,12 @@ print("this is pyhton")
 
 
 try:
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 except:
     import pickle
 
 
-print("Executing " + str(sys.argv))
+print(("Executing " + str(sys.argv)))
 
 # Global parameters
 
@@ -5466,7 +5470,7 @@ def getAffiliationFromEmail(email):
 
     if match == None or match == []:
         print("ERROR unable to extract affiliation from email. Wrong email format?")
-        print("match=["+str(match)+"]")
+        print(("match=["+str(match)+"]"))
         sys.exit()
 
     "implement an exception for IBM as their emails come from multiple domains"
@@ -5478,7 +5482,7 @@ def getAffiliationFromEmail(email):
         if match[0] not in ibm_email_domains_prefix:
             print(
                 "ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
-            print("march=["+str(match[0])+"]")
+            print(("march=["+str(match[0])+"]"))
             sys.exit()
 
         # print ("affiliation(" + email + ")=[ibm]")
@@ -5517,21 +5521,21 @@ def getDateEmailAffiliation(line):
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
         if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line:
             print("WARNING exceptional code commit header Exception 1 ")
-            print("LINE number "+str(stats['nlines'])+" [" + line +
-                  "] double ;; <- name and email together on commit header")
+            print(("LINE number "+str(stats['nlines'])+" [" + line +
+                  "] double ;; <- name and email together on commit header"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             match = name_pattern.findall(line)
-            print("match=["+str(match)+"]")
+            print(("match=["+str(match)+"]"))
 
         # Exception 2: If there is not name in the commit
         # there is no spaces before the email (@)
         elif ' ' not in line[0:atIndex] and '==Launchpad' not in line:
 
             print("WARNING exceptional code commit header Exception 2 ")
-            print("LINE number "+str(stats['nlines']) +
-                  " [" + line + "] no name, just an email")
+            print(("LINE number "+str(stats['nlines']) +
+                  " [" + line + "] no name, just an email"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -5547,8 +5551,8 @@ def getDateEmailAffiliation(line):
         # ==Launchpad Translations on behalf of nova-core;;Sat Sep 3 05:50:53 2011 +0000
         elif "==Launchpad" in line:
             print("WARNING exceptional code commit header Exception 3 ")
-            print("LINE number " +
-                  str(stats['nlines'])+" [" + line + "] Lauchpad bot")
+            print(("LINE number " +
+                  str(stats['nlines'])+" [" + line + "] Lauchpad bot"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -5567,7 +5571,7 @@ def getDateEmailAffiliation(line):
             print(
                 "Error, unable to extract developer name, email or date from commit block")
             print("Regular expression not captured")
-            print("Line=["+line+"]")
+            print(("Line=["+line+"]"))
             sys.exit()
 
     name = match[0][0]
@@ -5582,7 +5586,7 @@ def getDateEmailAffiliation(line):
     email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
 
     if (email_pattern.search(email) == None):
-        print("WARNING commiter ["+email+"] have an invalidName")
+        print(("WARNING commiter ["+email+"] have an invalidName"))
         print("Adding .com? to the end")
         email += ".com?"
 
@@ -5659,8 +5663,8 @@ def scrapBlock(block):
 # Format end date should be  "Oct 11 2014" "MMM DD YYYY"
 
 def filterChangeLogDataByDate(startDate, endDate):
-    print(
-        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]")
+    print((
+        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]"))
 
     # are they dates?
 
@@ -5701,7 +5705,7 @@ def filterChangeLogDataByDate(startDate, endDate):
         # If there is no regulae expression match
         if (match == []):
             print("ERROR: Change log date is not on proper format")
-            print("date_ match=["+str(match)+"]")
+            print(("date_ match=["+str(match)+"]"))
             sys.exit()
 
         weekday = match[0][0]
@@ -5770,11 +5774,11 @@ def print_changeLogData():
         af = change[0][2]
         files = change[1]
 
-        print("On " + date + " " + email + " from " +
-              af + " worked on the following files:")
+        print(("On " + date + " " + email + " from " +
+              af + " worked on the following files:"))
 
         for file in files:
-            print("[" + file + "]")
+            print(("[" + file + "]"))
 
 
 # save the changeLogData data scraped into a filename
@@ -5785,7 +5789,7 @@ def save_changeLogData(filename):
 
     print("")
     print("TODO")
-    print('Saving changeLog to file ' + str(filename) + '')
+    print(('Saving changeLog to file ' + str(filename) + ''))
 
     if (SAVE_MODE != 1):
         print ("ERROR, not in saving mode")
@@ -5794,7 +5798,7 @@ def save_changeLogData(filename):
     with open(filename, 'wb') as fp:
         pickle.dump(changeLogData, fp)
 
-    print ("DONE changelog saved in ", filename, "NICE :)")
+    print(("DONE changelog saved in ", filename, "NICE :)"))
     sys.exit()
 
 
@@ -5802,7 +5806,7 @@ def save_changeLogData(filename):
 def load_changeLogData(filename):
     print ("")
     print ("TODO")
-    print ("Loading changeLog from  file [", filename, "]")
+    print(("Loading changeLog from  file [", filename, "]"))
 
     with open(filename, 'rb') as fp:
         changeLogData = pickle.load(fp)
@@ -5823,11 +5827,11 @@ def print_agreByFileContributors():
             print("ERROR: File without contrubutors !!")
             exit()
 
-        print("The file " + fileName +
-              "was changed by following [" + str(len(authorEmails)) + "]contributors")
+        print(("The file " + fileName +
+              "was changed by following [" + str(len(authorEmails)) + "]contributors"))
 
         for email in authorEmails:
-            print("[" + email + "]")
+            print(("[" + email + "]"))
 
 
 # print a list of contributor connected to each other cause they worked on a common files
@@ -5842,8 +5846,8 @@ def print_agreByConnWSF():
         contributorsPair = connection[0]
         fileName = connection[1]
 
-        print("Contributors " + str(contributorsPair) +
-              " connected by collaborating on file [" + fileName + "]")
+        print(("Contributors " + str(contributorsPair) +
+              " connected by collaborating on file [" + fileName + "]"))
 
 
 # Agregate by file and its contributors
@@ -5956,9 +5960,9 @@ def print_unique_connections():
 
     print("\t------/------\n")
     for (dev1, dev2) in uniqueConnections:
-        print("\t" + dev1 + " collaborated  with " + dev2)
-    print(
-        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]")
+        print(("\t" + dev1 + " collaborated  with " + dev2))
+    print((
+        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]"))
     print("\t------/------\n")
 
 
@@ -5984,11 +5988,11 @@ def getAffiliations():
 def print_Affiliations():
     print("\nPrinting author affiliations:\n ")
     for author in affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
     print("\nPrinting network-author affiliations:\n ")
     for author in networked_affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 
@@ -6053,13 +6057,13 @@ def main():
         DEBUG_MODE = 1
 
     if args.lser:
-        print (" loanding and processing [lser=", args.lser, "]")
+        print((" loanding and processing [lser=", args.lser, "]"))
         print ("not implmented yet")
         LOAD_MODE = 1
         RAW_MODE = 0
         SAVE_MODE = 0
     elif args.sser and args.raw:
-        print (" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]")
+        print((" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]"))
         SAVE_MODE = 1
         RAW_MODE = 1
         LOAD_MODE = 0
@@ -6067,17 +6071,17 @@ def main():
         RAW_MODE = 1
         LOAD_MODE = 0
         SAVE_MODE = 0
-        print (" processing [raw=", args.raw, "]")
+        print((" processing [raw=", args.raw, "]"))
     else:
         print ("unrecognized argumets ... see --help")
         sys.exit()
 
     if RAW_MODE == 1:
         # if we are not in load mode, we need to strap the log
-        print ("Scrapping changeLog from ", args.raw)
+        print(("Scrapping changeLog from ", args.raw))
         t0 = datetime.now()
-        print("STARTING the scrap of changeLog file " +
-              args.raw + " on " + str(t0))
+        print(("STARTING the scrap of changeLog file " +
+              args.raw + " on " + str(t0)))
 
         # Opening the files
 
@@ -6126,8 +6130,8 @@ def main():
                 else:
                     print(
                         "ERROR: not a file path. Commit blocs not starting with == must be file paths")
-                    print(
-                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]")
+                    print((
+                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]"))
                     sys.exit()
             else:
                 print("ERROR: Something wrong with the changeLog blocks L 107")
@@ -6140,7 +6144,7 @@ def main():
 
     elif (LOAD_MODE == 1):
         changeLogData = load_changeLogData(args.lser)
-        print ("1st SUCESS Change log loaded from ", args.lser, " ")
+        print(("1st SUCESS Change log loaded from ", args.lser, " "))
 
         if len(changeLogData) < 1:
             print( "to small loaded change log, len <1")
@@ -6280,13 +6284,13 @@ def main():
     for i in range(len(releases)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releases[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -6296,11 +6300,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes) 
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10) 
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)) 
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)) 
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";") 
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")) 
 
         nodesiip1.append(nnodes)
         nodesiip1Top10.append(nnodestop10)
@@ -6354,13 +6358,13 @@ def main():
     for i in range(len(releasesm1)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releasesm1[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -6371,11 +6375,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesim1ip1.append(nnodes)
         nodesim1ip1Top10.append(nnodestop10)
@@ -6389,51 +6393,51 @@ def main():
     for r in releases:
         (name, nc) = r
         rname.append(name + ";")
-    print ("rname", rname[::-1])
+    print(("rname", rname[::-1]))
 
     # For all nodes
     print ("\t ALL NODES ")
 
-    print ("nodesiip1", nodesiip1[::-1])
-    print ("nodesiim1p1", nodesim1ip1[::-1])
-    print ("diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
-    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
+    print(("nodesiip1", nodesiip1[::-1]))
+    print(("nodesiim1p1", nodesim1ip1[::-1]))
+    print(("diff capture nodes less 1 month", list(map(int.__sub__, nodesiip1, nodesim1ip1))[::-1]))
+    print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1]))[::-1]))
 
-    print ("edgesiip1", edgesiip1[::-1])
-    print ("edgesim1ip1", edgesim1ip1[::-1])
-    print ("diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1])
+    print(("edgesiip1", edgesiip1[::-1]))
+    print(("edgesim1ip1", edgesim1ip1[::-1]))
+    print(("diff edges less 1 month", list(map(int.__sub__, edgesiip1, edgesim1ip1))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1]))[::-1]))
 
     # For top 10 onlys
     print ("\t TOP 10 NODES ")
 
-    print ("nodesiip1Top10",  nodesiip1Top10[::-1])
-    print ("nodesim1ip1Top10", nodesim1ip1Top10[::-1])
-    print ("diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
-    print ("% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
+    print(("nodesiip1Top10",  nodesiip1Top10[::-1]))
+    print(("nodesim1ip1Top10", nodesim1ip1Top10[::-1]))
+    print(("diff nodes top10 less 1 month", list(map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10))[::-1]))
+    print(("% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10]))[::-1]))
 
-    print ("edgesiip1Top10", edgesiip1Top10[::-1])
-    print ("edgesim1ip1Top10", edgesim1ip1Top10[::-1])
-    print ("diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
-    print ("% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
+    print(("edgesiip1Top10", edgesiip1Top10[::-1]))
+    print(("edgesim1ip1Top10", edgesim1ip1Top10[::-1]))
+    print(("diff edfes top10 less 1 month", list(map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10))[::-1]))
+    print(("% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10]))[::-1]))
 
     print("")
-    print("FINNISHED " + str(datetime.now()))
+    print(("FINNISHED " + str(datetime.now())))
 
     if (LOAD_MODE != 1):
-        print("TOTAL TIME " + str(datetime.now() - t0))
+        print(("TOTAL TIME " + str(datetime.now() - t0)))
 
     # Ending stats
 
-    print("Number of analized lines [" + str(stats['nlines']) + "]")
-    print(
-        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]")
-    print("Number of analized changelog blocks changing code files [" + str(
-        stats['nBlocksChagingCode']) + "?]")
-    print("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
-        stats['nBlocksNotChangingCode']) + "?]")
-    print("Number of files affected by the commits reported by change log[" + str(
-        stats['nChangedFiles']) + "]")
+    print(("Number of analized lines [" + str(stats['nlines']) + "]"))
+    print((
+        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]"))
+    print(("Number of analized changelog blocks changing code files [" + str(
+        stats['nBlocksChagingCode']) + "?]"))
+    print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
+        stats['nBlocksNotChangingCode']) + "?]"))
+    print(("Number of files affected by the commits reported by change log[" + str(
+        stats['nChangedFiles']) + "]"))
 
 
 if __name__ == "__main__":
@@ -6453,12 +6457,12 @@ print("this is pyhton")
 
 
 try:
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 except:
     import pickle
 
 
-print("Executing " + str(sys.argv))
+print(("Executing " + str(sys.argv)))
 
 # Global parameters
 
@@ -6532,7 +6536,7 @@ def getAffiliationFromEmail(email):
 
     if match == None or match == []:
         print("ERROR unable to extract affiliation from email. Wrong email format?")
-        print("match=["+str(match)+"]")
+        print(("match=["+str(match)+"]"))
         sys.exit()
 
     "implement an exception for IBM as their emails come from multiple domains"
@@ -6544,7 +6548,7 @@ def getAffiliationFromEmail(email):
         if match[0] not in ibm_email_domains_prefix:
             print(
                 "ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
-            print("march=["+str(match[0])+"]")
+            print(("march=["+str(match[0])+"]"))
             sys.exit()
 
         # print ("affiliation(" + email + ")=[ibm]")
@@ -6583,21 +6587,21 @@ def getDateEmailAffiliation(line):
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
         if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line:
             print("WARNING exceptional code commit header Exception 1 ")
-            print("LINE number "+str(stats['nlines'])+" [" + line +
-                  "] double ;; <- name and email together on commit header")
+            print(("LINE number "+str(stats['nlines'])+" [" + line +
+                  "] double ;; <- name and email together on commit header"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             match = name_pattern.findall(line)
-            print("match=["+str(match)+"]")
+            print(("match=["+str(match)+"]"))
 
         # Exception 2: If there is not name in the commit
         # there is no spaces before the email (@)
         elif ' ' not in line[0:atIndex] and '==Launchpad' not in line:
 
             print("WARNING exceptional code commit header Exception 2 ")
-            print("LINE number "+str(stats['nlines']) +
-                  " [" + line + "] no name, just an email")
+            print(("LINE number "+str(stats['nlines']) +
+                  " [" + line + "] no name, just an email"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -6613,8 +6617,8 @@ def getDateEmailAffiliation(line):
         # ==Launchpad Translations on behalf of nova-core;;Sat Sep 3 05:50:53 2011 +0000
         elif "==Launchpad" in line:
             print("WARNING exceptional code commit header Exception 3 ")
-            print("LINE number " +
-                  str(stats['nlines'])+" [" + line + "] Lauchpad bot")
+            print(("LINE number " +
+                  str(stats['nlines'])+" [" + line + "] Lauchpad bot"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -6633,7 +6637,7 @@ def getDateEmailAffiliation(line):
             print(
                 "Error, unable to extract developer name, email or date from commit block")
             print("Regular expression not captured")
-            print("Line=["+line+"]")
+            print(("Line=["+line+"]"))
             sys.exit()
 
     name = match[0][0]
@@ -6648,7 +6652,7 @@ def getDateEmailAffiliation(line):
     email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
 
     if (email_pattern.search(email) == None):
-        print("WARNING commiter ["+email+"] have an invalidName")
+        print(("WARNING commiter ["+email+"] have an invalidName"))
         print("Adding .com? to the end")
         email += ".com?"
 
@@ -6725,8 +6729,8 @@ def scrapBlock(block):
 # Format end date should be  "Oct 11 2014" "MMM DD YYYY"
 
 def filterChangeLogDataByDate(startDate, endDate):
-    print(
-        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]")
+    print((
+        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]"))
 
     # are they dates?
 
@@ -6767,7 +6771,7 @@ def filterChangeLogDataByDate(startDate, endDate):
         # If there is no regulae expression match
         if (match == []):
             print("ERROR: Change log date is not on proper format")
-            print("date_ match=["+str(match)+"]")
+            print(("date_ match=["+str(match)+"]"))
             sys.exit()
 
         weekday = match[0][0]
@@ -6836,11 +6840,11 @@ def print_changeLogData():
         af = change[0][2]
         files = change[1]
 
-        print("On " + date + " " + email + " from " +
-              af + " worked on the following files:")
+        print(("On " + date + " " + email + " from " +
+              af + " worked on the following files:"))
 
         for file in files:
-            print("[" + file + "]")
+            print(("[" + file + "]"))
 
 
 # save the changeLogData data scraped into a filename
@@ -6851,7 +6855,7 @@ def save_changeLogData(filename):
 
     print("")
     print("TODO")
-    print('Saving changeLog to file ' + str(filename) + '')
+    print(('Saving changeLog to file ' + str(filename) + ''))
 
     if (SAVE_MODE != 1):
         print ("ERROR, not in saving mode")
@@ -6860,7 +6864,7 @@ def save_changeLogData(filename):
     with open(filename, 'wb') as fp:
         pickle.dump(changeLogData, fp)
 
-    print ("DONE changelog saved in ", filename, "NICE :)")
+    print(("DONE changelog saved in ", filename, "NICE :)"))
     sys.exit()
 
 
@@ -6868,7 +6872,7 @@ def save_changeLogData(filename):
 def load_changeLogData(filename):
     print ("")
     print ("TODO")
-    print ("Loading changeLog from  file [", filename, "]")
+    print(("Loading changeLog from  file [", filename, "]"))
 
     with open(filename, 'rb') as fp:
         changeLogData = pickle.load(fp)
@@ -6889,11 +6893,11 @@ def print_agreByFileContributors():
             print("ERROR: File without contrubutors !!")
             exit()
 
-        print("The file " + fileName +
-              "was changed by following [" + str(len(authorEmails)) + "]contributors")
+        print(("The file " + fileName +
+              "was changed by following [" + str(len(authorEmails)) + "]contributors"))
 
         for email in authorEmails:
-            print("[" + email + "]")
+            print(("[" + email + "]"))
 
 
 # print a list of contributor connected to each other cause they worked on a common files
@@ -6908,8 +6912,8 @@ def print_agreByConnWSF():
         contributorsPair = connection[0]
         fileName = connection[1]
 
-        print("Contributors " + str(contributorsPair) +
-              " connected by collaborating on file [" + fileName + "]")
+        print(("Contributors " + str(contributorsPair) +
+              " connected by collaborating on file [" + fileName + "]"))
 
 
 # Agregate by file and its contributors
@@ -7022,9 +7026,9 @@ def print_unique_connections():
 
     print("\t------/------\n")
     for (dev1, dev2) in uniqueConnections:
-        print("\t" + dev1 + " collaborated  with " + dev2)
-    print(
-        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]")
+        print(("\t" + dev1 + " collaborated  with " + dev2))
+    print((
+        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]"))
     print("\t------/------\n")
 
 
@@ -7050,11 +7054,11 @@ def getAffiliations():
 def print_Affiliations():
     print("\nPrinting author affiliations:\n ")
     for author in affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
     print("\nPrinting network-author affiliations:\n ")
     for author in networked_affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 
@@ -7119,13 +7123,13 @@ def main():
         DEBUG_MODE = 1
 
     if args.lser:
-        print( " loanding and processing [lser=", args.lser, "]")
+        print(( " loanding and processing [lser=", args.lser, "]"))
         print( "not implmented yet")
         LOAD_MODE = 1
         RAW_MODE = 0
         SAVE_MODE = 0
     elif args.sser and args.raw:
-        print( " processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]")
+        print(( " processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]"))
         SAVE_MODE = 1
         RAW_MODE = 1
         LOAD_MODE = 0
@@ -7133,17 +7137,17 @@ def main():
         RAW_MODE = 1
         LOAD_MODE = 0
         SAVE_MODE = 0
-        print (" processing [raw=", args.raw, "]")
+        print((" processing [raw=", args.raw, "]"))
     else:
         print ("unrecognized argumets ... see --help")
         sys.exit()
 
     if RAW_MODE == 1:
         # if we are not in load mode, we need to strap the log
-        print ("Scrapping changeLog from ", args.raw)
+        print(("Scrapping changeLog from ", args.raw))
         t0 = datetime.now()
-        print("STARTING the scrap of changeLog file " +
-              args.raw + " on " + str(t0))
+        print(("STARTING the scrap of changeLog file " +
+              args.raw + " on " + str(t0)))
 
         # Opening the files
 
@@ -7192,8 +7196,8 @@ def main():
                 else:
                     print(
                         "ERROR: not a file path. Commit blocs not starting with == must be file paths")
-                    print(
-                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]")
+                    print((
+                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]"))
                     sys.exit()
             else:
                 print("ERROR: Something wrong with the changeLog blocks L 107")
@@ -7206,7 +7210,7 @@ def main():
 
     elif (LOAD_MODE == 1):
         changeLogData = load_changeLogData(args.lser)
-        print( "1st SUCESS Change log loaded from ", args.lser, " ")
+        print(( "1st SUCESS Change log loaded from ", args.lser, " "))
 
         if len(changeLogData) < 1:
             print ("to small loaded change log, len <1")
@@ -7346,13 +7350,13 @@ def main():
     for i in range(len(releases)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releases[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -7362,11 +7366,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesiip1.append(nnodes)
         nodesiip1Top10.append(nnodestop10)
@@ -7420,13 +7424,13 @@ def main():
     for i in range(len(releasesm1)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releasesm1[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -7437,11 +7441,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesim1ip1.append(nnodes)
         nodesim1ip1Top10.append(nnodestop10)
@@ -7455,51 +7459,51 @@ def main():
     for r in releases:
         (name, nc) = r
         rname.append(name + ";")
-    print( "rname", rname[::-1])
+    print(( "rname", rname[::-1]))
 
     # For all nodes
     print ("\t ALL NODES ")
 
-    print( "nodesiip1", nodesiip1[::-1])
-    print( "nodesiim1p1", nodesim1ip1[::-1])
-    print( "diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
-    print( "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
+    print(( "nodesiip1", nodesiip1[::-1]))
+    print(( "nodesiim1p1", nodesim1ip1[::-1]))
+    print(( "diff capture nodes less 1 month", list(map(int.__sub__, nodesiip1, nodesim1ip1))[::-1]))
+    print(( "% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1]))[::-1]))
 
-    print( "edgesiip1", edgesiip1[::-1])
-    print( "edgesim1ip1", edgesim1ip1[::-1])
-    print( "diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
-    print( "% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1])
+    print(( "edgesiip1", edgesiip1[::-1]))
+    print(( "edgesim1ip1", edgesim1ip1[::-1]))
+    print(( "diff edges less 1 month", list(map(int.__sub__, edgesiip1, edgesim1ip1))[::-1]))
+    print(( "% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1]))[::-1]))
 
     # For top 10 onlys
     print( "\t TOP 10 NODES ")
 
-    print( "nodesiip1Top10",  nodesiip1Top10[::-1])
-    print( "nodesim1ip1Top10", nodesim1ip1Top10[::-1])
-    print( "diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
-    print( "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
+    print(( "nodesiip1Top10",  nodesiip1Top10[::-1]))
+    print(( "nodesim1ip1Top10", nodesim1ip1Top10[::-1]))
+    print(( "diff nodes top10 less 1 month", list(map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10))[::-1]))
+    print(( "% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10]))[::-1]))
 
-    print( "edgesiip1Top10", edgesiip1Top10[::-1])
-    print( "edgesim1ip1Top10", edgesim1ip1Top10[::-1])
-    print( "diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
-    print( "% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
+    print(( "edgesiip1Top10", edgesiip1Top10[::-1]))
+    print(( "edgesim1ip1Top10", edgesim1ip1Top10[::-1]))
+    print(( "diff edfes top10 less 1 month", list(map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10))[::-1]))
+    print(( "% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10]))[::-1]))
 
     print("")
-    print("FINNISHED " + str(datetime.now()))
+    print(("FINNISHED " + str(datetime.now())))
 
     if (LOAD_MODE != 1):
-        print("TOTAL TIME " + str(datetime.now() - t0))
+        print(("TOTAL TIME " + str(datetime.now() - t0)))
 
     # Ending stats
 
-    print("Number of analized lines [" + str(stats['nlines']) + "]")
-    print(
-        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]")
-    print("Number of analized changelog blocks changing code files [" + str(
-        stats['nBlocksChagingCode']) + "?]")
-    print("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
-        stats['nBlocksNotChangingCode']) + "?]")
-    print("Number of files affected by the commits reported by change log[" + str(
-        stats['nChangedFiles']) + "]")
+    print(("Number of analized lines [" + str(stats['nlines']) + "]"))
+    print((
+        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]"))
+    print(("Number of analized changelog blocks changing code files [" + str(
+        stats['nBlocksChagingCode']) + "?]"))
+    print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
+        stats['nBlocksNotChangingCode']) + "?]"))
+    print(("Number of files affected by the commits reported by change log[" + str(
+        stats['nChangedFiles']) + "]"))
 
 
 if __name__ == "__main__":
@@ -7520,12 +7524,12 @@ print("this is pyhton")
 
 
 try:
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 except:
     import pickle
 
 
-print("Executing " + str(sys.argv))
+print(("Executing " + str(sys.argv)))
 
 # Global parameters
 
@@ -7599,7 +7603,7 @@ def getAffiliationFromEmail(email):
 
     if match == None or match == []:
         print("ERROR unable to extract affiliation from email. Wrong email format?")
-        print("match=["+str(match)+"]")
+        print(("match=["+str(match)+"]"))
         sys.exit()
 
     "implement an exception for IBM as their emails come from multiple domains"
@@ -7611,7 +7615,7 @@ def getAffiliationFromEmail(email):
         if match[0] not in ibm_email_domains_prefix:
             print(
                 "ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
-            print("march=["+str(match[0])+"]")
+            print(("march=["+str(match[0])+"]"))
             sys.exit()
 
         # print ("affiliation(" + email + ")=[ibm]")
@@ -7650,21 +7654,21 @@ def getDateEmailAffiliation(line):
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
         if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line:
             print("WARNING exceptional code commit header Exception 1 ")
-            print("LINE number "+str(stats['nlines'])+" [" + line +
-                  "] double ;; <- name and email together on commit header")
+            print(("LINE number "+str(stats['nlines'])+" [" + line +
+                  "] double ;; <- name and email together on commit header"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
             match = name_pattern.findall(line)
-            print("match=["+str(match)+"]")
+            print(("match=["+str(match)+"]"))
 
         # Exception 2: If there is not name in the commit
         # there is no spaces before the email (@)
         elif ' ' not in line[0:atIndex] and '==Launchpad' not in line:
 
             print("WARNING exceptional code commit header Exception 2 ")
-            print("LINE number "+str(stats['nlines']) +
-                  " [" + line + "] no name, just an email")
+            print(("LINE number "+str(stats['nlines']) +
+                  " [" + line + "] no name, just an email"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -7680,8 +7684,8 @@ def getDateEmailAffiliation(line):
         # ==Launchpad Translations on behalf of nova-core;;Sat Sep 3 05:50:53 2011 +0000
         elif "==Launchpad" in line:
             print("WARNING exceptional code commit header Exception 3 ")
-            print("LINE number " +
-                  str(stats['nlines'])+" [" + line + "] Lauchpad bot")
+            print(("LINE number " +
+                  str(stats['nlines'])+" [" + line + "] Lauchpad bot"))
 
             name_pattern = re.compile(
                 '^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
@@ -7700,7 +7704,7 @@ def getDateEmailAffiliation(line):
             print(
                 "Error, unable to extract developer name, email or date from commit block")
             print("Regular expression not captured")
-            print("Line=["+line+"]")
+            print(("Line=["+line+"]"))
             sys.exit()
 
     name = match[0][0]
@@ -7715,7 +7719,7 @@ def getDateEmailAffiliation(line):
     email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
 
     if (email_pattern.search(email) == None):
-        print("WARNING commiter ["+email+"] have an invalidName")
+        print(("WARNING commiter ["+email+"] have an invalidName"))
         print("Adding .com? to the end")
         email += ".com?"
 
@@ -7792,8 +7796,8 @@ def scrapBlock(block):
 # Format end date should be  "Oct 11 2014" "MMM DD YYYY"
 
 def filterChangeLogDataByDate(startDate, endDate):
-    print(
-        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]")
+    print((
+        "Filtering ChangeLogData for  dates between ["+str(startDate)+"] and ["+str(endDate)+"]"))
 
     # are they dates?
 
@@ -7834,7 +7838,7 @@ def filterChangeLogDataByDate(startDate, endDate):
         # If there is no regulae expression match
         if (match == []):
             print("ERROR: Change log date is not on proper format")
-            print("date_ match=["+str(match)+"]")
+            print(("date_ match=["+str(match)+"]"))
             sys.exit()
 
         weekday = match[0][0]
@@ -7903,11 +7907,11 @@ def print_changeLogData():
         af = change[0][2]
         files = change[1]
 
-        print("On " + date + " " + email + " from " +
-              af + " worked on the following files:")
+        print(("On " + date + " " + email + " from " +
+              af + " worked on the following files:"))
 
         for file in files:
-            print("[" + file + "]")
+            print(("[" + file + "]"))
 
 
 # save the changeLogData data scraped into a filename
@@ -7918,7 +7922,7 @@ def save_changeLogData(filename):
 
     print("")
     print("TODO")
-    print('Saving changeLog to file ' + str(filename) + '')
+    print(('Saving changeLog to file ' + str(filename) + ''))
 
     if (SAVE_MODE != 1):
         print( "ERROR, not in saving mode")
@@ -7927,7 +7931,7 @@ def save_changeLogData(filename):
     with open(filename, 'wb') as fp:
         pickle.dump(changeLogData, fp)
 
-    print ( "DONE changelog saved in ", filename, "NICE :)")
+    print(( "DONE changelog saved in ", filename, "NICE :)"))
     sys.exit()
 
 
@@ -7935,7 +7939,7 @@ def save_changeLogData(filename):
 def load_changeLogData(filename):
     print( "")
     print( "TODO")
-    print( "Loading changeLog from  file [", filename, "]")
+    print(( "Loading changeLog from  file [", filename, "]"))
 
     with open(filename, 'rb') as fp:
         changeLogData = pickle.load(fp)
@@ -7956,11 +7960,11 @@ def print_agreByFileContributors():
             print("ERROR: File without contrubutors !!")
             exit()
 
-        print("The file " + fileName +
-              "was changed by following [" + str(len(authorEmails)) + "]contributors")
+        print(("The file " + fileName +
+              "was changed by following [" + str(len(authorEmails)) + "]contributors"))
 
         for email in authorEmails:
-            print("[" + email + "]")
+            print(("[" + email + "]"))
 
 
 # print a list of contributor connected to each other cause they worked on a common files
@@ -7975,8 +7979,8 @@ def print_agreByConnWSF():
         contributorsPair = connection[0]
         fileName = connection[1]
 
-        print("Contributors " + str(contributorsPair) +
-              " connected by collaborating on file [" + fileName + "]")
+        print(("Contributors " + str(contributorsPair) +
+              " connected by collaborating on file [" + fileName + "]"))
 
 
 # Agregate by file and its contributors
@@ -8089,9 +8093,9 @@ def print_unique_connections():
 
     print("\t------/------\n")
     for (dev1, dev2) in uniqueConnections:
-        print("\t" + dev1 + " collaborated  with " + dev2)
-    print(
-        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]")
+        print(("\t" + dev1 + " collaborated  with " + dev2))
+    print((
+        "\t TOTAL number of unique collaborations =[" + str(len(uniqueConnections)) + "]"))
     print("\t------/------\n")
 
 
@@ -8117,11 +8121,11 @@ def getAffiliations():
 def print_Affiliations():
     print("\nPrinting author affiliations:\n ")
     for author in affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
     print("\nPrinting network-author affiliations:\n ")
     for author in networked_affiliations:
-        print("\t" + author + " is affiliatied with " + affiliations[author])
+        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 
@@ -8186,13 +8190,13 @@ def main():
         DEBUG_MODE = 1
 
     if args.lser:
-        print(" loanding and processing [lser=", args.lser, "]")
+        print((" loanding and processing [lser=", args.lser, "]"))
         print("not implmented yet")
         LOAD_MODE = 1
         RAW_MODE = 0
         SAVE_MODE = 0
     elif args.sser and args.raw:
-        print(" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]")
+        print((" processing [raw=", args.raw, "]", " and saving [sser=", args.sser, "]"))
         SAVE_MODE = 1
         RAW_MODE = 1
         LOAD_MODE = 0
@@ -8200,17 +8204,17 @@ def main():
         RAW_MODE = 1
         LOAD_MODE = 0
         SAVE_MODE = 0
-        print(" processing [raw=", args.raw, "]")
+        print((" processing [raw=", args.raw, "]"))
     else:
         print("unrecognized argumets ... see --help")
         sys.exit()
 
     if RAW_MODE == 1:
         # if we are not in load mode, we need to strap the log
-        print("Scrapping changeLog from ", args.raw)
+        print(("Scrapping changeLog from ", args.raw))
         t0 = datetime.now()
-        print("STARTING the scrap of changeLog file " +
-              args.raw + " on " + str(t0))
+        print(("STARTING the scrap of changeLog file " +
+              args.raw + " on " + str(t0)))
 
         # Opening the files
 
@@ -8259,8 +8263,8 @@ def main():
                 else:
                     print(
                         "ERROR: not a file path. Commit blocs not starting with == must be file paths")
-                    print(
-                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]")
+                    print((
+                        "ERROR processing line ["+str(stats['nlines'])+"]" + "line=["+line+"]"))
                     sys.exit()
             else:
                 print("ERROR: Something wrong with the changeLog blocks L 107")
@@ -8273,7 +8277,7 @@ def main():
 
     elif (LOAD_MODE == 1):
         changeLogData = load_changeLogData(args.lser)
-        print( "1st SUCESS Change log loaded from ", args.lser, " ")
+        print(( "1st SUCESS Change log loaded from ", args.lser, " "))
 
         if len(changeLogData) < 1:
             print( "to small loaded change log, len <1")
@@ -8413,13 +8417,13 @@ def main():
     for i in range(len(releases)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releases[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -8429,11 +8433,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesiip1.append(nnodes)
         nodesiip1Top10.append(nnodestop10)
@@ -8487,13 +8491,13 @@ def main():
     for i in range(len(releasesm1)-1):
         (release_name, release_date) = releases[i]
         prior_release_date = releasesm1[i+1][1]
-        print("\t --- Filtering change log data for [" + str(
-            prior_release_date) + "] <--> [" + str(release_date)+"]")
+        print(("\t --- Filtering change log data for [" + str(
+            prior_release_date) + "] <--> [" + str(release_date)+"]"))
         changeLogData = filterChangeLogDataByDate(
             prior_release_date, release_date)
         reprocess()
-        print("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
-            changeLogData)) + "] changeLogs removed due their change date")
+        print(("\t --- Filtering by date is done. [" + str(sizeOriginalChangeLogData-len(
+            changeLogData)) + "] changeLogs removed due their change date"))
 
         nnodes = len(
             JISA2015specificAnalysis.getNodesBetweenDatesInConnList(uniqueConnections))
@@ -8504,11 +8508,11 @@ def main():
         nedgestop10 = len(JISA2015specificAnalysis.getConnectionsAmongTop10Only(
             uniqueConnections, networked_affiliations, top10))
 
-        print ("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes)
-        print ("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10)
+        print(("Number of nodes between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodes))
+        print(("Number of nodes (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nnodestop10))
 
-        print ("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";")
-        print ("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";")
+        print(("Number of edges between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedges, ";"))
+        print(("Number of edges (among TOP10 dev) between[", str(prior_release_date), "] <--> [", str(release_date), "] = ", nedgestop10, ";"))
 
         nodesim1ip1.append(nnodes)
         nodesim1ip1Top10.append(nnodestop10)
@@ -8522,51 +8526,51 @@ def main():
     for r in releases:
         (name, nc) = r
         rname.append(name + ";")
-    print( "rname", rname[::-1])
+    print(( "rname", rname[::-1]))
 
     # For all nodes
     print( "\t ALL NODES ")
 
-    print( "nodesiip1", nodesiip1[::-1])
-    print( "nodesiim1p1", nodesim1ip1[::-1])
-    print( "diff capture nodes less 1 month", map(int.__sub__, nodesiip1, nodesim1ip1)[::-1])
-    print( "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1])[::-1])
+    print(( "nodesiip1", nodesiip1[::-1]))
+    print(( "nodesiim1p1", nodesim1ip1[::-1]))
+    print(( "diff capture nodes less 1 month", list(map(int.__sub__, nodesiip1, nodesim1ip1))[::-1]))
+    print(( "% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1], [float(i) for i in nodesim1ip1]))[::-1]))
 
-    print( "edgesiip1", edgesiip1[::-1])
-    print( "edgesim1ip1", edgesim1ip1[::-1])
-    print( "diff edges less 1 month", map(int.__sub__, edgesiip1, edgesim1ip1)[::-1])
-    print( "% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1])[::-1])
+    print(( "edgesiip1", edgesiip1[::-1]))
+    print(( "edgesim1ip1", edgesim1ip1[::-1]))
+    print(( "diff edges less 1 month", list(map(int.__sub__, edgesiip1, edgesim1ip1))[::-1]))
+    print(( "% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1], [float(i) for i in edgesim1ip1]))[::-1]))
 
     # For top 10 onlys
     print("\t TOP 10 NODES ")
 
-    print( "nodesiip1Top10",  nodesiip1Top10[::-1])
-    print( "nodesim1ip1Top10", nodesim1ip1Top10[::-1])
-    print( "diff nodes top10 less 1 month", map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10)[::-1])
-    print( "% captured nodes less 1 month", map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10])[::-1])
+    print(( "nodesiip1Top10",  nodesiip1Top10[::-1]))
+    print(( "nodesim1ip1Top10", nodesim1ip1Top10[::-1]))
+    print(( "diff nodes top10 less 1 month", list(map(int.__sub__, nodesiip1Top10, nodesim1ip1Top10))[::-1]))
+    print(( "% captured nodes less 1 month", list(map(float.__div__, [float(i) for i in nodesiip1Top10], [float(i) for i in nodesim1ip1Top10]))[::-1]))
 
-    print( "edgesiip1Top10", edgesiip1Top10[::-1])
-    print( "edgesim1ip1Top10", edgesim1ip1Top10[::-1])
-    print( "diff edfes top10 less 1 month", map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10)[::-1])
-    print( "% captured edges less 1 month", map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10])[::-1])
+    print(( "edgesiip1Top10", edgesiip1Top10[::-1]))
+    print(( "edgesim1ip1Top10", edgesim1ip1Top10[::-1]))
+    print(( "diff edfes top10 less 1 month", list(map(int.__sub__, edgesiip1Top10, edgesim1ip1Top10))[::-1]))
+    print(( "% captured edges less 1 month", list(map(float.__div__, [float(i) for i in edgesiip1Top10], [float(i) for i in edgesim1ip1Top10]))[::-1]))
 
     print("")
-    print("FINNISHED " + str(datetime.now()))
+    print(("FINNISHED " + str(datetime.now())))
 
     if (LOAD_MODE != 1):
-        print("TOTAL TIME " + str(datetime.now() - t0))
+        print(("TOTAL TIME " + str(datetime.now() - t0)))
 
     # Ending stats
 
-    print("Number of analized lines [" + str(stats['nlines']) + "]")
-    print(
-        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]")
-    print("Number of analized changelog blocks changing code files [" + str(
-        stats['nBlocksChagingCode']) + "?]")
-    print("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
-        stats['nBlocksNotChangingCode']) + "?]")
-    print("Number of files affected by the commits reported by change log[" + str(
-        stats['nChangedFiles']) + "]")
+    print(("Number of analized lines [" + str(stats['nlines']) + "]"))
+    print((
+        "Number of analized changelog blocks [" + str(stats['nBlocks']) + "]"))
+    print(("Number of analized changelog blocks changing code files [" + str(
+        stats['nBlocksChagingCode']) + "?]"))
+    print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" + str(
+        stats['nBlocksNotChangingCode']) + "?]"))
+    print(("Number of files affected by the commits reported by change log[" + str(
+        stats['nChangedFiles']) + "]"))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,9 @@
 # file to export VCS (CVS,SVN, GIT) SNA data to the graphml format used by visone and gephi
 
-import sys
+#import sys
+
+#from __future__ import absolute_import
+#from __future__ import print_function
 
 graphml_header = '<?xml version="1.0" encoding="UTF-8"?>\n<!-- This file was created by scraplog.py script for OSS SNA research purposes --> \n'  + '<!-- For more information contact jose.teixeira@utu.fi and check www.jteixeira.eu for more information on OSS SNA research -->\n' + '<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + 'xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n' 
 
@@ -74,7 +77,48 @@ def main():
     print(graphml_closer)
 
 
-    print "exportGraphml imported"
+    print ("exportGraphml imported")
 
+if __name__ == "__main__":
+    main()
+ # file to export VCS (CVS,SVN, GIT) SNA data to the graphml format used by visone and gephi
+ 
+
+
+ 
+graphml_header = '<?xml version="1.0" encoding="UTF-8"?>\n<!-- This file was created by scraplog.py script for OSS SNA research purposes --> \n'  + '<!-- For more information contact jose.teixeira@utu.fi and check www.jteixeira.eu for more information on OSS SNA research -->\n' + '<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + 'xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n' 
+
+def main():
+     #prints a smaple graphML file using this file functions  
+    print(graphml_header)
+    print(setNodeAntributeKey(0,"e-mail","string"))
+    print(setNodeAntributeKey(1,"color","string"))
+    print(setNodeAntributeKey(2,"affiliation","string"))
+    print((setNodeAntributeKey(0,"e-mail","string")))
+    print((setNodeAntributeKey(1,"color","string")))
+    print((setNodeAntributeKey(2,"affiliation","string")))
+    print(graph_opener)
+ 
+     # Adding a node with email atribute
+    print(addNode(0,[(0,"jose@webkit.org")]))
+    print((addNode(0,[(0,"jose@webkit.org")])))
+ 
+     # Add nodes with email, color and affiliation atribute
+ 
+    print(addNode(1,[(0,"martin@svh.com"),(1,"turquoise"),(2,"San Vicent Health")]))
+    print(addNode(2,[(0,"tt@utu.fi"),(1,"red"),(2,"University of Turku")]))
+    print((addNode(1,[(0,"martin@svh.com"),(1,"turquoise"),(2,"San Vicent Health")])))
+    print((addNode(2,[(0,"tt@utu.fi"),(1,"red"),(2,"University of Turku")])))
+ 
+    print(addEdge("e0",0,1))
+    print(addEdge("e1",0,2))
+    print((addEdge("e0",0,1)))
+    print((addEdge("e1",0,2)))
+    print(graph_closer)
+    print(graphml_closer)
+ 
+ 
+    print("exportGraphml imported")
+ 
 if __name__ == "__main__":
     main()

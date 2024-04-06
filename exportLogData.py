@@ -3,6 +3,8 @@
 # Second implementation to GraphML (VISIONE) for OpenStack SNA - Open Journal special issue  - using the exportgraphml form
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import re
 import csv
@@ -30,7 +32,7 @@ def clearDotsAndAts(contribEmail):
 def createNetworkFile(tuplesList , outFileName):
     
     print ("")    
-    print ("Writing network on file:[" + outFileName + "]")
+    print(("Writing network on file:[" + outFileName + "]"))
 
     f = open(outFileName, 'w')
 
@@ -49,7 +51,7 @@ def createNetworkFile(tuplesList , outFileName):
 def createAtributesFile(logData , outFileName):
     
     print ("")    
-    print ("Writing atributes on file:[" + outFileName + "]")
+    print(("Writing atributes on file:[" + outFileName + "]"))
 
     f = open(outFileName, 'w')
 
@@ -71,7 +73,7 @@ def createAtributesFile(logData , outFileName):
 def createNetworkFileCSV(tuplesList , outFileName):
     
     print ("")    
-    print ("Writing network on file (.CSV):[" + outFileName + "]")
+    print(("Writing network on file (.CSV):[" + outFileName + "]"))
 
 
     csvfile = open(outFileName, 'w')
@@ -96,13 +98,13 @@ def createNetworkFileCSV(tuplesList , outFileName):
     csvfile.close()
 
     # Success 
-    print (str(len(tuplesList)) +" network relationships writen down :[" + outFileName + "]")
+    print((str(len(tuplesList)) +" network relationships writen down :[" + outFileName + "]"))
 
 # Create a Atributes file (uciNet style) in CSV file for spreadsheat software
 def createAtributesFileCSV(logData , outFileName):
     
     print ("")    
-    print ("Writing atributes on file (.CSV):[" + outFileName + "]")
+    print(("Writing atributes on file (.CSV):[" + outFileName + "]"))
 
 
 
@@ -122,7 +124,7 @@ def createAtributesFileCSV(logData , outFileName):
     csvfile.close()       
 
     # Success 
-    print (str(len(logData)) +" node atributes writen down :[" + outFileName + "]")
+    print((str(len(logData)) +" node atributes writen down :[" + outFileName + "]"))
 
 
 
@@ -138,7 +140,7 @@ coreCompaniesColor =  []
 # Create a Network file  (grouped by core companies) (uciNet style) in CSV file for spreedsheet software
 def createNetworkByCoreCompaniesFileCSV(tuplesList , outFileName):
     print ("")    
-    print ("Writing network (grouped by core companies) on file (.CSV):[" + outFileName + "]")
+    print(("Writing network (grouped by core companies) on file (.CSV):[" + outFileName + "]"))
 
 
     csvfile = open(outFileName, 'w')
@@ -164,7 +166,7 @@ def createNetworkByCoreCompaniesFileCSV(tuplesList , outFileName):
 def createAtributesByCoreFileCSV(logData , outFileName):
     
     print ("")    
-    print ("Writing atributes  (grouped by core companies) on file (.CSV):[" + outFileName + "]")
+    print(("Writing atributes  (grouped by core companies) on file (.CSV):[" + outFileName + "]"))
 
 
 
@@ -202,7 +204,7 @@ def createGraphML(tuplesList,affiliations,outFileName):
     # iterator for nAf  
 
     print ("")    
-    print ("\tExporting graph to file (.graphml):[" + outFileName + "]")
+    print(("\tExporting graph to file (.graphml):[" + outFileName + "]"))
     
     
     # verify arguments data
@@ -238,7 +240,7 @@ def createGraphML(tuplesList,affiliations,outFileName):
     # open the export file 
 
     print ("")    
-    print ("\tWriting grapthML file  (for VISIONE SNA tool or other ) on file:[" + outFileName + "]")
+    print(("\tWriting grapthML file  (for VISIONE SNA tool or other ) on file:[" + outFileName + "]"))
 
     gfile= open(outFileName, 'w')
 
@@ -282,26 +284,26 @@ def createGraphML(tuplesList,affiliations,outFileName):
         #else:
             #print(str((author1, author2)) + " already on the list of unique connections")
         
-    print("uniqueConnections=[" + str(uniqueConnections) + "]")
+    print(("uniqueConnections=[" + str(uniqueConnections) + "]"))
 
     # interate over the unique edges list 
     nTup = 0 
     for (emailFrom, emailTo) in uniqueConnections:
         nodeIdFrom = tmpNodeId[emailFrom]
         nodeIdTo = tmpNodeId[emailTo]
-        print(exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
+        print((exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo)))
         gfile.writelines(exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
         nTup+=1 
 
         # There should be no arcs between the same mail/node/developer 
         if emailFrom == emailTo:
             print ("\t ERROR arc between the same mail/node/developer")
-            print ("\t edge=["+str(edge)+"]")
+            print(("\t edge=["+str(edge)+"]"))
             sys.exit()
         # There should be no arcs between the same mail/node/developer 
         if nodeIdFrom == nodeIdTo:
             print ("\t ERROR arc between the same nodeid/developer")
-            print ("\t edge=["+str(edge)+"]")
+            print(("\t edge=["+str(edge)+"]"))
             sys.exit()
             
     
