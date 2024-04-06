@@ -1,5 +1,7 @@
 # Code specific for the analysis of the JISA 2014/2015 paper 
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 
 # Gets connections list among top 10 firms of open stack 
@@ -38,7 +40,7 @@ def getNodesBetweenDatesInConnList(con):
     ## TEST 1 
     # if there are duplicates in tmpList, something went wrong  
     if len(tmpList)!=len(set(tmpList)):
-        print "error in getting the nodes list from a connections tuples"
+        print("error in getting the nodes list from a connections tuples")
         sys.exit()
 
     return tmpList
@@ -51,7 +53,7 @@ def getNodesBetweenDates4SelectedFirmsDatesInConnList(con,  networked_affiliatio
     ## TEST 1 
     # if there are duplicates in tmpList, something went wrong  
     if len(res)!=len(set(res)):
-        print "error in getting the nodes list from a connections tuples"
+        print("error in getting the nodes list from a connections tuples")
         sys.exit()
 
     return res 
@@ -61,21 +63,21 @@ def getNodesBetweenDates4SelectedFirmsDatesInConnList(con,  networked_affiliatio
 
 def getNodesBetweenDates(ChangeLongdata, earlier, later):
     "get a list of nodes from change long data between dates earlier later" 
-    print "getNodesBetweenDates not implmented yet" 
+    print("getNodesBetweenDates not implmented yet") 
     sys.exit()
 
 def getNodesBetweenDates4SelectedFirms(ChangeLogData ,earlier, later, firms):
     "get a list of edges  from change long data between dates earlier later" 
-    print "getNodesBetweenDates4SelectedFirms not implmented yet" 
+    print("getNodesBetweenDates4SelectedFirms not implmented yet") 
     sys.exit()
 
 
 def getEdgesBetweenDates(changeLogData, earlier, later):
-    print "getEdgessBetweenDates not implmented yet" 
+    print("getEdgessBetweenDates not implmented yet") 
     sys.exit()
 
 def getEdgesBetweenDates4SelectedFirms(changeLogData,earlier, later, firms):
-    print "getEdgesBetweenDates4SelectedFirms not implmented yet" 
+    print("getEdgesBetweenDates4SelectedFirms not implmented yet") 
     sys.exit()
 
     
