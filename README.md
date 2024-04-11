@@ -24,6 +24,9 @@ Social networks capturing who codes who who in a repository (not a software proj
 It uses the commit logs of a git repository
 `$git log --pretty=format:"==%an;%ae;%ad=="  --name-only`
 
+- %an stands for author name
+- %ae stands for author email
+- %ad stands for author date
 
 # How to use it  #
 
