@@ -52,6 +52,8 @@ circular_options = {
 }
 
 
+
+# See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python 
 print ("coloring by firm")
 
 org_colors = []

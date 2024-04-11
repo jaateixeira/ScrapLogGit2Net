@@ -64,10 +64,18 @@ affiliations = {}
 networked_affiliations = {}
 
 
+# Will keep the emails that should be filter
+# Note its more efficient to just not filter while scrapping, but filtering while checking for unique tuples (i.e., edges or connections)
+# This because is slow to check if x is member of a list all the time
+fitered_emails = {}
+
+
+# TODO Merge into org agregator 
 # For ibm ex
 #ibm_email_domains =  ["au1.ibm.com","linux.vnet.ibm.com","br.ibm.com", "zurich.ibm.com", "us.ibm.com" ,"cn.ibm.com","il.ibm.com","de.ibm.com","ca.ibm.com"] 
 ibm_email_domains_prefix =  ["au1","linux","br", "zurich", "us" ,"cn","il","de","ca"]
 
+# TODO Merge into top n 
 # TOP10 companies in OpenStack
 top10= ["rackspace", "nebula", "citrix", "redhat", "ibm", "hp", "cloudscaling", "mirantis" , "vmware" , "canonical", "intel"]
 
@@ -132,7 +140,7 @@ def getAffiliationFromEmail(email):
 def getDateEmailAffiliation(line):   	 
     "gets the ==Name;email;date=="
     #print ("	getting name, email, date, affilication from the line["+line+"]")
-
+    
     name_pattern = re.compile('^\\=\\=(.+);(.+);(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
     match = name_pattern.findall(line)
     
@@ -554,7 +562,8 @@ def  getContributorsConnectionsTuplesWSF():
                 agreByConnWSF.append((connection, files))
 
 
-# Get a list of unique tubles of developers that collaborate. List of tubles with linked nodes. 
+# Get a list of unique tubles of developers that collaborate. List of tubles with linked nodes.
+# uniqueConnections will not have emails/developers/nodes that are filtered (-f argument to scrapLog.py)
 def getUniqueConnectionsTuplesList(tuplesListWithFile):    
     
     # verify arguments data
@@ -576,6 +585,16 @@ def getUniqueConnectionsTuplesList(tuplesListWithFile):
         #Do not consider if author1 or author2 been already connected 1->2 or 2-< 1 
         if (author1,author2) and (author2,author1) not in seen:
             seen[(author1,author2)]= True
+
+        # Do not consider if author 1 or author 2 are to be filtered
+        # User invoked the (-f argument to scrapLog.py)
+        if (FILTERING_MODE == 1):
+                if (author1) or (author2)  in filtered_emails:
+                        if (DEBUG_MODE == 1):
+                                #print ("\tuniqueConnections should fiter according to -f argument")
+                                print ("\tnot considering edge ("+author1+","+author2+") due to -f argument (emails to be filtered)")
+                        seen[(author1,author2)]= True
+
 
     return list(seen.keys())
     
@@ -659,10 +678,16 @@ def main():
         global networked_affiliations
         global uniqueConnections
 
+        "e-mails that should not be considered when scrapping the git log"
+        "passed as an argument to scrapLog.py"
+        global filtered_emails
+
+        "modes reflecting arguments passed to scrapLog.py"
         global SAVE_MODE
         global RAW_MODE
         global LOAD_MODE
         global DEBUG_MODE
+        global FILTERING_MODE
 
         ## Process the arguments 
         # -s for serialized save (already provessed changeLog)
@@ -672,13 +697,19 @@ def main():
         parser.add_argument('-l','--lser',action='store', type=str, help='loads and processes an serialized changelog')
         parser.add_argument('-r','--raw', action='store', type=str, help='processes from a raw git changelog')
         parser.add_argument('-s','--sser',action='store', type=str, help='processses from a raw git changelog and saves it into a serialized changelog. Requires -r for imput')
-        parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true") 
+        parser.add_argument('-f','--filter',action='store', type=str, help='ignores the emails listed in a text file (one email per line)')
+        parser.add_argument("-v", "--verbose", help="increased output verbosity", action="store_true") 
 
         args = parser.parse_args()
 
         if args.verbose:
                 print("verbosity turned on")
                 DEBUG_MODE=1
+
+        if args.filter:
+                print("Filtering (ignoring given emails) turned on")
+                FILTERING_MODE=1;
+                        
 
         if args.lser:
                 print(("loanding and processing [lser=",args.lser,"]"))
@@ -707,13 +738,46 @@ def main():
                 print(("STARTING the scrap of changeLog file " + args.raw + " on " +  str(t0)))
 
 
-                ## Opening the files 
+                ## Opening the files
 
-                workfile = args.raw
+                ### The main one - the RAW git logs 
 
-                f = open(workfile, 'r')
+                work_file = args.raw
+
+                f = open(work_file, 'r')
+
+                ### The filter listing emails to not be considered
 
 
+                if FILTERING_MODE == 1:
+                        filter_file= args.filter 
+                        
+                
+
+                try:
+                        with open(filter_file, 'r') as ff:
+                                filter_file_content = ff.read().splitlines()
+                                print ("\t Reading filter file " + filter_file)
+                        if not filter_file_content:
+                                print("\t ERROR no emails to be filtered")
+                                sys.exit()
+
+                except IOError as e:
+                        print ("")
+                        print ("I/O error({0}): {1}".format(e.errno, e.strerror))
+                        print ("Can't open "+filter_file+". Should it contain emails that should not be considered by ScrapLog.py? ")
+                        print ("Check arguments. ./scrapLog.py --help")
+                        sys.exit()
+                except Exception as err: #handle other exceptions such as attribute errors
+                        print ("(Unexpected error:"+repr(err))
+                        sys.exit()
+                
+
+                #print (filter_file_content)
+                filtered_emails = filter_file_content 
+
+
+                        
                 ## Read line by line 
                 ## Keep also the stats
                 ## Detect blocks ... process them
@@ -818,8 +882,10 @@ def main():
                 print_agreByConnWSF()
 
 
+
         # agreate an list of authors that worked on the each files (do not repeat author tuples)
         # For getting unique edges/collaborations (do not include repetitions of the same collaborations)
+        # uniqueConnections will not have emails/developers/nodes that are filtered (-f argument to scrapLog.py)
         uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
         print ("\n:) 4rd SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated")
 
@@ -832,20 +898,20 @@ def main():
         getAffiliations()
 
         exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
-        print ("\n:) GRAPHML export SUCESS exported GraphML network to file:"+graphmlOutput)
+        print ("\n:) 5th SUCESS in exporting  network to GraphML file:"+graphmlOutput)
         
 
                 
-        print ("\t\n:) GRAPHML export Number of nodes/authors = " + str(len(affiliations)))
-        print ("\t\n:) GRAPHML export Number of networked nodes/authors = " + str(len(networked_affiliations)))
+        print ("\n\t:) GRAPHML export Number of nodes/authors = " + str(len(affiliations)))
+        print ("\n\t:) GRAPHML export Number of networked nodes/authors = " + str(len(networked_affiliations)))
 
-        print ("\t\n:) GRAPHML export Number of nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(affiliations)))
-        print ("\t\n:) GRAPHML export Number of networked nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(networked_affiliations)))
-        print ("\t\n:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(networkMeasures.getNumberOfEdges(agreByConnWSF)))
+        print ("\n\t:) GRAPHML export Number of nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(affiliations)))
+        print ("\n\t:) GRAPHML export Number of networked nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(networked_affiliations)))
+        print ("\n\t:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(networkMeasures.getNumberOfEdges(agreByConnWSF)))
 
-        print ("\t\n:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(networkMeasures.getNumberOfUniqueEdges(agreByConnWSF)))
+        print ("\n\t:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(networkMeasures.getNumberOfUniqueEdges(agreByConnWSF)))
 
-        print ("\t\n:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(len(uniqueConnections)))
+        print ("\n\t:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(len(uniqueConnections)))
 
         # Create an graphML file filtered by company
         # In this case_ red_hat,enovance and intel
