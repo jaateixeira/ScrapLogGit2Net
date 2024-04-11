@@ -111,11 +111,16 @@ Finally, the last example foes to the tensor flow reposiutory and gets the data 
 - Now lets analyse some data.
 
 ## Scrap the data - Get basic statistics and social networks 
-
-`./scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
+```
+./scrapLog.py  --raw  test-data/tensorFlowGitLog-first-trimester-2024.IN
+```
 or
+```
 `python3 scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
+```
 
+By default, you get a "NetworkFile.graphML" file capturing the social network. 
+Congrats. You collected social network data ready for analysis. 
 
 # Features 
 
