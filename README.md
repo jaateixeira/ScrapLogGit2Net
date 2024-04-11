@@ -29,22 +29,29 @@ You don't need to be a programmer to use ScrapLogGit2Net. But if you are one, pl
 
 ## First, clone a Git repository 
 
-- First you clone the GIT repository
+Clone the Git repository you wish to mine with Social Network Analysis. Here is the example for TensorFlow: 
+
 ```
 git clone https://github.com/tensorflow/tensorflow.git
 cd tensorflow`
 ```
 
-- Then you get the commit logs that will be used by ScrapLogGit2Net
+
+## Second, clone a Git repository 
+
+Obtain the commit logs that will be the main input for ScrapLogGit2Net. In this example, they are saved to the tensorFlowGitLog.IN file. 
+
+```
+git log --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog.IN`
+```
 
 
+If you are lost by this point, time to learn about Git. 
 
-
-`git log --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog.IN`
-
-If you are lost by this point, time to learn about Git
-`$man git`
-`$man git log`
+```
+man git`
+man git log`
+```
 
 
 
