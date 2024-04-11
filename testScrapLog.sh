@@ -4,16 +4,21 @@ echo "This tests scrapLog.py by executing it againt input files in ./test-data/"
 echo "part of the ScrapLogGit2Net open-source project"
 echo "Developed by Jose Teixeira <jose.teixeira@abo.fi> "
 
-echo "" 
-echo "Testing with test-data/tensorFlowGitLog-3-commits-0-edges.IN" 
-echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-0-edges.IN >> testResults.tmp"
-
 GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 NC=$(tput sgr0)
 
+
+
+
 # TEST CASE 1
 # Input with 3 commits but not edges associating developers 
+
+
+echo "" 
+echo "Testing with test-data/tensorFlowGitLog-3-commits-0-edges.IN" 
+echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-0-edges.IN >> testResults.tmp"
+
 
 ./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-0-edges.IN >> testResults.tmp
 echo "Last line of output shoul be:"
@@ -43,6 +48,12 @@ rm testResults.tmp
 # TEST CASE 2
 # Input with 3 commits and one edge associating developers
 # lawrencews@google.com and olupton@nvidia.com co-edited tensorflow/core/lib/gtl/array_slice.h
+
+
+echo "" 
+echo "Testing with test-data/tensorFlowGitLog-3-commits-1-edges.IN" 
+echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN >> testResults.tmp"
+
 
 ./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN >> testResults.tmp
 echo "Last line of output shoul be:"

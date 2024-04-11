@@ -769,7 +769,9 @@ def main():
 
         if (RAW_MODE == 1):
                 print ("\n:)1st SUCESS Data scraped from changlog files (stored in ChangeLogData data structure)")
-                #print_changeLogData()
+
+                if (DEBUG_MODE == 1):
+                        print_changeLogData()
         
 
         elif (LOAD_MODE == 1):	
@@ -779,8 +781,9 @@ def main():
                 if len(changeLogData) < 1:
                         print ("to small loaded change log, len <1" )
                         sys.exit()
-                
-                #print_changeLogData()
+
+                if (DEBUG_MODE == 1):
+                        print_changeLogData()
         
         else:
                 print ("ERROR: In what mode are we afer all= No SAVE,LOAD or RAW")
@@ -798,27 +801,37 @@ def main():
 
         agregateByFileItsContributors()
         print ("\n:)2nd SUCESS2 Data agregated by files and its contributors")
-        ##print_agreByFileContributors()
+
+
+        
+        if (DEBUG_MODE == 1):
+                print_agreByFileContributors()
 
 
         # agreate list of authors that worked on the each files
 
         getContributorsConnectionsTuplesWSF()
         print ("\n:) 3rd SUCESS tubles of authors that collaborated (coded in the same source code file) were generated")
-        #print_agreByConnWSF()
+
+        if (DEBUG_MODE == 1):
+                print_agreByConnWSF()
 
 
         # agreate an list of authors that worked on the each files (do not repeat author tuples)
         # For getting unique edges/collaborations (do not include repetitions of the same collaborations)
         uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
         print ("\n:) 4rd SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated")
-        #print_unique_connections()
+
+        if (DEBUG_MODE == 1):
+                print_unique_connections()
 
 
 
         # for every author, get its affiliation. result will be saved in the  affiliation global dictionart
-        getAffiliations() 
-        ##print_Affiliations()
+        getAffiliations()
+
+        if (DEBUG_MODE == 1):
+                print_Affiliations()
 
         print ("\n:) 5rd SUCESS got author -> affiliation dictionary")
 
@@ -938,6 +951,7 @@ def main():
         print(("Number of analized changelog blocks changing code files [" +  str(stats['nBlocksChagingCode']) + "?]"))
         print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" +  str(stats['nBlocksNotChangingCode']) + "?]"))
         print(("Number of files affected by the commits reported by change log[" +  str(stats['nChangedFiles']) + "]"))
+        print(("Number of unique collaborations[" +  str(len(uniqueConnections)) + "]"))
 
 if __name__ == "__main__":
     main()
