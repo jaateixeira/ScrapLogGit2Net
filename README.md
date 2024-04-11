@@ -37,28 +37,28 @@ cd tensorflow`
 ```
 
 
-## Second, clone a Git repository 
+## Second, get the Git logs for scraping 
+
 
 Obtain the commit logs that will be the main input for ScrapLogGit2Net. In this example, they are saved to the tensorFlowGitLog.IN file. 
+Note that data scraping is a technique where a computer program extracts data from human-readable output coming from another program. In this case ScrapLogGit2Net will extract data coming from git.
 
 ```
 git log --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog.IN`
 ```
 
-
 If you are lost by this point, time to learn about Git. 
 
 ```
-man git`
-man git log`
+man git
+man git log
 ```
-
-
 
 Congratulations you should have your raw data ready for analysis with ScrapLogGit2Net
 
 
-Look at you INPUT data.  As you can see from the 4 April 2024 sample from TensorFlow, you get time.stamped data on who changed what files. Note that gardner@tensorflow.org is a bot. Not a developer that directly commits code. 
+Look at you INPUT data.  As you can see from the following 4 April 2024 sample data from TensorFlow, you get time.stamped data on who changed what files. 
+Note that gardner@tensorflow.org is a bot. Not a developer that directly commits code. 
 
      A. Unique TensorFlower;gardener@tensorflow.org;Wed Apr 3 22:39:37 2024 -0700
      tensorflow/core/tfrt/saved_model/tests/BUILD
@@ -76,6 +76,7 @@ Look at you INPUT data.  As you can see from the 4 April 2024 sample from Tensor
      Doyeon Kim;doyeonkim@google.com;Wed Apr 3 17:46:07 2024 -0700
      tensorflow/compiler/mlir/lite/quantization/stablehlo/BUILD
      tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
+
 
 
 What ScrapLogGit2Net does is to parse this time-stamps and associate developers that co-edited the same source-code file in a social network.
@@ -101,10 +102,17 @@ Finally, the last example foes to the tensor flow reposiutory and gets the data 
 
 - Now lets analyse some data.
 
+## Scrap the data - Get basic statistics and social networks 
+
 `./scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
 or
 `python3 scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
 
+# Contributing 
+Please follow the basic guide on https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project
+Please create a branch and do a pull request. 
 
-## License 
+Jose Teixeira, currently the only maintainer,  will review and merge the code and update the ChangeLog.txt and documentation if needed.  
+
+# License 
 GNU General Public License v3.0
