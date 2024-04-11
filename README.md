@@ -82,7 +82,9 @@ Note that gardner@tensorflow.org is a bot. Not a developer that directly commits
 
 
 
-What ScrapLogGit2Net does is to parse this time-stamps and associate developers that co-edited the same source-code file in a social network.
+What ScrapLogGit2Net does is to parse this time-stamps and associate developers that co-edited the same source-code file in a social network.  If two developers co-edit the same source-code file over time, we can assume that they cooperate with each other. A bit like scietists that co-author papers.  
+
+
 
 Note the example year covers almost 10 years of commit logs in the TensorFlow project. It might be wise to narrow down the time window you want to analyse.
 
