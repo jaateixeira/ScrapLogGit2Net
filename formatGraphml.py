@@ -31,13 +31,24 @@ def printGraph_notes_and_its_data(graph):
 print ("Graph imported successfully")
 print ("Number_of_nodes="+str(G.number_of_nodes()))
 print ("Number_of_edges="+str(G.number_of_edges()))
+print ("Number_of_isolates="+str(nx.number_of_isolates(G)))
+
+isolate_ids=[]
+for isolate in nx.isolates(G):
+    isolate_ids.append(isolate)
 
 
-print ("Calculating centralities")
+print("\t Isolates:")
+for node, data in G.nodes(data=True):
+        if node in isolate_ids:
+            print ("\t",node,data['e-mail'],data['affiliation'])
 
-degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
 
-sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
+#print ("Calculating centralities")
+
+#degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
+
+#sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
 
 #print ("degree_centrality")
 #print (degree_centrality)
@@ -48,7 +59,6 @@ sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: ite
 circular_options = { 
     'node_size': 10,
     'width': 0.1,
-    'node-color': 'gray',
 }
 
 
@@ -60,7 +70,7 @@ org_colors = []
 
 for node, data in G.nodes(data=True):
         #print (node)
-    print (data['affiliation'])
+    #print (data['affiliation'])
 
     if data['affiliation'] == 'google':
         org_colors.append('red')
@@ -82,6 +92,8 @@ for node, data in G.nodes(data=True):
 
 
 
+
+
 print ("Saving circular layout")
 # Random colors 1-256 
 #nx.draw_circular(G,node_color=range(256),**circular_options)
@@ -91,10 +103,10 @@ plt.savefig("Uncolored-Circular-Layout.png")
 
 
 
+
 spring_options = { 
     'node_size': 10,
     'width': 0.5,
-    'node-color': 'blue',
 }
 
 
@@ -109,3 +121,4 @@ plt.savefig("Uncolored-Centrality-Layout.png")
 print ("writing formatted NetworkFile.graphML")
 
 nx.write_graphml_lxml(G, "Formatted-NetworkFile.graphML")
+

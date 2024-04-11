@@ -708,8 +708,9 @@ def main():
 
         if args.filter:
                 print("Filtering (ignoring given emails) turned on")
-                FILTERING_MODE=1;
-                        
+                FILTERING_MODE=1
+        else:
+                FILTERING_MODE=0
 
         if args.lser:
                 print(("loanding and processing [lser=",args.lser,"]"))
@@ -731,7 +732,7 @@ def main():
                 print ("unrecognized argumets ... see --help")
                 sys.exit()
 
-        if RAW_MODE == 1:
+        if (RAW_MODE == 1):
                 ##  if we are not in load mode, we need to strap the log	
                 print(("Scrapping changeLog from ", args.raw ))
                 t0 = datetime.now()
@@ -749,33 +750,34 @@ def main():
                 ### The filter listing emails to not be considered
 
 
-                if FILTERING_MODE == 1:
+                if (FILTERING_MODE == 1):
                         filter_file= args.filter 
                         
-                
 
-                try:
-                        with open(filter_file, 'r') as ff:
-                                filter_file_content = ff.read().splitlines()
+                        try:
+                                with open(filter_file, 'r') as ff:
+                                        filter_file_content = ff.read().splitlines()
                                 print ("\t Reading filter file " + filter_file)
-                        if not filter_file_content:
-                                print("\t ERROR no emails to be filtered")
+                                
+                                if not filter_file_content:
+                                        print("\t ERROR no emails to be filtered")
+                                        sys.exit()
+                        except IOError as e:
+                                print ("")
+                                print ("I/O error({0}): {1}".format(e.errno, e.strerror))
+                                print ("Can't open "+filter_file+". Should it contain emails that should not be considered by ScrapLog.py? ")
+                                print ("Check arguments. ./scrapLog.py --help")
+                                sys.exit()
+                        except Exception as err: #handle other exceptions such as attribute errors
+                                print ("(Unexpected error:"+repr(err))
                                 sys.exit()
 
-                except IOError as e:
-                        print ("")
-                        print ("I/O error({0}): {1}".format(e.errno, e.strerror))
-                        print ("Can't open "+filter_file+". Should it contain emails that should not be considered by ScrapLog.py? ")
-                        print ("Check arguments. ./scrapLog.py --help")
-                        sys.exit()
-                except Exception as err: #handle other exceptions such as attribute errors
-                        print ("(Unexpected error:"+repr(err))
-                        sys.exit()
+                        print (filter_file_content)
+                        filtered_emails = filter_file_content 
+
                 
 
-                #print (filter_file_content)
-                filtered_emails = filter_file_content 
-
+        
 
                         
                 ## Read line by line 
@@ -912,13 +914,40 @@ def main():
                 "after filtering unique connections are fewer without the filtered connections"
                 uniqueConnections=uniqueFilteredConnections
 
+
                 print ("\n:) 4 + 1/2  SUCESS removed notes that are to be filtered (-f argument to scrapLog.py) ")
         
 
         # for every author, get its affiliation. result will be saved in the  affiliation global dictionart
         getAffiliations()
 
-        exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
+        #print("networked_affiliations="+networked_affiliations)
+        
+        
+        if (FILTERING_MODE == 1):
+                "filter also the affilations dict as -f argument was passed"
+
+                def my_filtering_function(pair):
+                        unwanted_keys  = filtered_emails
+                        key, value = pair
+                        if key in unwanted_keys:
+                                return False  # keep pair in the filtered dictionary
+                        else:
+                                return True  # filter pair out of the dictionar
+ 
+                filtered_network_affiliations = dict(filter(my_filtering_function, networked_affiliations.items()))
+ 
+                print("\n filtered_network_affiliations="+str(filtered_network_affiliations))
+                     
+                print("\n networked_affiliations="+str(networked_affiliations))
+                
+
+        if (FILTERING_MODE == 1):
+                exportLogData.createGraphML(uniqueConnections,filtered_network_affiliations, graphmlOutput)
+        else: 
+                exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
+
+                
         print ("\n:) 5th SUCESS in exporting  qnetwork to GraphML file:"+graphmlOutput)
         
 
