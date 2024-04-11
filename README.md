@@ -30,7 +30,8 @@ You don't need to be a programmer to use ScrapLogGit2Net. But if you are one, pl
 ## First, clone a Git repository 
 
 - First you clone the GIT repository
-```git clone https://github.com/tensorflow/tensorflow.git
+```
+git clone https://github.com/tensorflow/tensorflow.git
 cd tensorflow`
 ```
 
@@ -98,9 +99,5 @@ or
 `python3 scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
 
 
-
-
-
-
-
-
+## License 
+GNU General Public License v3.0
