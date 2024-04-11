@@ -5,7 +5,7 @@ Tool was first developed by Jose Apolinário Teixeira during his doctoral studie
 
 For more information, see publication: 
 
-Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. for more information. Available open-access at  [https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2]([https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2]). 
+Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. for more information. Available open-access at  [https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2](https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2). 
 
 
 # Inputs #
@@ -109,7 +109,7 @@ or
 `python3 scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
 
 # Contributing 
-Please follow the basic guide on https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project
+Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project)
 Please create a branch and do a pull request. 
 
 Jose Teixeira, currently the only maintainer,  will review and merge the code and update the ChangeLog.txt and documentation if needed.  
