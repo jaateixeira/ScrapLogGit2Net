@@ -133,7 +133,8 @@ Congrats. You collected social network data ready for analysis.
 - Possibiliry to add a argument pointing with a file with emails to ignore (e.g., bots and spam email addresses)
 - Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>)
 - Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com)
-- Possibliity to export both networks at individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations) 
+OA- Possibliity to export both networks at individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations)
+- Possiblity to limit analysis to n top contriburors (organization with most nodes)
 
 # Contributing 
 Branch and pull mode. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
