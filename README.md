@@ -123,7 +123,7 @@ By default, you get a "NetworkFile.graphML" file capturing the social network.
 Congrats. You collected social network data ready for analysis. 
 
 
-# Arguments for advanced use
+# Command line options for advanced use
 
 - Use serialized changelogs so you don't need to use raw git logs every time (speeds things up)
 - Provide a configuration file with emails (aka developers) that should be ignored. Handy for ignoring bots that commit code
