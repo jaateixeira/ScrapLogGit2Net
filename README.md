@@ -122,6 +122,28 @@ or
 By default, you get a "NetworkFile.graphML" file capturing the social network. 
 Congrats. You collected social network data ready for analysis. 
 
+
+# Arguments for advanced use
+
+- Use serialized changelogs so you don't need to use raw git logs every time (speeds things up)
+- Provide a configuration file with emails (aka developers) that should be ignored. Handy for ignoring bots that commit code
+- Use verbose mode for debuging and testing 
+
+```
+usage: scrapLog.py [-h] [-l LSER] [-r RAW] [-s SSER] [-f FILTER] [-v]
+
+Scrap some chagelog to create networks/graphs for research purpses
+
+options:
+  -h, --help            show this help message and exit
+  -l LSER, --lser LSER  loads and processes an serialized changelog
+  -r RAW, --raw RAW     processes from a raw git changelog
+  -s SSER, --sser SSER  processses from a raw git changelog and saves it into a serialized changelog. Requires -r for imput
+  -f FILTER, --filter FILTER
+                        ignores the emails listed in a text file (one email per line)
+  -v, --verbose         increased output verbosity
+```
+
 # Features 
 
 ## Implemented features 
