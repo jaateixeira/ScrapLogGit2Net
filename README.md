@@ -149,10 +149,11 @@ options:
 ## Implemented features 
 - Export to the [GraphML][http://graphml.graphdrawing.org/] format for graphs based on XML. Exports undirected grapths with company affiliation atributes. 
 - Verbose debug output
-- Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects 
+- Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects
+- - Possibiliry to add a argument pointing with a file with emails to ignore (e.g., bots and spam email addresses)
 
 ## To implement (voluntears welcome)
-- Possibiliry to add a argument pointing with a file with emails to ignore (e.g., bots and spam email addresses)
+- Possibiliry to add a argument pointing with a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., bots and spam email addresses)
 - Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>)
 - Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com)
 OA- Possibliity to export both networks at individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations)
