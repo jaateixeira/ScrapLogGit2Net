@@ -56,6 +56,13 @@ agreByConnWSF = []
 # Keeps unique collaborations and connections. [(a,b),(b,c),(a,c)]
 uniqueConnections =[]
 
+
+# Will keep unique tuples of authors connected due to workin on common file. no repetitions for (a-b),(a-b) or (a-b),(b-a)
+# Keeps unique collaborations and connections. [(a,b),(b,c),(a,c)] but with the filtered emails/nodes passed by the -f argument to Scraplog
+uniqueFilteredConnections =[]
+
+
+
 # Will keep a dictionary author afiliation i.e affiliation[mike@google.com]=google.com
 affiliations = {}
 
@@ -586,18 +593,11 @@ def getUniqueConnectionsTuplesList(tuplesListWithFile):
         if (author1,author2) and (author2,author1) not in seen:
             seen[(author1,author2)]= True
 
-        # Do not consider if author 1 or author 2 are to be filtered
-        # User invoked the (-f argument to scrapLog.py)
-        if (FILTERING_MODE == 1):
-                if (author1) or (author2)  in filtered_emails:
-                        if (DEBUG_MODE == 1):
-                                #print ("\tuniqueConnections should fiter according to -f argument")
-                                print ("\tnot considering edge ("+author1+","+author2+") due to -f argument (emails to be filtered)")
-                        seen[(author1,author2)]= True
-
 
     return list(seen.keys())
     
+
+
 
 
 # Pring unique connections - lust of tuples [(a,b),(b.c)]
@@ -887,18 +887,39 @@ def main():
         # For getting unique edges/collaborations (do not include repetitions of the same collaborations)
         # uniqueConnections will not have emails/developers/nodes that are filtered (-f argument to scrapLog.py)
         uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
-        print ("\n:) 4rd SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated")
+        print ("\n:) 4th SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated")
 
         if (DEBUG_MODE == 1):
                 print_unique_connections()
 
 
 
+        # User invoked the (-f argument to scrapLog.py)
+        if (FILTERING_MODE == 1):
+
+                uniqueFilteredConnections= []
+                for connection in uniqueConnections:
+                        if connection[0] in filtered_emails:
+                                if (DEBUG_MODE == 1):
+                                        print ("\t\t Filtering "+str(connection))
+                                continue
+                        if connection[1] in filtered_emails:
+                                if (DEBUG_MODE == 1):
+                                        print ("\t\t Filtering "+str(connection))
+                                continue 
+                        uniqueFilteredConnections.append(connection)
+
+                "after filtering unique connections are fewer without the filtered connections"
+                uniqueConnections=uniqueFilteredConnections
+
+                print ("\n:) 4 + 1/2  SUCESS removed notes that are to be filtered (-f argument to scrapLog.py) ")
+        
+
         # for every author, get its affiliation. result will be saved in the  affiliation global dictionart
         getAffiliations()
 
         exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
-        print ("\n:) 5th SUCESS in exporting  network to GraphML file:"+graphmlOutput)
+        print ("\n:) 5th SUCESS in exporting  qnetwork to GraphML file:"+graphmlOutput)
         
 
                 
