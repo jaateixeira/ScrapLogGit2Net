@@ -104,12 +104,13 @@ def getAffiliationFromEmail(email):
     "implement an exception for IBM as their emails come from multiple domains" 
     "au1.ibm.com linux.vnet.ibm.com br.ibm.com zurich.ibm.com us.ibm.com cn.ibm.com il.ibm.com"
 
-    if 'ibm' in email :
-        #print ("Warning, ibm affiliation from multiple domains")
+    if 'ibm' in match :
+        print ("Warning, ibm affiliation from multiple domains")
         
         if match[0] not in ibm_email_domains_prefix:
             print ("ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
-            print(("march=["+str(match[0])+"]"))
+            print(("email=["+email+"]"))
+            print(("match[0]=["+str(match[0])+"]"))
             sys.exit()
 
         #print ("affiliation(" + email + ")=[ibm]") 
@@ -830,39 +831,21 @@ def main():
         # for every author, get its affiliation. result will be saved in the  affiliation global dictionart
         getAffiliations()
 
+        exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
+        print ("\n:) GRAPHML export SUCESS exported GraphML network to file:"+graphmlOutput)
+        
         if (DEBUG_MODE == 1):
-                print_Affiliations()
+                
+        print ("\t\n:) GRAPHML export Number of nodes/authors = " + str(len(affiliations)))
+        print ("\t\n:) GRAPHML export Number of networked nodes/authors = " + str(len(networked_affiliations)))
 
-        print ("\n:) 5rd SUCESS got author -> affiliation dictionary")
+        print ("\t\n:) GRAPHML export Number of nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(affiliations)))
+        print ("\t\n:) GRAPHML export Number of networked nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(networked_affiliations)))
+        print ("\t\n:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(networkMeasures.getNumberOfEdges(agreByConnWSF)))
 
+        print ("\t\n:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(networkMeasures.getNumberOfUniqueEdges(agreByConnWSF)))
 
-        #### UCI NET format #### 
-        #### Used for WebKit SIGMISCPT paper #### 
-        # Export to data files to Ucitnet format 
-        ## Both networkOutput and atributesOutput are global atributes defined on the header
-
-
-        #exportLogData.createNetworkFileCSV(agreByConnSF, networkOutput)
-        #exportLogData.createAtributesFileCSV(changeLogData, atributesOutput )
-        #print ("\n:) UciNet export SUCESS exported UCInet network to file:"+networkOutput+" and its attributes to file:"+atributesOutput)
-
-        # GRAPH ML#
-
-        # Create an GraphML file 
-
-        #exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
-        #print ("\n:) GRAPHML export SUCESS exported GraphML network to file:"+graphmlOutput)
-
-        #print ("\t\n:) GRAPHML export Number of nodes/authors = " + str(len(affiliations)))
-        #print ("\t\n:) GRAPHML export Number of networked nodes/authors = " + str(len(networked_affiliations)))
-
-        #print ("\t\n:) GRAPHML export Number of nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(affiliations)))
-        #print ("\t\n:) GRAPHML export Number of networked nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(networked_affiliations)))
-        #print ("\t\n:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(networkMeasures.getNumberOfEdges(agreByConnWSF)))
-
-        #print ("\t\n:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(networkMeasures.getNumberOfUniqueEdges(agreByConnWSF)))
-
-        #print ("\t\n:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(len(uniqueConnections)))
+        print ("\t\n:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(len(uniqueConnections)))
 
         # Create an graphML file filtered by company
         # In this case_ red_hat,enovance and intel

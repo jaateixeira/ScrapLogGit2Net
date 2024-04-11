@@ -14,7 +14,14 @@ options:
                         a serialized changelog. Requires -r for imput
   -v, --verbose         increase output verbosity
 
-Implement option input for organization-serialization
-Implement option input for individual-serialization
+Implement option input for organization-agregation 
+Implement option input for individual-agregation
 
-Implement verbose
+Implement verbose even more verbosity - while scrapping log
+
+Filter for emails by github
+
+Investigate noreply emails
+
+Make -e export  social netowor GraphML by defeaut
+-ef  exprt format
