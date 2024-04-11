@@ -14,7 +14,7 @@ A git repository
 
 
 # Outputs #
-Social networks capturing who codes who who in a repository (not a software project can have multiple repositories) 
+Social networks capturing who codes who who in a repository (not a software project can have multiple repositories)
 
 # How it works #
 
@@ -25,13 +25,14 @@ It uses the commit logs of a git repository
 # How to use it  #
 
 You need basic skills of Git and basic skills on how to invoke shell scripts in bash.  Knowing python will also help a lot. 
+You don't need to be a programmer to use ScrapLogGit2Net. But if you are one, please contribute by advancing the project. 
 
-## Clone a Git repository 
+## First, clone a Git repository 
 
 - First you clone the GIT repository
-
-`$ git clone https://github.com/tensorflow/tensorflow.git`
-`$ cd tensorflow`
+```git clone https://github.com/tensorflow/tensorflow.git
+cd tensorflow`
+```
 
 - Then you get the commit logs that will be used by ScrapLogGit2Net
 
