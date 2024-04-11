@@ -120,7 +120,7 @@ or
 # Features 
 
 ## Implemented features 
-- Export to GraphML support
+- Export to the [GraphML][http://graphml.graphdrawing.org/] format for graphs based on XML. Exports undirected grapths with company affiliation atributes. 
 - Verbose debug output
 - Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects 
 
