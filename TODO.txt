@@ -5,6 +5,10 @@ Integrate whatever was in Toshiba working disk
 
 Why not captured ==Gunhyun Park;gunhyun@google.com;Wed Mar 27 15:01:41 2024 -0700==
 
+Add Network X package citation to paper + website 
+Add Algoritm package citiation  to paper + website 
+
+
 - Document script paramters 
 options:
   -h, --help            show this help message and exit
