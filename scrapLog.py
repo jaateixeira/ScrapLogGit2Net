@@ -912,7 +912,7 @@ def main():
                         uniqueFilteredConnections.append(connection)
 
                 "after filtering unique connections are fewer without the filtered connections"
-                uniqueConnections=uniqueFilteredConnections
+                #uniqueConnections=uniqueFilteredConnections
 
 
                 print ("\n:) 4 + 1/2  SUCESS removed notes that are to be filtered (-f argument to scrapLog.py) ")
@@ -927,23 +927,36 @@ def main():
         if (FILTERING_MODE == 1):
                 "filter also the affilations dict as -f argument was passed"
 
+                "stores possible isolates that appear after fitering botes" 
+                onesNotCodingAlone=[]
+                
+                for id1, id2 in uniqueFilteredConnections:
+                        if id1 not in onesNotCodingAlone:
+                                onesNotCodingAlone.append(id1)
+                        if id2 not in onesNotCodingAlone:
+                                onesNotCodingAlone.append(id2)
+                
                 def my_filtering_function(pair):
                         unwanted_keys  = filtered_emails
                         key, value = pair
+
+                        if key not in onesNotCodingAlone:
+                                return False
+
                         if key in unwanted_keys:
-                                return False  # keep pair in the filtered dictionary
+                                return False  # keep pair out of  filtered dictionary
                         else:
-                                return True  # filter pair out of the dictionar
+                                return True  # filter pair in  the dictionary
  
                 filtered_network_affiliations = dict(filter(my_filtering_function, networked_affiliations.items()))
  
-                print("\n filtered_network_affiliations="+str(filtered_network_affiliations))
-                     
-                print("\n networked_affiliations="+str(networked_affiliations))
                 
 
         if (FILTERING_MODE == 1):
-                exportLogData.createGraphML(uniqueConnections,filtered_network_affiliations, graphmlOutput)
+                print("\n uniqueFilteredConnections="+str(uniqueFilteredConnections))
+                print("\n filtered_network_affiliations="+str(filtered_network_affiliations))
+                
+                exportLogData.createGraphML(uniqueFilteredConnections,filtered_network_affiliations, graphmlOutput)
         else: 
                 exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
 

@@ -118,7 +118,7 @@ plt.show()
 plt.savefig("Uncolored-Centrality-Layout.png")
 
 
-print ("writing formatted NetworkFile.graphML")
+print ("writing Formatted-NetworkFile.graphML")
 
 nx.write_graphml_lxml(G, "Formatted-NetworkFile.graphML")
 
