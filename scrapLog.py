@@ -834,7 +834,7 @@ def main():
         exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
         print ("\n:) GRAPHML export SUCESS exported GraphML network to file:"+graphmlOutput)
         
-        if (DEBUG_MODE == 1):
+
                 
         print ("\t\n:) GRAPHML export Number of nodes/authors = " + str(len(affiliations)))
         print ("\t\n:) GRAPHML export Number of networked nodes/authors = " + str(len(networked_affiliations)))

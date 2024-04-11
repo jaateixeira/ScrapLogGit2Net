@@ -276,7 +276,8 @@ def createGraphML(tuplesList,affiliations,outFileName):
     uniqueConnections = []
     
     for connection in tuplesList:
-        ((author1, author2), fileName ) = connection
+        print ("connection="+str(connection))
+        ((author1, author2)) = connection
 
         # Do not consider if author1 or author2 been already connected 1->2 or 2-< 1 
         if (author1, author2) not in uniqueConnections and (author2, author1) not in uniqueConnections:
