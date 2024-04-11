@@ -951,7 +951,7 @@ def main():
         print(("Number of analized changelog blocks changing code files [" +  str(stats['nBlocksChagingCode']) + "?]"))
         print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" +  str(stats['nBlocksNotChangingCode']) + "?]"))
         print(("Number of files affected by the commits reported by change log[" +  str(stats['nChangedFiles']) + "]"))
-        print(("Number of unique collaborations[" +  str(len(uniqueConnections)) + "]"))
+        print(("Number of unique collaborations (i.e., network edges)[" +  str(len(uniqueConnections)) + "]"))
 
 if __name__ == "__main__":
     main()
