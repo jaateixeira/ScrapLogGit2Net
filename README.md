@@ -109,10 +109,17 @@ or
 `python3 scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
 
 # Contributing 
-Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project)
-Please create a branch and do a pull request. 
+Branch and pull mode. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
 
 Jose Teixeira, currently the only maintainer,  will review and merge the code and update the ChangeLog.txt and documentation if needed.  
+
+
+# Contributors 
+Jose Teixeira
+
+# Maintainers  
+Jose Teixeira
+
 
 # License 
 GNU General Public License v3.0
