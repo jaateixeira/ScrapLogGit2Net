@@ -1,1 +1,15 @@
 Integrate whatever was in Toshiba working disk
+
+- Document script paramters 
+options:
+  -h, --help            show this help message and exit
+  -l LSER, --lser LSER  loads and processes an serialized changelog
+  -r RAW, --raw RAW     processes from a raw git changelog
+  -s SSER, --sser SSER  processses from a raw git changelog and saves it into
+                        a serialized changelog. Requires -r for imput
+  -v, --verbose         increase output verbosity
+
+Implement option input for organization-serialization
+Implement option input for individual-serialization
+
+Implement verbose

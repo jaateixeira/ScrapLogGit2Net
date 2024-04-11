@@ -37,3 +37,32 @@ fi
 
 echo 
 rm testResults.tmp
+
+
+
+# TEST CASE 2
+# Input with 3 commits and one edge associating developers
+# lawrencews@google.com and olupton@nvidia.com co-edited tensorflow/core/lib/gtl/array_slice.h
+
+./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN >> testResults.tmp
+echo "Last line of output shoul be:"
+echo "Output should be"
+lastline=$(tail -n1 testResults.tmp)
+expectedLastLine="ERROR "
+
+#echo lastline=[$lastline]
+#echo expextedLastLine=[$expectedLastLine]
+
+# Test if "ERROR collaboration tuplesList is empty" is on the last line of the scrapLog STDOUT 
+
+echo 
+if [[  "$lastline" =~ "$expectedLastLine" ]]; then
+    echo "${GREEN}TESTCASE 1 passed${NC}"
+else
+    echo "${RED}TESTCASE 1 did not pass${NC}"
+    echo "ScrapLog should end with 'ERROR collaboration tuplesList is empty expected'"
+    
+fi
+
+echo 
+rm testResults.tmp
