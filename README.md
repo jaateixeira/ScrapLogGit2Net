@@ -24,6 +24,10 @@ It uses the commit logs of a git repository
 
 # How to use it  #
 
+You need basic skills of Git and basic skills on how to invoke shell scripts in bash.  Knowing python will also help a lot. 
+
+## Clone a Git repository 
+
 - First you clone the GIT repository
 
 `$ git clone https://github.com/tensorflow/tensorflow.git`
