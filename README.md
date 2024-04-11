@@ -116,18 +116,32 @@ Finally, the last example foes to the tensor flow reposiutory and gets the data 
 or
 `python3 scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
 
+
+# Features 
+
+## Implemented features 
+- Export to GraphML support
+- Verbose debug output
+- Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects 
+
+## To implement (voluntears welcome)
+- Possibiliry to add a argument pointing with a file with emails to ignore (e.g., bots and spam email addresses)
+- Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>)
+- Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com)
+- Possibliity to export both networks at individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations) 
+
 # Contributing 
 Branch and pull mode. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
 
-Jose Teixeira, currently the only maintainer,  will review and merge the code and update the ChangeLog.txt and documentation if needed.  
+Note you should not break the test runner bash script (testScrapLog.sh) that runs ScrapLogGit2Net agains test-data and compares with the expected output. 
 
+Jose Teixeira, currently the only maintainer,  will review and merge the code and update the ChangeLog.txt and documentation if needed.  
 
 # Contributors 
 Jose Teixeira
 
 # Maintainers  
 Jose Teixeira
-
 
 # License 
 GNU General Public License v3.0
