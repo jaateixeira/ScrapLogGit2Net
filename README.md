@@ -135,8 +135,9 @@ Congrats. You collected social network data ready for analysis.
 - Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com)
 OA- Possibliity to export both networks at individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations)
 - Possiblity to limit analysis to n top contriburors (organization with most nodes)
-- Colorize nodes by company affiliation
-- export with centrality layout 
+- Colorize nodes by company affiliation automaticaly 
+- export with centrality layout
+- automatic circular and centrality analysis using networkX
 
 # Contributing 
 Branch and pull mode. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
