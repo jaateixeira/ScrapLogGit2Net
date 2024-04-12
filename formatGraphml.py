@@ -96,6 +96,7 @@ circular_options = {
 print ("coloring by firm")
 
 
+# less common goes to gray
 top_10_colors = {
     'google':'red',
     'nvidia':'lime',
@@ -106,13 +107,18 @@ top_10_colors = {
     'amazon':'orange',
     'ibm':'darkblue',
     'linaro':'pink',
-    'gtu':'brwon'
+    'gtu':'brwon',
+    'users': 'gray',
+    'gmail': 'gray',
+    'inailuig': 'gray',
+    'bytedance': 'gray',
+    
 }
 
 # argument passed to draw functions 
 org_colors = []
 
-# list with top 10 contributors 
+# list with top 10 org contributors 
 top_10 = {}
 
 for node, data in G.nodes(data=True):
@@ -147,6 +153,7 @@ print(all_affiliations_freq)
 top_10_org =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)[:10])
 
 
+
 print("\nTOP 10 org. with more nodes:")
 for key in top_10_org:
     print (key, top_10_org[key]) 
@@ -159,10 +166,25 @@ print ("Saving circular layout")
 nx.draw_circular(G,node_color=org_colors,**circular_options)
 
 
-legend_elements = [Line2D([0], [0], marker='o', color='blue', label='Female', lw=0,
-                          markerfacecolor='blue', markersize=10),
-                   Line2D([0], [0], marker='o', color='orange', label='Male', lw=0,
-                          markerfacecolor='orange', markersize=10)]
+print ("")
+print ("creating labels for top 10 org. with most nodes")
+
+"top 10 org is on the  top_10_org list"
+"color should be in top_10_colors otherwise "
+
+legend_elements = []
+
+for org in top_10_org:
+    print (org)
+
+    legend_elements.append(Line2D([0], [0],
+                                  marker='o',
+                                  color=top_10_colors[org],
+                                  label=org+" n= ("+str(top_10_org[org])+")",
+                                  lw=0,
+                                  markerfacecolor=top_10_colors[org],
+                                  markersize=5))
+
 
 ax = plt.gca()
 ax.legend(handles=legend_elements, loc='upper right')
@@ -186,9 +208,8 @@ print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
 nx.draw_spring(G, node_color=org_colors, **spring_options)
 
 ax = plt.gca()
-ax.legend(handles=legend_elements, loc='upper right')
-
-
+#ax.legend(handles=legend_elements, loc='upper right')
+ax.legend(handles=legend_elements, loc='best')
 
 plt.show()
 plt.savefig("Uncolored-Centrality-Layout.png")
