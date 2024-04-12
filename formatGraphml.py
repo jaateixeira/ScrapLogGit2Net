@@ -48,16 +48,41 @@ if (isolate_ids != []):
             print ("\t",node,data['e-mail'],data['affiliation'])
 
 
-#print ("Calculating centralities")
+print ()
+print ("Calculating centralities")
 
-#degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
+degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
 
-#sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
+sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
 
 #print ("degree_centrality")
 #print (degree_centrality)
 #print ("sorted_degree_centrality")
 #print (sorted_degree_centrality)
+
+
+top_10_connected_ind = []
+
+
+print("\nTOP 10 ind. with most edges:")
+
+
+top_10_connected_indtop_10_connected_ind = sorted_degree_centrality[:10]
+
+ids_of_top_10_connected_ind=(dict(top_10_connected_indtop_10_connected_ind)).keys()
+
+#print(top_10_connected_indtop_10_connected_ind)
+#print(ids_of_top_10_connected_ind)
+
+
+
+for node, data in G.nodes(data=True):
+    if node in ids_of_top_10_connected_ind:
+        #print (node)
+        print (data['e-mail'])
+        top_10_connected_ind.append(data['e-mail'])
+
+
 
 
 circular_options = { 
@@ -84,7 +109,11 @@ top_10_colors = {
     'gtu':'brwon'
 }
 
+# argument passed to draw functions 
 org_colors = []
+
+# list with top 10 contributors 
+top_10 = {}
 
 for node, data in G.nodes(data=True):
         #print (node)
@@ -101,9 +130,29 @@ for node, data in G.nodes(data=True):
 
 
 
+"find the top 10 organization contributing"
+all_affiliations_freq = {}
+for node, data in G.nodes(data=True):
+    affiliation = data['affiliation']
+    #print (affiliation)
+    if affiliation not in all_affiliations_freq.keys():
+        all_affiliations_freq[affiliation] = 1
+    else:
+        all_affiliations_freq[affiliation] += 1
+    
+
+print("\nall_affiliations_freq:")
+print(all_affiliations_freq)
+
+top_10_org =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)[:10])
 
 
+print("\nTOP 10 org. with more nodes:")
+for key in top_10_org:
+    print (key, top_10_org[key]) 
 
+
+print ("")
 print ("Saving circular layout")
 # Random colors 1-256 
 #nx.draw_circular(G,node_color=range(256),**circular_options)
@@ -131,6 +180,7 @@ spring_options = {
 }
 
 
+print ()
 print ("Saving centrality layout")
 print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
 nx.draw_spring(G, node_color=org_colors, **spring_options)
@@ -143,7 +193,7 @@ ax.legend(handles=legend_elements, loc='upper right')
 plt.show()
 plt.savefig("Uncolored-Centrality-Layout.png")
 
-
+print()
 print ("writing Formatted-NetworkFile.graphML")
 
 nx.write_graphml_lxml(G, "Formatted-NetworkFile.graphML")
