@@ -5,8 +5,11 @@
 # layout according centralities
 # colorize accourding to affiliation atribute
 
+
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import networkx as nx
+
 
 G = nx.read_graphml('NetworkFile.graphML')
 
@@ -38,8 +41,9 @@ for isolate in nx.isolates(G):
     isolate_ids.append(isolate)
 
 
-print("\t Isolates:")
-for node, data in G.nodes(data=True):
+if (isolate_ids != []):
+    print("\t Isolates:")
+    for node, data in G.nodes(data=True):
         if node in isolate_ids:
             print ("\t",node,data['e-mail'],data['affiliation'])
 
@@ -66,24 +70,29 @@ circular_options = {
 # See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python 
 print ("coloring by firm")
 
+
+top_10_colors = {
+    'google':'red',
+    'nvidia':'lime',
+    'intel':'lightblue',
+    'amd':'black',
+    'gmu':'yellow',
+    'arm':'steelblue',
+    'amazon':'orange',
+    'ibm':'darkblue',
+    'linaro':'pink',
+    'gtu':'brwon'
+}
+
 org_colors = []
 
 for node, data in G.nodes(data=True):
         #print (node)
     #print (data['affiliation'])
 
-    if data['affiliation'] == 'google':
-        org_colors.append('red')
-    elif data['affiliation'] == 'nvidia':
-        org_colors.append('lime')
-    elif data['affiliation'] == 'intel':
-        org_colors.append('lightblue')
-    elif data['affiliation'] == 'amd':
-        org_colors.append('black')
-    elif data['affiliation'] == 'gmu':
-        org_colors.append('yellow')
-    elif data['affiliation'] == 'arm':
-        org_colors.append('steelblue')
+    affiliation = data['affiliation']
+    if data['affiliation'] in list(top_10_colors.keys()):
+        org_colors.append(top_10_colors[affiliation])
     else:
         org_colors.append('gray')
 
@@ -94,10 +103,22 @@ for node, data in G.nodes(data=True):
 
 
 
+
 print ("Saving circular layout")
 # Random colors 1-256 
 #nx.draw_circular(G,node_color=range(256),**circular_options)
 nx.draw_circular(G,node_color=org_colors,**circular_options)
+
+
+legend_elements = [Line2D([0], [0], marker='o', color='blue', label='Female', lw=0,
+                          markerfacecolor='blue', markersize=10),
+                   Line2D([0], [0], marker='o', color='orange', label='Male', lw=0,
+                          markerfacecolor='orange', markersize=10)]
+
+ax = plt.gca()
+ax.legend(handles=legend_elements, loc='upper right')
+
+
 plt.show()
 plt.savefig("Uncolored-Circular-Layout.png")
 
@@ -113,6 +134,11 @@ spring_options = {
 print ("Saving centrality layout")
 print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
 nx.draw_spring(G, node_color=org_colors, **spring_options)
+
+ax = plt.gca()
+ax.legend(handles=legend_elements, loc='upper right')
+
+
 
 plt.show()
 plt.savefig("Uncolored-Centrality-Layout.png")
