@@ -144,12 +144,12 @@ options:
   -v, --verbose         increased output verbosity
 ```
 
-For example 
-```./scrapLog.py -f test-configurations/TensorFlowBots.txt  -r test-data/tensorFlowGitLog-all-till-12-Apri-2024.IN```-v 
-sraps the Git log in the test-data/tensorFlowGitLog-all-till-12-Apri-2024.IN input file, ignores emails listed in the test-configurations/TensorFlowBots.txt file and prints a debug information in a verbose way. By default it also creates a
+For example, the following command 
+
+```./scrapLog.py -f test-configurations/TensorFlowBots.txt  -r test-data/tensorFlowGitLog-all-till-12-Apri-2024.IN --verbose`` 
+
+scraps the Git log in the test-data/tensorFlowGitLog-all-till-12-Apri-2024.IN input file, ignores emails listed in the test-configurations/TensorFlowBots.txt file and prints debug information in a verbose way. By default it also creates a
 network file in the standard XML based format GraphML. 
-
-
 
 
 # Features 
