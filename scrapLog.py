@@ -79,8 +79,8 @@ fitered_emails = {}
 
 # TODO Merge into org agregator 
 # For ibm ex
-#ibm_email_domains =  ["au1.ibm.com","linux.vnet.ibm.com","br.ibm.com", "zurich.ibm.com", "us.ibm.com" ,"cn.ibm.com","il.ibm.com","de.ibm.com","ca.ibm.com"] 
-ibm_email_domains_prefix =  ["au1","linux","br", "zurich", "us" ,"cn","il","de","ca"]
+ibm_email_domains =  ["ibm.com","au1.ibm.com","linux.vnet.ibm.com","br.ibm.com", "zurich.ibm.com", "us.ibm.com" ,"cn.ibm.com","il.ibm.com","de.ibm.com","ca.ibm.com"] 
+ibm_email_domains_prefix =  ["au1","linux","br", "zurich", "us" ,"cn","il","de","ca","ibm"]
 
 # TODO Merge into top n 
 # TOP10 companies in OpenStack
@@ -102,6 +102,10 @@ LOAD_MODE = 0
 RAW_MODE = 0 
 
 
+# Are we filtering according to -f parameter passed to ScrapLog ?
+FILTERING_MODE = 0 
+
+
 def getAffiliationFromEmail(email):
     "gets affiliation from an given email" 
 
@@ -113,14 +117,24 @@ def getAffiliationFromEmail(email):
 
     if match == None or match == []:
         print ("ERROR unable to extract affiliation from email. Wrong email format?")
-        print(("match=["+str(match)+"]"))
-        sys.exit()
+        print("\t email=["+str(email)+"]")
+        print("\t match=["+str(match)+"]")
+
+        "some exception from problematic e-mails found on tensor flow"
+        if (FILTERING_MODE == 1 ):
+                print ("matching in filtered mode",filtered_emails)
+                if email in filtered_emails:
+                        return "filtered - included in file passed with -f argument"
+        
+        else:
+                sys.exit()
 
     "implement an exception for IBM as their emails come from multiple domains" 
     "au1.ibm.com linux.vnet.ibm.com br.ibm.com zurich.ibm.com us.ibm.com cn.ibm.com il.ibm.com"
 
     if 'ibm' in match :
-        print ("Warning, ibm affiliation from multiple domains")
+        if (DEBUG_MODE == 1):
+                print ("Warning, ibm affiliation from multiple domains")
         
         if match[0] not in ibm_email_domains_prefix:
             print ("ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
@@ -147,6 +161,7 @@ def getAffiliationFromEmail(email):
 def getDateEmailAffiliation(line):   	 
     "gets the ==Name;email;date=="
     #print ("	getting name, email, date, affilication from the line["+line+"]")
+
     
     name_pattern = re.compile('^\\=\\=(.+);(.+);(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
     match = name_pattern.findall(line)
@@ -162,7 +177,7 @@ def getDateEmailAffiliation(line):
 
         # Exception 1: Developer added name and email to name
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
-        if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line:
+        if ';;' in line and ' ' in line[0:atIndex] and '==Launchpad' not in line and '@'  in line:
             print ("WARNING exceptional code commit header Exception 1 ")
             print(("LINE number "+str(stats['nlines'])+" ["+ line + "] double ;; <- name and email together on commit header"))
 
@@ -202,11 +217,21 @@ def getDateEmailAffiliation(line):
         # Exception 4: 
         # match=[('Jenkins', 'jenkins@review.openstack.org', 'Thu Jan 30 21:21:23 2014', '+')]
         # 
-            
+
+
+        # Exception 5: 
+        # ==Francois Chollet;;Tue Apr 24 17:00:40 2018 -0700==
+        # No email at all
+        
+        elif '@' not in line:
+                print ("WARNING exceptional code commit header Exception 5 ")
+                print ("\t Commit header with no email[",line,"]" )
+                "better return unknown@email - can be added to filter argument file " 
+                return ('unknown','unknown@email','unknown')
 
             
         # anything else ERROR with imput or this code
-        else: 
+        else:
             print("Error, unable to extract developer name, email or date from commit block")
             print("Regular expression not captured")
             print(("Line=["+line+"]"))
