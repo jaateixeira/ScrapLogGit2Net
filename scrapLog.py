@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import itertools
 import argparse
+from pathlib import Path
 
 try:
 	import six.moves.cPickle as pickle
@@ -32,7 +33,7 @@ print(("Executing " + str(sys.argv)))
 
 networkOutput = "NetworkOutput.file1.CSV"
 atributesOutput = "AtributesOutput.file2.CSV"
-graphmlOutput= "NetworkFile.graphML"
+graphmlOutputSufix= ".NetworkFile.graphML"
 
 
 # Global structures 
@@ -227,7 +228,7 @@ def getDateEmailAffiliation(line):
                 print ("WARNING exceptional code commit header Exception 5 ")
                 print ("\t Commit header with no email[",line,"]" )
                 "better return unknown@email - can be added to filter argument file " 
-                return ('unknown','unknown@email','unknown')
+                return ('XXX XXX 00 0000','unknown@email','unknown-affiliation')
 
             
         # anything else ERROR with imput or this code
@@ -975,18 +976,19 @@ def main():
  
                 filtered_network_affiliations = dict(filter(my_filtering_function, networked_affiliations.items()))
  
+        
+        graphml_filename=Path(work_file).stem+graphmlOutputSufix
                 
-
         if (FILTERING_MODE == 1):
-                print("\n uniqueFilteredConnections="+str(uniqueFilteredConnections))
-                print("\n filtered_network_affiliations="+str(filtered_network_affiliations))
+                #print("\n uniqueFilteredConnections="+str(uniqueFilteredConnections))
+                #print("\n filtered_network_affiliations="+str(filtered_network_affiliations))
                 
-                exportLogData.createGraphML(uniqueFilteredConnections,filtered_network_affiliations, graphmlOutput)
+                exportLogData.createGraphML(uniqueFilteredConnections,filtered_network_affiliations,graphml_filename)
         else: 
-                exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
+                exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphml_filename)
 
                 
-        print ("\n:) 5th SUCESS in exporting  qnetwork to GraphML file:"+graphmlOutput)
+        print ("\n:) 5th SUCESS in exporting  qnetwork to GraphML file:"+graphml_filename)
         
 
                 

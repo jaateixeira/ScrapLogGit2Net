@@ -5,6 +5,10 @@
 #from __future__ import absolute_import
 #from __future__ import print_function
 
+from datetime import date
+
+
+
 graphml_header = '<?xml version="1.0" encoding="UTF-8"?>\n<!-- This file was created by scraplog.py script for OSS SNA research purposes --> \n'  + '<!-- For more information contact jose.teixeira@utu.fi and check www.jteixeira.eu for more information on OSS SNA research -->\n' + '<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + 'xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n' 
 
 graphml_closer = "</graphml>\n"
