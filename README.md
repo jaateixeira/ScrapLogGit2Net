@@ -116,7 +116,7 @@ Finally, the last example foes to the tensor flow reposiutory and gets the data 
 ```
 or
 ```
-`python3 scrapLog.py  test-data/tensorFlowGitLog-first-trimester-2024.IN`
+`python3 scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN
 ```
 
 By default, you get a "NetworkFile.graphML" file capturing the social network. 
