@@ -22,7 +22,7 @@ Social networks capturing who codes who who in a repository (not a software proj
 # How it works #
 
 It uses the commit logs of a git repository
-`$git log --pretty=format:"==%an;%ae;%ad=="  --name-only`
+```git log --pretty=format:"==%an;%ae;%ad=="  --name-only```
 
 - %an stands for author name
 - %ae stands for author email
@@ -39,7 +39,7 @@ Clone the Git repository you wish to mine with Social Network Analysis. Here is 
 
 ```
 git clone https://github.com/tensorflow/tensorflow.git
-cd tensorflow`
+cd tensorflow
 ```
 
 
@@ -92,20 +92,20 @@ What ScrapLogGit2Net does is to parse this time-stamps and associate developers 
 Note the example year covers almost 10 years of commit logs in the TensorFlow project. It might be wise to narrow down the time window you want to analyse.
 
 
-`$git log --pretty=format:"==%an;%ae;%ad=="  --name-only`
+```git log --pretty=format:"==%an;%ae;%ad=="  --name-only```
 
 In the following example you are checking commit logs between 1st and 4th of April 2021 
 
-`$git log --since='Apr 1 2021' --until='Apr 4 2021' --pretty=format:"==%an;%ae;%ad=="  --name-only`
-q
+```git log --since='Apr 1 2021' --until='Apr 4 2021' --pretty=format:"==%an;%ae;%ad=="  --name-only```
+
 And this example you check what developers did on 1st of April 2024
 
 
-`$git log --since='Mar 31 2024' --until='Apr 1 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only`
+```git log --since='Mar 31 2024' --until='Apr 1 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only```
 
 Finally, the last example foes to the tensor flow reposiutory and gets the data to study the  first trimester for 2024
 
-`cd tensorflow && git log --since='Jan 1 2024' --until='Mar 31 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog-first-trimester-2024.IN `
+```cd tensorflow && git log --since='Jan 1 2024' --until='Mar 31 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog-first-trimester-2024.IN ```
 
 
 - Now lets analyse some data.
@@ -161,6 +161,7 @@ OA- Possibliity to export both networks at individual and organizational level (
 - Colorize nodes by company affiliation automaticaly 
 - export with centrality layout
 - automatic circular and centrality analysis using networkX
+- stats on the files connecting people the most
 
 # Contributing 
 Branch and pull mode. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
