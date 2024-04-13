@@ -827,7 +827,7 @@ def main():
 
                 ### The filter listing emails to not be considered
 
-                if (FILTERING_MODE):
+                if (EMAIL_FILTERING_MODE):
                         try:
                                 with open(args.filter_emails, 'r') as ff:
                                         filter_file_content = ff.read().splitlines()
@@ -964,9 +964,44 @@ def main():
                 print_unique_connections()
                 
 
+        print ("")
+        print ("Populating main graph G_network_Dev2Dev_singleEdges")
+
+
+        G_network_Dev2Dev_singleEdges.add_edges_from(uniqueConnections)
+
+        print(Fore.GREEN+"\n:) 5th SUCESS - got Dev2Dev network with no parallel edges")
+        print(Style.RESET_ALL)
+
+        print("\t Number of nodes Dev2Dev network",G_network_Dev2Dev_singleEdges.number_of_nodes())
+        print("\t Number of edges Dev2Dev network",G_network_Dev2Dev_singleEdges.size())
+        print("\t Number of scrapped unique connections",len(uniqueConnections))
+
+        if (len(uniqueConnections) != G_network_Dev2Dev_singleEdges.size()):
+                print ("ERROR - The  uniqueConnections list of tuples does not match with the created Dev2Dev ")
+                exit()
+
+
+        if (EMAIL_FILTERING_MODE):
+                print ("")
+                print ("Removing the nodes and all adjacent edges for nodes in list_of_emails_to_filter:")
+
+                for email in list_of_emails_to_filter:
+                        print ("\t", email)
+                        "Note nodes ids in G_network_Dev2Dev_singleEdges are actual emails"
+                        "One node, one developer, one email"                        
+                        G_network_Dev2Dev_singleEdges.remove_node(email)
+
+                        print("\t Number of nodes Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.number_of_nodes())
+                        print("\t Number of edges Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.size())
+                        print("\t Number of scrapped unique connections before filtering by e-mail (i.e. len(uniqueConnections))",len(uniqueConnections))
+
+        "there should be not isolates"
+
+        exit()
 
         # User invoked the (-f argument to scrapLog.py)
-        if (FILTERING_MODE):
+        if (EMAIL_FILTERING_MODE):
 
                 uniqueConnections_filtered_by_email=[]
                 for connection in uniqueConnections:
@@ -988,6 +1023,8 @@ def main():
 
 
 
+        
+
 
         # for every author, get its affiliation. result will be saved in the  affiliation global dictionart
         getAffiliations()
@@ -995,7 +1032,7 @@ def main():
         #print("networked_affiliations="+networked_affiliations)
         
         
-        if (FILTERING_MODE == 1):
+        if (EMAIL_FILTERING_MODE):
                 "filter also the affilations dict as -f argument was passed"
 
                 "stores possible isolates that appear after fitering botes" 
@@ -1024,7 +1061,7 @@ def main():
         
         graphml_filename=Path(work_file).stem+graphmlOutputSufix
                 
-        if (FILTERING_MODE == 1):
+        if (EMAIL_FILTERING_MODE):
                 #print("\n uniqueFilteredConnections="+str(uniqueFilteredConnections))
                 #print("\n filtered_network_affiliations="+str(filtered_network_affiliations))
                 
