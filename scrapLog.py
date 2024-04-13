@@ -135,7 +135,7 @@ RAW_MODE = 0
 
 
 # Are we filtering according to -f parameter passed to ScrapLog ?
-FILTERING_MODE = 0 
+EMAIL_FILTERING_MODE = 0 
 
 
 def getAffiliationFromEmail(email):
@@ -707,19 +707,20 @@ def print_unique_connections():
 # Get the affiliations of all authors commiting code 
 # Author emails is its unique identifier
 def getAffiliations():
+    print ()   
     print ("Getting author affiliations from their unique email in changeLogData")
     for change in changeLogData:
         email = change[0][1]
         affiliations[email]= getAffiliationFromEmail(email)
 
-    print ("Getting networked-author affiliations from their unique email in changeLogData")
-    for connection in agreByConnWSF:
-        contributorsPair = connection[0]
-        fileName = connection[1]
+#    print ("Getting networked-author affiliations from their unique email in changeLogData")
+#    for connection in agreByConnWSF:
+#        contributorsPair = connection[0]
+#       fileName = connection[1]
 
-        (contr1, contr2 ) = contributorsPair
-        networked_affiliations [contr1] =  getAffiliationFromEmail(contr1)
-        networked_affiliations [contr2] =  getAffiliationFromEmail(contr2)
+#        (contr1, contr2 ) = contributorsPair
+#        networked_affiliations [contr1] =  getAffiliationFromEmail(contr1)
+#        networked_affiliations [contr2] =  getAffiliationFromEmail(contr2)
         
 
 # Pring the affiliation of each author 
@@ -728,9 +729,9 @@ def print_Affiliations():
     for author  in  affiliations:
         print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
-    print ("\nPrinting network-author affiliations:\n ")
-    for author  in  networked_affiliations:
-        print(("\t" + author + " is affiliatied with " + affiliations[author]))
+#    print ("\nPrinting network-author affiliations:\n ")
+#    for author  in  networked_affiliations:
+#        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 def reprocess():
@@ -764,7 +765,6 @@ def main():
         global agreByFileContributors
         global agreByConnWSF
         global affiliations
-        global networked_affiliations
         global uniqueConnections
 
         "e-mails that should not be considered when scrapping the git log"
@@ -1022,50 +1022,48 @@ def main():
                 print ("Removing the nodes and all adjacent edges for nodes in list_of_emails_to_filter:")
 
                 for email in list_of_emails_to_filter:
-                        print ("\t", email)
+                        print ("\t removing node", email)
                         "Note nodes ids in G_network_Dev2Dev_singleEdges are actual emails"
                         "One node, one developer, one email"
                         if G_network_Dev2Dev_singleEdges.has_node(email):
+                                "must remove the node, and all its edges shoud go as well"
+                                
+                                for adj in G_network_Dev2Dev_singleEdges.neighbors(email):
+                                        print("\t",email, " was connected to ", adj )
                                 G_network_Dev2Dev_singleEdges.remove_node(email)
+                                
 
                 print("")
                 print("\t Number of nodes Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.number_of_nodes())
                 print("\t Number of edges Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.size())
                 print("\t Number of scrapped unique connections before filtering by e-mail (i.e. len(uniqueConnections))",len(uniqueConnections))
 
-                "there should be not isolates"
+        "there should be not isolates"
+        if (DEBUG_MODE):
+                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0 ):
+                        print()
+                        print("\t Isolates found in Dev2Dev network of single edges")
+                        for i in nx.isolates(G_network_Dev2Dev_singleEdges):
+                                print ("\t",i," is isolated - no edges")
 
-        exit()
+        "there should be not isolates because you been filtering emails"
+        "imagine A connects to B and C, C is the only connection to C. If you remote A and its edges, C will get alone "
+        "So isolates should be removed after filtering by email or removing nodes in any other way" 
+        if (EMAIL_FILTERING_MODE == False):
+                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0):
+                        for isolate in isolates(G_network_Dev2Dev_singleEdges):
+                                G_network_Dev2Dev_singleEdges.remove_node(isolate)
 
-        # User invoked the (-f argument to scrapLog.py)
-        if (EMAIL_FILTERING_MODE):
-
-                uniqueConnections_filtered_by_email=[]
-                for connection in uniqueConnections:
-                        if connection[0] in filtered_emails:
-                                if (DEBUG_MODE):
-                                        print ("\t\t Filtering "+str(connection))
-                                continue
-                        if connection[1] in filtered_emails:
-                                if (DEBUG_MODE):
-                                        print ("\t\t Filtering "+str(connection))
-                                continue 
-                        uniqueConnections_filtered_by_email.append(connection)
-
-                "after filtering unique connections are fewer without the filtered connections"
-                uniqueConnections=uniqueConnections_filtered_by_email
-
-
-                print ("\n:) 4 + 1/2  SUCESS removed notes that are to be filtered (-f argument to scrapLog.py) ")
-
-
-
-        
-
+                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) != 0):
+                        print ("Error: failed to remove isolates after filtering by email")
+                        exit(1)
 
         # for every author, get its affiliation. result will be saved in the  affiliation global dictionart
         getAffiliations()
 
+
+        exit()
+        
         #print("networked_affiliations="+networked_affiliations)
         
         

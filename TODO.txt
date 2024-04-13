@@ -1,3 +1,5 @@
+Test if all nodes are in array of affilations
+
 There is error at writing connections with graphML. Not for notes !!
 Use export report data for edges and nodes. input two separate files
 
