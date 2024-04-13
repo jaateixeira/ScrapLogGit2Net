@@ -15,10 +15,10 @@ NC=$(tput sgr0)
 
 echo "" 
 echo "Testing with test-data/tensorFlowGitLog-3-commits-0-edges.IN" 
-echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-0-edges.IN >> testResults.tmp"
+echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp"
 
 
-./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-0-edges.IN >> testResults.tmp
+./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp
 #echo "Last line of output shoul be:"
 #echo "Output should be ERROR collaboration tuplesList is empty !!"
 lastline=$(tail -n1 testResults.tmp)
@@ -50,10 +50,10 @@ rm testResults.tmp
 
 echo "" 
 echo "Testing with test-data/tensorFlowGitLog-3-commits-1-edges.IN" 
-echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN >> testResults.tmp"
+echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN > testResults.tmp"
 
 
-./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN >> testResults.tmp
+./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN > testResults.tmp
 #echo "Last line of output shoul be:"
 #echo "Output should be"
 lastline=$(tail -n1 testResults.tmp)
@@ -97,7 +97,7 @@ echo ""
 
 
 if [ "$actualHeader" == "$GraphMLHeader" ]; then 
-   echo "${GREEN}TESTCASE 2.3 - $GraphMLFILE have a good header"
+   echo "${GREEN}TESTCASE 2.3 - $GraphMLFILE have a good header${NC}"
 else 
    echo "${RED}TESTCASE 2.3 did not pass${NC}"
    echo "$GraphMLFILE with wrong header" 
@@ -109,7 +109,7 @@ fi
 echo ""
 
 if grep -q '<data key="d0">olupton@nvidia.com</data>' "$GraphMLFILE"; then
-    echo "${GREEN}TESTCASE 2.4 - $GraphMLFILE have the olupton@nvidia.com node as expected"
+    echo "${GREEN}TESTCASE 2.4 - $GraphMLFILE have the olupton@nvidia.com node as expected${NC}"
 else 
     echo "${RED}TESTCASE 2.4 did not pass${NC}"
 fi
@@ -117,7 +117,7 @@ fi
 echo "" 
 
 if grep -q '<data key="d0">lawrencews@google.com</data>' "$GraphMLFILE"; then
-    echo "${GREEN}TESTCASE 2.5 - $GraphMLFILE have the lawrencews@google.com node as expected"
+    echo "${GREEN}TESTCASE 2.5 - $GraphMLFILE have the lawrencews@google.com node as expected${NC}"
 else 
     echo "${RED}TESTCASE 2.5 did not pass${NC}"
 fi
@@ -127,7 +127,7 @@ echo ""
 # Test if edges are correct
 
 if grep -q '<edge id="e0" source="0" target="1"/>' "$GraphMLFILE"; then
-    echo "${GREEN}TESTCASE 2.6 - $GraphMLFILE have the the expected edge connecting two nodes"
+    echo "${GREEN}TESTCASE 2.6 - $GraphMLFILE have the the expected edge connecting two nodes${NC}"
 else 
     echo "${RED}TESTCASE 2.6 did not pass${NC}"
 fi
@@ -140,14 +140,63 @@ cmdOutput=$(tail -1  $GraphMLFILE)
 
 
 if [ "$cmdOutput" == '</graph></graphml>' ]; then
-    echo "${GREEN}TESTCASE 2.7 - $GraphMLFILE ends in the proper way with </graphml>"
+    echo "${GREEN}TESTCASE 2.7 - $GraphMLFILE ends in the proper way with </graphml>${NC}"
 else 
     echo "${RED}TESTCASE 2.7 did not pass - Wrong ending of $GraphMLFILE ${NC}"
 fi
 
 
 
-lastline=$(tail -n1 testResults.tmp)
+# TEST CASE 3
+# Input with the tensorFlowGitLog-first-trimester-2024.IN
+
+
+echo "" 
+echo "Testing with tensorFlowGitLog-first-trimester-2024.IN - 32659 lines"
+echo "Should capture colllaboration between during first trimester 2024 in TensorFlow "
+echo "Should also filter the bots and emails listed in test-configurations/TensorFlowBots.txt"
+echo "./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN -f test-configurations/TensorFlowBots.txt > testResults.tmp"
+
+
+./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN -f test-configurations/TensorFlowBots.txt > testResults.tmp 
+
+echo""
+
+if grep -q 'analized changelog blocks \[4431\]' testResults.tmp; then
+    echo "${GREEN}TESTCASE 3.1 - analized changelog blocks [4431] as expected${NC}"
+else 
+    echo "${RED}TESTCASE 3.1 did not pass - unexpected number of changelog blocks${NC}"
+fi
+
+
+echo""
+
+if grep -q 'Number of files affected by the commits reported by change log\[8467\]' testResults.tmp; then
+    echo "${GREEN}TESTCASE 3.2 - number of changed files [8467] as expected${NC}"
+else 
+    echo "${RED}TESTCASE 3.2 did not pass - unexpected number of changed files${NC}"
+fi
+
+echo""
+
+
+echo""
+
+if grep -q 'Number of nodes/authors = 279' testResults.tmp; then
+    echo "${GREEN}TESTCASE 3.3 - number of nodes [279] as expected${NC}"
+else 
+    echo "${RED}TESTCASE 3.3 did not pass - unexpected number of nodes${NC}"
+fi
+
+echo""
+
+if grep -q 'Number of unique edges/collaborations (do not include repetitions of the same collaborations) = 3363' testResults.tmp; then
+    echo "${GREEN}TESTCASE 3.4 - number of edges [3363] as expected${NC}"
+else 
+    echo "${RED}TESTCASE 3.4 did not pass - unexpected number of edges ${NC}"
+fi
+
+
 
 
 
