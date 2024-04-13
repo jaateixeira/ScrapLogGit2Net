@@ -126,10 +126,14 @@ fi
 echo "" 
 # Test if edges are correct
 
+
 if grep -q '<edge id="e0" source="0" target="1"/>' "$GraphMLFILE"; then
     echo "${GREEN}TESTCASE 2.6 - $GraphMLFILE have the the expected edge connecting two nodes${NC}"
 else 
     echo "${RED}TESTCASE 2.6 did not pass${NC}"
+    echo '   expecting <edge id="e0" source="0" target="1"/>'
+    echo "   please check check the edges in  tensorFlowGitLog-3-commits-1-edge.NetworkFile.graphML"
+    
 fi
 
 
@@ -200,7 +204,7 @@ fi
 
 
 rm testResults.tmp
-rm $GraphMLFILE
+#rm $GraphMLFILE
 
 
 

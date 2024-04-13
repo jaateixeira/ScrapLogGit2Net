@@ -1038,6 +1038,19 @@ def main():
                 print("\t Number of edges Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.size())
                 print("\t Number of scrapped unique connections before filtering by e-mail (i.e. len(uniqueConnections))",len(uniqueConnections))
 
+                "there should be now isolates because you been filtering emails"
+                "imagine A connects to B and C, C is the only connection to C. If you remote A and its edges, C will get alone "
+                "So isolates should be removed after filtering by email or removing nodes in any other way" 
+                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0):
+                        array_of_nodes_to_be_removed =[]
+                        for node_to_go in nx.isolates(G_network_Dev2Dev_singleEdges):
+                                array_of_nodes_to_be_removed.append(node_to_go)
+                        G_network_Dev2Dev_singleEdges.remove_nodes_from(array_of_nodes_to_be_removed)
+
+                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) != 0):
+                        print ("Error: failed to remove isolates after filtering by email")
+                        exit(1)
+
         "there should be not isolates"
         if (DEBUG_MODE):
                 if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0 ):
@@ -1046,66 +1059,34 @@ def main():
                         for i in nx.isolates(G_network_Dev2Dev_singleEdges):
                                 print ("\t",i," is isolated - no edges")
 
-        "there should be not isolates because you been filtering emails"
-        "imagine A connects to B and C, C is the only connection to C. If you remote A and its edges, C will get alone "
-        "So isolates should be removed after filtering by email or removing nodes in any other way" 
-        if (EMAIL_FILTERING_MODE == False):
-                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0):
-                        for isolate in isolates(G_network_Dev2Dev_singleEdges):
-                                G_network_Dev2Dev_singleEdges.remove_node(isolate)
-
-                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) != 0):
-                        print ("Error: failed to remove isolates after filtering by email")
-                        exit(1)
-
-        # for every author, get its affiliation. result will be saved in the  affiliation global dictionart
+        # for every author, get its affiliation. result will be saved in the  affiliations global dictionart
         getAffiliations()
 
-
-        exit()
         
-        #print("networked_affiliations="+networked_affiliations)
-        
-        
-        if (EMAIL_FILTERING_MODE):
-                "filter also the affilations dict as -f argument was passed"
+        # Time to test that every node in our graph as an affiliation in the global dicionary
+        # And at same time we add affiliation as a node and email also as atribute, 
 
-                "stores possible isolates that appear after fitering botes" 
-                onesNotCodingAlone=[]
-                
-                for id1, id2 in uniqueFilteredConnections:
-                        if id1 not in onesNotCodingAlone:
-                                onesNotCodingAlone.append(id1)
-                        if id2 not in onesNotCodingAlone:
-                                onesNotCodingAlone.append(id2)
-                
-                def my_filtering_function(pair):
-                        unwanted_keys  = filtered_emails
-                        key, value = pair
+        for node in G_network_Dev2Dev_singleEdges.nodes():
+                if (node not in globals()['affiliations']):
+                        print ("Error: There are nodes without a correspondent affiliation in the dictionary retrived by scrapLog")
+                        exit()
+                G_network_Dev2Dev_singleEdges.nodes[node]['affiliation']= globals()['affiliations'][node]
+                G_network_Dev2Dev_singleEdges.nodes[node]['e-mail']= node
 
-                        if key not in onesNotCodingAlone:
-                                return False
 
-                        if key in unwanted_keys:
-                                return False  # keep pair out of  filtered dictionary
-                        else:
-                                return True  # filter pair in  the dictionary
- 
-                filtered_network_affiliations = dict(filter(my_filtering_function, networked_affiliations.items()))
- 
+        print ("All fine so far, time to export results to graphML file")
         
         graphml_filename=Path(work_file).stem+graphmlOutputSufix
-                
-        if (EMAIL_FILTERING_MODE):
-                #print("\n uniqueFilteredConnections="+str(uniqueFilteredConnections))
-                #print("\n filtered_network_affiliations="+str(filtered_network_affiliations))
-                
-                exportLogData.createGraphML(uniqueFilteredConnections,filtered_network_affiliations,graphml_filename)
-        else: 
-                exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphml_filename)
 
                 
-        print ("\n:) 5th SUCESS in exporting  qnetwork to GraphML file:"+graphml_filename)
+
+
+        exportLogData.createGraphML(G_network_Dev2Dev_singleEdges,graphml_filename)
+      
+       
+
+        print(Fore.GREEN+"\n:) 6th SUCESS - in exporting  qnetwork to GraphML file:"+graphml_filename)
+        print(Style.RESET_ALL)
         
 
                 

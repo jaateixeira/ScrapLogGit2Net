@@ -9,7 +9,7 @@ import sys
 import re
 import csv
 from datetime import * 
-
+import networkx as nx
 import exportGraphml
 
 # Replace '@' and '.' by "AT" and "DOT" 
@@ -200,7 +200,7 @@ def createAtributesByCoreFileCSV(logData , outFileName):
 
 # export the grapth node and edges to GraphML format 
 # Must be readable by Visione
-def createGraphML(tuplesList,affiliations,outFileName):
+def createGraphML(network_with_affiliation_atributes :nx.Graph ,outFileName :str):
     # iterator for nAf  
 
     print ("")    
@@ -208,21 +208,36 @@ def createGraphML(tuplesList,affiliations,outFileName):
     
     
     # verify arguments data
-    ## verify tuplesList 
-    
-    if type(tuplesList) != list :
-        print ("\tERROR collaboration tuplesList is not a list !!")
-        exit()
-    if len(tuplesList) < 1 :
-        print ("\tERROR collaboration tuplesList is empty !!")
-        exit()
+    ## verify graph/network 
 
-    ## verify affiliations 
-    #print ("\tCreateGraphMLaffiliations"+str(affiliations))
     
-    if type(affiliations) != dict:
-        print ("\tERROR affiliations are not a dictionary. Invalid format !!")
-        exit()
+    if network_with_affiliation_atributes.order() < 2:
+        print ("\tERROR network have less than two nodes !!")
+        exit(1)
+
+    if network_with_affiliation_atributes.size() < 1:
+        print ("\tERROR network have less than one edge !!")
+        exit(1)
+
+        
+    ## verify affiliations 
+
+    "verify every node as affiliation data"
+
+
+    for node, data in network_with_affiliation_atributes.nodes(data=True):
+        if len(data['affiliation']) == 0:
+            print ("invalid affiliation atribute")
+            print (node)
+            print (data['affiliation'])
+            exit(1)
+        if 'affiliation' not in data.keys():
+            print ("affiliation atribute is missing")
+            print (node)
+            print (data['affiliation'])
+            exit(1)
+
+
 
     ## verify outFilename
     if type(outFileName) != str:
@@ -260,53 +275,44 @@ def createGraphML(tuplesList,affiliations,outFileName):
     
     # store the nodes id for each email/contributor
     tmpNodeId = {} 
+
+
+    "for now all colors are turquoise"
     
-    # interate over nodes
-    nAf = 0
-    for af in affiliations.items():
-        email = af[0]
-        afl = af[1]
-        print(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
-        gfile.writelines(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
-        tmpNodeId[email]=nAf
-        nAf+=1
 
 
-    # interate over the edges list and remove duplicates
-    uniqueConnections = []
+    print ()
+    print ("\t\tWriting nodes in graphML file")
+    node_id = 0
+    for node, data in network_with_affiliation_atributes.nodes(data=True):
+        email=node
+        afl=data['affiliation']
+        #print(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
+        gfile.writelines(exportGraphml.addNode(node_id,[(0,email),(1,"turquoise"),(2,afl)]))
+        # Give a each node and numeric id atribute data as well 
+        network_with_affiliation_atributes.nodes[node]['id']= node_id
+        node_id+=1
+
+
+    print ()
+    print ("\t\tWriting edges in graphML file")
     
-    for connection in tuplesList:
-        #print ("connection="+str(connection))
-        ((author1, author2)) = connection
-
-        # Do not consider if author1 or author2 been already connected 1->2 or 2-< 1 
-        if (author1, author2) not in uniqueConnections and (author2, author1) not in uniqueConnections:
-            uniqueConnections.append((author1, author2))
-        #else:
-            #print(str((author1, author2)) + " already on the list of unique connections")
+    nTup=0
+    for edge in network_with_affiliation_atributes.edges():
+        nodeIdFrom = network_with_affiliation_atributes.nodes[edge[0]]['id']
+        nodeIdTo = network_with_affiliation_atributes.nodes[edge[1]]['id']
+        #print("edge=",edge)
+        #print("edge via id=",nodeIdFrom,nodeIdTo)
         
-    print(("uniqueConnections=[" + str(uniqueConnections) + "]"))
-
-    # interate over the unique edges list 
-    nTup = 0 
-    for emailFrom, emailTo in uniqueConnections:
-        nodeIdFrom = tmpNodeId[emailFrom]
-        nodeIdTo = tmpNodeId[emailTo]
-        #print((exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo)))
+        
+        #print(exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
         gfile.writelines(exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
-        nTup+=1 
+        nTup+=1
 
-        # There should be no arcs between the same mail/node/developer 
-        if emailFrom == emailTo:
+        if edge[0] == edge[1]:
             print ("\t ERROR arc between the same mail/node/developer")
             print(("\t edge=["+str(edge)+"]"))
-            sys.exit()
-        # There should be no arcs between the same mail/node/developer 
-        if nodeIdFrom == nodeIdTo:
-            print ("\t ERROR arc between the same nodeid/developer")
-            print(("\t edge=["+str(edge)+"]"))
-            sys.exit()
-            
+            sys.exit()            
     
     # Close grapth
     gfile.writelines(exportGraphml.graph_closer)
