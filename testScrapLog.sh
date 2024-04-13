@@ -59,21 +59,35 @@ echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN >> testRe
 echo "Last line of output shoul be:"
 echo "Output should be"
 lastline=$(tail -n1 testResults.tmp)
-expectedLastLine="ERROR "
+expectedLastLine="Number of unique collaborations (i.e., network edges)[1]"
 
-#echo lastline=[$lastline]
-#echo expextedLastLine=[$expectedLastLine]
+echo lastline=[$lastline]
+echo expextedLastLine=[$expectedLastLine]
 
-# Test if "ERROR collaboration tuplesList is empty" is on the last line of the scrapLog STDOUT 
+# Test if the number of unique collaborations is only one on the last line of the scrapLog STDOUT 
 
 echo 
 if [[  "$lastline" =~ "$expectedLastLine" ]]; then
-    echo "${GREEN}TESTCASE 1 passed${NC}"
+    echo "${GREEN}TESTCASE 2 - last line test passed${NC}"
 else
-    echo "${RED}TESTCASE 1 did not pass${NC}"
+    echo "${RED}TESTCASE 2 did not pass${NC}"
     echo "ScrapLog should end with 'ERROR collaboration tuplesList is empty expected'"
     
 fi
 
+# Test if tensorFlowGitLog-3-commits-1-edge.NetworkFile.graphML was created
+GraphMLFILE="tensorFlowGitLog-3-commits-1-edge.NetworkFile.graphML"
+if test -f "$GraphMLFILE"; then
+    echo "${GREEN}TESTCASE 2 - $GraphMLFILE exists ${NC}"
+else
+        echo "${RED}TESTCASE 2 did not pass${NC}"
+    echo "$GraphMLFILE not created" 
+fi
+
+
 echo 
 rm testResults.tmp
+rm $GraphMLFILE
+
+
+
