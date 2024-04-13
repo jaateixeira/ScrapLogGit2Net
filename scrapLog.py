@@ -18,7 +18,8 @@ import argparse
 from pathlib import Path
 import networkx as nx
 from colorama import Fore, Back, Style
-
+import numpy as np
+from itertools import groupby
 
 try:
 	import six.moves.cPickle as pickle
@@ -168,7 +169,7 @@ def getAffiliationFromEmail(email):
                 print ("Warning, ibm affiliation from multiple domains")
         
         if match[0] not in ibm_email_domains_prefix:
-            print ("ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
+            print ("ERROR, ibm affilition from an unknown domain, check ibm_email_domain glob")
             print(("email=["+email+"]"))
             print(("match[0]=["+str(match[0])+"]"))
             sys.exit()
@@ -257,8 +258,9 @@ def getDateEmailAffiliation(line):
         elif '@' not in line:
                 print ("WARNING exceptional code commit header Exception 5 ")
                 print ("\t Commit header with no email[",line,"]" )
-                "better return unknown@email - can be added to filter argument file " 
-                return ('XXX XXX 00 0000','unknown@email','unknown-affiliation')
+                "better return unknown@email - can be added to filter argument file "
+                "I also return  datetime.now() as a uniqye identifier to be sure that this block can be used for associating developers "
+                return (datetime.now(),'unknown@email'+datetime.now(),'unknown-affiliation'+datetime.now())
 
             
         # anything else ERROR with imput or this code
@@ -530,7 +532,7 @@ def print_agreByFileContributors():
             print(("[" + email + "]"))
 
 
-# print a list of contributor connected to each other cause they worked on a common files
+# print a list of contributors connected to each other cause they worked on a common files
 def print_agreByConnWSF():
     #print (str(agreByConnWSF))
 
@@ -539,12 +541,43 @@ def print_agreByConnWSF():
     #format more a less like this [(a-b),file)]
 
     
-    for connection in agreByConnWSF:
+    for connection in globals()["agreByConnWSF"]:
         contributorsPair = connection[0]
         fileName = connection[1]
         
         print(("Contributors " + str (contributorsPair) + " connected by collaborating on file [" + fileName + "]"))
 
+
+
+# print a list of the files that were most recurrently co-edited by the developers 
+def print_top_20_files_by_ConnWSF():
+        #print (str(agreByConnWSF))
+
+        print ("")
+        print("Printing the files thare were most recurrently co-edited by the developers") 
+
+        list_of_all_coedited_files = [] 
+        for connection in globals()["agreByConnWSF"]:
+                contributorsPair = connection[0]
+                fileName = connection[1]
+                list_of_all_coedited_files.append(fileName)
+        
+        
+        #print("list_of_all_coedited_files=",list_of_all_coedited_files)
+
+        # Counts and gets rid of duplicates
+        filename_by_n_coedits = {value: len(list(freq)) for value, freq in groupby(sorted(list_of_all_coedited_files))}
+
+        filename_sorted_by_n_coedits = (sorted(filename_by_n_coedits.items(),reverse = True, key=lambda item: item[1]))
+
+        if len(filename_sorted_by_n_coedits) >= 20:
+                for git_log_file_name, n in filename_sorted_by_n_coedits[:20]:
+                        print ("\t",git_log_file_name,"co.edited ",n," times")
+        else:
+                for git_log_file_name, n in filename_sorted_by_n_coedits:
+                        print ("\t",git_log_file_name,"co.edited ",n," times")
+
+        
 
 # Agregate by file and its contributors
 def agregateByFileItsContributors():
@@ -951,7 +984,9 @@ def main():
         if (DEBUG_MODE):
                 print_agreByConnWSF()
 
-
+        # report the top 20 files co-edited the most
+        print_top_20_files_by_ConnWSF()
+        
 
         # agreate an list of authors that worked on the each files (do not repeat author tuples)
         # For getting unique edges/collaborations (do not include repetitions of the same collaborations)
@@ -989,14 +1024,16 @@ def main():
                 for email in list_of_emails_to_filter:
                         print ("\t", email)
                         "Note nodes ids in G_network_Dev2Dev_singleEdges are actual emails"
-                        "One node, one developer, one email"                        
-                        G_network_Dev2Dev_singleEdges.remove_node(email)
+                        "One node, one developer, one email"
+                        if G_network_Dev2Dev_singleEdges.has_node(email):
+                                G_network_Dev2Dev_singleEdges.remove_node(email)
 
-                        print("\t Number of nodes Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.number_of_nodes())
-                        print("\t Number of edges Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.size())
-                        print("\t Number of scrapped unique connections before filtering by e-mail (i.e. len(uniqueConnections))",len(uniqueConnections))
+                print("")
+                print("\t Number of nodes Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.number_of_nodes())
+                print("\t Number of edges Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.size())
+                print("\t Number of scrapped unique connections before filtering by e-mail (i.e. len(uniqueConnections))",len(uniqueConnections))
 
-        "there should be not isolates"
+                "there should be not isolates"
 
         exit()
 
