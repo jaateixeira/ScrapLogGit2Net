@@ -113,9 +113,8 @@ top_10_colors = {
     'inailuig': 'gray',
     'bytedance': 'gray',
     'qq': 'gray',
-    'hotmail', 'gray',
+    'hotmail': 'gray',
     'tensorflow': 'white',
-    '
     
 }
 

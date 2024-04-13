@@ -1,7 +1,6 @@
-Test if all nodes are in array of affilations
+Check networkmezure unique connections
+So slow. move 
 
-There is error at writing connections with graphML. Not for notes !!
-Use export report data for edges and nodes. input two separate files
 
 Adress the @users.noreply.github.com non verified users
 See https://github.com/orgs/community/discussions/41199
