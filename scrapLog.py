@@ -15,6 +15,11 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import itertools
 import argparse
+from pathlib import Path
+import networkx as nx
+from colorama import Fore, Back, Style
+import numpy as np
+from itertools import groupby
 
 try:
 	import six.moves.cPickle as pickle
@@ -26,30 +31,53 @@ import exportLogData
 import networkMeasures 
 
 
-print(("Executing " + str(sys.argv))) 
+print(("Executing " + str(sys.argv)))
+
 
 # Global parameters 
 
 networkOutput = "NetworkOutput.file1.CSV"
 atributesOutput = "AtributesOutput.file2.CSV"
-graphmlOutput= "NetworkFile.graphML"
+graphmlOutputSufix= ".NetworkFile.graphML"
+
+# Global structures
+
+## Socal network aka Graph on who works with who - unweighted - does not matter how many times developers recurrently co-edit same files (aka cooperate)
+## Individual/Developer/Bot level
+
+# Inter individual network - edges are unweighted 
+# Stores nodes and edges with optional data, or attributes. Holds undirected edges. Self loops are allowed but multiple (parallel) edges are not.
+G_network_Dev2Dev_singleEdges = nx.Graph()
+
+# Inter individual network - edges can be weighted (using edge-attributes)
+# Stores nodes and edges with optional data, or attributes. Holds undirected edges. Self loops and  multiple (parallel) edges are allowed.
+# Multiedges are multiple edges between two nodes. Each edge can hold optional data or attributes.
+G_network_Dev2Dev_multiEdges = nx.MultiGraph()
+
+# Inter organizational network - edges are eighted - eights are atributed by on how many developers cooperated between two companies 
+# Stores nodes and edges with optional data, or attributes. Holds undirected edges. Self loops are allowed but multiple (parallel) edges are not.
+G_network_Org2Org_singleEdges = nx.Graph()
 
 
-# Global structures 
+# Inter organizational network - edges are  not eighted. 
+# Stores nodes and edges with optional data, or attributes. Holds undirected edges.
+# Self loops and  multiple (parallel) edges are allowed.
+# Multiedges are multiple edges between two nodes. Each edge can hold optional data or attributes.
+G_network_Org2Org_singleEdges = nx.MultiGraph()
 
-# Keeps statistics of the scrappping 
+
+## Keeps statistics of the scrappping 
 stats = {'nlines': 0, 'nBlocks' :0 , 'nBlocksChagingCode':0, 'nBlocksNotChangingCode':0 , 'nChangedFiles':0}
 
-# Keeps data as inially scrapped [(date, email, affilition), [files changed]]
-# The one that can be saved , the only data structure keeping date information 
+## Keeps data as inially scrapped [(date, email, affilition), [files changed]]
+## The one that can be saved , the only data structure keeping date information 
 changeLogData = []
 
 # Will keep agrregated data of authors that changed the same (file,[list of contributors changing it])
 agreByFileContributors = {}
 
-
 # Will keep agregated tuples of authors connecting due to working on a common file [(a-b),file)]
-
+# It is from here that we will extract the networks to  G_network_Dev2Dev_singleEdges and G_network_Dev2Dev_multiEdges
 agreByConnWSF = []
 
 # Will keep unique tuples of authors connected due to workin on common file. no repetitions for (a-b),(a-b) or (a-b),(b-a)
@@ -62,7 +90,6 @@ uniqueConnections =[]
 uniqueFilteredConnections =[]
 
 
-
 # Will keep a dictionary author afiliation i.e affiliation[mike@google.com]=google.com
 affiliations = {}
 
@@ -70,11 +97,16 @@ affiliations = {}
 # Drops authors that do not connect with others
 networked_affiliations = {}
 
-
 # Will keep the emails that should be filter
 # Note its more efficient to just not filter while scrapping, but filtering while checking for unique tuples (i.e., edges or connections)
 # This because is slow to check if x is member of a list all the time
-fitered_emails = {}
+list_of_emails_to_filter = [] 
+
+
+# Will keep the files that should be not considered
+# Note its efficient to just filter while scrapping, because then there are less  (i.e., edges or connections) to process 
+# This because is slow to check if x is member of a list all the time
+list_of_files_to_filter = []
 
 
 # TODO Merge into org agregator 
@@ -103,7 +135,7 @@ RAW_MODE = 0
 
 
 # Are we filtering according to -f parameter passed to ScrapLog ?
-FILTERING_MODE = 0 
+EMAIL_FILTERING_MODE = 0 
 
 
 def getAffiliationFromEmail(email):
@@ -137,7 +169,7 @@ def getAffiliationFromEmail(email):
                 print ("Warning, ibm affiliation from multiple domains")
         
         if match[0] not in ibm_email_domains_prefix:
-            print ("ERROR, ibm affilition from an unknow domain, check ibm_email_domain glob")
+            print ("ERROR, ibm affilition from an unknown domain, check ibm_email_domain glob")
             print(("email=["+email+"]"))
             print(("match[0]=["+str(match[0])+"]"))
             sys.exit()
@@ -226,8 +258,9 @@ def getDateEmailAffiliation(line):
         elif '@' not in line:
                 print ("WARNING exceptional code commit header Exception 5 ")
                 print ("\t Commit header with no email[",line,"]" )
-                "better return unknown@email - can be added to filter argument file " 
-                return ('unknown','unknown@email','unknown')
+                "better return unknown@email - can be added to filter argument file "
+                "I also return  datetime.now() as a uniqye identifier to be sure that this block can be used for associating developers "
+                return (datetime.now(),'unknown@email'+datetime.now(),'unknown-affiliation'+datetime.now())
 
             
         # anything else ERROR with imput or this code
@@ -499,7 +532,7 @@ def print_agreByFileContributors():
             print(("[" + email + "]"))
 
 
-# print a list of contributor connected to each other cause they worked on a common files
+# print a list of contributors connected to each other cause they worked on a common files
 def print_agreByConnWSF():
     #print (str(agreByConnWSF))
 
@@ -508,12 +541,43 @@ def print_agreByConnWSF():
     #format more a less like this [(a-b),file)]
 
     
-    for connection in agreByConnWSF:
+    for connection in globals()["agreByConnWSF"]:
         contributorsPair = connection[0]
         fileName = connection[1]
         
         print(("Contributors " + str (contributorsPair) + " connected by collaborating on file [" + fileName + "]"))
 
+
+
+# print a list of the files that were most recurrently co-edited by the developers 
+def print_top_20_files_by_ConnWSF():
+        #print (str(agreByConnWSF))
+
+        print ("")
+        print("Printing the files thare were most recurrently co-edited by the developers") 
+
+        list_of_all_coedited_files = [] 
+        for connection in globals()["agreByConnWSF"]:
+                contributorsPair = connection[0]
+                fileName = connection[1]
+                list_of_all_coedited_files.append(fileName)
+        
+        
+        #print("list_of_all_coedited_files=",list_of_all_coedited_files)
+
+        # Counts and gets rid of duplicates
+        filename_by_n_coedits = {value: len(list(freq)) for value, freq in groupby(sorted(list_of_all_coedited_files))}
+
+        filename_sorted_by_n_coedits = (sorted(filename_by_n_coedits.items(),reverse = True, key=lambda item: item[1]))
+
+        if len(filename_sorted_by_n_coedits) >= 20:
+                for git_log_file_name, n in filename_sorted_by_n_coedits[:20]:
+                        print ("\t",git_log_file_name,"co.edited ",n," times")
+        else:
+                for git_log_file_name, n in filename_sorted_by_n_coedits:
+                        print ("\t",git_log_file_name,"co.edited ",n," times")
+
+        
 
 # Agregate by file and its contributors
 def agregateByFileItsContributors():
@@ -643,19 +707,20 @@ def print_unique_connections():
 # Get the affiliations of all authors commiting code 
 # Author emails is its unique identifier
 def getAffiliations():
+    print ()   
     print ("Getting author affiliations from their unique email in changeLogData")
     for change in changeLogData:
         email = change[0][1]
         affiliations[email]= getAffiliationFromEmail(email)
 
-    print ("Getting networked-author affiliations from their unique email in changeLogData")
-    for connection in agreByConnWSF:
-        contributorsPair = connection[0]
-        fileName = connection[1]
+#    print ("Getting networked-author affiliations from their unique email in changeLogData")
+#    for connection in agreByConnWSF:
+#        contributorsPair = connection[0]
+#       fileName = connection[1]
 
-        (contr1, contr2 ) = contributorsPair
-        networked_affiliations [contr1] =  getAffiliationFromEmail(contr1)
-        networked_affiliations [contr2] =  getAffiliationFromEmail(contr2)
+#        (contr1, contr2 ) = contributorsPair
+#        networked_affiliations [contr1] =  getAffiliationFromEmail(contr1)
+#        networked_affiliations [contr2] =  getAffiliationFromEmail(contr2)
         
 
 # Pring the affiliation of each author 
@@ -664,9 +729,9 @@ def print_Affiliations():
     for author  in  affiliations:
         print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
-    print ("\nPrinting network-author affiliations:\n ")
-    for author  in  networked_affiliations:
-        print(("\t" + author + " is affiliatied with " + affiliations[author]))
+#    print ("\nPrinting network-author affiliations:\n ")
+#    for author  in  networked_affiliations:
+#        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
 # Reprocess all variables from changeLogData
 def reprocess():
@@ -700,19 +765,24 @@ def main():
         global agreByFileContributors
         global agreByConnWSF
         global affiliations
-        global networked_affiliations
         global uniqueConnections
 
         "e-mails that should not be considered when scrapping the git log"
-        "passed as an argument to scrapLog.py"
-        global filtered_emails
+        "passed as an argument to scrapLog.py with -fe"
+        global list_of_emails_to_filter
 
+        "files that should not be considered when scrapping the git log"
+        "passed as an argument to scrapLog.py with -ff"
+        global list_of_files_to_filter 
+
+        
         "modes reflecting arguments passed to scrapLog.py"
         global SAVE_MODE
         global RAW_MODE
         global LOAD_MODE
         global DEBUG_MODE
-        global FILTERING_MODE
+        global EMAIL_FILTERING_MODE
+        global FILE_FILTERING_MODE
 
         ## Process the arguments 
         # -s for serialized save (already provessed changeLog)
@@ -722,45 +792,61 @@ def main():
         parser.add_argument('-l','--lser',action='store', type=str, help='loads and processes an serialized changelog')
         parser.add_argument('-r','--raw', action='store', type=str, help='processes from a raw git changelog')
         parser.add_argument('-s','--sser',action='store', type=str, help='processses from a raw git changelog and saves it into a serialized changelog. Requires -r for imput')
-        parser.add_argument('-f','--filter',action='store', type=str, help='ignores the emails listed in a text file (one email per line)')
+        parser.add_argument('-fe','--filter_emails',action='store', type=str, help='ignores the emails listed in a text file (one email per line)')
+        parser.add_argument('-ff','--filter_files',action='store', type=str, help='ignores the files listed in a text file (one email per line)')
         parser.add_argument("-v", "--verbose", help="increased output verbosity", action="store_true") 
 
         args = parser.parse_args()
 
         if args.verbose:
+                print()
                 print("verbosity turned on")
-                DEBUG_MODE=1
+                DEBUG_MODE=True 
 
-        if args.filter:
+        if args.filter_emails:
+                print()
                 print("Filtering (ignoring given emails) turned on")
-                FILTERING_MODE=1
-        else:
-                FILTERING_MODE=0
+                EMAIL_FILTERING_MODE=True 
+
+        if args.filter_files:
+                print()
+                print("Filtering (ignoring given emails) turned on - but not implemented yet")
+                FILE_FILTERING_MODE=True
+                exit(1)
 
         if args.lser:
+                print()
                 print(("loanding and processing [lser=",args.lser,"]"))
                 print ("not implmented yet")
-                LOAD_MODE=1 
+                LOAD_MODE=True 
                 RAW_MODE=0
                 SAVE_MODE=0
+                
         elif args.sser and args.raw:
-                print(("processing [raw=",args.raw,"]", " and saving [sser=", args.sser, "]"))
-                SAVE_MODE=1
-                RAW_MODE=1
-                LOAD_MODE=0 
+                print()
+                print("processing [raw=",args.raw,"]", " and saving [sser=", args.sser, "]")
+                SAVE_MODE=True 
+                RAW_MODE=True 
+                LOAD_MODE=0
+                
         elif args.raw:
-                RAW_MODE=1
+                RAW_MODE=True 
                 LOAD_MODE=0
                 SAVE_MODE=0
-                print(("processing [raw=",args.raw,"]"))
+                print ()
+                print("processing [raw=",args.raw,"]")
         else: 
                 print ("unrecognized argumets ... see --help")
                 sys.exit()
 
-        if (RAW_MODE == 1):
-                ##  if we are not in load mode, we need to strap the log	
+        if (RAW_MODE):
+                ##  if we are not in load mode, we need to strap the log
+                print ()
                 print(("Scrapping changeLog from ", args.raw ))
+
                 t0 = datetime.now()
+
+                print()
                 print(("STARTING the scrap of changeLog file " + args.raw + " on " +  str(t0)))
 
 
@@ -774,15 +860,11 @@ def main():
 
                 ### The filter listing emails to not be considered
 
-
-                if (FILTERING_MODE == 1):
-                        filter_file= args.filter 
-                        
-
+                if (EMAIL_FILTERING_MODE):
                         try:
-                                with open(filter_file, 'r') as ff:
+                                with open(args.filter_emails, 'r') as ff:
                                         filter_file_content = ff.read().splitlines()
-                                print ("\t Reading filter file " + filter_file)
+                                print ("\t Reading filter file " + args.filter_emails)
                                 
                                 if not filter_file_content:
                                         print("\t ERROR no emails to be filtered")
@@ -798,23 +880,14 @@ def main():
                                 sys.exit()
 
                         print (filter_file_content)
-                        filtered_emails = filter_file_content 
-
-                
-
-        
-
+                        list_of_emails_to_filter = filter_file_content 
                         
                 ## Read line by line 
                 ## Keep also the stats
                 ## Detect blocks ... process them
 
-
                 ## Will save a commit block lines : From == to next ==
-
-
    
-
                 lines = f.readlines()
 
 
@@ -859,14 +932,15 @@ def main():
                         break
 
 
-        if (RAW_MODE == 1):
-                print ("\n:)1st SUCESS Data scraped from changlog files (stored in ChangeLogData data structure)")
+        if (RAW_MODE):
+                print (Fore.GREEN + "\n:)1st SUCESS Data scraped from changlog files (stored in ChangeLogData data structure)")
+                print(Style.RESET_ALL)
 
                 if (DEBUG_MODE == 1):
                         print_changeLogData()
         
 
-        elif (LOAD_MODE == 1):	
+        elif (LOAD_MODE):	
                 changeLogData = load_changeLogData(args.lser) 
                 print(("1st SUCESS Change log loaded from ", args.lser, " "))
 
@@ -882,7 +956,7 @@ def main():
                 sys.exit()
 
 
-        if (SAVE_MODE == 1):
+        if (SAVE_MODE):
                 print ("Saving file")
                 save_changeLogData(args.sser)
 
@@ -892,64 +966,108 @@ def main():
         # Agregate by file ... 
 
         agregateByFileItsContributors()
-        print ("\n:)2nd SUCESS2 Data agregated by files and its contributors")
+        print (Fore.GREEN +"\n:)2nd SUCESS2 Data agregated by files and its contributors")
+        print(Style.RESET_ALL)
 
 
         
-        if (DEBUG_MODE == 1):
+        if (DEBUG_MODE):
                 print_agreByFileContributors()
 
 
         # agreate list of authors that worked on the each files
 
         getContributorsConnectionsTuplesWSF()
-        print ("\n:) 3rd SUCESS tubles of authors that collaborated (coded in the same source code file) were generated")
+        print (Fore.GREEN + "\n:) 3rd SUCESS tubles of authors that collaborated (coded in the same source code file) were generated")
+        print(Style.RESET_ALL)
 
-        if (DEBUG_MODE == 1):
+        if (DEBUG_MODE):
                 print_agreByConnWSF()
 
-
+        # report the top 20 files co-edited the most
+        print_top_20_files_by_ConnWSF()
+        
 
         # agreate an list of authors that worked on the each files (do not repeat author tuples)
         # For getting unique edges/collaborations (do not include repetitions of the same collaborations)
         # uniqueConnections will not have emails/developers/nodes that are filtered (-f argument to scrapLog.py)
         uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
-        print ("\n:) 4th SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated")
-
-        if (DEBUG_MODE == 1):
-                print_unique_connections()
-
-
-
-        # User invoked the (-f argument to scrapLog.py)
-        if (FILTERING_MODE == 1):
-
-                uniqueFilteredConnections= []
-                for connection in uniqueConnections:
-                        if connection[0] in filtered_emails:
-                                if (DEBUG_MODE == 1):
-                                        print ("\t\t Filtering "+str(connection))
-                                continue
-                        if connection[1] in filtered_emails:
-                                if (DEBUG_MODE == 1):
-                                        print ("\t\t Filtering "+str(connection))
-                                continue 
-                        uniqueFilteredConnections.append(connection)
-
-                "after filtering unique connections are fewer without the filtered connections"
-                #uniqueConnections=uniqueFilteredConnections
-
-
-                print ("\n:) 4 + 1/2  SUCESS removed notes that are to be filtered (-f argument to scrapLog.py) ")
+        print (Fore.GREEN+"\n:) 4th SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated")
+        print(Style.RESET_ALL)
         
+        if (DEBUG_MODE):
+                print_unique_connections()
+                
+
+        print ("")
+        print ("Populating main graph G_network_Dev2Dev_singleEdges")
+
+
+        G_network_Dev2Dev_singleEdges.add_edges_from(uniqueConnections)
+
+        print(Fore.GREEN+"\n:) 5th SUCESS - got Dev2Dev network with no parallel edges")
+        print(Style.RESET_ALL)
+
+        print("\t Number of nodes Dev2Dev network",G_network_Dev2Dev_singleEdges.number_of_nodes())
+        print("\t Number of edges Dev2Dev network",G_network_Dev2Dev_singleEdges.size())
+        print("\t Number of scrapped unique connections",len(uniqueConnections))
+
+        if (len(uniqueConnections) != G_network_Dev2Dev_singleEdges.size()):
+                print ("ERROR - The  uniqueConnections list of tuples does not match with the created Dev2Dev ")
+                exit()
+
+
+        if (EMAIL_FILTERING_MODE):
+                print ("")
+                print ("Removing the nodes and all adjacent edges for nodes in list_of_emails_to_filter:")
+
+                for email in list_of_emails_to_filter:
+                        print ("\t removing node", email)
+                        "Note nodes ids in G_network_Dev2Dev_singleEdges are actual emails"
+                        "One node, one developer, one email"
+                        if G_network_Dev2Dev_singleEdges.has_node(email):
+                                "must remove the node, and all its edges shoud go as well"
+                                
+                                for adj in G_network_Dev2Dev_singleEdges.neighbors(email):
+                                        print("\t",email, " was connected to ", adj )
+                                G_network_Dev2Dev_singleEdges.remove_node(email)
+                                
+
+                print("")
+                print("\t Number of nodes Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.number_of_nodes())
+                print("\t Number of edges Dev2Dev network after filtering by e-mail",G_network_Dev2Dev_singleEdges.size())
+                print("\t Number of scrapped unique connections before filtering by e-mail (i.e. len(uniqueConnections))",len(uniqueConnections))
+
+        "there should be not isolates"
+        if (DEBUG_MODE):
+                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0 ):
+                        print()
+                        print("\t Isolates found in Dev2Dev network of single edges")
+                        for i in nx.isolates(G_network_Dev2Dev_singleEdges):
+                                print ("\t",i," is isolated - no edges")
+
+        "there should be not isolates because you been filtering emails"
+        "imagine A connects to B and C, C is the only connection to C. If you remote A and its edges, C will get alone "
+        "So isolates should be removed after filtering by email or removing nodes in any other way" 
+        if (EMAIL_FILTERING_MODE == False):
+                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0):
+                        for isolate in isolates(G_network_Dev2Dev_singleEdges):
+                                G_network_Dev2Dev_singleEdges.remove_node(isolate)
+
+                if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) != 0):
+                        print ("Error: failed to remove isolates after filtering by email")
+                        exit(1)
 
         # for every author, get its affiliation. result will be saved in the  affiliation global dictionart
         getAffiliations()
 
+
+        exit()
+        
         #print("networked_affiliations="+networked_affiliations)
         
         
-        if (FILTERING_MODE == 1):
+        if (EMAIL_FILTERING_MODE):
                 "filter also the affilations dict as -f argument was passed"
 
                 "stores possible isolates that appear after fitering botes" 
@@ -975,18 +1093,19 @@ def main():
  
                 filtered_network_affiliations = dict(filter(my_filtering_function, networked_affiliations.items()))
  
+        
+        graphml_filename=Path(work_file).stem+graphmlOutputSufix
                 
-
-        if (FILTERING_MODE == 1):
-                print("\n uniqueFilteredConnections="+str(uniqueFilteredConnections))
-                print("\n filtered_network_affiliations="+str(filtered_network_affiliations))
+        if (EMAIL_FILTERING_MODE):
+                #print("\n uniqueFilteredConnections="+str(uniqueFilteredConnections))
+                #print("\n filtered_network_affiliations="+str(filtered_network_affiliations))
                 
-                exportLogData.createGraphML(uniqueFilteredConnections,filtered_network_affiliations, graphmlOutput)
+                exportLogData.createGraphML(uniqueFilteredConnections,filtered_network_affiliations,graphml_filename)
         else: 
-                exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphmlOutput)
+                exportLogData.createGraphML(uniqueConnections,networked_affiliations, graphml_filename)
 
                 
-        print ("\n:) 5th SUCESS in exporting  qnetwork to GraphML file:"+graphmlOutput)
+        print ("\n:) 5th SUCESS in exporting  qnetwork to GraphML file:"+graphml_filename)
         
 
                 

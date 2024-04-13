@@ -266,7 +266,7 @@ def createGraphML(tuplesList,affiliations,outFileName):
     for af in affiliations.items():
         email = af[0]
         afl = af[1]
-        #print(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
+        print(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
         gfile.writelines(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
         tmpNodeId[email]=nAf
         nAf+=1
@@ -285,11 +285,11 @@ def createGraphML(tuplesList,affiliations,outFileName):
         #else:
             #print(str((author1, author2)) + " already on the list of unique connections")
         
-    #print(("uniqueConnections=[" + str(uniqueConnections) + "]"))
+    print(("uniqueConnections=[" + str(uniqueConnections) + "]"))
 
     # interate over the unique edges list 
     nTup = 0 
-    for (emailFrom, emailTo) in uniqueConnections:
+    for emailFrom, emailTo in uniqueConnections:
         nodeIdFrom = tmpNodeId[emailFrom]
         nodeIdTo = tmpNodeId[emailTo]
         #print((exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo)))

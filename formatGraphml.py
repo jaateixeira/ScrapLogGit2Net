@@ -9,9 +9,9 @@
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import networkx as nx
+import sys 
 
-
-G = nx.read_graphml('NetworkFile.graphML')
+G = nx.read_graphml(sys.argv[1])
 
 
 
@@ -112,6 +112,7 @@ top_10_colors = {
     'gmail': 'gray',
     'inailuig': 'gray',
     'bytedance': 'gray',
+    'tensorflow': 'white',
     
 }
 
