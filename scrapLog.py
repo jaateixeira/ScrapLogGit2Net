@@ -49,7 +49,7 @@ G_network_Dev2Dev_singleEdges = nx.Graph()
 # Inter individual network - edges can be weighted (using edge-attributes)
 # Stores nodes and edges with optional data, or attributes. Holds undirected edges. Self loops and  multiple (parallel) edges are allowed.
 # Multiedges are multiple edges between two nodes. Each edge can hold optional data or attributes.
-G_network_Dev2Dev_multiEdgess = nx.MultiGraph()
+G_network_Dev2Dev_multiEdges = nx.MultiGraph()
 
 # Inter organizational network - edges are eighted - eights are atributed by on how many developers cooperated between two companies 
 # Stores nodes and edges with optional data, or attributes. Holds undirected edges. Self loops are allowed but multiple (parallel) edges are not.
@@ -73,9 +73,8 @@ changeLogData = []
 # Will keep agrregated data of authors that changed the same (file,[list of contributors changing it])
 agreByFileContributors = {}
 
-
 # Will keep agregated tuples of authors connecting due to working on a common file [(a-b),file)]
-
+# It is from here that we will extract the networks to  G_network_Dev2Dev_singleEdges and G_network_Dev2Dev_multiEdges
 agreByConnWSF = []
 
 # Will keep unique tuples of authors connected due to workin on common file. no repetitions for (a-b),(a-b) or (a-b),(b-a)
@@ -88,7 +87,6 @@ uniqueConnections =[]
 uniqueFilteredConnections =[]
 
 
-
 # Will keep a dictionary author afiliation i.e affiliation[mike@google.com]=google.com
 affiliations = {}
 
@@ -96,11 +94,16 @@ affiliations = {}
 # Drops authors that do not connect with others
 networked_affiliations = {}
 
-
 # Will keep the emails that should be filter
 # Note its more efficient to just not filter while scrapping, but filtering while checking for unique tuples (i.e., edges or connections)
 # This because is slow to check if x is member of a list all the time
-fitered_emails = {}
+list_of_emails_to_filter = [] 
+
+
+# Will keep the files that should be not considered
+# Note its efficient to just filter while scrapping, because then there are less  (i.e., edges or connections) to process 
+# This because is slow to check if x is member of a list all the time
+list_of_files_to_filter = []
 
 
 # TODO Merge into org agregator 
@@ -730,15 +733,21 @@ def main():
         global uniqueConnections
 
         "e-mails that should not be considered when scrapping the git log"
-        "passed as an argument to scrapLog.py"
-        global filtered_emails
+        "passed as an argument to scrapLog.py with -fe"
+        global list_of_emails_to_filter
 
+        "files that should not be considered when scrapping the git log"
+        "passed as an argument to scrapLog.py with -ff"
+        global list_of_files_to_filter 
+
+        
         "modes reflecting arguments passed to scrapLog.py"
         global SAVE_MODE
         global RAW_MODE
         global LOAD_MODE
         global DEBUG_MODE
-        global FILTERING_MODE
+        global EMAIL_FILTERING_MODE
+        global FILE_FILTERING_MODE
 
         ## Process the arguments 
         # -s for serialized save (already provessed changeLog)
@@ -748,34 +757,40 @@ def main():
         parser.add_argument('-l','--lser',action='store', type=str, help='loads and processes an serialized changelog')
         parser.add_argument('-r','--raw', action='store', type=str, help='processes from a raw git changelog')
         parser.add_argument('-s','--sser',action='store', type=str, help='processses from a raw git changelog and saves it into a serialized changelog. Requires -r for imput')
-        parser.add_argument('-f','--filter',action='store', type=str, help='ignores the emails listed in a text file (one email per line)')
+        parser.add_argument('-fe','--filter_emails',action='store', type=str, help='ignores the emails listed in a text file (one email per line)')
+        parser.add_argument('-ff','--filter_files',action='store', type=str, help='ignores the files listed in a text file (one email per line)')
         parser.add_argument("-v", "--verbose", help="increased output verbosity", action="store_true") 
 
         args = parser.parse_args()
 
         if args.verbose:
                 print("verbosity turned on")
-                DEBUG_MODE=1
+                DEBUG_MODE=True 
 
-        if args.filter:
+        if args.filter_emails:
                 print("Filtering (ignoring given emails) turned on")
-                FILTERING_MODE=1
-        else:
-                FILTERING_MODE=0
+                EMAIL_FILTERING_MODE=True 
+
+        if args.filter_files:
+                print("Filtering (ignoring given emails) turned on - but not implemented yet")
+                FILE_FILTERING_MODE=True
+                exit(1)
 
         if args.lser:
                 print(("loanding and processing [lser=",args.lser,"]"))
                 print ("not implmented yet")
-                LOAD_MODE=1 
+                LOAD_MODE=True 
                 RAW_MODE=0
                 SAVE_MODE=0
+                
         elif args.sser and args.raw:
                 print(("processing [raw=",args.raw,"]", " and saving [sser=", args.sser, "]"))
-                SAVE_MODE=1
-                RAW_MODE=1
-                LOAD_MODE=0 
+                SAVE_MODE=True 
+                RAW_MODE=True 
+                LOAD_MODE=0
+                
         elif args.raw:
-                RAW_MODE=1
+                RAW_MODE=True 
                 LOAD_MODE=0
                 SAVE_MODE=0
                 print(("processing [raw=",args.raw,"]"))
@@ -783,7 +798,7 @@ def main():
                 print ("unrecognized argumets ... see --help")
                 sys.exit()
 
-        if (RAW_MODE == 1):
+        if (RAW_MODE):
                 ##  if we are not in load mode, we need to strap the log	
                 print(("Scrapping changeLog from ", args.raw ))
                 t0 = datetime.now()
@@ -800,15 +815,11 @@ def main():
 
                 ### The filter listing emails to not be considered
 
-
-                if (FILTERING_MODE == 1):
-                        filter_file= args.filter 
-                        
-
+                if (FILTERING_MODE):
                         try:
-                                with open(filter_file, 'r') as ff:
+                                with open(args.filter_emails, 'r') as ff:
                                         filter_file_content = ff.read().splitlines()
-                                print ("\t Reading filter file " + filter_file)
+                                print ("\t Reading filter file " + args.filter_emails)
                                 
                                 if not filter_file_content:
                                         print("\t ERROR no emails to be filtered")
@@ -824,12 +835,7 @@ def main():
                                 sys.exit()
 
                         print (filter_file_content)
-                        filtered_emails = filter_file_content 
-
-                
-
-        
-
+                        list_of_emails_to_filter = filter_file_content 
                         
                 ## Read line by line 
                 ## Keep also the stats

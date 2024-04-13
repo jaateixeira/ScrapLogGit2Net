@@ -155,10 +155,10 @@ echo ""
 echo "Testing with tensorFlowGitLog-first-trimester-2024.IN - 32659 lines"
 echo "Should capture colllaboration between during first trimester 2024 in TensorFlow "
 echo "Should also filter the bots and emails listed in test-configurations/TensorFlowBots.txt"
-echo "./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN -f test-configurations/TensorFlowBots.txt > testResults.tmp"
+echo "./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN -fe test-configurations/TensorFlowBots.txt > testResults.tmp"
 
 
-./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN -f test-configurations/TensorFlowBots.txt > testResults.tmp 
+./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN -fe test-configurations/TensorFlowBots.txt > testResults.tmp 
 
 echo""
 
