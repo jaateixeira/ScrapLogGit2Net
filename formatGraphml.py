@@ -114,7 +114,11 @@ top_10_colors = {
     'bytedance': 'gray',
     'qq': 'gray',
     'hotmail': 'gray',
+    'yahoo': 'gray',
+    'outlook': 'gray',
+    'gmail': 'gray',
     'tensorflow': 'white',
+    
     
 }
 
