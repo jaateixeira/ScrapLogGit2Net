@@ -177,7 +177,6 @@ else
     echo "${RED}TESTCASE 3.2 did not pass - unexpected number of changed files${NC}"
 fi
 
-echo""
 
 
 echo""

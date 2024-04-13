@@ -17,6 +17,8 @@ import itertools
 import argparse
 from pathlib import Path
 
+import networkx as nx
+
 try:
 	import six.moves.cPickle as pickle
 except:
@@ -35,14 +37,37 @@ networkOutput = "NetworkOutput.file1.CSV"
 atributesOutput = "AtributesOutput.file2.CSV"
 graphmlOutputSufix= ".NetworkFile.graphML"
 
+# Global structures
 
-# Global structures 
+## Socal network aka Graph on who works with who - unweighted - does not matter how many times developers recurrently co-edit same files (aka cooperate)
+## Individual/Developer/Bot level
 
-# Keeps statistics of the scrappping 
+# Inter individual network - edges are unweighted 
+# Stores nodes and edges with optional data, or attributes. Holds undirected edges. Self loops are allowed but multiple (parallel) edges are not.
+G_network_Dev2Dev_singleEdges = nx.Graph()
+
+# Inter individual network - edges can be weighted (using edge-attributes)
+# Stores nodes and edges with optional data, or attributes. Holds undirected edges. Self loops and  multiple (parallel) edges are allowed.
+# Multiedges are multiple edges between two nodes. Each edge can hold optional data or attributes.
+G_network_Dev2Dev_multiEdgess = nx.MultiGraph()
+
+# Inter organizational network - edges are eighted - eights are atributed by on how many developers cooperated between two companies 
+# Stores nodes and edges with optional data, or attributes. Holds undirected edges. Self loops are allowed but multiple (parallel) edges are not.
+G_network_Org2Org_singleEdges = nx.Graph()
+
+
+# Inter organizational network - edges are  not eighted. 
+# Stores nodes and edges with optional data, or attributes. Holds undirected edges.
+# Self loops and  multiple (parallel) edges are allowed.
+# Multiedges are multiple edges between two nodes. Each edge can hold optional data or attributes.
+G_network_Org2Org_singleEdges = nx.MultiGraph()
+
+
+## Keeps statistics of the scrappping 
 stats = {'nlines': 0, 'nBlocks' :0 , 'nBlocksChagingCode':0, 'nBlocksNotChangingCode':0 , 'nChangedFiles':0}
 
-# Keeps data as inially scrapped [(date, email, affilition), [files changed]]
-# The one that can be saved , the only data structure keeping date information 
+## Keeps data as inially scrapped [(date, email, affilition), [files changed]]
+## The one that can be saved , the only data structure keeping date information 
 changeLogData = []
 
 # Will keep agrregated data of authors that changed the same (file,[list of contributors changing it])
