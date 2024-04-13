@@ -153,9 +153,9 @@ def getAffiliationFromEmail(email):
         print("\t match=["+str(match)+"]")
 
         "some exception from problematic e-mails found on tensor flow"
-        if (FILTERING_MODE == 1 ):
-                print ("matching in filtered mode",filtered_emails)
-                if email in filtered_emails:
+        if (EMAIL_FILTERING_MODE == 1 ):
+                print ("matching in filtered mode",list_of_emails_to_filter )
+                if email in list_of_emails_to_filter :
                         return "filtered - included in file passed with -f argument"
         
         else:
@@ -257,10 +257,10 @@ def getDateEmailAffiliation(line):
         
         elif '@' not in line:
                 print ("WARNING exceptional code commit header Exception 5 ")
-                print ("\t Commit header with no email[",line,"]" )
+                print ("\t Commit block-header with no email[",line,"]" )
                 "better return unknown@email - can be added to filter argument file "
                 "I also return  datetime.now() as a uniqye identifier to be sure that this block can be used for associating developers "
-                return (datetime.now(),'unknown@email'+datetime.now(),'unknown-affiliation'+datetime.now())
+                return (str(datetime.now()),'unknown@email'+str(datetime.now()),'unknown-affiliation'+str(datetime.now()))
 
             
         # anything else ERROR with imput or this code

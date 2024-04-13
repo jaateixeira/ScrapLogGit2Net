@@ -112,6 +112,7 @@ top_10_colors = {
     'gmail': 'gray',
     'inailuig': 'gray',
     'bytedance': 'gray',
+    'qq': 'gray',
     'tensorflow': 'white',
     
 }
@@ -192,7 +193,7 @@ ax.legend(handles=legend_elements, loc='upper right')
 
 
 plt.show()
-plt.savefig("Uncolored-Circular-Layout.png")
+#plt.savefig("Uncolored-Circular-Layout.png")
 
 
 
@@ -213,7 +214,7 @@ ax = plt.gca()
 ax.legend(handles=legend_elements, loc='best')
 
 plt.show()
-plt.savefig("Uncolored-Centrality-Layout.png")
+#plt.savefig("Uncolored-Centrality-Layout.png")
 
 print()
 print ("writing Formatted-NetworkFile.graphML")
