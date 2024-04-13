@@ -130,7 +130,7 @@ Congrats. You collected social network data ready for analysis.
 - Use verbose mode for debuging and testing 
 
 ```
-usage: scrapLog.py [-h] [-l LSER] [-r RAW] [-s SSER] [-f FILTER] [-v]
+usage: scrapLog.py [-h] [-l LSER] [-r RAW] [-s SSER] [-fe FILTER_EMAILS] [-ff FILTER_FILES] [-v]
 
 Scrap some chagelog to create networks/graphs for research purpses
 
@@ -139,10 +139,11 @@ options:
   -l LSER, --lser LSER  loads and processes an serialized changelog
   -r RAW, --raw RAW     processes from a raw git changelog
   -s SSER, --sser SSER  processses from a raw git changelog and saves it into a serialized changelog. Requires -r for imput
-  -f FILTER, --filter FILTER
+  -fe FILTER_EMAILS, --filter_emails FILTER_EMAILS
                         ignores the emails listed in a text file (one email per line)
-  -v, --verbose         increased output verbosity
-```
+  -ff FILTER_FILES, --filter_files FILTER_FILES
+                        ignores the files listed in a text file (one email per line)
+  -v, --verbose         increased output verbosity```
 
 For example, the following command 
 
