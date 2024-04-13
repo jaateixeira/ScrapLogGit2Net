@@ -16,8 +16,9 @@ from dateutil.relativedelta import relativedelta
 import itertools
 import argparse
 from pathlib import Path
-
 import networkx as nx
+from colorama import Fore, Back, Style
+
 
 try:
 	import six.moves.cPickle as pickle
@@ -790,7 +791,7 @@ def main():
                 
         elif args.sser and args.raw:
                 print()
-                print(("processing [raw=",args.raw,"]", " and saving [sser=", args.sser, "]"))
+                print("processing [raw=",args.raw,"]", " and saving [sser=", args.sser, "]")
                 SAVE_MODE=True 
                 RAW_MODE=True 
                 LOAD_MODE=0
@@ -800,15 +801,19 @@ def main():
                 LOAD_MODE=0
                 SAVE_MODE=0
                 print ()
-                print(("processing [raw=",args.raw,"]"))
+                print("processing [raw=",args.raw,"]")
         else: 
                 print ("unrecognized argumets ... see --help")
                 sys.exit()
 
         if (RAW_MODE):
-                ##  if we are not in load mode, we need to strap the log	
+                ##  if we are not in load mode, we need to strap the log
+                print ()
                 print(("Scrapping changeLog from ", args.raw ))
+
                 t0 = datetime.now()
+
+                print()
                 print(("STARTING the scrap of changeLog file " + args.raw + " on " +  str(t0)))
 
 
@@ -895,7 +900,8 @@ def main():
 
 
         if (RAW_MODE):
-                print ("\n:)1st SUCESS Data scraped from changlog files (stored in ChangeLogData data structure)")
+                print (Fore.GREEN + "\n:)1st SUCESS Data scraped from changlog files (stored in ChangeLogData data structure)")
+                print(Style.RESET_ALL)
 
                 if (DEBUG_MODE == 1):
                         print_changeLogData()
@@ -927,7 +933,8 @@ def main():
         # Agregate by file ... 
 
         agregateByFileItsContributors()
-        print ("\n:)2nd SUCESS2 Data agregated by files and its contributors")
+        print (Fore.GREEN +"\n:)2nd SUCESS2 Data agregated by files and its contributors")
+        print(Style.RESET_ALL)
 
 
         
@@ -938,7 +945,8 @@ def main():
         # agreate list of authors that worked on the each files
 
         getContributorsConnectionsTuplesWSF()
-        print ("\n:) 3rd SUCESS tubles of authors that collaborated (coded in the same source code file) were generated")
+        print (Fore.GREEN + "\n:) 3rd SUCESS tubles of authors that collaborated (coded in the same source code file) were generated")
+        print(Style.RESET_ALL)
 
         if (DEBUG_MODE):
                 print_agreByConnWSF()
@@ -949,36 +957,37 @@ def main():
         # For getting unique edges/collaborations (do not include repetitions of the same collaborations)
         # uniqueConnections will not have emails/developers/nodes that are filtered (-f argument to scrapLog.py)
         uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
-        print ("\n:) 4th SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated")
-
+        print (Fore.GREEN+"\n:) 4th SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated")
+        print(Style.RESET_ALL)
+        
         if (DEBUG_MODE):
                 print_unique_connections()
-
-        exit()
                 
 
 
         # User invoked the (-f argument to scrapLog.py)
-        if (FILTERING_MODE == 1):
+        if (FILTERING_MODE):
 
-                uniqueFilteredConnections= []
+                uniqueConnections_filtered_by_email=[]
                 for connection in uniqueConnections:
                         if connection[0] in filtered_emails:
-                                if (DEBUG_MODE == 1):
+                                if (DEBUG_MODE):
                                         print ("\t\t Filtering "+str(connection))
                                 continue
                         if connection[1] in filtered_emails:
-                                if (DEBUG_MODE == 1):
+                                if (DEBUG_MODE):
                                         print ("\t\t Filtering "+str(connection))
                                 continue 
-                        uniqueFilteredConnections.append(connection)
+                        uniqueConnections_filtered_by_email.append(connection)
 
                 "after filtering unique connections are fewer without the filtered connections"
-                #uniqueConnections=uniqueFilteredConnections
+                uniqueConnections=uniqueConnections_filtered_by_email
 
 
                 print ("\n:) 4 + 1/2  SUCESS removed notes that are to be filtered (-f argument to scrapLog.py) ")
-        
+
+
+
 
         # for every author, get its affiliation. result will be saved in the  affiliation global dictionart
         getAffiliations()
