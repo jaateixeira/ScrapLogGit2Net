@@ -29,7 +29,8 @@ import exportLogData
 import networkMeasures 
 
 
-print(("Executing " + str(sys.argv))) 
+print(("Executing " + str(sys.argv)))
+
 
 # Global parameters 
 
@@ -764,19 +765,23 @@ def main():
         args = parser.parse_args()
 
         if args.verbose:
+                print()
                 print("verbosity turned on")
                 DEBUG_MODE=True 
 
         if args.filter_emails:
+                print()
                 print("Filtering (ignoring given emails) turned on")
                 EMAIL_FILTERING_MODE=True 
 
         if args.filter_files:
+                print()
                 print("Filtering (ignoring given emails) turned on - but not implemented yet")
                 FILE_FILTERING_MODE=True
                 exit(1)
 
         if args.lser:
+                print()
                 print(("loanding and processing [lser=",args.lser,"]"))
                 print ("not implmented yet")
                 LOAD_MODE=True 
@@ -784,6 +789,7 @@ def main():
                 SAVE_MODE=0
                 
         elif args.sser and args.raw:
+                print()
                 print(("processing [raw=",args.raw,"]", " and saving [sser=", args.sser, "]"))
                 SAVE_MODE=True 
                 RAW_MODE=True 
@@ -793,6 +799,7 @@ def main():
                 RAW_MODE=True 
                 LOAD_MODE=0
                 SAVE_MODE=0
+                print ()
                 print(("processing [raw=",args.raw,"]"))
         else: 
                 print ("unrecognized argumets ... see --help")
@@ -841,12 +848,8 @@ def main():
                 ## Keep also the stats
                 ## Detect blocks ... process them
 
-
                 ## Will save a commit block lines : From == to next ==
-
-
    
-
                 lines = f.readlines()
 
 
@@ -891,14 +894,14 @@ def main():
                         break
 
 
-        if (RAW_MODE == 1):
+        if (RAW_MODE):
                 print ("\n:)1st SUCESS Data scraped from changlog files (stored in ChangeLogData data structure)")
 
                 if (DEBUG_MODE == 1):
                         print_changeLogData()
         
 
-        elif (LOAD_MODE == 1):	
+        elif (LOAD_MODE):	
                 changeLogData = load_changeLogData(args.lser) 
                 print(("1st SUCESS Change log loaded from ", args.lser, " "))
 
@@ -914,7 +917,7 @@ def main():
                 sys.exit()
 
 
-        if (SAVE_MODE == 1):
+        if (SAVE_MODE):
                 print ("Saving file")
                 save_changeLogData(args.sser)
 
@@ -928,7 +931,7 @@ def main():
 
 
         
-        if (DEBUG_MODE == 1):
+        if (DEBUG_MODE):
                 print_agreByFileContributors()
 
 
@@ -937,7 +940,7 @@ def main():
         getContributorsConnectionsTuplesWSF()
         print ("\n:) 3rd SUCESS tubles of authors that collaborated (coded in the same source code file) were generated")
 
-        if (DEBUG_MODE == 1):
+        if (DEBUG_MODE):
                 print_agreByConnWSF()
 
 
@@ -948,9 +951,11 @@ def main():
         uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
         print ("\n:) 4th SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated")
 
-        if (DEBUG_MODE == 1):
+        if (DEBUG_MODE):
                 print_unique_connections()
 
+        exit()
+                
 
 
         # User invoked the (-f argument to scrapLog.py)
