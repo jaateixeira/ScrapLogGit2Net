@@ -1,9 +1,5 @@
-Why isolates appear? Its the filtering issues ? Must fix.
-Why isolates 
-
-
-Problem is tha graph ML fors 
-affiliations.items():
+There is error at writing connections with graphML. Not for notes !!
+Use export report data for edges and nodes. input two separate files
 
 Adress the @users.noreply.github.com non verified users
 See https://github.com/orgs/community/discussions/41199

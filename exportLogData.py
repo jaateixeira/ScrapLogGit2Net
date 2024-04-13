@@ -276,7 +276,7 @@ def createGraphML(tuplesList,affiliations,outFileName):
     uniqueConnections = []
     
     for connection in tuplesList:
-        print ("connection="+str(connection))
+        #print ("connection="+str(connection))
         ((author1, author2)) = connection
 
         # Do not consider if author1 or author2 been already connected 1->2 or 2-< 1 
@@ -285,11 +285,11 @@ def createGraphML(tuplesList,affiliations,outFileName):
         #else:
             #print(str((author1, author2)) + " already on the list of unique connections")
         
-    #print(("uniqueConnections=[" + str(uniqueConnections) + "]"))
+    print(("uniqueConnections=[" + str(uniqueConnections) + "]"))
 
     # interate over the unique edges list 
     nTup = 0 
-    for (emailFrom, emailTo) in uniqueConnections:
+    for emailFrom, emailTo in uniqueConnections:
         nodeIdFrom = tmpNodeId[emailFrom]
         nodeIdTo = tmpNodeId[emailTo]
         #print((exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo)))
