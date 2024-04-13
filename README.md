@@ -143,7 +143,8 @@ options:
                         ignores the emails listed in a text file (one email per line)
   -ff FILTER_FILES, --filter_files FILTER_FILES
                         ignores the files listed in a text file (one email per line)
-  -v, --verbose         increased output verbosity```
+  -v, --verbose         increased output verbosity
+```
 
 For example, the following command 
 
