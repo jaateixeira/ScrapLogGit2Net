@@ -1,5 +1,8 @@
-Check networkmezure unique connections
+Check networkmezure unique connections to finnish the last stats 
 So slow. move 
+
+Check that htere are other ways map cooperation
+https://stackoverflow.com/questions/72653563/git-log-name-only-show-coauthors
 
 
 Adress the @users.noreply.github.com non verified users
