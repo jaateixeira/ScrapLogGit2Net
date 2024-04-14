@@ -42,9 +42,9 @@ Then:
 - Then connects developers in a network. Nodes are software developers with a unique email and edges connect them as they co-edited the same source-code file. 
 
   Note that:
-  Some manual developer's email aggregation might be required as the same developers can use multiple emails.
-  Software bots can also commit code, undermining your analysis of human-to-human collaboration. 
-  Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected.  For example, if analysis projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination. 
+- Some manual developer's email aggregation might be required as the same developers can use multiple emails.
+- Software bots can also commit code, undermining your analysis of human-to-human collaboration. 
+- Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected.  For example, if analysis projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination. 
 
   
 # How to use it  #
