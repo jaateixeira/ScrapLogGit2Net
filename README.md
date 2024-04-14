@@ -193,7 +193,10 @@ network file in the standard XML based format GraphML.
 - Support for weighted edges.
 - Reporting analysis in latex, Markdown, HTML and text files. Should include quantitative metrics (e.g, n. commits, n. lines of code per dev, most co-edited files) and relational metrics (e.g., centrality, density). 
 - Support for other network formats besides graphML (see [https://socnetv.org/docs/formats.html](https://socnetv.org/docs/formats.html)).
-- Support for community detection. 
+- Support for community detection.
+- Use a logging system (e.g., [https://docs.python.org/3/library/logging.html](https://docs.python.org/3/library/logging.html)) instead of print statements for debugging.
+- Write unit tests for the main functions in scrapLogGit2Net (see [https://docs.python.org/3/library/unittest.html](https://docs.python.org/3/library/unittest.html)).
+- Publish as a python package to the community 
 
 # Contributing 
 Branch and pull mode. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
