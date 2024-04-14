@@ -1,7 +1,9 @@
 # ScrapLogGit2Net
-Tool supporting the mining of Git repositories. It creates social networks based on common source-code edits
+Tool supporting the mining of Git repositories. It creates social networks based on common source-code file edits. 
 
 Tool was first developed by Jose Apolinário Teixeira during his doctoral studies. 
+Newer features allow you to filter developers by email ()
+The code was also made compaint with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) and the [python 3.10 version](https://networkx.org/documentation/latest/)
 
 For more information, see publication and related website: 
 
