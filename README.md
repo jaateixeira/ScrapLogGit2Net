@@ -181,10 +181,10 @@ network file in the standard XML based format GraphML.
 
 ## Recently implemented features 
 - Export to the [GraphML][http://graphml.graphdrawing.org/] format for graphs based on XML. Exports undirected grapths with company affiliation atributes. 
-- Verbose debug output
+- Optional verbose debug output.
 - Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects.
 - Possibiliry of adding an argument pointing with a file with emails to ignore (e.g., bots and spam email addresses).
-- Dynamic export of social network visualizations with in the circular and centrality layouts
+- Dynamic export of social network visualizations with in the circular and centrality layouts.
 - Dynamic node size based on degree centrality in the circular and centrality layouts. High connected nodes are bigger, less connected nodes are smaller. 
 
 ## To implement (voluntears welcome)
