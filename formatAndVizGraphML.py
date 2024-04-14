@@ -4,6 +4,7 @@
 # calculates centralities
 # layout according centralities
 # colorize accourding to affiliation atribute
+# nodesize according centralities 
 
 
 import matplotlib.pyplot as plt
@@ -194,7 +195,7 @@ for org in top_10_org:
 
 
 ax = plt.gca()
-ax.legend(handles=legend_elements, loc='upper right')
+ax.legend(handles=legend_elements, loc='better')
 
 
 plt.show()
