@@ -201,7 +201,8 @@ network file in the standard XML based format GraphML.
 - Use a logging system (e.g., [https://docs.python.org/3/library/logging.html](https://docs.python.org/3/library/logging.html) or [https://github.com/gruns/icecream](https://github.com/gruns/icecream)) instead of print statements for debugging.
 - Write unit tests for the main functions in scrapLogGit2Net (see [https://docs.python.org/3/library/unittest.html](https://docs.python.org/3/library/unittest.html)).
 - Use config files as there are already so many parameters.
-- Integrate with the [TNM Tool for Mining of Socio-Technical Data from Git Repositories](https://github.com/JetBrains-Research/tnm)
+- Integrate with the [TNM Tool for Mining of Socio-Technical Data from Git Repositories](https://github.com/JetBrains-Research/tnm). Cool, advanced, research-based but in coded in java. See [TNM tool presentation at MSR (2021) conference])[https://www.youtube.com/watch?v=-NXaY8zTEOU]. 
+- Integrate with the [git2net tool that also that facilitates the extraction of co-editing networks from git repositories.](https://github.com/gotec/git2net). Cool, advanced, research-based and also coded in python. 
 - Publish as a python package to the community.
 
 # Contributing 
