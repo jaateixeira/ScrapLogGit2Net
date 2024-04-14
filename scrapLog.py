@@ -1089,24 +1089,13 @@ def main():
         print(Style.RESET_ALL)
         
 
-                
-        print ("\n\t:) GRAPHML export Number of nodes/authors = " + str(len(affiliations)))
-        print ("\n\t:) GRAPHML export Number of networked nodes/authors = " + str(len(networked_affiliations)))
 
-        print ("\n\t:) GRAPHML export Number of nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(affiliations)))
-        print ("\n\t:) GRAPHML export Number of networked nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(networked_affiliations)))
-        print ("\n\t:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(networkMeasures.getNumberOfEdges(agreByConnWSF)))
 
-        print ("\n\t:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(networkMeasures.getNumberOfUniqueEdges(agreByConnWSF)))
+         
+        print ("\n\t:) GRAPHML export Number of nodes/authors = " + str(G_network_Dev2Dev_singleEdges.number_of_nodes()))
 
-        print ("\n\t:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(len(uniqueConnections)))
+        print ("\n\t:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(G_network_Dev2Dev_singleEdges.size()))
 
-        # Create an graphML file filtered by company
-        # In this case_ red_hat,enovance and intel
-        # Others are ignored, not grouped 
-        #exportLogData.createGraphML_filterByAffiliation(uniqueConnections,networked_affiliations, "FilteredByCompanies"+ graphmlOutput , ["red_hat","enovance", "intel", "ibm", "hp","mirantis","nebula","vmware" ])
-
-        print ("\n")
 
         sizeOriginalChangeLogData = len(changeLogData)
 
@@ -1128,7 +1117,7 @@ def main():
         #print "Number of edges between Xmas and Fall[", len(uniqueConnections), "]"
 
 
-        tmpBkupLogData = changeLogData
+        # tmpBkupLogData = changeLogData
 
         # Creates logitudinal network segments for open-stack 
         #for i in range (len(releases)-1):
@@ -1147,13 +1136,13 @@ def main():
         # Get the number of edges betwen releases i and i+1 
 
 
-        nodesiip1 = []
-        nodesiip1Top10 = [] 
-        edgesiip1 = []
-        edgesiip1Top10 = []
+        #nodesiip1 = []
+        #nodesiip1Top10 = [] 
+        #edgesiip1 = []
+        #edgesiip1Top10 = []
         
                 
-        changeLogData = tmpBkupLogData
+        #changeLogData = tmpBkupLogData
 
                 # for debug only 
                 # print the edges among top10 for first release
@@ -1188,7 +1177,7 @@ def main():
         print(("Number of analized changelog blocks changing code files [" +  str(stats['nBlocksChagingCode']) + "?]"))
         print(("Number of analized changelog blocks not changing code files (i.e. testCases)[" +  str(stats['nBlocksNotChangingCode']) + "?]"))
         print(("Number of files affected by the commits reported by change log[" +  str(stats['nChangedFiles']) + "]"))
-        print(("Number of unique collaborations (i.e., network edges)[" +  str(len(uniqueConnections)) + "]"))
+        print(("Number of unique collaborations (i.e., network edges)[" +  str(G_network_Dev2Dev_singleEdges.size()) + "]"))
 
 if __name__ == "__main__":
     main()

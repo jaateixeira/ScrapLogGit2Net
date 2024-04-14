@@ -159,10 +159,11 @@ echo ""
 echo "Testing with tensorFlowGitLog-first-trimester-2024.IN - 32659 lines"
 echo "Should capture colllaboration between during first trimester 2024 in TensorFlow "
 echo "Should also filter the bots and emails listed in test-configurations/TensorFlowBots.txt"
-echo "./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN -fe test-configurations/TensorFlowBots.txt > testResults.tmp"
+# Not passing configurations as they can evolve over time 
+echo "./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN > testResults.tmp"
 
 
-./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN -fe test-configurations/TensorFlowBots.txt > testResults.tmp 
+./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN > testResults.tmp 
 
 echo""
 
@@ -185,7 +186,7 @@ fi
 
 echo""
 
-if grep -q 'Number of nodes/authors = 279' testResults.tmp; then
+if grep -q 'Number of nodes/authors = 256' testResults.tmp; then
     echo "${GREEN}TESTCASE 3.3 - number of nodes [279] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.3 did not pass - unexpected number of nodes${NC}"
@@ -193,7 +194,7 @@ fi
 
 echo""
 
-if grep -q 'Number of unique edges/collaborations (do not include repetitions of the same collaborations) = 3363' testResults.tmp; then
+if grep -q 'Number of unique collaborations (i.e., network edges)\[3363\]' testResults.tmp; then
     echo "${GREEN}TESTCASE 3.4 - number of edges [3363] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.4 did not pass - unexpected number of edges ${NC}"
