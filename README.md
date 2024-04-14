@@ -185,6 +185,7 @@ network file in the standard XML based format GraphML.
 - Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects.
 - Possibiliry of adding an argument pointing with a file with emails to ignore (e.g., bots and spam email addresses).
 - Dynamic export of social network visualizations with in the circular and centrality layouts
+- Dynamic node size based on degree centrality in the circular and centrality layouts. High connected nodes are bigger, less connected nodes are smaller. 
 
 ## To implement (voluntears welcome)
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the  trailer tof the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
