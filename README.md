@@ -1,25 +1,31 @@
 # ScrapLogGit2Net
-Tool supporting the mining of Git repositories. It creates social networks based on common source-code file edits. 
+Tools supporting the mining of Git repositories. It creates social networks based on common source-code file edits. 
 
-Tool was first developed by Jose Apolinário Teixeira during his doctoral studies. 
-Newer features allow you to filter developers by email ()
-The code was also made compaint with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) and the [python 3.10 version](https://networkx.org/documentation/latest/)
+The tool was first developed by Jose Apolinário Teixeira during his doctoral studies with some guidance from  Software Engineering scholars with expertise in the mining of software repositories. 
 
-For more information, see publication and related website: 
+Newer features allow you to: 
+- Filter developers by email (handy to deal with bots that commit code)
+- Support for parallel edges (.e., multiple edges between two nodes) that allow attributing weight to a cooperative relationship between two developers (e.g., the number of times they co-edited a source code file).
+- visualize collaborations dynamically using  [NetworkX is a Python package](https://networkx.org/documentation/latest/) and [Matplotlib: Visualization with Python](https://matplotlib.org/). 
+
+The code was also recently made compliant with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) data structures and the [python 3.10 version](https://networkx.org/documentation/latest/) runtime which simplified the original code base. 
+
+For more information, see the publication and related website: 
 
 - Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. for more information. Available open-access at  [https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2](https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2).
-- Website [http://users.abo.fi/jteixeir/OpenStackSNA/](http://users.abo.fi/jteixeir/OpenStackSNA/) with the obtained social networks and visualizations included in the publication. 
+- Website [http://users.abo.fi/jteixeir/OpenStackSNA/](http://users.abo.fi/jteixeir/OpenStackSNA/) with the obtained social networks and visualizations included in the publication.
+- Website [http://users.abo.fi/jteixeir/TensorFlowSNA/](http://users.abo.fi/jteixeir/TensorFlowSNA/) with the obtained social networks and visualizations for the TensorFlow open and coopetitive project (publication forthcoming). 
 
 
 
 
 # Inputs #
 
-A git repository
+A git repository and its commit logs 
 
 
 # Outputs #
-Social networks capturing who codes who who in a repository (not a software project can have multiple repositories)
+Social networks that capture who codes who who in a repository (note that a software project can have multiple repositories)
 
 # How it works #
 
