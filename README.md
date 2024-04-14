@@ -41,7 +41,7 @@ Then:
 - Then associate each file with the developers that co-edited the same source-code file. 
 - Then connects developers in a network. Nodes are software developers with a unique email and edges connect them as they co-edited the same source-code file. 
 
-  Note that:
+Note that:
 - Some manual developer's email aggregation might be required as the same developers can use multiple emails.
 - Software bots can also commit code, undermining your analysis of human-to-human collaboration. 
 - Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected.  For example, if analysis projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination. 
@@ -49,8 +49,8 @@ Then:
   
 # How to use it  #
 
-You need basic skills of Git and basic skills on how to invoke shell scripts in bash.  Knowing python will also help a lot. 
-You don't need to be a programmer to use ScrapLogGit2Net. But if you are one, please contribute by advancing the project. 
+You need basic skills of Git and basic skills on how to invoke python scripts (test case scripts are implemented in bash).  Knowing python code will also help a lot. 
+You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it usefull, please contribute to the project. 
 
 ## First, clone a Git repository 
 
@@ -138,7 +138,7 @@ or
 `python3 scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN
 ```
 
-By default, you get a "NetworkFile.graphML" file capturing the social network. 
+By default, and all goes well, you get a "NetworkFile.graphML" file prefixed with the data input filename (e.g., tensorFlowGitLog-first-trimester-2024.IN.NetworkFile.graphMK) capturing the social network. 
 Congrats. You collected social network data ready for analysis. 
 
 
@@ -175,29 +175,32 @@ network file in the standard XML based format GraphML.
 
 # Features 
 
-## Implemented features 
+## Recently implemented features 
 - Export to the [GraphML][http://graphml.graphdrawing.org/] format for graphs based on XML. Exports undirected grapths with company affiliation atributes. 
 - Verbose debug output
-- Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects
-- - Possibiliry to add a argument pointing with a file with emails to ignore (e.g., bots and spam email addresses)
+- Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects.
+- Possibiliry of adding an argument pointing with a file with emails to ignore (e.g., bots and spam email addresses).
+- Dynamic export of social network visualizations with in the circular and centrality layouts
 
 ## To implement (voluntears welcome)
-- Possibiliry to add a argument pointing with a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., bots and spam email addresses)
-- Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>)
-- Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com)
-OA- Possibliity to export both networks at individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations)
-- Possiblity to limit analysis to n top contriburors (organization with most nodes)
-- Colorize nodes by company affiliation automaticaly 
-- export with centrality layout
-- automatic circular and centrality analysis using networkX
-- stats on the files connecting people the most
+- Possibiliry to add a argument pointing with a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company)-
+- Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>).
+- Possibiliry to add a argument pointing with a file what agregates different emails used by a different organizations (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com all map IBM).
+- OA- Possibliity to export both networks at individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations).
+- Possiblity to limit analysis to n top contriburors (organization with most nodes).
+- Colorize nodes by company affiliation automaticaly.
+- Report stats on the files connecting people the most (handy for identifying outliers). 
+- Support for weighted edges.
+- Reporting analysis in latex, Markdown, HTML and text files. Should include quantitative metrics (e.g, n. commits, n. lines of code per dev, most co-edited files) and relational metrics (e.g., centrality, density). 
+- Support for other network formats besides graphML (see [https://socnetv.org/docs/formats.html](https://socnetv.org/docs/formats.html)).
+- Support for community detection. 
 
 # Contributing 
 Branch and pull mode. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
 
 Note you should not break the test runner bash script (testScrapLog.sh) that runs ScrapLogGit2Net agains test-data and compares with the expected output. 
 
-Jose Teixeira, currently the only maintainer,  will review and merge the code and update the ChangeLog.txt and documentation if needed.  
+Jose Teixeira, currently the only maintainer,  will review and merge pull requests, update the ChangeLog.txt, aknowledge the contribuitions and work on documentation on free-time from work. 
 
 # Contributors 
 Jose Teixeira
