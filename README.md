@@ -17,7 +17,11 @@ For more information, see the publication and related website:
 - Website [http://users.abo.fi/jteixeir/TensorFlowSNA/](http://users.abo.fi/jteixeir/TensorFlowSNA/) with the obtained social networks and visualizations for the TensorFlow open and coopetitive project (publication forthcoming). 
 
 
+# Problem statement # 
+Hard to figure out who works with whom in complex software projects. 
 
+# Vision
+A world where software co-production analytics put social network visualizations at the side of standard quantitative statistical data.  All towards the improved management and engineering of complex software projects orchestrated on Git. 
 
 # Inputs #
 
@@ -183,7 +187,7 @@ network file in the standard XML based format GraphML.
 - Dynamic export of social network visualizations with in the circular and centrality layouts
 
 ## To implement (voluntears welcome)
-- Possibiliry to add a argument pointing with a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company)-
+- Possibiliry to add a argument pointing with a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company).
 - Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>).
 - Possibiliry to add a argument pointing with a file what agregates different emails used by a different organizations (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com all map IBM).
 - OA- Possibliity to export both networks at individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations).
@@ -196,7 +200,7 @@ network file in the standard XML based format GraphML.
 - Support for community detection.
 - Use a logging system (e.g., [https://docs.python.org/3/library/logging.html](https://docs.python.org/3/library/logging.html)) instead of print statements for debugging.
 - Write unit tests for the main functions in scrapLogGit2Net (see [https://docs.python.org/3/library/unittest.html](https://docs.python.org/3/library/unittest.html)).
-- Publish as a python package to the community 
+- Publish as a python package to the community.
 
 # Contributing 
 Branch and pull mode. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
