@@ -1,4 +1,7 @@
-Check networkmezure unique connections to finnish the last stats 
+check why number of nodes is not cosisten between graphML module and scraplog
+Not workign with tensorFlowGitLog-first-trimester-2024.IN
+
+refactos network_meazures 
 So slow. move 
 
 Check that htere are other ways map cooperation
