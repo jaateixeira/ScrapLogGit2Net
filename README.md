@@ -200,7 +200,8 @@ network file in the standard XML based format GraphML.
 - Support for community detection.
 - Use a logging system (e.g., [https://docs.python.org/3/library/logging.html](https://docs.python.org/3/library/logging.html) or [https://github.com/gruns/icecream](https://github.com/gruns/icecream)) instead of print statements for debugging.
 - Write unit tests for the main functions in scrapLogGit2Net (see [https://docs.python.org/3/library/unittest.html](https://docs.python.org/3/library/unittest.html)).
-- Use config files as there are already so many parameters. 
+- Use config files as there are already so many parameters.
+- Integrate with the [TNM Tool for Mining of Socio-Technical Data from Git Repositories](https://github.com/JetBrains-Research/tnm)
 - Publish as a python package to the community.
 
 # Contributing 
