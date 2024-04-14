@@ -43,12 +43,12 @@ It uses the commit logs of a git repository
 Then: 
 - It starts by identifying what source-code files were changed by whom at a given point in time. 
 - Then associate each file with the developers that co-edited the same source-code file. 
-- Then connects developers in a network. Nodes are software developers with a unique email and edges connect them as they co-edited the same source-code file. 
+- Then connects developers in a network. Nodes are software developers with a unique email. Edges are established if developers co-edited the same source-code file (i.e., nodes connect by working on the same files). 
 
 Note that:
 - Some manual developer's email aggregation might be required as the same developers can use multiple emails.
 - Software bots can also commit code, undermining your analysis of human-to-human collaboration. 
-- Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected.  For example, if analysis projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination. 
+- Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected.  For example, when  analysing projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination. 
 
   
 # How to use it  #
