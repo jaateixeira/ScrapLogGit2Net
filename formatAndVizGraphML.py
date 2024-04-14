@@ -87,7 +87,7 @@ for node, data in G.nodes(data=True):
 
 
 circular_options = { 
-    'node_size': 10,
+#    'node_size': 10,
     'width': 0.1,
 }
 
@@ -167,11 +167,16 @@ for key in top_10_org:
     print (key, top_10_org[key]) 
 
 
+
+# setting size of node according centrality
+# see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
+
+    
 print ("")
 print ("Saving circular layout")
 # Random colors 1-256 
 #nx.draw_circular(G,node_color=range(256),**circular_options)
-nx.draw_circular(G,node_color=org_colors,**circular_options)
+nx.draw_circular(G,node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()],**circular_options)
 
 
 print ("")
@@ -195,7 +200,7 @@ for org in top_10_org:
 
 
 ax = plt.gca()
-ax.legend(handles=legend_elements, loc='better')
+ax.legend(handles=legend_elements, loc='best')
 
 
 plt.show()
@@ -205,7 +210,7 @@ plt.show()
 
 
 spring_options = { 
-    'node_size': 10,
+#    'node_size': 10,
     'width': 0.5,
 }
 
@@ -213,7 +218,12 @@ spring_options = {
 print ()
 print ("Saving centrality layout")
 print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
-nx.draw_spring(G, node_color=org_colors, **spring_options)
+
+"all nodes same size"
+# nx.draw_spring(G, node_color=org_colors, **spring_options)
+"all nodes size based on centrality"
+nx.draw_spring(G, node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()], **spring_options)
+
 
 ax = plt.gca()
 #ax.legend(handles=legend_elements, loc='upper right')
