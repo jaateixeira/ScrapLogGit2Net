@@ -187,19 +187,20 @@ network file in the standard XML based format GraphML.
 - Dynamic export of social network visualizations with in the circular and centrality layouts
 
 ## To implement (voluntears welcome)
-- Possibiliry to add a argument pointing with a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company).
-- Possibiliry to add a argument pointing with a file what agregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>).
-- Possibiliry to add a argument pointing with a file what agregates different emails used by a different organizations (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com all map IBM).
-- OA- Possibliity to export both networks at individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations).
-- Possiblity to limit analysis to n top contriburors (organization with most nodes).
-- Colorize nodes by company affiliation automaticaly.
+- Possibility to add an argument pointing to a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company).
+- Possibility to add an argument pointing with a file that aggregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>).
+- Possibility to add an argument pointing with a file that aggregates different emails used by different organizations (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com all map IBM).
+- Possibility to export both networks at the individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations).
+- Possibility to limit analysis to n top contributors (organization with most nodes).
+- Colorize nodes by company affiliation automatically.
 - Report stats on the files connecting people the most (handy for identifying outliers). 
 - Support for weighted edges.
-- Reporting analysis in latex, Markdown, HTML and text files. Should include quantitative metrics (e.g, n. commits, n. lines of code per dev, most co-edited files) and relational metrics (e.g., centrality, density). 
+- Reporting analysis in latex, Markdown, HTML and text files. Should include quantitative metrics (e.g., n. commits, n. lines of code per dev, most co-edited files) and relational metrics (e.g., centrality, density). 
 - Support for other network formats besides graphML (see [https://socnetv.org/docs/formats.html](https://socnetv.org/docs/formats.html)).
 - Support for community detection.
-- Use a logging system (e.g., [https://docs.python.org/3/library/logging.html](https://docs.python.org/3/library/logging.html)) instead of print statements for debugging.
+- Use a logging system (e.g., [https://docs.python.org/3/library/logging.html](https://docs.python.org/3/library/logging.html) or [https://github.com/gruns/icecream](https://github.com/gruns/icecream)) instead of print statements for debugging.
 - Write unit tests for the main functions in scrapLogGit2Net (see [https://docs.python.org/3/library/unittest.html](https://docs.python.org/3/library/unittest.html)).
+- Use config files as there are already so many parameters. 
 - Publish as a python package to the community.
 
 # Contributing 
