@@ -21,11 +21,11 @@ For more information, see the publication and related website:
 
 # Inputs #
 
-A git repository and its commit logs 
+A git repository and its commit logs.
 
 
 # Outputs #
-Social networks that capture who codes who who in a repository (note that a software project can have multiple repositories)
+Social networks that capture who codes who who in a repository (note that a software project can have multiple repositories).
 
 # How it works #
 
@@ -36,6 +36,17 @@ It uses the commit logs of a git repository
 - %ae stands for author email
 - %ad stands for author date
 
+Then: 
+- It starts by identifying what source-code files were changed by whom at a given point in time. 
+- Then associate each file with the developers that co-edited the same source-code file. 
+- Then connects developers in a network. Nodes are software developers with a unique email and edges connect them as they co-edited the same source-code file. 
+
+  Note that:
+  Some manual developer's email aggregation might be required as the same developers can use multiple emails.
+  Software bots can also commit code, undermining your analysis of human-to-human collaboration. 
+  Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected.  For example, if analysis projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination. 
+
+  
 # How to use it  #
 
 You need basic skills of Git and basic skills on how to invoke shell scripts in bash.  Knowing python will also help a lot. 
