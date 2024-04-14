@@ -187,6 +187,7 @@ network file in the standard XML based format GraphML.
 - Dynamic export of social network visualizations with in the circular and centrality layouts
 
 ## To implement (voluntears welcome)
+- Account for co-authorships made explicit with the 'Co-authored-by:' string on the  trailer tof the commit's message. [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation. 
 - Possibility to add an argument pointing to a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company).
 - Possibility to add an argument pointing with a file that aggregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>).
 - Possibility to add an argument pointing with a file that aggregates different emails used by different organizations (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com all map IBM).
