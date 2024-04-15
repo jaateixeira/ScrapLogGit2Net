@@ -1,3 +1,30 @@
+
+Write test for filtering emails in bash
+the script should create and delete its own filters
+
+Write down in object oriented form useing classes
+
+- Scrapper (file, scrappingtype(org, ind, eighted)) returns nothing 
+
+. Miner(file) returns (Graph, Co-editedFilesGroupedBydevelopers, DevelopersConnectionByCo-EdigitedFiles 
+
+- Reporter
+- Reports on graph,and developer and file statistics 
+
+extension of Miner 
+Miner_org2org_weighted
+Miner_org2org_pararel
+Miner_dev2de_weigted
+Miner_dev2de_weigted pararel
+
+
+
+- ScrapperResultsExporter
+- ScrapperResultExporterGraphML is an extension 
+
+- Reports on graph,and developer and file statistics 
+
+
 Check networkmezure unique connections to finnish the last stats 
 So slow. move 
 
