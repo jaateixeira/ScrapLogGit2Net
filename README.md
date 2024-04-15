@@ -73,7 +73,7 @@ Obtain the commit logs that will be the main input for ScrapLogGit2Net. In this 
 Note that data scraping is a technique where a computer program extracts data from human-readable output coming from another program. In this case ScrapLogGit2Net will extract data coming from git.
 
 ```
-git log --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog.IN`
+git log --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog.IN
 ```
 
 If you are lost by this point, time to learn about Git. 
@@ -181,10 +181,11 @@ network file in the standard XML based format GraphML.
 
 ## Recently implemented features 
 - Export to the [GraphML][http://graphml.graphdrawing.org/] format for graphs based on XML. Exports undirected grapths with company affiliation atributes. 
-- Verbose debug output
+- Optional verbose debug output.
 - Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects.
 - Possibiliry of adding an argument pointing with a file with emails to ignore (e.g., bots and spam email addresses).
-- Dynamic export of social network visualizations with in the circular and centrality layouts
+- Dynamic export of social network visualizations with in the circular and centrality layouts.
+- Dynamic node size based on degree centrality in the circular and centrality layouts. High connected nodes are bigger, less connected nodes are smaller. 
 
 ## To implement (voluntears welcome)
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the  trailer tof the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
@@ -208,9 +209,9 @@ network file in the standard XML based format GraphML.
 - Publish as a python package to the community.
 
 # Contributing 
-Branch and pull mode. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
+Please create a new branch for any new feature. Branch or fork, code, test, then pull request. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
 
-Note you should not break the test runner bash script (testScrapLog.sh) that runs ScrapLogGit2Net agains test-data and compares with the expected output. 
+Note you should not break the test runner bash script (testScrapLog.sh) that runs ScrapLogGit2Net agains test-data and compares with the expected output. You might need to change the test runner to comply with new developments. 
 
 Jose Teixeira, currently the only maintainer,  will review and merge pull requests, update the ChangeLog.txt, aknowledge the contribuitions and work on documentation on free-time from work. 
 

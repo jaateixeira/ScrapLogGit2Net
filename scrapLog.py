@@ -593,25 +593,34 @@ def agregateByFileItsContributors():
     
 
     for change in changeLogData:
+
         email = change[0][1]
         files = change [1]
 
-        for file in files:
-            # If its a new file 
-            if file not in filesVisited:
-                filesVisited.append(file)
-                agreByFileContributors[file]=[]
-                agreByFileContributors[file].append(email)
-            # if a file that that was changed before
-            elif file in filesVisited:
-                # add a new author to the list of authors that changed the file
-                if email not in agreByFileContributors[file]:
-                    agreByFileContributors[file].append(email)
-            else:
-                print ("ERROR: list of file not visited") 
-                exit()
+        #if(globals()['DEBUG_MODE']):
+        print ("")
+        print ("\t agreegating change by ",email, "on ", change[0][0])
 
-    stats['nChangedFiles'] = len(filesVisited)
+        for file in files:
+                if(globals()['DEBUG_MODE']):
+                        print ("")
+                        print ("\t agreegating file [",file,"] to dev [",email,"]" )
+
+                # If its a new file 
+                if file not in filesVisited:
+                        filesVisited.append(file)
+                        globals()['agreByFileContributors'][file]=[]
+                        globals()['agreByFileContributors'][file].append(email)
+                        # if a file that that was changed before
+                elif file in filesVisited:
+                        # add a new author to the list of authors that changed the file
+                        if email not in globals()['agreByFileContributors'][file]:
+                                globals()['agreByFileContributors'][file].append(email)
+                else:
+                        print ("ERROR: list of file not visited") 
+                        exit()
+
+    globals()['stats']['nChangedFiles'] = len(filesVisited)
 
 # Get tuple of authors getting connect due to working on a common file 
 # [(a-b),file)]
@@ -733,28 +742,31 @@ def print_Affiliations():
 #    for author  in  networked_affiliations:
 #        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
+
 # Reprocess all variables from changeLogData
-def reprocess():
-    
-    print ("\n Reprocessing changeLogData")
-    
-    global agreByFileContributors
-    global agreByConnWSF
-    global affiliations
-    global networked_affiliations
-    global uniqueConnections
+# deprecateted was for JISA paper to filter by date within here
+# This should be done out instead 
+#def reprocess():
+#    
+#    print ("\n Reprocessing changeLogData")
+#    
+#    global agreByFileContributors
+#    global agreByConnWSF
+#    global affiliations
+#    global networked_affiliations
+#    global uniqueConnections
 
-    agreByFileContributors = {}
-    agreByConnWSF = []
-    affiliations = {}
-    networked_affiliations = {}
+#    agreByFileContributors = {}
+#    agreByConnWSF = []
+#    affiliations = {}
+#    networked_affiliations = {}
 
 
-    # Reprocess with the new changeLogData
-    agregateByFileItsContributors()
-    getContributorsConnectionsTuplesWSF()
-    uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
-    getAffiliations() 
+#    # Reprocess with the new changeLogData
+#    agregateByFileItsContributors()
+#    getContributorsConnectionsTuplesWSF()
+#    uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
+#    getAffiliations() 
 
 
 ## MAIN 
@@ -1029,7 +1041,7 @@ def main():
                                 "must remove the node, and all its edges shoud go as well"
                                 
                                 for adj in G_network_Dev2Dev_singleEdges.neighbors(email):
-                                        print("\t",email, " was connected to ", adj )
+                                        print("\t\t",email, " (node being removed) is connected to ", adj )
                                 G_network_Dev2Dev_singleEdges.remove_node(email)
                                 
 
@@ -1043,15 +1055,20 @@ def main():
                 "So isolates should be removed after filtering by email or removing nodes in any other way" 
                 if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0):
                         array_of_nodes_to_be_removed =[]
-                        for node_to_go in nx.isolates(G_network_Dev2Dev_singleEdges):
-                                array_of_nodes_to_be_removed.append(node_to_go)
-                        G_network_Dev2Dev_singleEdges.remove_nodes_from(array_of_nodes_to_be_removed)
+                        for node_to_del in nx.isolates(G_network_Dev2Dev_singleEdges):
+                                if (globals()['DEBUG_MODE']):
+                                        print ("\t\t Appending ",node_to_del,"to be removed")
+                                array_of_nodes_to_be_removed.append(node_to_del)
+                        
+                        print ()
+                        print ("Removing node isolates that resulted from deleting nodes marked to be filtered")
+                        print (G_network_Dev2Dev_singleEdges.remove_nodes_from(array_of_nodes_to_be_removed))
 
                 if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) != 0):
                         print ("Error: failed to remove isolates after filtering by email")
                         exit(1)
 
-        "there should be not isolates"
+        "there should be not isolates - even if connections removed by filtering"
         if (DEBUG_MODE):
                 if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0 ):
                         print()
@@ -1091,8 +1108,21 @@ def main():
 
 
 
+
          
         print ("\n\t:) GRAPHML export Number of nodes/authors = " + str(G_network_Dev2Dev_singleEdges.number_of_nodes()))
+
+        
+        print ("\n\t:) GRAPHML export Number of nodes/authors = " + str(G_network_Dev2Dev_singleEdges.number_of_nodes()))
+        print ("\n\t:) GRAPHML export Number of networked nodes/authors = " + str(G_network_Dev2Dev_singleEdges.number_of_nodes()))
+
+        # This will break tests, but fogot commit last code
+        #print ("\n\t:) GRAPHML export Number of nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(affiliations)))
+        #print ("\n\t:) GRAPHML export Number of networked nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(networked_affiliations)))
+
+        print ("\n\t:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(G_network_Dev2Dev_singleEdges.size))
+
+        print ("\n\t:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(G_network_Dev2Dev_singleEdges.size()))
 
         print ("\n\t:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(G_network_Dev2Dev_singleEdges.size()))
 

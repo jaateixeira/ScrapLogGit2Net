@@ -2,6 +2,35 @@ check why number of nodes is not cosisten between graphML module and scraplog
 Not workign with tensorFlowGitLog-first-trimester-2024.IN
 
 refactos network_meazures 
+
+
+Write test for filtering emails in bash
+the script should create and delete its own filters
+
+Write down in object oriented form useing classes
+
+- Scrapper (file, scrappingtype(org, ind, eighted)) returns nothing 
+
+. Miner(file) returns (Graph, Co-editedFilesGroupedBydevelopers, DevelopersConnectionByCo-EdigitedFiles 
+
+- Reporter
+- Reports on graph,and developer and file statistics 
+
+extension of Miner 
+Miner_org2org_weighted
+Miner_org2org_pararel
+Miner_dev2de_weigted
+Miner_dev2de_weigted pararel
+
+
+
+- ScrapperResultsExporter
+- ScrapperResultExporterGraphML is an extension 
+
+- Reports on graph,and developer and file statistics 
+
+
+Check networkmezure unique connections to finnish the last stats 
 So slow. move 
 
 Check that htere are other ways map cooperation
@@ -19,14 +48,7 @@ Why not captured ==Gunhyun Park;gunhyun@google.com;Wed Mar 27 15:01:41 2024 -070
 Add Network X package citation to paper + website 
 Add Algoritm package citiation  to paper + website 
 
-
-- Document script paramters 
-options:
-  -h, --help            show this help message and exit
-  -l LSER, --lser LSER  loads and processes an serialized changelog
-  -r RAW, --raw RAW     processes from a raw git changelog
-  -s SSER, --sser SSER  processses from a raw git changelog and saves it into
-                        a serialized changelog. Requires -r for imput
+r for imput
   -v, --verbose         increase output verbosity
 
 Implement option input for organization-agregation 

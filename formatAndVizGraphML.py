@@ -119,8 +119,10 @@ top_10_colors = {
     'outlook': 'gray',
     'gmail': 'gray',
     'tensorflow': 'white',
-    
-    
+    'fastmail':'gray',
+    'ornl':'gray',
+    'meta':'blue',
+    'polymagelabs':'gray',
 }
 
 # argument passed to draw functions 
