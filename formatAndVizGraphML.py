@@ -121,7 +121,8 @@ top_10_colors = {
     'tensorflow': 'white',
     'fastmail':'gray',
     'ornl':'gray',
-    'meta':'blue', 
+    'meta':'blue',
+    'polymagelabs':'gray',
 }
 
 # argument passed to draw functions 
