@@ -73,7 +73,7 @@ Obtain the commit logs that will be the main input for ScrapLogGit2Net. In this 
 Note that data scraping is a technique where a computer program extracts data from human-readable output coming from another program. In this case ScrapLogGit2Net will extract data coming from git.
 
 ```
-git log --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog.IN`
+git log --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog.IN
 ```
 
 If you are lost by this point, time to learn about Git. 
