@@ -599,7 +599,7 @@ def agregateByFileItsContributors():
 
         #if(globals()['DEBUG_MODE']):
         print ("")
-        print ("\t agreegating changes by developer",email)
+        print ("\t agreegating change by ",email, "on ", change[0][0])
 
         for file in files:
                 if(globals()['DEBUG_MODE']):
@@ -1041,7 +1041,7 @@ def main():
                                 "must remove the node, and all its edges shoud go as well"
                                 
                                 for adj in G_network_Dev2Dev_singleEdges.neighbors(email):
-                                        print("\t",email, " was connected to ", adj )
+                                        print("\t\t",email, " (node being removed) is connected to ", adj )
                                 G_network_Dev2Dev_singleEdges.remove_node(email)
                                 
 
@@ -1055,15 +1055,20 @@ def main():
                 "So isolates should be removed after filtering by email or removing nodes in any other way" 
                 if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0):
                         array_of_nodes_to_be_removed =[]
-                        for node_to_go in nx.isolates(G_network_Dev2Dev_singleEdges):
-                                array_of_nodes_to_be_removed.append(node_to_go)
-                        G_network_Dev2Dev_singleEdges.remove_nodes_from(array_of_nodes_to_be_removed)
+                        for node_to_del in nx.isolates(G_network_Dev2Dev_singleEdges):
+                                if (globals()['DEBUG_MODE']):
+                                        print ("\t\t Appending ",node_to_del,"to be removed")
+                                array_of_nodes_to_be_removed.append(node_to_del)
+                        
+                        print ()
+                        print ("Removing node isolates that resulted from deleting nodes marked to be filtered")
+                        print (G_network_Dev2Dev_singleEdges.remove_nodes_from(array_of_nodes_to_be_removed))
 
                 if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) != 0):
                         print ("Error: failed to remove isolates after filtering by email")
                         exit(1)
 
-        "there should be not isolates"
+        "there should be not isolates - even if connections removed by filtering"
         if (DEBUG_MODE):
                 if (nx.number_of_isolates(G_network_Dev2Dev_singleEdges) > 0 ):
                         print()
@@ -1101,17 +1106,17 @@ def main():
         print(Style.RESET_ALL)
         
 
-                
-        print ("\n\t:) GRAPHML export Number of nodes/authors = " + str(len(affiliations)))
-        print ("\n\t:) GRAPHML export Number of networked nodes/authors = " + str(len(networked_affiliations)))
+        
+        print ("\n\t:) GRAPHML export Number of nodes/authors = " + str(G_network_Dev2Dev_singleEdges.number_of_nodes()))
+        print ("\n\t:) GRAPHML export Number of networked nodes/authors = " + str(G_network_Dev2Dev_singleEdges.number_of_nodes()))
 
-        print ("\n\t:) GRAPHML export Number of nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(affiliations)))
-        print ("\n\t:) GRAPHML export Number of networked nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(networked_affiliations)))
-        print ("\n\t:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(networkMeasures.getNumberOfEdges(agreByConnWSF)))
+        # This will break tests, but fogot commit last code
+        #print ("\n\t:) GRAPHML export Number of nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(affiliations)))
+        #print ("\n\t:) GRAPHML export Number of networked nodes/atribute/affiliations  = " + str(networkMeasures.getNumberOfAffiliations(networked_affiliations)))
 
-        print ("\n\t:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(networkMeasures.getNumberOfUniqueEdges(agreByConnWSF)))
+        print ("\n\t:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = " + str(G_network_Dev2Dev_singleEdges.size))
 
-        print ("\n\t:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(len(uniqueConnections)))
+        print ("\n\t:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = " + str(G_network_Dev2Dev_singleEdges.size()))
 
         # Create an graphML file filtered by company
         # In this case_ red_hat,enovance and intel
