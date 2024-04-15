@@ -593,25 +593,34 @@ def agregateByFileItsContributors():
     
 
     for change in changeLogData:
+
         email = change[0][1]
         files = change [1]
 
-        for file in files:
-            # If its a new file 
-            if file not in filesVisited:
-                filesVisited.append(file)
-                agreByFileContributors[file]=[]
-                agreByFileContributors[file].append(email)
-            # if a file that that was changed before
-            elif file in filesVisited:
-                # add a new author to the list of authors that changed the file
-                if email not in agreByFileContributors[file]:
-                    agreByFileContributors[file].append(email)
-            else:
-                print ("ERROR: list of file not visited") 
-                exit()
+        #if(globals()['DEBUG_MODE']):
+        print ("")
+        print ("\t agreegating changes by developer",email)
 
-    stats['nChangedFiles'] = len(filesVisited)
+        for file in files:
+                if(globals()['DEBUG_MODE']):
+                        print ("")
+                        print ("\t agreegating file [",file,"] to dev [",email,"]" )
+
+                # If its a new file 
+                if file not in filesVisited:
+                        filesVisited.append(file)
+                        globals()['agreByFileContributors'][file]=[]
+                        globals()['agreByFileContributors'][file].append(email)
+                        # if a file that that was changed before
+                elif file in filesVisited:
+                        # add a new author to the list of authors that changed the file
+                        if email not in globals()['agreByFileContributors'][file]:
+                                globals()['agreByFileContributors'][file].append(email)
+                else:
+                        print ("ERROR: list of file not visited") 
+                        exit()
+
+    globals()['stats']['nChangedFiles'] = len(filesVisited)
 
 # Get tuple of authors getting connect due to working on a common file 
 # [(a-b),file)]
@@ -733,28 +742,31 @@ def print_Affiliations():
 #    for author  in  networked_affiliations:
 #        print(("\t" + author + " is affiliatied with " + affiliations[author]))
 
+
 # Reprocess all variables from changeLogData
-def reprocess():
-    
-    print ("\n Reprocessing changeLogData")
-    
-    global agreByFileContributors
-    global agreByConnWSF
-    global affiliations
-    global networked_affiliations
-    global uniqueConnections
+# deprecateted was for JISA paper to filter by date within here
+# This should be done out instead 
+#def reprocess():
+#    
+#    print ("\n Reprocessing changeLogData")
+#    
+#    global agreByFileContributors
+#    global agreByConnWSF
+#    global affiliations
+#    global networked_affiliations
+#    global uniqueConnections
 
-    agreByFileContributors = {}
-    agreByConnWSF = []
-    affiliations = {}
-    networked_affiliations = {}
+#    agreByFileContributors = {}
+#    agreByConnWSF = []
+#    affiliations = {}
+#    networked_affiliations = {}
 
 
-    # Reprocess with the new changeLogData
-    agregateByFileItsContributors()
-    getContributorsConnectionsTuplesWSF()
-    uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
-    getAffiliations() 
+#    # Reprocess with the new changeLogData
+#    agregateByFileItsContributors()
+#    getContributorsConnectionsTuplesWSF()
+#    uniqueConnections= getUniqueConnectionsTuplesList(agreByConnWSF)
+#    getAffiliations() 
 
 
 ## MAIN 
