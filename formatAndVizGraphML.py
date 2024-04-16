@@ -179,7 +179,7 @@ for node, data in G.nodes(data=True):
     
 
 print("\nall_affiliations_freq:")
-print(all_affiliations_freq)
+print(dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)))
 
 top_10_org =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)[:10])
 
