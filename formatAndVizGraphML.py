@@ -144,6 +144,7 @@ top_10_colors = {
     'microsoft': 'darkorange',
     'mit':'black',
     'alum':'gray',
+    'us':'white',
 }
 
 # argument passed to draw functions 
