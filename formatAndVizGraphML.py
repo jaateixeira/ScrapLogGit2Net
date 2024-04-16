@@ -148,6 +148,8 @@ top_10_colors = {
     '163':'gray',
     'huawei':'darkred',
     'graphcore':'pink',
+    'ispras': 'black',
+    
 }
 
 # argument passed to draw functions 

@@ -1,7 +1,11 @@
-IBM, Amazon, Microsoft, Google all in - All competitiors
+IBM, Amazon, Microsoft, and Google all in - All competitiors
 Meta, Bytedance - All competitors
 AMD, ARM, Nividia, Intel 
 Many contributions  from outside - researchers  and research institutes 
 After 2020 Many contributions fir AI expertcompanies and startups
 Examples: Graphcore and polymagelabs
 
+rsearch institutes all over the world.like ispras, blologna, cern
+
+Draw all research institutes
+Draw all users in gray
