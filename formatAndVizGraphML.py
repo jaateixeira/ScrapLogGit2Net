@@ -147,7 +147,7 @@ top_10_colors = {
     'us':'white',
     '163':'gray',
     'huawei':'darkred',
-    
+    'graphcore':'pink',
 }
 
 # argument passed to draw functions 
