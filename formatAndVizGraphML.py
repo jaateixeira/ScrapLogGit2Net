@@ -146,6 +146,8 @@ top_10_colors = {
     'alum':'gray',
     'us':'white',
     '163':'gray',
+    'huawei':'darkred',
+    
 }
 
 # argument passed to draw functions 
