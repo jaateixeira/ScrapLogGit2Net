@@ -123,6 +123,11 @@ top_10_colors = {
     'ornl':'gray',
     'meta':'blue',
     'polymagelabs':'gray',
+    'cern': 'black',
+    'nicksweeting': 'gray',
+    'borgerding':'gray',
+    'apache':'gray',
+    'hyperscience':'gray',
 }
 
 # argument passed to draw functions 
