@@ -1,0 +1,948 @@
+Executing ['../../scrapLog.py', '-r', '../icis-2024-wp-raw-inputs/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.txt', '-fe', '../../test-configurations/TensorFlowBots.txt']
+
+Filtering (ignoring given emails) turned on
+
+processing [raw= ../icis-2024-wp-raw-inputs/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.txt ]
+
+('Scrapping changeLog from ', '../icis-2024-wp-raw-inputs/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.txt')
+
+STARTING the scrap of changeLog file ../icis-2024-wp-raw-inputs/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.txt on 2024-04-16 11:35:26.510369
+	 Reading filter file ../../test-configurations/TensorFlowBots.txt
+['unknown@email', 'gardener@tensorflow.org', '114951738+akhilgoe@users.noreply.github.com', '126815388+zoranjovanovic-ns@users.noreply.github.com', '107119183+yasiribmcon@users.noreply.github.com', '83710963+mraunak@users.noreply.github.com', 'anubhav@u.nus.edu.com?', 'ebigelow@u.rochester.edu.com?']
+[32m
+:)1st SUCESS Data scraped from changlog files (stored in ChangeLogData data structure)
+[0m
+
+Agregating data: for each file what are the contributors
+
+	 agreegating change by  terrytangyuan@gmail.com on  Wed Dec 30 13:53:12 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Wed Dec 30 13:43:10 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 30 11:34:03 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Wed Dec 30 13:24:22 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 29 23:49:55 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 29 22:52:40 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 29 22:37:39 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 29 22:11:52 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 29 21:59:24 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 29 19:25:13 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 29 18:28:40 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 29 18:19:34 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Mon Dec 28 22:28:04 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 30 11:22:27 2015
+
+	 agreegating change by  jendap@google.com on  Tue Dec 29 22:54:31 2015
+
+	 agreegating change by  jendap@google.com on  Wed Dec 30 00:19:01 2015
+
+	 agreegating change by  jendap@google.com on  Fri Dec 18 23:22:50 2015
+
+	 agreegating change by  jendap@google.com on  Thu Dec 17 21:25:43 2015
+
+	 agreegating change by  jendap@google.com on  Wed Dec 16 23:54:11 2015
+
+	 agreegating change by  alammar@gmail.com on  Mon Dec 28 20:53:23 2015
+
+	 agreegating change by  smmuzi@gmail.com on  Mon Dec 28 18:44:23 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Dec 28 00:43:09 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Dec 28 00:10:39 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 27 23:32:39 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 27 23:30:32 2015
+
+	 agreegating change by  sjabraha@gmail.com on  Sun Dec 27 23:19:56 2015
+
+	 agreegating change by  alammar@gmail.com on  Mon Dec 28 09:16:06 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 27 18:50:40 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 27 18:19:16 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 27 18:13:25 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 27 18:07:38 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 27 17:42:20 2015
+
+	 agreegating change by  alammar@gmail.com on  Sun Dec 27 16:18:33 2015
+
+	 agreegating change by  aymeric.damien@gmail.com on  Wed Dec 23 14:24:32 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 22:40:33 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 18:24:32 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 15:29:25 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 15:18:49 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 15:15:44 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 15:15:11 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 14:36:37 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 14:13:08 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 14:04:47 2015
+
+	 agreegating change by  ghchinoy@gmail.com on  Sat Dec 26 14:25:49 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 11:39:53 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 11:37:26 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 11:35:05 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 26 11:31:01 2015
+
+	 agreegating change by  zavidovych@users.noreply.github.com on  Sat Dec 26 03:47:00 2015
+
+	 agreegating change by  rekhajoshm@gmail.com on  Fri Dec 25 11:20:10 2015
+
+	 agreegating change by  Mistobaan@users.noreply.github.com on  Thu Dec 24 13:11:42 2015
+
+	 agreegating change by  mistobaan@gmail.com on  Thu Dec 24 10:36:13 2015
+
+	 agreegating change by  keiji_ariyama@c-lis.co.jp on  Fri Dec 25 03:29:14 2015
+
+	 agreegating change by  akiomik@gmail.com on  Wed Dec 23 23:50:13 2015
+
+	 agreegating change by  akiomik@gmail.com on  Wed Dec 23 19:20:07 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 12:06:18 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 12:05:03 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 23 11:59:21 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 11:23:55 2015
+
+	 agreegating change by  git@nicksweeting.com on  Wed Dec 23 14:08:52 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 11:16:38 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 23 11:05:03 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:55:28 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:53:56 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:50:24 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:43:11 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:42:53 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:38:04 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:32:06 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:31:51 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:20:37 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:14:23 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Dec 23 00:10:39 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Dec 22 23:25:26 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Dec 22 23:16:17 2015
+
+	 agreegating change by  frolvlad@gmail.com on  Wed Dec 23 13:43:30 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 22 18:29:02 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 22 17:48:30 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 22 17:48:20 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 22 17:48:09 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 22 17:48:00 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 22 17:47:50 2015
+
+	 agreegating change by  mrry@google.com on  Tue Dec 22 15:07:19 2015
+
+	 agreegating change by  mrry@google.com on  Tue Dec 22 15:07:09 2015
+
+	 agreegating change by  josh11b@tensorflow.org on  Tue Dec 22 15:06:57 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 22 15:06:47 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 22 15:06:34 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Dec 22 10:05:15 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 21 13:32:34 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 21 13:32:24 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 21 13:32:13 2015
+
+	 agreegating change by  josh11b@tensorflow.org on  Mon Dec 21 13:32:02 2015
+
+	 agreegating change by  mrry@google.com on  Mon Dec 21 13:31:53 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 21 13:31:41 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 21 13:31:31 2015
+
+	 agreegating change by  wicke@google.com on  Mon Dec 21 13:31:21 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 21 13:31:11 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 21 13:31:01 2015
+
+	 agreegating change by  dga@google.com on  Mon Dec 21 13:30:41 2015
+
+	 agreegating change by  carneiro.be@gmail.com on  Mon Dec 21 11:50:24 2015
+
+	 agreegating change by  dennybritz@gmail.com on  Fri Dec 18 06:59:43 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 20:29:33 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 20:23:31 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 20:17:20 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 19:57:23 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 19:47:05 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 19:46:09 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 19:07:04 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 18:47:00 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 11:53:20 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 20 11:16:17 2015
+
+	 agreegating change by  vrv@google.com on  Sun Dec 20 10:56:16 2015
+
+	 agreegating change by  smmuzi@gmail.com on  Sun Dec 20 19:36:09 2015
+
+	 agreegating change by  smmuzi@gmail.com on  Fri Dec 18 10:51:22 2015
+
+	 agreegating change by  riccardo.grazz@gmail.com on  Sun Dec 20 11:45:39 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 19 20:14:12 2015
+
+	 agreegating change by  zhulinchao7@gmail.com on  Sat Dec 19 01:29:03 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 18 19:17:29 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 18 17:51:56 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 18 17:37:45 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 18 17:16:46 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 18 17:01:54 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 18 14:48:21 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 18 14:43:28 2015
+
+	 agreegating change by  lukaszkaiser@gmail.com on  Fri Dec 18 14:40:07 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Fri Dec 18 14:39:59 2015
+
+	 agreegating change by  mrry@google.com on  Fri Dec 18 14:39:49 2015
+
+	 agreegating change by  josh11b@tensorflow.org on  Fri Dec 18 14:39:40 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Fri Dec 18 10:05:25 2015
+
+	 agreegating change by  mrry@google.com on  Fri Dec 18 10:05:16 2015
+
+	 agreegating change by  mrry@google.com on  Fri Dec 18 10:05:07 2015
+
+	 agreegating change by  mrry@google.com on  Fri Dec 18 10:04:57 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Dec 17 18:33:36 2015
+
+	 agreegating change by  wicke@google.com on  Thu Dec 17 17:27:36 2015
+
+	 agreegating change by  benoit.steiner.goog@gmail.com on  Thu Dec 17 17:27:28 2015
+
+	 agreegating change by  benoit.steiner.goog@gmail.com on  Thu Dec 17 17:27:19 2015
+
+	 agreegating change by  martin.wicke@gmail.com on  Thu Dec 17 16:59:51 2015
+
+	 agreegating change by  yutaka.leon@gmail.com on  Thu Dec 17 16:39:27 2015
+
+	 agreegating change by  yutaka.leon@gmail.com on  Thu Dec 17 16:39:13 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Thu Dec 17 16:39:02 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Thu Dec 17 16:38:45 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Thu Dec 17 16:38:32 2015
+
+	 agreegating change by  mrry@google.com on  Thu Dec 17 16:38:15 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 17 13:23:47 2015
+
+	 agreegating change by  benoit.steiner.goog@gmail.com on  Thu Dec 17 13:23:38 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Thu Dec 17 13:23:28 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Dec 17 11:49:38 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Dec 17 11:25:45 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Dec 17 10:32:20 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 17 10:28:16 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Thu Dec 17 10:28:06 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Thu Dec 17 10:27:58 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Thu Dec 17 10:27:42 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Thu Dec 17 10:27:32 2015
+
+	 agreegating change by  jendap@google.com on  Thu Dec 17 10:27:24 2015
+
+	 agreegating change by  wicke@google.com on  Thu Dec 17 10:27:14 2015
+
+	 agreegating change by  vanhoucke@google.com on  Thu Dec 17 10:27:05 2015
+
+	 agreegating change by  dsmilkov@gmail.com on  Thu Dec 17 10:26:56 2015
+
+	 agreegating change by  dsmilkov@gmail.com on  Thu Dec 17 10:26:46 2015
+
+	 agreegating change by  andy.dai@gmail.com on  Thu Dec 17 10:26:37 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Dec 17 10:08:21 2015
+
+	 agreegating change by  kenton.ct.lee@gmail.com on  Thu Dec 17 00:57:24 2015
+
+	 agreegating change by  kenton.ct.lee@gmail.com on  Tue Dec 15 19:56:57 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 16 17:57:02 2015
+
+	 agreegating change by  dga@google.com on  Wed Dec 16 17:56:53 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 16 17:56:43 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Wed Dec 16 17:56:35 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Wed Dec 16 17:56:17 2015
+
+	 agreegating change by  keveman@gmail.com on  Wed Dec 16 17:56:09 2015
+
+	 agreegating change by  mrry@google.com on  Wed Dec 16 17:56:00 2015
+
+	 agreegating change by  jendap@google.com on  Wed Dec 16 17:55:52 2015
+
+	 agreegating change by  jendap@google.com on  Wed Dec 16 17:55:33 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Wed Dec 16 17:55:24 2015
+
+	 agreegating change by  jendap@google.com on  Wed Dec 16 17:55:16 2015
+
+	 agreegating change by  keveman@gmail.com on  Wed Dec 16 17:55:08 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Wed Dec 16 17:55:00 2015
+
+	 agreegating change by  mrry@google.com on  Wed Dec 16 17:54:29 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 17:34:40 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 17:34:31 2015
+
+	 agreegating change by  mrry@google.com on  Tue Dec 15 17:34:21 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:48:56 2015
+
+	 agreegating change by  dsmilkov@gmail.com on  Tue Dec 15 14:48:46 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:48:36 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:48:26 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:48:06 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:47:57 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:47:48 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:47:28 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 15 14:47:19 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:47:08 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:46:57 2015
+
+	 agreegating change by  mrry@google.com on  Tue Dec 15 14:46:48 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:46:21 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:46:12 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:45:52 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Tue Dec 15 14:45:31 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Mon Dec 14 22:03:38 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Mon Dec 14 21:42:53 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Mon Dec 14 20:41:23 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Mon Dec 14 20:34:48 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 14 16:45:49 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 14 16:45:34 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 14 16:45:08 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 14 16:44:54 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 14 16:44:45 2015
+
+	 agreegating change by  nobody@tensorflow.org on  Mon Dec 14 16:44:36 2015
+
+	 agreegating change by  wicke@google.com on  Mon Dec 14 16:44:21 2015
+
+	 agreegating change by  sjabraha@gmail.com on  Mon Dec 14 16:35:21 2015
+
+	 agreegating change by  ivanvallesperez@gmail.com on  Sun Dec 13 19:14:32 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Dec 14 11:26:58 2015
+
+	 agreegating change by  vrv@google.com on  Mon Dec 14 11:01:15 2015
+
+	 agreegating change by  vrv@google.com on  Mon Dec 14 11:00:45 2015
+
+	 agreegating change by  jalexvig@gmail.com on  Sun Dec 13 15:16:28 2015
+
+	 agreegating change by  vrv@google.com on  Mon Dec 14 10:25:42 2015
+
+	 agreegating change by  mark@borgerding.net on  Thu Dec 10 14:05:03 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 22:58:11 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 20:28:22 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 19:58:00 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 19:21:20 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 13 21:12:52 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 19:11:26 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 18:53:35 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 18:36:13 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 13 20:25:24 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 13 20:14:48 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 13 20:14:17 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 13 20:10:22 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 13 19:46:16 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 13 19:42:57 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 15:27:17 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 15:19:13 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Dec 13 15:18:50 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Sun Dec 13 18:17:55 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 13 14:44:04 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 13 11:39:32 2015
+
+	 agreegating change by  vrv@google.com on  Fri Dec 11 23:03:16 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Fri Dec 11 19:15:58 2015
+
+	 agreegating change by  vrv@google.com on  Fri Dec 11 17:14:11 2015
+
+	 agreegating change by  vrv@google.com on  Fri Dec 11 17:09:12 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 11 16:45:34 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 11 16:32:10 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 11 15:47:38 2015
+
+	 agreegating change by  vrv@google.com on  Fri Dec 11 14:08:17 2015
+
+	 agreegating change by  vrv@google.com on  Fri Dec 11 12:25:19 2015
+
+	 agreegating change by  aahuja11@gmail.com on  Fri Dec 11 14:56:33 2015
+
+	 agreegating change by  vrv@google.com on  Fri Dec 11 11:29:48 2015
+
+	 agreegating change by  vrv@google.com on  Fri Dec 11 10:33:31 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 11 09:16:44 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 11 09:15:31 2015
+
+	 agreegating change by  mark@borgerding.net on  Fri Dec 11 07:33:33 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 10 16:42:22 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 10 15:10:51 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 10 14:27:55 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 10 12:07:40 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 10 10:15:38 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 10 09:06:16 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 9 17:40:18 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Wed Dec 9 19:03:51 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 9 17:00:29 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 9 16:39:39 2015
+
+	 agreegating change by  wicke@google.com on  Wed Dec 9 14:34:36 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 9 10:30:53 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Wed Dec 9 00:05:17 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Wed Dec 9 00:02:22 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 8 23:51:05 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Tue Dec 8 23:50:25 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 8 16:11:23 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 8 15:41:27 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 8 14:55:13 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 8 09:58:59 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Tue Dec 8 07:51:10 2015
+
+	 agreegating change by  jeff.hammerbacher@gmail.com on  Tue Dec 8 07:26:12 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Dec 8 00:06:04 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Dec 8 00:01:09 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Dec 8 00:00:50 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Dec 7 23:49:03 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Dec 7 23:47:24 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Dec 7 23:46:32 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Dec 7 22:46:14 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Dec 7 22:44:07 2015
+
+	 agreegating change by  jimmy.fleming@gmail.com on  Fri Dec 4 13:27:31 2015
+
+	 agreegating change by  vrv@google.com on  Mon Dec 7 15:48:00 2015
+
+	 agreegating change by  jeff.hammerbacher@gmail.com on  Mon Dec 7 18:31:47 2015
+
+	 agreegating change by  dresimpelo@gmail.com on  Fri Nov 20 13:38:26 2015
+
+	 agreegating change by  dongjoon@apache.org on  Mon Nov 23 03:20:26 2015
+
+	 agreegating change by  vrv@google.com on  Sun Dec 6 20:37:24 2015
+
+	 agreegating change by  vrv@google.com on  Sun Dec 6 20:06:15 2015
+
+	 agreegating change by  vrv@google.com on  Sun Dec 6 16:35:40 2015
+
+	 agreegating change by  vrv@google.com on  Sun Dec 6 14:53:28 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Sun Dec 6 13:17:48 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 6 11:50:46 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 6 11:36:39 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 6 11:32:34 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 6 11:31:52 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 6 11:24:42 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 6 00:12:03 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sun Dec 6 00:06:59 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sat Dec 5 23:53:02 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sat Dec 5 23:45:13 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Dec 5 18:43:41 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sat Dec 5 13:02:32 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sat Dec 5 12:04:15 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sat Dec 5 12:00:36 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 4 23:54:38 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 4 23:43:06 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 4 23:38:57 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sat Dec 5 00:53:20 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sat Dec 5 00:41:35 2015
+
+	 agreegating change by  terrytangyuan@gmail.com on  Sat Dec 5 00:35:11 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Sat Dec 5 00:31:15 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Dec 4 17:52:01 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Fri Dec 4 19:49:50 2015
+
+	 agreegating change by  vrv@google.com on  Fri Dec 4 16:15:23 2015
+
+	 agreegating change by  william.dmitri.breaden.madden@cern.ch on  Fri Dec 4 22:56:40 2015
+
+	 agreegating change by  keveman@gmail.com on  Fri Dec 4 11:16:52 2015
+
+	 agreegating change by  keveman@gmail.com on  Fri Dec 4 09:55:26 2015
+
+	 agreegating change by  keveman@gmail.com on  Fri Dec 4 09:54:09 2015
+
+	 agreegating change by  william.dmitri.breaden.madden@cern.ch on  Fri Dec 4 16:36:57 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Fri Dec 4 09:08:43 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Fri Dec 4 09:06:04 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Dec 3 21:29:18 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Dec 3 21:09:04 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 3 17:56:16 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 3 14:39:42 2015
+
+	 agreegating change by  vrv@google.com on  Thu Dec 3 10:26:25 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 2 15:05:37 2015
+
+	 agreegating change by  vrv@google.com on  Wed Dec 2 15:04:40 2015
+
+	 agreegating change by  keveman@gmail.com on  Wed Dec 2 09:12:45 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 1 13:50:51 2015
+
+	 agreegating change by  vrv@google.com on  Tue Dec 1 13:26:53 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Nov 30 20:46:55 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Mon Nov 30 18:07:07 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Nov 29 22:21:49 2015
+
+	 agreegating change by  dave.decker@gmail.com on  Sun Nov 29 14:38:04 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Nov 27 21:08:37 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Nov 27 20:48:16 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Nov 27 20:35:54 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 25 16:02:21 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 25 15:43:37 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 25 12:53:09 2015
+
+	 agreegating change by  keveman@gmail.com on  Wed Nov 25 12:13:27 2015
+
+	 agreegating change by  keveman@gmail.com on  Wed Nov 25 11:57:31 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 25 10:52:08 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 25 10:41:44 2015
+
+	 agreegating change by  keveman@gmail.com on  Wed Nov 25 08:48:47 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 25 00:15:45 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 25 00:13:58 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 24 23:00:00 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 24 22:52:41 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 24 22:51:35 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 24 21:56:11 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 24 21:42:38 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 24 20:17:24 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 24 20:09:14 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 24 19:54:19 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 24 19:34:48 2015
+
+	 agreegating change by  terrytangyuan@users.noreply.github.com on  Tue Nov 24 18:01:18 2015
+
+	 agreegating change by  boris@hyperscience.com on  Mon Nov 23 19:15:23 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Nov 22 21:58:08 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sun Nov 22 21:36:50 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Sat Nov 21 20:13:33 2015
+
+	 agreegating change by  surya95@gmail.com on  Fri Nov 20 19:18:41 2015
+
+	 agreegating change by  keveman@gmail.com on  Fri Nov 20 10:30:41 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Fri Nov 20 10:11:20 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 22:34:56 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 22:32:23 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 22:26:35 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 22:24:47 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 21:27:43 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 21:27:06 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 18:52:43 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 18:14:11 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 18:08:09 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 19 18:04:03 2015
+
+	 agreegating change by  c.bonnett@gmail.com on  Thu Nov 19 14:52:24 2015
+
+	 agreegating change by  c.bonnett@gmail.com on  Thu Nov 19 14:46:52 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 18 20:19:38 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 18 19:55:45 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 18 19:38:55 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 18 18:42:01 2015
+
+	 agreegating change by  vrv@google.com on  Wed Nov 18 16:41:37 2015
+
+	 agreegating change by  vrv@google.com on  Wed Nov 18 10:47:35 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 17 20:25:08 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Tue Nov 17 19:08:33 2015
+
+	 agreegating change by  vrv@google.com on  Mon Nov 16 23:42:32 2015
+
+	 agreegating change by  vrv@google.com on  Mon Nov 16 11:11:36 2015
+
+	 agreegating change by  vrv@google.com on  Mon Nov 16 09:15:41 2015
+
+	 agreegating change by  ipolosukhin@google.com on  Fri Nov 13 10:05:08 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 12 22:46:26 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 12 20:33:48 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 12 19:58:38 2015
+
+	 agreegating change by  vrv@google.com on  Thu Nov 12 18:34:45 2015
+
+	 agreegating change by  vrv@google.com on  Thu Nov 12 16:47:36 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Thu Nov 12 15:25:56 2015
+
+	 agreegating change by  vrv@google.com on  Thu Nov 12 11:27:00 2015
+
+	 agreegating change by  ipolosukhin@google.com on  Wed Nov 11 20:11:21 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 11 20:07:40 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 11 20:04:02 2015
+
+	 agreegating change by  ilblackdragon@gmail.com on  Wed Nov 11 20:00:02 2015
+
+	 agreegating change by  vrv@google.com on  Wed Nov 11 18:45:21 2015
+
+	 agreegating change by  vrv@google.com on  Wed Nov 11 11:52:11 2015
+
+	 agreegating change by  vrv@google.com on  Tue Nov 10 17:41:19 2015
+
+	 agreegating change by  vrv@google.com on  Tue Nov 10 15:23:01 2015
+
+	 agreegating change by  vrv@google.com on  Mon Nov 9 18:42:53 2015
+
+	 agreegating change by  vrv@google.com on  Mon Nov 9 10:11:07 2015
+
+	 agreegating change by  vrv@google.com on  Mon Nov 9 06:38:54 2015
+
+	 agreegating change by  keveman@gmail.com on  Sun Nov 8 22:08:04 2015
+
+	 agreegating change by  keveman@gmail.com on  Sun Nov 8 21:41:37 2015
+
+	 agreegating change by  keveman@gmail.com on  Sun Nov 8 21:27:30 2015
+
+	 agreegating change by  keveman@gmail.com on  Sun Nov 8 21:04:29 2015
+
+	 agreegating change by  keveman@gmail.com on  Sun Nov 8 19:28:55 2015
+
+	 agreegating change by  keveman@gmail.com on  Sun Nov 8 19:23:41 2015
+
+	 agreegating change by  keveman@gmail.com on  Sun Nov 8 17:41:48 2015
+
+	 agreegating change by  keveman@gmail.com on  Sun Nov 8 15:14:37 2015
+
+	 agreegating change by  keveman@gmail.com on  Sun Nov 8 13:56:56 2015
+
+	 agreegating change by  vrv@google.com on  Sun Nov 8 11:37:26 2015
+
+	 agreegating change by  vrv@google.com on  Sat Nov 7 14:33:26 2015
+
+	 agreegating change by  vrv@google.com on  Sat Nov 7 13:58:24 2015
+
+	 agreegating change by  vrv@google.com on  Sat Nov 7 10:49:41 2015
+
+	 agreegating change by  vrv@google.com on  Fri Nov 6 21:57:38 2015
+
+	 agreegating change by  keveman@gmail.com on  Fri Nov 6 18:37:11 2015
+[32m
+:)2nd SUCESS2 Data agregated by files and its contributors
+[0m
+
+Getting tuples of contributors that coded/contributed on the same file
+[32m
+:) 3rd SUCESS tubles of authors that collaborated (coded in the same source code file) were generated
+[0m
+
+Printing the files thare were most recurrently co-edited by the developers
+	 README.md co.edited  55  times
+	 tensorflow/python/framework/ops.py co.edited  21  times
+	 skflow/__init__.py co.edited  15  times
+	 tensorflow/examples/android/README.md co.edited  10  times
+	 tensorflow/g3doc/api_docs/python/framework.md co.edited  10  times
+	 tensorflow/g3doc/api_docs/python/train.md co.edited  10  times
+	 tensorflow/python/client/session.py co.edited  10  times
+	 tensorflow/python/ops/image_ops.py co.edited  10  times
+	 tensorflow/python/training/coordinator.py co.edited  10  times
+	 scripts/travis_install.sh co.edited  6  times
+	 skflow/tests/test_base.py co.edited  6  times
+	 skflow/trainer.py co.edited  6  times
+	 tensorflow/core/common_runtime/direct_session.cc co.edited  6  times
+	 tensorflow/core/kernels/conv_grad_ops.cc co.edited  6  times
+	 tensorflow/core/kernels/resize_bicubic_op.cc co.edited  6  times
+	 tensorflow/core/kernels/resize_bilinear_op.cc co.edited  6  times
+	 tensorflow/core/ops/array_ops.cc co.edited  6  times
+	 tensorflow/core/ops/math_ops.cc co.edited  6  times
+	 tensorflow/core/ops/ops.pbtxt co.edited  6  times
+	 tensorflow/core/public/tensor_c_api.h co.edited  6  times
+[32m
+:) 4th SUCESS unique authors that collaborated tuples (coded in the same source code file) were generated
+[0m
+
+Populating main graph G_network_Dev2Dev_singleEdges
+[32m
+:) 5th SUCESS - got Dev2Dev network with no parallel edges
+[0m
+	 Number of nodes Dev2Dev network 48
+	 Number of edges Dev2Dev network 171
+	 Number of scrapped unique connections 171
+
+Removing the nodes and all adjacent edges for nodes in list_of_emails_to_filter:
+	 removing node unknown@email
+	 removing node gardener@tensorflow.org
+	 removing node 114951738+akhilgoe@users.noreply.github.com
+	 removing node 126815388+zoranjovanovic-ns@users.noreply.github.com
+	 removing node 107119183+yasiribmcon@users.noreply.github.com
+	 removing node 83710963+mraunak@users.noreply.github.com
+	 removing node anubhav@u.nus.edu.com?
+	 removing node ebigelow@u.rochester.edu.com?
+
+	 Number of nodes Dev2Dev network after filtering by e-mail 48
+	 Number of edges Dev2Dev network after filtering by e-mail 171
+	 Number of scrapped unique connections before filtering by e-mail (i.e. len(uniqueConnections)) 171
+
+Getting author affiliations from their unique email in changeLogData
+All fine so far, time to export results to graphML file
+
+	Exporting graph to file (.graphml):[tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML]
+
+	Writing grapthML file  (for VISIONE SNA tool or other ) on file:[tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML]
+
+		Writing nodes in graphML file
+
+		Writing edges in graphML file
+[32m
+:) 6th SUCESS - in exporting  qnetwork to GraphML file:tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML
+[0m
+
+	:) GRAPHML export Number of nodes/authors = 48
+
+	:) GRAPHML export Number of nodes/authors = 48
+
+	:) GRAPHML export Number of networked nodes/authors = 48
+
+	:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = <bound method Graph.size of <networkx.classes.graph.Graph object at 0x7f6977f2b190>>
+
+	:) GRAPHML export Number of unique edges/collaborations (do not include repetitions of the same collaborations) = 171
+
+	:) GRAPHML export Number of edges/collaborations (include repetitions of the same collaboration) = 171
+
+FINNISHED 2024-04-16 11:35:26.623629
+TOTAL TIME 0:00:00.113278
+Number of analized lines [7238]
+Number of analized changelog blocks [519]
+Number of analized changelog blocks changing code files [4819?]
+Number of analized changelog blocks not changing code files (i.e. testCases)[0?]
+Number of files affected by the commits reported by change log[1787]
+Number of unique collaborations (i.e., network edges)[171]
