@@ -145,6 +145,7 @@ top_10_colors = {
     'mit':'black',
     'alum':'gray',
     'us':'white',
+    '163':'gray',
 }
 
 # argument passed to draw functions 

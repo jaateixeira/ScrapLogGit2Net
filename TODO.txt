@@ -1,6 +1,8 @@
 check why number of nodes is not cosisten between graphML module and scraplog
 Not workign with tensorFlowGitLog-first-trimester-2024.IN
 
+Whats going on wuth "us" affiliation?
+
 refactos network_meazures 
 
 
