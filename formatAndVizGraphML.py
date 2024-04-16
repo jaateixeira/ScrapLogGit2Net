@@ -116,12 +116,12 @@ top_10_colors = {
     'nvidia':'lime',
     'intel':'lightblue',
     'amd':'black',
-    'gmu':'yellow',
+    'gmu':'brown',
     'arm':'steelblue',
     'amazon':'orange',
     'ibm':'darkblue',
     'linaro':'pink',
-    'gtu':'brwon',
+    'gtu':'black',
     'users': 'gray',
     'gmail': 'gray',
     'inailuig': 'gray',
@@ -141,6 +141,9 @@ top_10_colors = {
     'borgerding':'gray',
     'apache':'gray',
     'hyperscience':'gray',
+    'microsoft': 'darkorange',
+    'mit':'black',
+    'alum':'gray',
 }
 
 # argument passed to draw functions 
