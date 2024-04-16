@@ -86,11 +86,6 @@ for node, data in G.nodes(data=True):
 
 
 
-circular_options = { 
-#    'node_size': 10,
-    'width': 0.1,
-}
-
 
 
 # See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python 
@@ -178,12 +173,20 @@ for key in top_10_org:
 # setting size of node according centrality
 # see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
 
-    
+
+
+circular_options = { 
+    'node_size': 10,
+    'width': 0.1,
+}
+
+
+
 print ("")
 print ("Saving circular layout")
 # Random colors 1-256 
 #nx.draw_circular(G,node_color=range(256),**circular_options)
-nx.draw_circular(G,node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()],**circular_options)
+nx.draw_circular(G,node_color=org_colors,**circular_options)
 
 
 print ("")
@@ -210,8 +213,8 @@ ax = plt.gca()
 ax.legend(handles=legend_elements, loc='best')
 
 
-plt.show()
-#plt.savefig("Uncolored-Circular-Layout.png")
+#plt.show()
+plt.savefig(sys.argv[1]+"Uncolored-Circular-Layout.png")
 
 
 
@@ -236,11 +239,12 @@ ax = plt.gca()
 #ax.legend(handles=legend_elements, loc='upper right')
 ax.legend(handles=legend_elements, loc='best')
 
-plt.show()
-#plt.savefig("Uncolored-Centrality-Layout.png")
+#plt.show()
+plt.savefig(sys.argv[1]+"Uncolored-Centrality-Layout.png")
 
 print()
 print ("writing Formatted-NetworkFile.graphML")
 
-nx.write_graphml_lxml(G, "Formatted-NetworkFile.graphML")
+
+#nx.write_graphml_lxml(G, "Formatted-NetworkFile.graphML")
 
