@@ -10,10 +10,28 @@
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import networkx as nx
-import sys 
+import sys
+import os 
+global out_file_name
 
-G = nx.read_graphml(sys.argv[1])
+global prefix_for_figures_filenames 
 
+
+
+
+input_file_name = sys.argv[1] 
+
+
+
+G = nx.read_graphml(input_file_name)
+
+
+
+prefix_for_figures_filenames= os.path.basename(input_file_name)
+
+
+
+#prefix_for_figures_filenames = 
 
 
 def printGraph_as_dict_of_dicts(graph):
@@ -211,11 +229,11 @@ for org in top_10_org:
 
 ax = plt.gca()
 ax.legend(handles=legend_elements, loc='best')
-
+#plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
 
 #plt.show()
-plt.savefig(sys.argv[1]+"Uncolored-Circular-Layout.png")
-
+plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
+plt.clf()
 
 
 
@@ -240,7 +258,7 @@ ax = plt.gca()
 ax.legend(handles=legend_elements, loc='best')
 
 #plt.show()
-plt.savefig(sys.argv[1]+"Uncolored-Centrality-Layout.png")
+plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
 
 print()
 print ("writing Formatted-NetworkFile.graphML")
