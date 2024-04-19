@@ -11,15 +11,56 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import networkx as nx
 import sys
+import argparse
 import os 
 global out_file_name
 
 global prefix_for_figures_filenames 
 
+top_firms_that_matter = []
+top_firms_that_do_not_matter = ['users']
+
+parser = argparse.ArgumentParser()
+parser.add_argument("file", type=str, help="the network file")
+parser.add_argument("-v", "--verbose", action="store_true",
+                    help="increase output verbosity")
+parser.add_argument("-t", "--top-firms-only", action="store_true",
+                    help="only top_firms_that_matter")
+
+parser.add_argument("-f", "--filter-by-org", action="store_true",
+                    help="top_firms_that_do_not_matter")
+
+parser.add_argument("-s", "--show", action="store_true",
+                    help="top_firms_that_do_not_matter")
+
+
+args = parser.parse_args()
 
 
 
-input_file_name = sys.argv[1] 
+if args.verbose:
+    print("In verbose mode")
+
+
+if args.top_firms_only:
+    print()
+    print("In top-firms only mode")
+    print()
+
+
+if args.filter_by_org:
+    print()
+    print("In filtering by org mode")
+    print()
+
+
+if args.show:
+    print()
+    print("In snow mode")
+    print()
+
+
+input_file_name = args.file
 
 
 
@@ -240,15 +281,19 @@ ax = plt.gca()
 ax.legend(handles=legend_elements, loc='best')
 #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
 
-#plt.show()
-plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
+if args.show:
+    plt.show()
+else:
+    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
+
+# Clear so graphs do not overlap each other
 plt.clf()
 
 
 
 spring_options = { 
 #    'node_size': 10,
-    'width': 0.5,
+#   'width': 0.5,
 }
 
 
@@ -266,8 +311,10 @@ ax = plt.gca()
 #ax.legend(handles=legend_elements, loc='upper right')
 ax.legend(handles=legend_elements, loc='best')
 
-#plt.show()
-plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
+if args.show:
+    plt.show()
+else:
+    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
 
 print()
 print ("writing Formatted-NetworkFile.graphML")
