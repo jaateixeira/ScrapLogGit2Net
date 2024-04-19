@@ -1,3 +1,5 @@
+MEntion elegant way of combining quant. quality amd visualizaitons.
+
 check why number of nodes is not cosisten between graphML module and scraplog
 Not workign with tensorFlowGitLog-first-trimester-2024.IN
 
