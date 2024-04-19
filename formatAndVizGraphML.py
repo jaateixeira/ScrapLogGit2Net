@@ -18,7 +18,7 @@ global out_file_name
 global prefix_for_figures_filenames 
 
 top_firms_that_matter = []
-top_firms_that_do_not_matter = ['users']
+top_firms_that_do_not_matter = ['users','tensorflow']
 
 parser = argparse.ArgumentParser()
 parser.add_argument("file", type=str, help="the network file")
@@ -72,14 +72,20 @@ prefix_for_figures_filenames= os.path.basename(input_file_name)
 
 
 
-#prefix_for_figures_filenames = 
+# I want alum to be alum.mit.edu # 
+#	<data key="d0">rryan@alum.mit.edu</data>
+# Only for ICIS paper 
+
+
+for node, data in G.nodes(data=True):
+    if (data['affiliation'] == 'alum'):
+        data['affiliation'] = 'alum.mit.edu'
+
 
 
 def printGraph_as_dict_of_dicts(graph):
     print (nx.to_dict_of_dicts(graph))
 
-
-#printGraph_as_dict_of_dicts(G)
 
 def printGraph_notes_and_its_data(graph):
     
@@ -87,7 +93,15 @@ def printGraph_notes_and_its_data(graph):
         print (node)
         print (data)
 
-#printGraph_notes_and_its_data(G)
+
+if args.verbose:
+    print() 
+    print("printing graph:")
+    printGraph_as_dict_of_dicts(G)
+    print() 
+    print("printing graph and its data:")
+    printGraph_notes_and_its_data(G)
+    print() 
 
 
 
@@ -100,7 +114,6 @@ isolate_ids=[]
 for isolate in nx.isolates(G):
     isolate_ids.append(isolate)
 
-
 if (isolate_ids != []):
     print("\t Isolates:")
     for node, data in G.nodes(data=True):
@@ -108,6 +121,32 @@ if (isolate_ids != []):
             print ("\t",node,data['e-mail'],data['affiliation'])
 
 
+
+# We imported the graph and checked for isolates
+# Shall we now do some filtering
+# Will be implemented as fuction later 
+
+if args.filter_by_org:
+    print()
+    print("Filtering by org mode")
+    print()
+
+    print("\t removing nodes affiliated with", top_firms_that_do_not_matter)
+
+    array_of_nodes_to_be_removed = []
+
+    for node, data in G.nodes(data=True):
+                if (data['affiliation'] in  top_firms_that_do_not_matter):
+                        array_of_nodes_to_be_removed.append(node)
+                        if args.verbose:
+                            print ()
+                            print ("\t\t Removing node",node,data)
+
+    # Removes everybody affiliated  with top_firms_that_do_not_matter)
+    G.remove_nodes_from(array_of_nodes_to_be_removed)
+
+            
+            
 print ()
 print ("Calculating centralities")
 
@@ -127,12 +166,19 @@ top_10_connected_ind = []
 print("\nTOP 10 ind. with most edges:")
 
 
-top_10_connected_indtop_10_connected_ind = sorted_degree_centrality[:10]
+top_10_connected_ind= sorted_degree_centrality[:10]
 
-ids_of_top_10_connected_ind=(dict(top_10_connected_indtop_10_connected_ind)).keys()
+ids_of_top_10_connected_ind=(dict(top_10_connected_ind)).keys()
 
-#print(top_10_connected_indtop_10_connected_ind)
-#print(ids_of_top_10_connected_ind)
+
+if args.verbose:
+    print ("")
+    print("Printing list of the most connected firms") 
+    print("n =", len(top_10_connected_ind))
+    print()
+    print
+    print("top_10_connected_ind=",top_10_connected_ind)
+    print("ids_of_top_10_connected_ind=",ids_of_top_10_connected_ind)
 
 
 
@@ -151,8 +197,12 @@ for node, data in G.nodes(data=True):
 print ("coloring by firm")
 
 
+
 # less common goes to gray
-top_10_colors = {
+# Convention of black gro research institutes
+# Gray for anunomous eemails
+# Yellow for statups 
+top_colors = {
     'google':'red',
     'nvidia':'lime',
     'intel':'lightblue',
@@ -190,10 +240,12 @@ top_10_colors = {
     'huawei':'darkred',
     'graphcore':'pink',
     'ispras': 'black',
-    
+    'gatech': 'black',
+    'alum.mit.edu':'black',
+    '126': 'gray',
 }
 
-# argument passed to draw functions 
+# The actual colors to be shown <- depend on top colors
 org_colors = []
 
 # list with top 10 org contributors 
@@ -204,13 +256,13 @@ for node, data in G.nodes(data=True):
     #print (data['affiliation'])
 
     affiliation = data['affiliation']
-    if data['affiliation'] in list(top_10_colors.keys()):
-        org_colors.append(top_10_colors[affiliation])
+    if data['affiliation'] in list(top_colors.keys()):
+        org_colors.append(top_colors[affiliation])
     else:
         org_colors.append('gray')
 
 
-#print(org_colors)
+print(org_colors)
 
 
 
@@ -270,10 +322,10 @@ for org in top_10_org:
 
     legend_elements.append(Line2D([0], [0],
                                   marker='o',
-                                  color=top_10_colors[org],
+                                  color=top_colors[org],
                                   label=org+" n= ("+str(top_10_org[org])+")",
                                   lw=0,
-                                  markerfacecolor=top_10_colors[org],
+                                  markerfacecolor=top_colors[org],
                                   markersize=5))
 
 
