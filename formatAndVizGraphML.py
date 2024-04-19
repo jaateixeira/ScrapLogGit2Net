@@ -17,7 +17,8 @@ global out_file_name
 
 global prefix_for_figures_filenames 
 
-top_firms_that_matter = []
+
+top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
 top_firms_that_do_not_matter = ['users','tensorflow']
 
 parser = argparse.ArgumentParser()
@@ -145,7 +146,27 @@ if args.filter_by_org:
     # Removes everybody affiliated  with top_firms_that_do_not_matter)
     G.remove_nodes_from(array_of_nodes_to_be_removed)
 
-            
+
+
+if args.top_firms_only:
+    print()
+    print("Removing edges not in top_firms_that_matter")
+    print()
+
+                        
+    array_of_nodes_to_be_removed = []
+
+    for node, data in G.nodes(data=True):
+                if (data['affiliation'] not in top_firms_that_matter):
+                        array_of_nodes_to_be_removed.append(node)
+                        if args.verbose:
+                            print ()
+                            print ("\t\t Removing node",node,data)
+
+    # Removes everybody affiliated  with top_firms_that_matter)
+    G.remove_nodes_from(array_of_nodes_to_be_removed)
+                                  
+
             
 print ()
 print ("Calculating centralities")
