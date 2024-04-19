@@ -6,6 +6,10 @@
 # colorize accourding to affiliation atribute
 # nodesize according centralities 
 
+#Example of use verbose,fitering and only top firms
+# ./formatAndVizGraphML.py -svft test-data/icis-2024-wp-networks-graphML/tensorFlowGitLog-2022-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML
+
+
 
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
