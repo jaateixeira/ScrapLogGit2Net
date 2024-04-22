@@ -1,3 +1,9 @@
+
+Side by side - With and without Google
+
+Fix bug isolate nodes
+
+
 MEntion elegant way of combining quant. quality amd visualizaitons.
 
 check why number of nodes is not cosisten between graphML module and scraplog
