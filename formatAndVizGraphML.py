@@ -402,9 +402,7 @@ else:
     plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
     plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf")
 
-print()
-print ("writing Formatted-NetworkFile.graphML")
-
-
+#print()
+#print ("writing Formatted-NetworkFile.graphML")
 #nx.write_graphml_lxml(G, "Formatted-NetworkFile.graphML")
 
