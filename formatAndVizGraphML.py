@@ -22,9 +22,9 @@ global out_file_name
 global prefix_for_figures_filenames 
 
 
-#top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
-top_firms_that_matter = ['microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
-top_firms_that_do_not_matter = ['users','tensorflow']
+top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
+#top_firms_that_matter = ['microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
+top_firms_that_do_not_matter = ['users','tensorflow','google']
 
 parser = argparse.ArgumentParser()
 parser.add_argument("file", type=str, help="the network file")
@@ -37,7 +37,10 @@ parser.add_argument("-f", "--filter-by-org", action="store_true",
                     help="top_firms_that_do_not_matter")
 
 parser.add_argument("-s", "--show", action="store_true",
-                    help="top_firms_that_do_not_matter")
+                    help="show the visualization, otherwises saves to png and pdf")
+
+parser.add_argument("-l", "--legend", action="store_true",
+                    help="adds a legend to the sociogram")
 
 
 args = parser.parse_args()
@@ -356,13 +359,16 @@ for org in top_10_org:
 
 
 ax = plt.gca()
-ax.legend(handles=legend_elements, loc='best')
-#plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
+
+if args.legend:
+    ax.legend(handles=legend_elements, loc='best')
+    #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
 
 if args.show:
     plt.show()
 else:
     plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
+    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf")
 
 # Clear so graphs do not overlap each other
 plt.clf()
@@ -387,12 +393,14 @@ nx.draw_spring(G, node_color=org_colors,node_size=[v * 100 for v in degree_centr
 
 ax = plt.gca()
 #ax.legend(handles=legend_elements, loc='upper right')
-ax.legend(handles=legend_elements, loc='best')
+if args.legend:
+    ax.legend(handles=legend_elements, loc='best')
 
 if args.show:
     plt.show()
 else:
     plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
+    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf")
 
 print()
 print ("writing Formatted-NetworkFile.graphML")
