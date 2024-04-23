@@ -24,7 +24,8 @@ global prefix_for_figures_filenames
 
 top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
 #top_firms_that_matter = ['microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
-top_firms_that_do_not_matter = ['users','tensorflow','google']
+#top_firms_that_do_not_matter = ['users','tensorflow','google']
+top_firms_that_do_not_matter = ['users','tensorflow']
 
 parser = argparse.ArgumentParser()
 parser.add_argument("file", type=str, help="the network file")
