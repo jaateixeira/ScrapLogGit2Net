@@ -345,6 +345,7 @@ circular_options = {
 }
 
 
+fig, ax = plt.subplots(figsize=(6, 4),  facecolor='0.7')
 
 print ("")
 print ("Saving circular layout")
@@ -363,7 +364,6 @@ legend_elements = []
 
 for org in top_10_org:
     print (org)
-
     legend_elements.append(Line2D([0], [0],
                                   marker='o',
                                   color=top_colors[org],
@@ -375,15 +375,21 @@ for org in top_10_org:
 
 if args.legend:
    if  args.outside_legend_right:
-       #plt.legend(handles=legend_elements,bbox_to_anchor=(1.05, 1), loc='upper left');
-       plt.legend(bbox_to_anchor=(1.2, 0.5),
-                  loc='lower right',
+       # Works but legend get cut
+       fig.subplots_adjust(right=0.6)
+       fig.legend(bbox_to_anchor=(0.9, 0.5),
+                  borderaxespad=0,
+                  loc=('center right'),
                   handles=legend_elements,
                   frameon=False,
-                  prop={'weight': 'bold', 'size': 14, 'family': 'georgia'})
+                  prop={'weight': 'bold', 'size': 14, 'family': 'georgia'},
+                  )
+       "Comment to save legend in separate file" 
+       #plt.gca().set_axis_off()
    else: 
        plt.legend(handles=legend_elements,
                   loc='best',
+
                   frameon=False,
                   prop={'weight': 'bold', 'size': 14, 'family': 'georgia'})     
        #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
