@@ -18,7 +18,7 @@ import sys
 import argparse
 import os 
 global out_file_name
-
+import numpy as np
 global prefix_for_figures_filenames 
 
 
@@ -42,6 +42,9 @@ parser.add_argument("-s", "--show", action="store_true",
 
 parser.add_argument("-l", "--legend", action="store_true",
                     help="adds a legend to the sociogram")
+
+parser.add_argument("-r", "--outside-legend-right", action="store_true",
+                            help="the legend to the sociogram goes outside to the right")
 
 
 args = parser.parse_args()
@@ -68,6 +71,18 @@ if args.show:
     print()
     print("In snow mode")
     print()
+
+
+if args.legend and args.outside_legend_right:
+    print()
+    print("legend should be outside of plot on the right")
+    print()
+
+
+
+
+#print (args)
+#exit()
 
 
 input_file_name = args.file
@@ -185,7 +200,7 @@ degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
 sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
 
 #print ("degree_centrality")
-#print (degree_centrality)
+print (degree_centrality)
 #print ("sorted_degree_centrality")
 #print (sorted_degree_centrality)
 
@@ -361,11 +376,24 @@ for org in top_10_org:
 
 ax = plt.gca()
 
+
 if args.legend:
+
+   if  args.outside_legend_right:
+       x = np.arange(-2*np.pi, 2*np.pi, 0.1)
+       fig = plt.figure(1)
+       ax = fig.add_subplot(111)
+       ax.plot(x, np.sin(x), label='Sine')
+       ax.plot(x, np.cos(x), label='Cosine')
+       ax.plot(x, np.arctan(x), label='Inverse tan')
+       lgd = ax.legend(loc=9, bbox_to_anchor=(1.2,0.5))
+       fig.tight_layout()
+   else: 
     ax.legend(handles=legend_elements, loc='best')
     #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
 
 if args.show:
+    
     plt.show()
 else:
     plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
@@ -374,7 +402,7 @@ else:
 # Clear so graphs do not overlap each other
 plt.clf()
 
-
+exit()
 
 spring_options = { 
 #    'node_size': 10,
