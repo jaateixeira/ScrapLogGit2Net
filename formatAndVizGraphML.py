@@ -376,9 +376,16 @@ for org in top_10_org:
 if args.legend:
    if  args.outside_legend_right:
        #plt.legend(handles=legend_elements,bbox_to_anchor=(1.05, 1), loc='upper left');
-       plt.legend(bbox_to_anchor=(1.2, 0.5), loc='lower right',handles=legend_elements,prop={'weight': 'bold', 'size': 14, 'family': 'georgia'}); 
+       plt.legend(bbox_to_anchor=(1.2, 0.5),
+                  loc='lower right',
+                  handles=legend_elements,
+                  frameon=False,
+                  prop={'weight': 'bold', 'size': 14, 'family': 'georgia'})
    else: 
-       plt.legend(handles=legend_elements, loc='best')     
+       plt.legend(handles=legend_elements,
+                  loc='best',
+                  frameon=False,
+                  prop={'weight': 'bold', 'size': 14, 'family': 'georgia'})     
        #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
 
 if args.show:
