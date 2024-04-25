@@ -1,3 +1,5 @@
+Increase size of labels
+
 
 Side by side - With and without Google
 
