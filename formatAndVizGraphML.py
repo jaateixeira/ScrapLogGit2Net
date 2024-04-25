@@ -398,8 +398,8 @@ if args.show:
     
     plt.show()
 else:
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf")
+    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png",bbox_inches='tight')
+    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf",bbox_inches='tight')
 
 # Clear so graphs do not overlap each other
 plt.clf()
