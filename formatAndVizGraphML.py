@@ -60,8 +60,7 @@ if args.top_firms_only:
     print("In top-firms only mode")
     print()
 
-
-if args.filter_by_org:
+if  args.filter_by_org:
     print()
     print("In filtering by org mode")
     print()
@@ -374,23 +373,13 @@ for org in top_10_org:
                                   markersize=5))
 
 
-ax = plt.gca()
-
-
 if args.legend:
-
    if  args.outside_legend_right:
-       x = np.arange(-2*np.pi, 2*np.pi, 0.1)
-       fig = plt.figure(1)
-       ax = fig.add_subplot(111)
-       ax.plot(x, np.sin(x), label='Sine')
-       ax.plot(x, np.cos(x), label='Cosine')
-       ax.plot(x, np.arctan(x), label='Inverse tan')
-       lgd = ax.legend(loc=9, bbox_to_anchor=(1.2,0.5))
-       fig.tight_layout()
+       #plt.legend(handles=legend_elements,bbox_to_anchor=(1.05, 1), loc='upper left');
+       plt.legend(bbox_to_anchor=(1.2, 0.5), loc='lower right',handles=legend_elements,prop={'weight': 'bold', 'size': 14, 'family': 'georgia'}); 
    else: 
-    ax.legend(handles=legend_elements, loc='best')
-    #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
+       plt.legend(handles=legend_elements, loc='best')     
+       #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
 
 if args.show:
     
@@ -401,6 +390,7 @@ else:
 
 # Clear so graphs do not overlap each other
 plt.clf()
+
 
 exit()
 
