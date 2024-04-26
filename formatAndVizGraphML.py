@@ -345,7 +345,7 @@ circular_options = {
 }
 
 
-fig, ax = plt.subplots(figsize=(6, 4),  facecolor='0.7')
+fig1, ax1 = plt.subplots(figsize=(6, 4),  facecolor='0.7')
 
 print ("")
 print ("Saving circular layout")
@@ -376,18 +376,18 @@ for org in top_10_org:
 if args.legend:
    if  args.outside_legend_right:
        # Works but legend get cut
-       fig.subplots_adjust(right=0.6)
-       fig.legend(bbox_to_anchor=(0.9, 0.5),
+       fig1.subplots_adjust(right=0.6)
+       fig1.legend(bbox_to_anchor=(1.0, 0.5),
                   borderaxespad=0,
-                  loc=('center right'),
+                  loc=('right'),
                   handles=legend_elements,
                   frameon=False,
-                  prop={'weight': 'bold', 'size': 14, 'family': 'georgia'},
+                  prop={'weight': 'bold', 'size': 12, 'family': 'georgia'},
                   )
        "Comment to save legend in separate file" 
        #plt.gca().set_axis_off()
    else: 
-       plt.legend(handles=legend_elements,
+       fig1.legend(handles=legend_elements,
                   loc='best',
 
                   frameon=False,
@@ -399,13 +399,17 @@ if args.show:
     plt.show()
 else:
     plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png",bbox_inches='tight')
+    print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
     plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf",bbox_inches='tight')
+    print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf")
 
 # Clear so graphs do not overlap each other
+
 plt.clf()
+plt.close()
 
+fig2, ax2 = plt.subplots(figsize=(6, 4),  facecolor='0.7')
 
-exit()
 
 spring_options = { 
 #    'node_size': 10,
@@ -423,16 +427,30 @@ print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
 nx.draw_spring(G, node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()], **spring_options)
 
 
-ax = plt.gca()
+
 #ax.legend(handles=legend_elements, loc='upper right')
 if args.legend:
-    ax.legend(handles=legend_elements, loc='best')
+    if  args.outside_legend_right:
+       # Works but legend get cut
+        fig2.subplots_adjust(right=0.6)
+        fig2.legend(bbox_to_anchor=(1.0, 0.5),
+                  borderaxespad=0,
+                  loc=('right'),
+                  handles=legend_elements,
+                  frameon=False,
+                  prop={'weight': 'bold', 'size': 12, 'family': 'georgia'},
+                  )
+    else:
+        fig2.legend(handles=legend_elements, loc='best')
 
 if args.show:
     plt.show()
 else:
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf")
+    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png",bbox_inches='tight')
+    print("\t See file",prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
+    
+    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf",bbox_inches='tight')
+    print("\t See file",prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf")
 
 #print()
 #print ("writing Formatted-NetworkFile.graphML")
