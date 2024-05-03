@@ -263,7 +263,7 @@ Most Linux distributions run ScrapLogGit2Net out of the box. See the file depend
   2. pip3 install networkx 
   3. pip3 install colorama
   4. pip3 install numpy
-  
+  5. pip3 install matplotlib
   
 ## Windows 
 Contributor writing this subsection welcome 
