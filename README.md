@@ -250,6 +250,24 @@ network file in the standard XML based format GraphML.
 - Integrate with the [git2net tool that also that facilitates the extraction of co-editing networks from git repositories.](https://github.com/gotec/git2net). Cool, advanced, research-based and also coded in python. Have a more sofisticated aproach to edges based on entrophy and offers desambiguation features. 
 - Publish as a python package to the community.
 
+# Instalation 
+
+## Linux 
+
+Most Linux distributions run ScrapLogGit2Net out of the box. See the file dependencies.sh if something is missing. 
+
+## Mac 
+1 - Download a python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/). 
+2 - Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
+  1- pip3 install  dateutils
+  2- pip3 install networkx 
+  3- pip3 install colorama
+  4- pip3 install numpy
+  
+  
+## Windows 
+Contributor writing this subsection welcome 
+
 # Contributing 
 Please create a new branch for any new feature. Branch or fork, code, test, then pull request. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
 
