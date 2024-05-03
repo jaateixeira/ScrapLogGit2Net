@@ -142,6 +142,9 @@ def getAffiliationFromEmail(email):
     "gets affiliation from an given email" 
 
     #print ("getAffiliationFromEmail("+email+")")
+    if(globals()['DEBUG_MODE']):
+        print()
+        print("\tgetAffiliationFromEmail(" + email + ")")
     
     affiliation_pattern= re.compile('@(\w[\w\-]+)')
     match = affiliation_pattern.findall(email)
@@ -597,7 +600,7 @@ def agregateByFileItsContributors():
         email = change[0][1]
         files = change [1]
 
-        #if(globals()['DEBUG_MODE']):
+        # if(globals()['DEBUG_MODE']):
         print ("")
         print ("\t agreegating change by ",email, "on ", change[0][0])
 
