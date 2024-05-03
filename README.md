@@ -163,6 +163,8 @@ If a developer has two or more organization emails (e.g., works part-time for tw
 If a developer changes organization (e.g. changed email), by default ScrapLogGit2Net models him as another developer. You might want to model it in another way. 
 If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., ibm, amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with gmail. But it might make sense to associate him with the firm he also commits. Should contributions submitted with personal use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with? 
 
+When associating emails with developers, and developers with firms, it is a good approach to find suspicious similarities on the strings identifying actors in the network. The Python package [strsimpy](https://pypi.org/project/strsimpy/) implements many algorithms for string similarity. The names 'George Tony' and 'George Toony'  have a very high string similarity score, so they are probably the same person.  Test for similarity in names and emails to enhance the robustness of the social network model. 
+
 ### A developer can have several emails!   ### 
 
 There are many ways to deal with developers that use several emails. The simplest one is to use the aproach by [Augustina Ragwitz (2017)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
