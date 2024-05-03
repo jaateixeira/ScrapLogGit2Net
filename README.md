@@ -165,25 +165,28 @@ If a developer contributes with a personal email account (Gmail, Outlook) and wi
 
 ### A developer can have several emails.   ### 
 
-There are many ways to deal with developers that use several emails. The simplest one is to the aproach by [Augustina Ragwitz (2917)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
+There are many ways to deal with developers that use several emails. The simplest one is to use the aproach by [Augustina Ragwitz (2917)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
 first email address found in the commit log for an author is then the authoritative one. According to her: 
   > While other methods should be explored and compared for better accuracy, this is sufficient to identify unique authors.
 
 If the Git repository is hosted in GitHub.  You can dig and solve this issue with more confidence by assessing the developer's profiles with your favourite programming language using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)).  For that, you will need the necessary permission with a GitHub account and an authentication token.  For Python lovers, PyGithub  is readily available  with methods that interface with the GitHub REST API
 (see [https://pygithub.readthedocs.io/en/stable/introduction.html](https://pygithub.readthedocs.io/en/stable/introduction.html)). 
 
-Note, however, that GitHub GraphQL API was designed in a way that you can retrieve relation data more efficiently from large social networks. 
+Note, however, that GitHub GraphQL API was designed in a way that you can retrieve relational graph-oriented data more efficiently from large social networks. 
+
+If the Git repository is not hosted in GitHub, you can use the approach by (Teixeira, Leppänen and Hyrynsalmi (2020))[https://arxiv.org/pdf/2106.09329] that used pattern-matching techniques with regular expressions to identify unique names and emails.  Note that in their study of code reviews on the Linux Kernel,  adopted a strictly extrarelational approach: individuals are identified by their real names, while all affiliations are based on explicit data extraction from the domain names in individuals’ e-mail addresses. ScrapLogGit2Net get developers' ids and their affiliations from e-mail addresses, simply ignoring their names. 
+
+
 
 ### A developer can hide emails.   ### 
 
-
-## Some collaborative edges are missed 
+TODO 
 
 ## Some collaborative edges are missed with logitudinal segmentation 
 
-## Developers using multiple email accounts 
+TODO
 
-## Developers hiding email accounts 
+
 
 # Command line options for advanced use
 
