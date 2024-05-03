@@ -146,6 +146,14 @@ By default, and all goes well, you get a "NetworkFile.graphML" file prefixed wit
 Congrats. You collected social network data ready for analysis. 
 
 
+# Known issues on mining Git respositories from a network perspective with ScrapLogGit2Net 
+
+## Some collaborative edges are missed 
+
+## Developers using multiple email accounts 
+
+## Developers hiding email accounts 
+
 # Command line options for advanced use
 
 - Use serialized changelogs so you don't need to use raw git logs every time (speeds things up)
