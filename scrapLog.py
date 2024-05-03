@@ -805,7 +805,7 @@ def main():
         parser.add_argument('-r','--raw', action='store', type=str, help='processes from a raw git changelog')
         parser.add_argument('-s','--sser',action='store', type=str, help='processses from a raw git changelog and saves it into a serialized changelog. Requires -r for imput')
         parser.add_argument('-fe','--filter_emails',action='store', type=str, help='ignores the emails listed in a text file (one email per line)')
-        parser.add_argument('-ff','--filter_files',action='store', type=str, help='ignores the files listed in a text file (one email per line)')
+        parser.add_argument('-ff','--filter_files',action='store', type=str, help='ignores the files listed in a text file (one file per line)')
         parser.add_argument("-v", "--verbose", help="increased output verbosity", action="store_true") 
 
         args = parser.parse_args()
