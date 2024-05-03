@@ -165,11 +165,11 @@ If a developer contributes with a personal email account (Gmail, Outlook) and wi
 
 ### A developer can have several emails.   ### 
 
-If a developer has two or more organization emails (e.g., works part-time for two organizations). Should it be treated as two developers !!  Or merged into one. This might require additional investigation on the developer and its contributions to figure out the best way to model the social network. 
-If a developer changes organization (e.g. changed email), by default ScrapLogGit2Net models him as another developer. You might want to model it in another way. 
-If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., ibm, amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with gmail. But it might make sense to associate him with the firm he also commits. Should contributions submitted with personal use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with? 
+There are many ways to deal with developers that use several emails. The simplest one is to the aproach by [Augustina Ragwitz (2917)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
+first email address found in the commit log for an author is then the authoritative one. According to her: 
+  > While other methods should be explored and compared for better accuracy, this is sufficient to identify unique authors.
 
-If the Git repository is hosted in GitHub.  You can dig and solve this issue by assessing the developer's profiles with your favourite programming language using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)).  For that, you will need the necessary permission with a GitHub account and an authentication token.  For Python lovers, PyGithub  is readily available  with methods that interface with the GitHub REST API
+If the Git repository is hosted in GitHub.  You can dig and solve this issue with more confidence by assessing the developer's profiles with your favourite programming language using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)).  For that, you will need the necessary permission with a GitHub account and an authentication token.  For Python lovers, PyGithub  is readily available  with methods that interface with the GitHub REST API
 (see [https://pygithub.readthedocs.io/en/stable/introduction.html](https://pygithub.readthedocs.io/en/stable/introduction.html)). 
 
 Note, however, that GitHub GraphQL API was designed in a way that you can retrieve relation data more efficiently from large social networks. 
