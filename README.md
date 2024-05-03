@@ -163,7 +163,7 @@ If a developer has two or more organization emails (e.g., works part-time for tw
 If a developer changes organization (e.g. changed email), by default ScrapLogGit2Net models him as another developer. You might want to model it in another way. 
 If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., ibm, amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with gmail. But it might make sense to associate him with the firm he also commits. Should contributions submitted with personal use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with? 
 
-### A developer can have several emails.   ### 
+### A developer can have several emails!   ### 
 
 There are many ways to deal with developers that use several emails. The simplest one is to use the aproach by [Augustina Ragwitz (2017)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
 first email address found in the commit log for an author is then the authoritative one. According to her: 
@@ -178,11 +178,11 @@ If the Git repository is not hosted in GitHub, you can use the approach by [Teix
 
 
 
-### A developer can hide emails.   ### 
+### A developer can hide his email!   ### 
 
 Most developers do not hide their email from the git logs. Like scientists in their articles, they want to keep their names as authors or contributors. However, they can remain anonymous or simply do not want to be contacted or avoid spam. This is popular since GitHub started allowing the association of pseudo email addresses on the format [8 digit number]+[username]@users.noreply.github.com that are still associated with their GitHub profile. For example, a git commit from Ruslan Inovic <rroinov@gmail.com> might appear as <608192+rosmanov@users.noreply.github.com>. See GitHub documentation on the issue at [GitHub Docs](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address#about-commit-email-addresses). Once again using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)) would allow to map the @users.noreply.github.com with developers or other emails used by them. Note that once a developer commits code with an email, it will always be associated with him on GitHub, when a developer sets commits to be signed with my no-reply email, he is only affecting the future commits, not the past recorded ones. 
 
-## Some collaborative edges are missed with logitudinal segmentation 
+## Some collaborative edges are missed with logitudinal segmentation!
 
 TODO
 
