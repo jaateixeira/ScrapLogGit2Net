@@ -257,12 +257,12 @@ network file in the standard XML based format GraphML.
 Most Linux distributions run ScrapLogGit2Net out of the box. See the file dependencies.sh if something is missing. 
 
 ## Mac 
-1 - Download a python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/). 
-2 - Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
-  1- pip3 install  dateutils
-  2- pip3 install networkx 
-  3- pip3 install colorama
-  4- pip3 install numpy
+1. Download a python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/). 
+2. Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
+  1. pip3 install  dateutils
+  2. pip3 install networkx 
+  3. pip3 install colorama
+  4. pip3 install numpy
   
   
 ## Windows 
