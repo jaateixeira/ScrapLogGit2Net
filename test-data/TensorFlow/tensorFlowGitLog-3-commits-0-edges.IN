@@ -1,0 +1,21 @@
+==Olli Lupton;olupton@nvidia.com;Wed Mar 27 15:21:05 2024 -0700==
+third_party/xla/third_party/tsl/tsl/profiler/lib/BUILD
+third_party/xla/third_party/tsl/tsl/profiler/lib/nvtx_utils.cc
+third_party/xla/third_party/tsl/tsl/profiler/lib/nvtx_utils.h
+third_party/xla/third_party/tsl/tsl/profiler/lib/nvtx_utils_stub.cc
+third_party/xla/third_party/tsl/tsl/profiler/lib/scoped_annotation.h
+third_party/xla/xla/service/gpu/runtime/BUILD
+third_party/xla/xla/service/gpu/runtime/annotation.cc
+third_party/xla/xla/service/gpu/runtime/annotation.h
+
+==Lawrence Wolf-Sonkin;lawrencews@google.com;Wed Mar 27 15:08:15 2024 -0700==
+tensorflow/core/lib/gtl/BUILD
+tensorflow/core/lib/gtl/array_slice.h
+
+==Gunhyun Park;gunhyun@google.com;Wed Mar 27 15:01:41 2024 -0700==
+third_party/stablehlo/temporary.patch
+third_party/stablehlo/workspace.bzl
+third_party/xla/third_party/stablehlo/temporary.patch
+third_party/xla/third_party/stablehlo/workspace.bzl
+third_party/xla/xla/mlir_hlo/tests/Dialect/mhlo/ops.mlir
+third_party/xla/xla/mlir_hlo/tests/Dialect/mhlo/verifier_reduce_op.mli
