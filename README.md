@@ -148,7 +148,38 @@ Congrats. You collected social network data ready for analysis.
 
 # Known issues on mining Git respositories from a network perspective with ScrapLogGit2Net 
 
+ScrapLogGit2Net shines at mining Git repositories with Social Network Analysis because it takes a multi-level perspective. It tries to capture and model collaboration in terms of source-code file co-editing in terms of both individuals and organizations. It does that by trying to assign an organization attribute to each developer. An organization should be a firm, research institute, university, etc).  However, it does it by looking at the email that developers set when pulling code contributions to the repository. 
+
+* If john pulls the code with jonn@us.ibm.comm, john gets attributed with ibm. 
+* If Silvia pulls the code with Silvia@amazon.com, Silvia gets attributed amazon.com
+* If Gregor pulls with gregor@gmail.com, Gregor gets associated with gmail.  
+
+The approach works well, most of the time. But there are known issues that should be mitigated. Often by hard work, where data needs to be "cleaned" manually or using semi-automated approaches whenever possible. 
+
+## Getting with firm atributes from emails 
+
+### A developer can have several emails.   ### 
+
+If a developer has two or more organization emails (e.g., works part-time for two organizations). Should it be treated as two developers !!  Or merged into one. This might require additional investigation on the developer and its contributions to figure out the best way to model the social network. 
+If a developer changes organization (e.g. changed email), by default ScrapLogGit2Net models him as another developer. You might want to model it in another way. 
+If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., ibm, amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with gmail. But it might make sense to associate him with the firm he also commits. Should contributions submitted with personal use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with? 
+
+A developer can have several emails.  It is not uncommon. 
+
+If a developer has two or more organization emails (e.g., works part-time for two organizations). Should it be treated as two developers !!  Or merged into one. This might require additional investigation on the developer and its contributions to figure out the best way to model the social network. 
+If a developer changes organization (e.g. changed email), by default ScrapLogGit2Net models him as another developer. You might want to model it in another way. 
+If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., ibm, amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with gmail. But it might make sense to associate him with the firm he also commits. Should contributions submitted with personal use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with? 
+
+If the Git repository is hosted in GitHub.  You can dig and solve this issue by assessing the developer's profiles with your favourite programming language using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)).  For that, you will need the necessary permission with a GitHub account and an authentication token.  For Python lovers, PyGithub  is readily available  with methods that interface with the GitHub REST API
+(see [https://pygithub.readthedocs.io/en/stable/introduction.html](https://pygithub.readthedocs.io/en/stable/introduction.html)). 
+
+Note, however, that GitHub GraphQL API was designed in a way that you can retrieve relation data more efficiently from large social networks. 
+
+
+
 ## Some collaborative edges are missed 
+
+## Some collaborative edges are missed with logitudinal segmentation 
 
 ## Developers using multiple email accounts 
 
