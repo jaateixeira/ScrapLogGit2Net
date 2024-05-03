@@ -165,7 +165,7 @@ options:
   -fe FILTER_EMAILS, --filter_emails FILTER_EMAILS
                         ignores the emails listed in a text file (one email per line)
   -ff FILTER_FILES, --filter_files FILTER_FILES
-                        ignores the files listed in a text file (one email per line)
+                        ignores the files listed in a text file (one file per line)
   -v, --verbose         increased output verbosity
 ```
 
