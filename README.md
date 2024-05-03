@@ -165,7 +165,7 @@ If a developer contributes with a personal email account (Gmail, Outlook) and wi
 
 ### A developer can have several emails.   ### 
 
-There are many ways to deal with developers that use several emails. The simplest one is to use the aproach by [Augustina Ragwitz (2917)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
+There are many ways to deal with developers that use several emails. The simplest one is to use the aproach by [Augustina Ragwitz (2017)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
 first email address found in the commit log for an author is then the authoritative one. According to her: 
   > While other methods should be explored and compared for better accuracy, this is sufficient to identify unique authors.
 
@@ -249,6 +249,26 @@ network file in the standard XML based format GraphML.
 - Integrate with the [TNM Tool for Mining of Socio-Technical Data from Git Repositories](https://github.com/JetBrains-Research/tnm). Cool, advanced, research-based but in coded in java. See [TNM tool presentation at MSR (2021) conference])[https://www.youtube.com/watch?v=-NXaY8zTEOU]. 
 - Integrate with the [git2net tool that also that facilitates the extraction of co-editing networks from git repositories.](https://github.com/gotec/git2net). Cool, advanced, research-based and also coded in python. Have a more sofisticated aproach to edges based on entrophy and offers desambiguation features. 
 - Publish as a python package to the community.
+
+# Instalation 
+
+## Linux 
+
+Most Linux distributions run ScrapLogGit2Net out of the box. See the file dependencies.sh if something is missing. 
+
+## Mac 
+1. Download a python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/). 
+2. Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
+  1. pip3 install  dateutils
+  2. pip3 install networkx 
+  3. pip3 install colorama
+  4. pip3 install numpy
+  
+  
+## Windows 
+Contributor writing this subsection welcome 
+
+Across platforms, you can run testcases by invoking the bash script testScrapLog.sh avaliable in the rep. If those cases run well, i.e., you got green color, you installed ScrapLogGit2Net successfully. 
 
 # Contributing 
 Please create a new branch for any new feature. Branch or fork, code, test, then pull request. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
