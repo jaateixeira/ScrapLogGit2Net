@@ -186,8 +186,9 @@ Most developers do not hide their email from the git logs. Like scientists in th
 
 ## Some collaborative edges are missed with logitudinal segmentation!
 
-TODO
+As pointed out by [Teixeira et al. (2015)](https://link.springer.com/article/10.1186/s13174-015-0028-2), when studying code-collaboration as a synchronous behaviour happening across different time windows (release after release or year after year), you will miss some collaboration edges between two developers who contributed to the same file that started before the time-window opened for analysis, or did not end before the time-window closes. See [https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3](https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3). 
 
+A way to quantify this issue is to first analyze all the historical data. From day 0 to the last day save the edges. Then conduct the analysis in segments (e.g., year after year, release after release, etc). Then see how many edges there are in the network from all the time that were not captured by the time-limited analysis. 0 is ideal. But expect a few.  Given that people tend to drop coding efforts before Xmas and New Year, or before releasing a new version (they as mostly stabilizing over developoing new features), the impacts on the model validity are very small. 
 
 
 # Command line options for advanced use
