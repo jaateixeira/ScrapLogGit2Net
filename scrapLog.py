@@ -155,6 +155,14 @@ def getAffiliationFromEmail(email):
         print("\t email=["+str(email)+"]")
         print("\t match=["+str(match)+"]")
 
+        "some exceptions from problematic e-mails found on koha"
+
+        # Many emails ended in ?
+        if email[-1] == '?':
+            print ()
+            print ("\t WARNING: email ending with a question mark '?'")
+            return email[:-1]
+
         "some exception from problematic e-mails found on tensor flow"
         if (EMAIL_FILTERING_MODE == 1 ):
                 print ("matching in filtered mode",list_of_emails_to_filter )
@@ -936,6 +944,12 @@ def main():
                         # having a / a . or stenlen bigger than 5
                         if '.' in line or '/' in line or len(line)>=5:
                             tmpBlock.append(line)
+                            continue
+                        elif line == '--\n':
+                            print ()
+                            print ("\t Warning: File or dir line starting with --")
+                            print("\t Definitely not a file path as expected with git --log --prety")
+                            "see https://git-scm.com/docs/pretty-formats"
                             continue
                         else:
                             print ("ERROR: not a file path. Commit blocs not starting with == must be file paths") 
