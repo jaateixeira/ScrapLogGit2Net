@@ -165,7 +165,7 @@ If a developer contributes with a personal email account (Gmail, Outlook) and wi
 
 ### A developer can have several emails.   ### 
 
-There are many ways to deal with developers that use several emails. The simplest one is to use the aproach by [Augustina Ragwitz (2917)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
+There are many ways to deal with developers that use several emails. The simplest one is to use the aproach by [Augustina Ragwitz (2017)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
 first email address found in the commit log for an author is then the authoritative one. According to her: 
   > While other methods should be explored and compared for better accuracy, this is sufficient to identify unique authors.
 
@@ -267,6 +267,8 @@ Most Linux distributions run ScrapLogGit2Net out of the box. See the file depend
   
 ## Windows 
 Contributor writing this subsection welcome 
+
+Across platforms, you can run testcases by invoking the bash script testScrapLog.sh avaliable in the rep. If those cases run well, i.e., you got green color, you installed ScrapLogGit2Net successfully. 
 
 # Contributing 
 Please create a new branch for any new feature. Branch or fork, code, test, then pull request. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 
