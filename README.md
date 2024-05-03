@@ -174,7 +174,7 @@ If the Git repository is hosted in GitHub.  You can dig and solve this issue wit
 
 Note, however, that GitHub GraphQL API was designed in a way that you can retrieve relational graph-oriented data more efficiently from large social networks. 
 
-If the Git repository is not hosted in GitHub, you can use the approach by [Teixeira, Leppänen and Hyrynsalmi (2020)])(https://arxiv.org/pdf/2106.09329) that used pattern-matching techniques with regular expressions to identify unique names and emails.  Note that in their study of code reviews on the Linux Kernel,  adopted a strictly extrarelational approach: individuals are identified by their real names, while all affiliations are based on explicit data extraction from the domain names in individuals’ e-mail addresses. ScrapLogGit2Net get developers' ids and their affiliations from e-mail addresses, simply ignoring their names. 
+If the Git repository is not hosted in GitHub, you can use the approach by [Teixeira, Leppänen and Hyrynsalmi (2020)](https://arxiv.org/pdf/2106.09329) that used pattern-matching techniques with regular expressions to identify unique names and emails.  Note that in their study of code reviews on the Linux Kernel,  adopted a strictly extrarelational approach: individuals are identified by their real names, while all affiliations are based on explicit data extraction from the domain names in individuals’ e-mail addresses. ScrapLogGit2Net get developers' ids and their affiliations from e-mail addresses, simply ignoring their names. 
 
 
 
