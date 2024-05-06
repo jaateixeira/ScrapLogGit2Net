@@ -305,8 +305,16 @@ for node, data in G.nodes(data=True):
     if data['affiliation'] in list(top_colors.keys()):
         org_colors.append(top_colors[affiliation])
     else:
-        org_colors.append('gray')
+        "Gray for everything not in top_colors"
+        #org_colors.append('gray')
+        "random color for everyhing not in top_colors" 
+        r = random.random()
+        b = random.random()
+        g = random.random()
 
+        color = (r, g, b)
+        org_colors.append(color)
+        #top_colors[org]= color
 
 print(org_colors)
 
@@ -367,12 +375,7 @@ for org in top_10_org:
         print (top_colors[org])
     except KeyError:
         print(f"Top firm {org}' color is not defined in top_colors")
-        r = random.random()
-        b = random.random()
-        g = random.random()
-
-        color = (r, g, b)
-        top_colors[org]= color
+        sys.exit()
 
 
 legend_elements = []
