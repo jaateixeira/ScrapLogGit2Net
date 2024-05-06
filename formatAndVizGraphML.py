@@ -19,7 +19,9 @@ import argparse
 import os 
 global out_file_name
 import numpy as np
-global prefix_for_figures_filenames 
+import turtle, math, random, time
+
+global prefix_for_figures_filenames
 
 
 top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
@@ -357,8 +359,21 @@ nx.draw_circular(G,node_color=org_colors,**circular_options)
 print ("")
 print ("creating labels for top 10 org. with most nodes")
 
-"top 10 org is on the  top_10_org list"
-"color should be in top_10_colors otherwise "
+"top color org is on the"
+"color should be in top_colors otherwise random color "
+
+for org in top_10_org:
+    try:
+        print (top_colors[org])
+    except KeyError:
+        print(f"Top firm {org}' color is not defined in top_colors")
+        r = random.random()
+        b = random.random()
+        g = random.random()
+
+        color = (r, g, b)
+        top_colors[org]= color
+
 
 legend_elements = []
 

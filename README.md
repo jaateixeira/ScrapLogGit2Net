@@ -163,9 +163,11 @@ If a developer has two or more organization emails (e.g., works part-time for tw
 If a developer changes organization (e.g. changed email), by default ScrapLogGit2Net models him as another developer. You might want to model it in another way. 
 If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., ibm, amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with gmail. But it might make sense to associate him with the firm he also commits. Should contributions submitted with personal use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with? 
 
-### A developer can have several emails.   ### 
+When associating emails with developers, and developers with firms, it is a good approach to find suspicious similarities on the strings identifying actors in the network. The Python package [strsimpy](https://pypi.org/project/strsimpy/) implements many algorithms for string similarity. The names 'George Tony' and 'George Toony'  have a very high string similarity score, so they are probably the same person.  Test for similarity in names and emails to enhance the robustness of the social network model. 
 
-There are many ways to deal with developers that use several emails. The simplest one is to use the aproach by [Augustina Ragwitz (2917)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
+### A developer can have several emails!   ### 
+
+There are many ways to deal with developers that use several emails. The simplest one is to use the aproach by [Augustina Ragwitz (2017)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the 
 first email address found in the commit log for an author is then the authoritative one. According to her: 
   > While other methods should be explored and compared for better accuracy, this is sufficient to identify unique authors.
 
@@ -178,14 +180,15 @@ If the Git repository is not hosted in GitHub, you can use the approach by [Teix
 
 
 
-### A developer can hide emails.   ### 
+### A developer can hide his email!   ### 
 
-TODO 
+Most developers do not hide their email from the git logs. Like scientists in their articles, they want to keep their names as authors or contributors. However, they can remain anonymous or simply do not want to be contacted or avoid spam. This is popular since GitHub started allowing the association of pseudo email addresses on the format [8 digit number]+[username]@users.noreply.github.com that are still associated with their GitHub profile. For example, a git commit from Ruslan Inovic <rroinov@gmail.com> might appear as <608192+rosmanov@users.noreply.github.com>. See GitHub documentation on the issue at [GitHub Docs](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address#about-commit-email-addresses). Once again using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)) would allow to map the @users.noreply.github.com with developers or other emails used by them. Note that once a developer commits code with an email, it will always be associated with him on GitHub, when a developer sets commits to be signed with my no-reply email, he is only affecting the future commits, not the past recorded ones. 
 
-## Some collaborative edges are missed with logitudinal segmentation 
+## Some collaborative edges are missed with logitudinal segmentation!
 
-TODO
+As pointed out by [Teixeira et al. (2015)](https://link.springer.com/article/10.1186/s13174-015-0028-2), when studying code-collaboration as a synchronous behaviour happening across different time windows (release after release or year after year), you will miss some collaboration edges between two developers who contributed to the same file that started before the time-window opened for analysis, or did not end before the time-window closes. See [https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3](https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3). 
 
+A way to quantify this issue is to first analyze all the historical data. From day 0 to the last day save the edges. Then conduct the analysis in segments (e.g., year after year, release after release, etc). Then see how many edges there are in the network from all the time that were not captured by the time-limited analysis. 0 is ideal. But expect a few.  Given that people tend to drop coding efforts before Xmas and New Year, or before releasing a new version (they as mostly stabilizing over developoing new features), the impacts on the model validity are very small. 
 
 
 # Command line options for advanced use
@@ -249,6 +252,34 @@ network file in the standard XML based format GraphML.
 - Integrate with the [TNM Tool for Mining of Socio-Technical Data from Git Repositories](https://github.com/JetBrains-Research/tnm). Cool, advanced, research-based but in coded in java. See [TNM tool presentation at MSR (2021) conference])[https://www.youtube.com/watch?v=-NXaY8zTEOU]. 
 - Integrate with the [git2net tool that also that facilitates the extraction of co-editing networks from git repositories.](https://github.com/gotec/git2net). Cool, advanced, research-based and also coded in python. Have a more sofisticated aproach to edges based on entrophy and offers desambiguation features. 
 - Publish as a python package to the community.
+
+# Instalation 
+
+## Linux 
+
+Most Linux distributions run ScrapLogGit2Net out of the box. See the file dependencies.sh if something is missing. 
+
+## Mac 
+1. Download a python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/). 
+2. Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
+  1. pip3 install dateutils
+  2. pip3 install networkx 
+  3. pip3 install colorama
+  4. pip3 install numpy
+  5. pip3 install matplotlib
+  6. pip3 install scipy
+  
+## Windows 
+1. Download a python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/). 
+2. Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
+  1. pip3 install dateutils
+  2. pip3 install networkx 
+  3. pip3 install colorama
+  4. pip3 install numpy
+  5. pip3 install matplotlib
+  6. pip3 install scipy
+
+Across platforms, you can run testcases by invoking the bash script testScrapLog.sh avaliable in the rep. If those cases run well, i.e., you got green color, you installed ScrapLogGit2Net successfully. 
 
 # Contributing 
 Please create a new branch for any new feature. Branch or fork, code, test, then pull request. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project). 

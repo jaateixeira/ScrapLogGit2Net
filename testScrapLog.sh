@@ -14,11 +14,11 @@ NC=$(tput sgr0)
 
 
 echo "" 
-echo "Testing with test-data/tensorFlowGitLog-3-commits-0-edges.IN" 
-echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp"
+echo "Testing with test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN"
+echo "./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp"
 
 
-./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp
+./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp
 #echo "Last line of output shoul be:"
 #echo "Output should be ERROR collaboration tuplesList is empty !!"
 lastline=$(tail -n1 testResults.tmp)
@@ -49,11 +49,11 @@ rm testResults.tmp
 
 
 echo "" 
-echo "Testing with test-data/tensorFlowGitLog-3-commits-1-edges.IN" 
-echo "./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN > testResults.tmp"
+echo "Testing with test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edges.IN"
+echo "./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN > testResults.tmp"
 
 
-./scrapLog.py  -r test-data/tensorFlowGitLog-3-commits-1-edge.IN > testResults.tmp
+./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN > testResults.tmp
 #echo "Last line of output shoul be:"
 #echo "Output should be"
 lastline=$(tail -n1 testResults.tmp)
@@ -160,10 +160,10 @@ echo "Testing with tensorFlowGitLog-first-trimester-2024.IN - 32659 lines"
 echo "Should capture colllaboration between during first trimester 2024 in TensorFlow "
 echo "Should also filter the bots and emails listed in test-configurations/TensorFlowBots.txt"
 # Not passing configurations as they can evolve over time 
-echo "./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN > testResults.tmp"
+echo "./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN > testResults.tmp"
 
 
-./scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN > testResults.tmp 
+./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN > testResults.tmp
 
 echo""
 

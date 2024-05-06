@@ -142,6 +142,9 @@ def getAffiliationFromEmail(email):
     "gets affiliation from an given email" 
 
     #print ("getAffiliationFromEmail("+email+")")
+    if(globals()['DEBUG_MODE']):
+        print()
+        print("\tgetAffiliationFromEmail(" + email + ")")
     
     affiliation_pattern= re.compile('@(\w[\w\-]+)')
     match = affiliation_pattern.findall(email)
@@ -151,6 +154,14 @@ def getAffiliationFromEmail(email):
         print ("ERROR unable to extract affiliation from email. Wrong email format?")
         print("\t email=["+str(email)+"]")
         print("\t match=["+str(match)+"]")
+
+        "some exceptions from problematic e-mails found on koha"
+
+        # Many emails ended in ?
+        if email[-1] == '?':
+            print ()
+            print ("\t WARNING: email ending with a question mark '?'")
+            return email[:-1]
 
         "some exception from problematic e-mails found on tensor flow"
         if (EMAIL_FILTERING_MODE == 1 ):
@@ -597,7 +608,7 @@ def agregateByFileItsContributors():
         email = change[0][1]
         files = change [1]
 
-        #if(globals()['DEBUG_MODE']):
+        # if(globals()['DEBUG_MODE']):
         print ("")
         print ("\t agreegating change by ",email, "on ", change[0][0])
 
@@ -933,6 +944,12 @@ def main():
                         # having a / a . or stenlen bigger than 5
                         if '.' in line or '/' in line or len(line)>=5:
                             tmpBlock.append(line)
+                            continue
+                        elif line == '--\n':
+                            print ()
+                            print ("\t Warning: File or dir line starting with --")
+                            print("\t Definitely not a file path as expected with git --log --prety")
+                            "see https://git-scm.com/docs/pretty-formats"
                             continue
                         else:
                             print ("ERROR: not a file path. Commit blocs not starting with == must be file paths") 
