@@ -11,15 +11,6 @@ print("")
 
 
 
-
-# calculates centralities
-
-
-#Example of use verbose,fitering and only top firms
-# ./formatAndVizGraphML.py -svft test-data/icis-2024-wp-networks-graphML/tensorFlowGitLog-2022-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML
-
-
-
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import networkx as nx
@@ -33,7 +24,7 @@ import turtle, math, random, time
 "For writing exel files"
 import xlwt
 
-global prefix_for_report_filenames
+global prefix_for_report_filename
 
 
 "This is for filtering results for certain firms - only those" 
@@ -90,7 +81,7 @@ G = nx.read_graphml(input_file_name)
 
 
 
-prefix_for_figures_filenames= os.path.basename(input_file_name)
+prefix_for_report_filename= os.path.basename(input_file_name)
 
 
 
@@ -139,19 +130,24 @@ print ("Number_of_nodes="+str(G.number_of_nodes()))
 print ("Number_of_edges="+str(G.number_of_edges()))
 print ("Number_of_isolates="+str(nx.number_of_isolates(G)))
 
+print()
+print("Exporting graph stats")
     
 sheet1 = book.add_sheet("Graph SNA Stats")
 
 sheet1.write(0,0,"Number_of_nodes")
 sheet1.write(0,1,str(G.number_of_nodes()))
 
-sheet1.write(0,0,"Number_of_edges")
-sheet1.write(0,1,str(G.number_of_edges()))
+sheet1.write(1,0,"Number_of_edges")
+sheet1.write(1,1,str(G.number_of_edges()))
 
 
-sheet1.write(0,0,"Number_of_isolates")
-sheet1.write(0,1,str(G.str(nx.number_of_isolates(G))))
-             
+sheet1.write(2,0,"Number_of_isolates")
+sheet1.write(2,1,str(nx.number_of_isolates(G)))
+
+
+print()
+print("DONE: Exported graph stats")
 
 isolate_ids=[]
 for isolate in nx.isolates(G):
@@ -275,50 +271,52 @@ for node, data in G.nodes(data=True):
 print("\n all_affiliations_freq:")
 print(dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)))
 
-top_10_org =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)[:10])
+
+
+print()
+print("\t Exporting organizations with most nodes")
+
+sheet2 = book.add_sheet("Organization with most nodes")
+
+top_orgs =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True))
+
+for index, key in enumerate(top_orgs):
+    #print("#",index," key","->",top_orgs[key])
+    
+    sheet2.write(index,0,key)
+    sheet2.write(index,1,top_orgs[key])
+
+
+print("\t DONE: Exported organizations with most nodes")
+    
+
+
+print()
+print("\t Exporting node list")
 
 
 
-print("\nTOP 10 org. with more nodes:")
-for key in top_10_org:
-    print (key, top_10_org[key]) 
+sheet3 = book.add_sheet("Nodes aka developers list")
 
 
+sheet3.write(0,0,"id")
+sheet3.write(0,1,"e-mail")
+sheet3.write(0,2,"affiliation")
 
-print ("")
-print ("Reporting the most the top 10 org. with most nodes")
-
-"top color org is on the"
-"color should be in top_colors otherwise random color "
-
-for org in top_10_org:
-    try:
-        print (top_colors[org])
-    except KeyError:
-        print(f"Top firm {org}' color is not defined in top_colors")
-        sys.exit()
-
-
-legend_elements = []
-
-for org in top_10_org:
-    print (org)
-    legend_elements.append(Line2D([0], [0],
-                                  marker='o',
-                                  color=top_colors[org],
-                                  label=org+" n= ("+str(top_10_org[org])+")",
-                                  lw=0,
-                                  markerfacecolor=top_colors[org],
-                                  markersize=5))
+for node, data in G.nodes(data=True):
+        #print (node)
+        #print (data['e-mail'])
+        #print (data['affiliation'])
+    
+    sheet3.write(int(node)+1,0,node)
+    sheet3.write(int(node)+1,1,data['e-mail'])
+    sheet3.write(int(node)+1,2,data['affiliation'])
 
 
+print("\t DONE: Exported node list")        
+print()
+print ("\twriting the exel file ["+prefix_for_report_filename+".xls"+"]")
 
-
-
-
-#print()
-#print ("writing Formatted-NetworkFile.graphML")
-#nx.write_graphml_lxml(G, "Formatted-NetworkFile.graphML")
-
+book.save(prefix_for_report_filename+".xls")
 
 exit(1)
