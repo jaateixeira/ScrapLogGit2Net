@@ -27,7 +27,7 @@ global prefix_for_figures_filenames
 top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
 #top_firms_that_matter = ['microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
 #top_firms_that_do_not_matter = ['users','tensorflow','google']
-top_firms_that_do_not_matter = ['users','tensorflow']
+top_firms_that_do_not_matter = ['users','tensorflow','gmail']
 
 parser = argparse.ArgumentParser()
 parser.add_argument("file", type=str, help="the network file")
@@ -305,8 +305,16 @@ for node, data in G.nodes(data=True):
     if data['affiliation'] in list(top_colors.keys()):
         org_colors.append(top_colors[affiliation])
     else:
-        org_colors.append('gray')
+        "Gray for everything not in top_colors"
+        #org_colors.append('gray')
+        "random color for everyhing not in top_colors" 
+        r = random.random()
+        b = random.random()
+        g = random.random()
 
+        color = (r, g, b)
+        org_colors.append(color)
+        top_colors[data['affiliation']]= color
 
 print(org_colors)
 
@@ -367,12 +375,7 @@ for org in top_10_org:
         print (top_colors[org])
     except KeyError:
         print(f"Top firm {org}' color is not defined in top_colors")
-        r = random.random()
-        b = random.random()
-        g = random.random()
-
-        color = (r, g, b)
-        top_colors[org]= color
+        sys.exit()
 
 
 legend_elements = []
