@@ -96,10 +96,6 @@ prefix_for_figures_filenames= os.path.basename(input_file_name)
 
 book = xlwt.Workbook(encoding="utf-8")
 
-sheet1 = book.add_sheet("Top contributing firms")
-
-
-
 
 "This manually hacks group email domains that represent same organization"
 "alum.mit and .mit should be same"
@@ -142,6 +138,20 @@ print ("Graph imported successfully")
 print ("Number_of_nodes="+str(G.number_of_nodes()))
 print ("Number_of_edges="+str(G.number_of_edges()))
 print ("Number_of_isolates="+str(nx.number_of_isolates(G)))
+
+    
+sheet1 = book.add_sheet("Graph SNA Stats")
+
+sheet1.write(0,0,"Number_of_nodes")
+sheet1.write(0,1,str(G.number_of_nodes()))
+
+sheet1.write(0,0,"Number_of_edges")
+sheet1.write(0,1,str(G.number_of_edges()))
+
+
+sheet1.write(0,0,"Number_of_isolates")
+sheet1.write(0,1,str(G.str(nx.number_of_isolates(G))))
+             
 
 isolate_ids=[]
 for isolate in nx.isolates(G):
