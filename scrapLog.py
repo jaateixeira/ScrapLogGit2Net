@@ -943,6 +943,10 @@ def main():
                         # must be a file path 
                         # having a / a . or stenlen bigger than 5
                         if '.' in line or '/' in line or len(line)>=5:
+                            print()
+                            print("Warning == missing !!")
+                            print('Did you use  "git log--pretty=format:"==%an;%ae;%ad=="  --name-only')
+                            print()
                             tmpBlock.append(line)
                             continue
                         elif line == '--\n':
