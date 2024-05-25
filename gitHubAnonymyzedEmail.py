@@ -6,6 +6,8 @@ config.read('config.ini')
 
 GITHUB_TOKEN = config.get('github', 'token', fallback=None)
 
+print("\tGITHUB_TOKEN=[",GITHUB_TOKEN,"]")
+
 if not GITHUB_TOKEN:
     raise ValueError("Please set the GITHUB_TOKEN in the config.ini file")
 
