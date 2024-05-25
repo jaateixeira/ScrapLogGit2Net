@@ -17,7 +17,7 @@ if not GITHUB_TOKEN:
 
 
 # The anonymized email address
-anonymized_email = "octocat@users.noreply.github.com"
+anonymized_email = "byronyi@users.noreply.github.com"
 
 # Extract the username from the email
 username = anonymized_email.split('@')[0]
@@ -41,7 +41,15 @@ if response.status_code == 200:
     print(f"Name: {user_data.get('name', 'N/A')}")
     print(f"Public Repos: {user_data['public_repos']}")
     print(f"Followers: {user_data['followers']}")
-    print(f"Following: {user_data['following']}")
+
+    print()
+    print(f"email: {user_data['email']}")
+    print(f"company: {user_data['company']}")
+
+    print()
+
+    for key, value in user_data.items():
+        print(f"{key}: {value}")    
 else:
     print(f"Failed to fetch user details: {response.status_code}")
 
