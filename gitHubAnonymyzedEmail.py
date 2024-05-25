@@ -17,7 +17,8 @@ if not GITHUB_TOKEN:
 
 
 # The anonymized email address
-anonymized_email = "byronyi@users.noreply.github.com"
+#anonymized_email = "13885442+dothinking@users.noreply.github.com"
+anonymized_email = "ThomasHagebols@users.noreply.github.com"
 
 # Extract the username from the email
 username = anonymized_email.split('@')[0]
