@@ -1,0 +1,26 @@
+* There are may algoritms for string similarity  https://www.geeksforgeeks.org/python-similarity-metrics-of-strings/ - they can be used to identify similar names and similar emails
+
+* GitHub REST and GRAPHML APIs are great to resolve emails and organization with the domain users.noreply.github.com
+
+* IBM subdomains are problematic
+
+* Bots are easy to spot
+
+
+* Linked it often resolves affiliation prbles
+
+* Increasing trend to use anonynous emails
+to avoid pricacy and spam issues
+
+* danger with .cn .fi .pt
+
+* danger with alumni accounts
+* Danger with change from non-annonymous to annonymous 
+
+Robustness tests
+: String similarity for names
+: String similarty for emails
+: Triangulate with names announced in releases
+: Affiliation triangulaion with GitHub API
+* Account for commits on behalf of organizations using the 'on-behalf-of: @ORG NAME[AT]ORGANIZATION.COM'
+
