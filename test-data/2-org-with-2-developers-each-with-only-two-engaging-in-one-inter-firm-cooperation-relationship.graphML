@@ -26,10 +26,10 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 	<data key="d2">rijksmuseum</data>
 	</node>
 	<node id="4">
-	<data key="d0">m.de.rooy@rijksmuseum.nl</data>
+	<data key="d0">imag@rijksmuseum.nl</data>
 	<data key="d1">turquoise</data>
 	<data key="d2">rijksmuseum</data>
 	</node>
-	<edge id="e" source="2" target="3"/>
+	<edge id="edge-2-3" source="2" target="3"/>
 	
 </graph></graphml>

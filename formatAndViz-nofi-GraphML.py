@@ -136,6 +136,10 @@ print ("Number_of_nodes="+str(G.number_of_nodes()))
 print ("Number_of_edges="+str(G.number_of_edges()))
 print ("Number_of_isolates="+str(nx.number_of_isolates(G)))
 
+
+print ("")
+print ("Checking for isolates")
+
 isolate_ids=[]
 for isolate in nx.isolates(G):
     isolate_ids.append(isolate)
