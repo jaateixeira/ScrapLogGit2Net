@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-# Formats a graphML file capturing a weighted Network of Organizations
+# Formats and visualizes a graphML file capturing a weighted Network of Organizations created by ScrapLog
 # Edges thinkness maps its weight 
 # Colorize nodes accourding to affiliation atribute
 
@@ -55,7 +55,7 @@ print ("")
 #top_firms_that_do_not_matter = ['users','tensorflow','google']
 #top_firms_that_do_not_matter = ['users','tensorflow','gmail']
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(prog="formatAndViz-nofo-GraphML.py",description="Formats and visualizes a graphML file capturing a weighted Network of Organizations")
 parser.add_argument("file", type=str, help="the network file")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
@@ -74,6 +74,7 @@ parser.add_argument("-l", "--legend", action="store_true",
 
 parser.add_argument("-r", "--outside-legend-right", action="store_true",
                             help="the legend to the sociogram goes outside to the right")
+parser.add_argument("-n", "--network-layout", required=True, type=ascii, choices=['circular', 'spring'], help="the type of network visualization layout (i.e., node positioning algorithm)")
 
 
 args = parser.parse_args()
