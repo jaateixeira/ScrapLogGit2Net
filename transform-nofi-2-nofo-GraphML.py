@@ -179,22 +179,28 @@ for edge in G.edges(data=True):
     if org_affiliation_from == org_affiliation_to:
         if args.verbose:
             print ("\t Intra-firm relationship")
+            print("\t\t To IGNORE")
+            continue
+
     elif org_affiliation_from != org_affiliation_to:
         if args.verbose:
-            print("\t Inter-firm relationship")            
+            print("\t Inter-firm relationship")
+            
 
         #If inter-organizational edge does not exist yet in orgG add it with weight =1
         if (not orgG.has_edge(org_affiliation_from,org_affiliation_to)) and (not orgG.has_edge(org_affiliation_to,org_affiliation_from)):
             orgG.add_edge(org_affiliation_from,org_affiliation_to, weight=1)
+            if args.verbose:
+                print(f"\t\t FOUND NEW orgG relation {org_affiliation_from}  <-->  {org_affiliation_to}. Adding it with weight=1.")
         #If inter-organizational edge already exists yet add 1 to its weight
         elif orgG.has_edge(org_affiliation_from,org_affiliation_to) or orgG.has_edge(org_affiliation_to,org_affiliation_from):
             orgG.edges[org_affiliation_from,org_affiliation_to]['weight']+=1
+            if args.verbose:
+                print(f"\t\t FOUND existing orgG relation {org_affiliation_from}  <-->  {org_affiliation_to}. Increasing the weight atribute by 1")
+
         else:
             print ("ERROR: Either a collaborative edge exists or not")
-            sys.exit()
-                
-        print(f"\t\tIntra organizational edge {org_affiliation_from}  <-->  {org_affiliation_to} added to orgG (network of organizations)")
-        print(orgG)
+            sys.exit()                
                 
     else:
             print ("\t error - a relation in ScrapLog is either inter or intra firm")
