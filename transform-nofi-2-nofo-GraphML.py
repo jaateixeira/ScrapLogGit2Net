@@ -155,14 +155,19 @@ orgG= nx.Graph()
 
 # G.add_edge("a", "b", weight=0.6)
 
-
+print ("")
+print ("Iterating over all edges of G (network of individuals)")
 for edge in G.edges(data=True):
     if args.verbose:
         print("\t Edge info: "+ str(edge) + " FROM node id" + edge[0] + " TO node id" + edge[1] )
-        org_affiliation_from = nx.get_node_attributes(G, "affiliation")[edge[0]]
-        org_affiliation_to 
-        
-        print("\t " + org_affiliation_from + " <--> " +nx.get_node_attributes(G, "affiliation")[edge[1]])
-        orgG.add_edge(2, 3, weight=1)  
 
+        org_affiliation_from = nx.get_node_attributes(G, "affiliation")[edge[0]]
+        org_affiliation_to = nx.get_node_attributes(G, "affiliation")[edge[1]]
+
+        print(f"\t {org_affiliation_from}  <-->  {org_affiliation_to}.")
+
+
+        
+        #orgG.add_edge(2, 3, weight=1)  
+        
 
