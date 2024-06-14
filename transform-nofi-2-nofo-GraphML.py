@@ -207,14 +207,19 @@ for edge in G.edges(data=True):
         
             
 
-print ()
-print ("Showing current orgG (network of organizations):")
-print ()
-print ("\t The nodes:")
+print()
+print("Showing current orgG (network of organizations):")
+print()
+print("\t The nodes:")
 printGraph_nodes_and_its_data(orgG)
-print ("\t The edges:")
+print("\t The edges:")
 printGraph_edges_and_its_data(orgG)
-print ()
+print()
 
 
+print()
+print("Time to save orgG, the inter organizational network with weighted edges into the graphML format") 
 
+nx.write_graphml_lxml(orgG, args.file+"-transformed-to-nofo.graphML")
+
+print("DONE")
