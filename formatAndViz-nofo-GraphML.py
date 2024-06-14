@@ -1,38 +1,65 @@
 #! /usr/bin/env python3
 
-# formats a graphml file
-# calculates centralities
-# layout according centralities
-# colorize accourding to affiliation atribute
-# nodesize according centralities 
+# Formats a graphML file capturing a weighted Network of Organizations
+# Edges thinkness maps its weight 
+# Colorize nodes accourding to affiliation atribute
 
-#Example of use verbose,fitering and only top firms
-# ./formatAndVizGraphML.py -svft test-data/icis-2024-wp-networks-graphML/tensorFlowGitLog-2022-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML
 
+# Example of use: 
+# ./formatAndViz-nofo-GraphML.py test-data/2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML-transformed-to-nofo.graphML 
 
 
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+
 import networkx as nx
 import sys
-import argparse
 import os 
-global out_file_name
+import argparse
+
 import numpy as np
-import turtle, math, random, time
 
-global prefix_for_figures_filenames
+"needed to assign random colors"
+import random
 
 
-top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
+def printGraph_as_dict_of_dicts(graph):
+    print (nx.to_dict_of_dicts(graph))
+
+
+def printGraph_nodes_and_its_data(graph):
+    
+    for node, data in graph.nodes(data=True):
+        print ("\t"+ str(node))
+        print ("\t" + str(data))
+
+def printGraph_edges_and_its_data(graph):
+    
+    for edge in graph.edges(data=True):
+        print ("\t"+str(edge))
+
+
+
+
+print ("")
+print ("formatAndViz-nofo-GraphML.py - visualizing weighted networks of organizations since June 2024")
+print ("Let's go")
+print ("")
+
+
+
+
+#No filtering implemented yet
+#top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
 #top_firms_that_matter = ['microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
 #top_firms_that_do_not_matter = ['users','tensorflow','google']
-top_firms_that_do_not_matter = ['users','tensorflow','gmail']
+#top_firms_that_do_not_matter = ['users','tensorflow','gmail']
 
 parser = argparse.ArgumentParser()
 parser.add_argument("file", type=str, help="the network file")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
+
 parser.add_argument("-t", "--top-firms-only", action="store_true",
                     help="only top_firms_that_matter")
 
@@ -80,175 +107,41 @@ if args.legend and args.outside_legend_right:
     print()
 
 
-
-
-#print (args)
-#exit()
-
-
 input_file_name = args.file
-
-
-
 G = nx.read_graphml(input_file_name)
-
-
-
 prefix_for_figures_filenames= os.path.basename(input_file_name)
 
 
 
-# I want alum to be alum.mit.edu # 
-#	<data key="d0">rryan@alum.mit.edu</data>
-# Only for ICIS paper 
-
-
-for node, data in G.nodes(data=True):
-    if (data['affiliation'] == 'alum'):
-        data['affiliation'] = 'alum.mit.edu'
-
-
-
-def printGraph_as_dict_of_dicts(graph):
-    print (nx.to_dict_of_dicts(graph))
-
-
-def printGraph_notes_and_its_data(graph):
-    
-    for node, data in G.nodes(data=True):
-        print (node)
-        print (data)
-
-
 if args.verbose:
     print() 
-    print("printing graph:")
+    print("Printing inter-organizational network:")
     printGraph_as_dict_of_dicts(G)
     print() 
-    print("printing graph and its data:")
-    printGraph_notes_and_its_data(G)
+    print("printing graph notes and its data:")
+    printGraph_nodes_and_its_data(G)
+    print() 
+    print("printing graph notes and its data:")
+    printGraph_edges_and_its_data(G)
     print() 
 
 
 
-print ("Graph imported successfully")
+print ("Inter organizational weighted Graph imported successfully")
 print ("Number_of_nodes="+str(G.number_of_nodes()))
 print ("Number_of_edges="+str(G.number_of_edges()))
 print ("Number_of_isolates="+str(nx.number_of_isolates(G)))
-
-isolate_ids=[]
-for isolate in nx.isolates(G):
-    isolate_ids.append(isolate)
-
-if (isolate_ids != []):
-    print("\t Isolates:")
-    for node, data in G.nodes(data=True):
-        if node in isolate_ids:
-            print ("\t",node,data['e-mail'],data['affiliation'])
-
-
-
-# We imported the graph and checked for isolates
-# Shall we now do some filtering
-# Will be implemented as fuction later 
-
-if args.filter_by_org:
-    print()
-    print("Filtering by org mode")
-    print()
-
-    print("\t removing nodes affiliated with", top_firms_that_do_not_matter)
-
-    array_of_nodes_to_be_removed = []
-
-    for node, data in G.nodes(data=True):
-                if (data['affiliation'] in  top_firms_that_do_not_matter):
-                        array_of_nodes_to_be_removed.append(node)
-                        if args.verbose:
-                            print ()
-                            print ("\t\t Removing node",node,data)
-
-    # Removes everybody affiliated  with top_firms_that_do_not_matter)
-    G.remove_nodes_from(array_of_nodes_to_be_removed)
-
-
-
-if args.top_firms_only:
-    print()
-    print("Removing edges not in top_firms_that_matter")
-    print()
-
-                        
-    array_of_nodes_to_be_removed = []
-
-    for node, data in G.nodes(data=True):
-                if (data['affiliation'] not in top_firms_that_matter):
-                        array_of_nodes_to_be_removed.append(node)
-                        if args.verbose:
-                            print ()
-                            print ("\t\t Removing node",node,data)
-
-    # Removes everybody affiliated  with top_firms_that_matter)
-    G.remove_nodes_from(array_of_nodes_to_be_removed)
-                                  
-
-            
-print ()
-print ("Calculating centralities")
-
-degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
-
-sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
-
-#print ("degree_centrality")
-print (degree_centrality)
-#print ("sorted_degree_centrality")
-#print (sorted_degree_centrality)
-
-
-top_10_connected_ind = []
-
-
-print("\nTOP 10 ind. with most edges:")
-
-
-top_10_connected_ind= sorted_degree_centrality[:10]
-
-ids_of_top_10_connected_ind=(dict(top_10_connected_ind)).keys()
-
-
-if args.verbose:
-    print ("")
-    print("Printing list of the most connected firms") 
-    print("n =", len(top_10_connected_ind))
-    print()
-    print
-    print("top_10_connected_ind=",top_10_connected_ind)
-    print("ids_of_top_10_connected_ind=",ids_of_top_10_connected_ind)
-
-
-
-for node, data in G.nodes(data=True):
-    if node in ids_of_top_10_connected_ind:
-        #print (node)
-        print (data['e-mail'])
-        top_10_connected_ind.append(data['e-mail'])
-
-
-
-
 
 
 # See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python 
 print ("coloring by firm")
 
 
-
 # less common goes to gray
 # Convention of black gro research institutes
 # Gray for anunomous eemails
 # Yellow for statups 
-top_colors = {
+known_org_node_colors = {
     'google':'red',
     'nvidia':'lime',
     'intel':'lightblue',
@@ -289,188 +182,107 @@ top_colors = {
     'gatech': 'black',
     'alum.mit.edu':'black',
     '126': 'gray',
+    'rijksmuseum': 'orange',
 }
 
-# The actual colors to be shown <- depend on top colors
+
+print()
+print("Assigning colors to organizations/nodes")
+print()
+
+# Colors to actually be shown - In known_org_node_colors or random color 
 org_colors = []
 
-# list with top 10 org contributors 
-top_10 = {}
+for node  in G.nodes:
+    #print (node)
 
-for node, data in G.nodes(data=True):
-        #print (node)
-    #print (data['affiliation'])
-
-    affiliation = data['affiliation']
-    if data['affiliation'] in list(top_colors.keys()):
-        org_colors.append(top_colors[affiliation])
+    if node in list(known_org_node_colors.keys()):
+        org_colors.append(known_org_node_colors[node])
     else:
-        "Gray for everything not in top_colors"
+        "Gray for everything not in top_colors - not in use"
         #org_colors.append('gray')
         "random color for everyhing not in top_colors" 
         r = random.random()
         b = random.random()
         g = random.random()
 
-        color = (r, g, b)
-        org_colors.append(color)
-        top_colors[data['affiliation']]= color
+        random_color = (r, g, b)
+        org_colors.append(random_color)
 
+        "prevents the repetition of random colors"
+        known_org_node_colors[node] = random_color
+
+
+print("Colors assigned to organizations/nodes:")
 print(org_colors)
+print()
 
 
 
-"find the top 10 organization contributing"
-all_affiliations_freq = {}
-for node, data in G.nodes(data=True):
-    affiliation = data['affiliation']
-    #print (affiliation)
-    if affiliation not in all_affiliations_freq.keys():
-        all_affiliations_freq[affiliation] = 1
-    else:
-        all_affiliations_freq[affiliation] += 1
-    
-
-print("\nall_affiliations_freq:")
-print(dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)))
-
-top_10_org =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)[:10])
+print("Drawing inter organizational network in circular layout ...")
+print()
 
 
 
-print("\nTOP 10 org. with more nodes:")
-for key in top_10_org:
-    print (key, top_10_org[key]) 
+ 
+
+pos=nx.circular_layout(G)
 
 
+print("Drawing inter organizational nodes ... ")
 
-# setting size of node according centrality
-# see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
-
-
-
-circular_options = { 
-    'node_size': 10,
-    'width': 0.1,
+node_circular_options = { 
+    'node_size': 200
 }
 
 
-fig1, ax1 = plt.subplots(figsize=(6, 4),  facecolor='0.7')
-
-print ("")
-print ("Saving circular layout")
-# Random colors 1-256 
-#nx.draw_circular(G,node_color=range(256),**circular_options)
-nx.draw_circular(G,node_color=org_colors,**circular_options)
+nx.draw_networkx_nodes(G, pos, node_color=org_colors,**node_circular_options)
 
 
-print ("")
-print ("creating labels for top 10 org. with most nodes")
-
-"top color org is on the"
-"color should be in top_colors otherwise random color "
-
-for org in top_10_org:
-    try:
-        print (top_colors[org])
-    except KeyError:
-        print(f"Top firm {org}' color is not defined in top_colors")
-        sys.exit()
 
 
-legend_elements = []
+print("Drawing inter organizational edges ... ")
 
-for org in top_10_org:
-    print (org)
-    legend_elements.append(Line2D([0], [0],
-                                  marker='o',
-                                  color=top_colors[org],
-                                  label=org+" n= ("+str(top_10_org[org])+")",
-                                  lw=0,
-                                  markerfacecolor=top_colors[org],
-                                  markersize=5))
-
-
-if args.legend:
-   if  args.outside_legend_right:
-       # Works but legend get cut
-       fig1.subplots_adjust(right=0.6)
-       fig1.legend(bbox_to_anchor=(1.0, 0.5),
-                  borderaxespad=0,
-                  loc=('right'),
-                  handles=legend_elements,
-                  frameon=False,
-                  prop={'weight': 'bold', 'size': 12, 'family': 'georgia'},
-                  )
-       "Comment to save legend in separate file" 
-       #plt.gca().set_axis_off()
-   else: 
-       fig1.legend(handles=legend_elements,
-                  loc='best',
-
-                  frameon=False,
-                  prop={'weight': 'bold', 'size': 14, 'family': 'georgia'})     
-       #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
-
-if args.show:
-    
-    plt.show()
-else:
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png",bbox_inches='tight')
-    print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf",bbox_inches='tight')
-    print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf")
-
-# Clear so graphs do not overlap each other
-
-plt.clf()
-plt.close()
-
-fig2, ax2 = plt.subplots(figsize=(6, 4),  facecolor='0.7')
-
-
-spring_options = { 
-#    'node_size': 10,
-#   'width': 0.5,
+edge_circular_options = { 
 }
 
 
-print ()
-print ("Saving centrality layout")
-print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
-
-"all nodes same size"
-# nx.draw_spring(G, node_color=org_colors, **spring_options)
-"all nodes size based on centrality"
-nx.draw_spring(G, node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()], **spring_options)
 
 
+print("\t Calculating edge thinkness ... ")
 
-#ax.legend(handles=legend_elements, loc='upper right')
-if args.legend:
-    if  args.outside_legend_right:
-       # Works but legend get cut
-        fig2.subplots_adjust(right=0.6)
-        fig2.legend(bbox_to_anchor=(1.0, 0.5),
-                  borderaxespad=0,
-                  loc=('right'),
-                  handles=legend_elements,
-                  frameon=False,
-                  prop={'weight': 'bold', 'size': 12, 'family': 'georgia'},
-                  )
-    else:
-        fig2.legend(handles=legend_elements, loc='best')
+edge_thinkness=[]
+for u,v,a in G.edges(data=True):   
+    edge_thinkness.append(a['weight'])
 
-if args.show:
-    plt.show()
-else:
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png",bbox_inches='tight')
-    print("\t See file",prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
-    
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf",bbox_inches='tight')
-    print("\t See file",prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf")
+print("\t  edge_thinkness = " + str(edge_thinkness))
 
-#print()
-#print ("writing Formatted-NetworkFile.graphML")
-#nx.write_graphml_lxml(G, "Formatted-NetworkFile.graphML")
+nx.draw_networkx_edges(G, pos, width=edge_thinkness)
 
+
+
+print("Drawing organizations  node labels") 
+nx.draw_networkx_labels(G, pos, font_size=10, font_family="sans-serif")
+
+print("Drawing inter-organizational edge weight labels") 
+
+
+print("\t Calculating edge labels based on weight atribute ... ")
+
+weight_labels = nx.get_edge_attributes(G, 'weight')
+print("\t  weight_labels = " + str(weight_labels))
+
+#nx.draw_networkx_edge_labels(G, pos, edge_labels)
+nx.draw_networkx_edge_labels(G, pos, edge_labels=weight_labels)  
+
+
+ax = plt.gca()
+ax.margins(0.08)
+plt.axis("off")
+plt.tight_layout()
+plt.show()
+
+
+print("")
+print("DONE")
+print("")
