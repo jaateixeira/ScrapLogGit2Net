@@ -22,6 +22,8 @@ import numpy as np
 "needed to assign random colors"
 import random
 
+"need for logarithms"
+import math 
 
 def printGraph_as_dict_of_dicts(graph):
     print (nx.to_dict_of_dicts(graph))
@@ -265,8 +267,11 @@ edge_circular_options = {
 print("\t Calculating edge thinkness ... ")
 
 edge_thinkness=[]
-for u,v,a in G.edges(data=True):   
-    edge_thinkness.append(a['weight'])
+for u,v,a in G.edges(data=True):
+    "Using weights as they are"
+    #edge_thinkness.append(a['weight'])
+    "Using log base 2"
+    edge_thinkness.append(1+math.log(a['weight'], 2))
 
 print("\t  edge_thinkness = " + str(edge_thinkness))
 
