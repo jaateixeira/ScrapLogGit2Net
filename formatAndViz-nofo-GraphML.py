@@ -57,6 +57,9 @@ print ("")
 
 parser = argparse.ArgumentParser(prog="formatAndViz-nofo-GraphML.py",description="Formats and visualizes a graphML file capturing a weighted Network of Organizations")
 parser.add_argument("file", type=str, help="the network file")
+
+parser.add_argument("-n", "--networklayout",  choices=['circular', 'spring'],  default='spring', help="the type of network visualization layout (i.e., node positioning algorithm)")
+
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
 
@@ -74,7 +77,7 @@ parser.add_argument("-l", "--legend", action="store_true",
 
 parser.add_argument("-r", "--outside-legend-right", action="store_true",
                             help="the legend to the sociogram goes outside to the right")
-parser.add_argument("-n", "--network-layout", required=True, type=ascii, choices=['circular', 'spring'], help="the type of network visualization layout (i.e., node positioning algorithm)")
+
 
 
 args = parser.parse_args()
@@ -107,6 +110,12 @@ if args.legend and args.outside_legend_right:
     print("legend should be outside of plot on the right")
     print()
 
+
+print()
+print(f"Chosen network layout: {args.networklayout}")
+print()
+    
+    
 
 input_file_name = args.file
 G = nx.read_graphml(input_file_name)
@@ -220,14 +229,17 @@ print()
 
 
 
-print("Drawing inter organizational network in circular layout ...")
+print("Drawing inter organizational network in given layout ...")
 print()
 
 
-
- 
-
-pos=nx.circular_layout(G)
+if args.networklayout == 'circular': 
+    pos=nx.circular_layout(G)
+elif args.networklayout == 'spring':
+    pos=nx.spring_layout(G)
+else:
+    print("Error - Unknow network layout")
+    sys.exit()
 
 
 print("Drawing inter organizational nodes ... ")
