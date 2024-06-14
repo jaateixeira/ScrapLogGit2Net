@@ -230,7 +230,8 @@ network file in the standard XML based format GraphML.
 - Use of a serialized changelog, so we dont't need to use RAW git logs every time. Save a lot of time for analysing complext projects.
 - Possibiliry of adding an argument pointing with a file with emails to ignore (e.g., bots and spam email addresses).
 - Dynamic export of social network visualizations with in the circular and centrality layouts.
-- Dynamic node size based on degree centrality in the circular and centrality layouts. High connected nodes are bigger, less connected nodes are smaller. 
+- Dynamic node size based on degree centrality in the circular and centrality layouts. High connected nodes are bigger, less connected nodes are smaller.
+- Transformation of unweighted inter-individual networks into weighted inter-organizational networks. The weight is equal to the number of inter-organizational relationships. Intra-organizational relationships are ignored. 
 
 ## To implement (voluntears welcome)
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the  trailer tof the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
@@ -238,7 +239,7 @@ network file in the standard XML based format GraphML.
 - Possibility to add an argument pointing to a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company).
 - Possibility to add an argument pointing with a file that aggregates different emails used by a different individual  (e.g., John uses <John@ibm.com> and <John@gmail.com>).
 - Possibility to add an argument pointing with a file that aggregates different emails used by different organizations (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com all map IBM).
-- Possibility to export both networks at the individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations).
+- Possibility to export both networks at the individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations) during scraplog execution from git log data.
 - Possibility to limit analysis to n top contributors (organization with most nodes).
 - Colorize nodes by company affiliation automatically.
 - Report stats on the files connecting people the most (handy for identifying outliers). 
