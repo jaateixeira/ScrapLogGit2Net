@@ -41,13 +41,18 @@ def printGraph_as_dict_of_dicts(graph):
     print (nx.to_dict_of_dicts(graph))
 
 
-def printGraph_notes_and_its_data(graph):
+def printGraph_nodes_and_its_data(graph):
     
-    for node, data in G.nodes(data=True):
+    for node, data in graph.nodes(data=True):
         print (node)
         print (data)
 
+def printGraph_edges_and_its_data(graph):
+    
+    for edge in graph.edges(data=True):
+        print (edge)
 
+        
 parser = argparse.ArgumentParser()
 
 parser.add_argument("file", type=str, help="the network file")
@@ -100,7 +105,7 @@ if args.verbose:
     printGraph_as_dict_of_dicts(G)
     print() 
     print("printing graph and its data:")
-    printGraph_notes_and_its_data(G)
+    printGraph_nodes_and_its_data(G)
     print() 
 
 
@@ -157,17 +162,53 @@ orgG= nx.Graph()
 
 print ("")
 print ("Iterating over all edges of G (network of individuals)")
+print ("")
+
 for edge in G.edges(data=True):
+
+    org_affiliation_from = nx.get_node_attributes(G, "affiliation")[edge[0]]
+    org_affiliation_to = nx.get_node_attributes(G, "affiliation")[edge[1]]
+
+        
     if args.verbose:
+        print("")
         print("\t Edge info: "+ str(edge) + " FROM node id" + edge[0] + " TO node id" + edge[1] )
-
-        org_affiliation_from = nx.get_node_attributes(G, "affiliation")[edge[0]]
-        org_affiliation_to = nx.get_node_attributes(G, "affiliation")[edge[1]]
-
         print(f"\t {org_affiliation_from}  <-->  {org_affiliation_to}.")
 
+        
+    if org_affiliation_from == org_affiliation_to:
+        if args.verbose:
+            print ("\t Intra-firm relationship")
+    elif org_affiliation_from != org_affiliation_to:
+        if args.verbose:
+            print("\t Inter-firm relationship")            
 
+        #If inter-organizational edge does not exist yet in orgG add it with weight =1
+        if (not orgG.has_edge(org_affiliation_from,org_affiliation_to)) and (not orgG.has_edge(org_affiliation_to,org_affiliation_from)):
+            orgG.add_edge(org_affiliation_from,org_affiliation_to, weight=1)
+        #If inter-organizational edge already exists yet add 1 to its weight
+        elif orgG.has_edge(org_affiliation_from,org_affiliation_to) or orgG.has_edge(org_affiliation_to,org_affiliation_from):
+            orgG.edges[org_affiliation_from,org_affiliation_to]['weight']+=1
+        else:
+            print ("ERROR: Either a collaborative edge exists or not")
+            sys.exit()
+                
+        print(f"\t\tIntra organizational edge {org_affiliation_from}  <-->  {org_affiliation_to} added to orgG (network of organizations)")
+        print(orgG)
+                
+    else:
+            print ("\t error - a relation in ScrapLog is either inter or intra firm")
         
-        #orgG.add_edge(2, 3, weight=1)  
-        
+            
+
+print ()
+print ("Showing current orgG (network of organizations):")
+print ()
+print ("\t The nodes:")
+printGraph_nodes_and_its_data(orgG)
+print ("\t The edges:")
+printGraph_edges_and_its_data(orgG)
+print ()
+
+
 
