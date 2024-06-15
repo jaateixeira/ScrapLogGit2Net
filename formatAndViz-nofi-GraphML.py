@@ -1,14 +1,12 @@
 #! /usr/bin/env python3
 
-# formats a graphml file
-# calculates centralities
-# layout according centralities
+# formats and visualizes a graphml file
+# layout can be circular or spring (default)
 # colorize accourding to affiliation atribute
 # nodesize according centralities 
 
-#Example of use verbose,fitering and only top firms
-# ./formatAndVizGraphML.py -svft test-data/icis-2024-wp-networks-graphML/tensorFlowGitLog-2022-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML
-
+#Example of use verbose,fitering and only top firms with legend
+# ./formatAndViz-nofi-GraphML.py  -svtfl test-data/TensorFlow/icis-2024-wp-networks-graphML/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML 
 
 
 import matplotlib.pyplot as plt
@@ -29,8 +27,12 @@ top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvid
 #top_firms_that_do_not_matter = ['users','tensorflow','google']
 top_firms_that_do_not_matter = ['users','tensorflow','gmail']
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(prog="formatAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
+
 parser.add_argument("file", type=str, help="the network file")
+
+parser.add_argument("-n", "--networklayout",  choices=['circular', 'spring'],  default='spring', help="the type of network visualization layout (i.e., node positioning algorithm)")
+
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
 parser.add_argument("-t", "--top-firms-only", action="store_true",
@@ -410,7 +412,7 @@ if args.legend:
        #plt.gca().set_axis_off()
    else: 
        fig1.legend(handles=legend_elements,
-                  loc='best',
+                  loc='center right',
 
                   frameon=False,
                   prop={'weight': 'bold', 'size': 14, 'family': 'georgia'})     
@@ -463,7 +465,7 @@ if args.legend:
                   prop={'weight': 'bold', 'size': 12, 'family': 'georgia'},
                   )
     else:
-        fig2.legend(handles=legend_elements, loc='best')
+        fig2.legend(handles=legend_elements, loc='center right')
 
 if args.show:
     plt.show()
