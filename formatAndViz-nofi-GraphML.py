@@ -12,14 +12,20 @@
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import networkx as nx
+
 import sys
+import os
+
 import argparse
-import os 
-global out_file_name
+
+
 import numpy as np
 import turtle, math, random, time
 
-global prefix_for_figures_filenames
+# Define a custom argument type for a list of strings
+def list_of_strings(arg):
+    return arg.split(',')
+
 
 
 top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
@@ -29,50 +35,69 @@ top_firms_that_do_not_matter = ['users','tensorflow','gmail']
 
 parser = argparse.ArgumentParser(prog="formatAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
 
-parser.add_argument("file", type=str, help="the network file")
-
-parser.add_argument("-n", "--networklayout",  choices=['circular', 'spring'],  default='spring', help="the type of network visualization layout (i.e., node positioning algorithm)")
+parser.add_argument("file", type=str, help="the network file (created by ScrapLogGit2Net)")
 
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
-parser.add_argument("-t", "--top-firms-only", action="store_true",
-                    help="only top_firms_that_matter")
 
-parser.add_argument("-f", "--filter-by-org", action="store_true",
-                    help="top_firms_that_do_not_matter")
-
-parser.add_argument("-s", "--show", action="store_true",
-                    help="show the visualization, otherwises saves to png and pdf")
+parser.add_argument("-p", "--plot", action="store_true",
+                    help="plot the visualization (aka show), otherwises saves to png and pdf")
 
 parser.add_argument("-l", "--legend", action="store_true",
                     help="adds a legend to the sociogram")
 
-parser.add_argument("-r", "--outside-legend-right", action="store_true",
+parser.add_argument("-r", "--outside_legend_right", action="store_true",
                             help="the legend to the sociogram goes outside to the right")
+
+parser.add_argument("-s", "--save_graphML", action="store_true",
+                            help="save a new graphML network based on organizations to consider and organizations to filter passed as argument (i.e., -on, -oo, oi)")
+
+parser.add_argument("-nl", "--network_layout",  choices=['circular', 'spring'],  default='spring', help="the type of network visualization layout (i.e., node positioning algorithm)")
+
+parser.add_argument("-oi", "--org_list_to_ignore", type=list_of_strings, 
+                    help="filter out developers affiliated with organizations in a given list. Example: -oi microsoft,meta,amazon")
+
+parser.add_argument("-oo", "--org_list_only", type=list_of_strings ,
+                    help="consider only developers affiliated with organizations in a given list. Example: -oo google,microsoft")
+
+parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings, help="consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google")
 
 
 args = parser.parse_args()
 
 
-
 if args.verbose:
     print("In verbose mode")
+    print("Here is the list of arguments")
+    print(f"\targs={args}")
 
-
-if args.top_firms_only:
+if  args.org_list_to_ignore:
     print()
-    print("In top-firms only mode")
-    print()
-
-if  args.filter_by_org:
-    print()
-    print("In filtering by org mode")
+    print("In filtering by org mode - ignore given organizations")
+    print("filter out developers affiliated with organizations in a given list. Example: -oi microsoft,meta,amazon")
+    print(f'org_list_to_ignore={org_list_to_ignore}')
     print()
 
 
-if args.show:
+if args.org_list_only:
     print()
-    print("In snow mode")
+    print("In filtering by org mode - consider only the given organizations")
+    print("consider only developers affiliated with organizations in a given list. Example: -oo google,microsoft")
+    print(f'org_list_only={org_list_only}')
+    print()
+
+if args.org_list_and_neighbours_only:
+    print()
+    print('We should consider only a list of organizations and its neighbours')
+    print("consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google")
+    print(f'org_list_and_neighbours_only={args.org_list_and_neighbours_only}')
+    print()
+
+
+    
+if args.plot:
+    print()
+    print("In show/plot  mode")
     print()
 
 
@@ -82,7 +107,7 @@ if args.legend and args.outside_legend_right:
     print()
 
 print()
-print(f"Chosen network layout: {args.networklayout}")
+print(f"Chosen network layout: {args.network_layout}")
 print()
     
 
@@ -112,7 +137,6 @@ prefix_for_figures_filenames= os.path.basename(input_file_name)
 for node, data in G.nodes(data=True):
     if (data['affiliation'] == 'alum'):
         data['affiliation'] = 'alum.mit.edu'
-
 
 
 def printGraph_as_dict_of_dicts(graph):
@@ -151,16 +175,25 @@ for isolate in nx.isolates(G):
     isolate_ids.append(isolate)
 
 if (isolate_ids != []):
+    print("\t Warning - Found isolates")
     print("\t Isolates:")
     for node, data in G.nodes(data=True):
         if node in isolate_ids:
             print ("\t",node,data['e-mail'],data['affiliation'])
-
+elif isolate_ids == []:
+    print ("\t No islolates founbd")
 
 
 # We imported the graph and checked for isolates
 # Shall we now do some filtering
 # Will be implemented as fuction later 
+
+
+print()
+print("We imported the graph and check for isolates")
+print("Let's now filter according the parameters -oi, -oo, -on")
+print()
+
 
 if args.filter_by_org:
     print()
