@@ -1,3 +1,8 @@
+Create documentation folder 
+Document formatAndViz-nofi-GraphML.py add link to README.MD
+Document formatAndViz-nofo-GraphML.py add link to README.MD
+Document transform-nofi-2-nofo-GraphML.py add link to README.MD
+
 Increase size of labels
 
 
