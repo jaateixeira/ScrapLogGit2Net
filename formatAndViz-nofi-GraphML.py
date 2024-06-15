@@ -28,11 +28,6 @@ def list_of_strings(arg):
 
 
 
-top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
-#top_firms_that_matter = ['microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
-#top_firms_that_do_not_matter = ['users','tensorflow','google']
-top_firms_that_do_not_matter = ['users','tensorflow','gmail']
-
 parser = argparse.ArgumentParser(prog="formatAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
 
 parser.add_argument("file", type=str, help="the network file (created by ScrapLogGit2Net)")
@@ -75,7 +70,7 @@ if  args.org_list_to_ignore:
     print()
     print("In filtering by org mode - ignore given organizations")
     print("filter out developers affiliated with organizations in a given list. Example: -oi microsoft,meta,amazon")
-    print(f'org_list_to_ignore={org_list_to_ignore}')
+    print(f'org_list_to_ignore={args.org_list_to_ignore}')
     print()
 
 
@@ -195,9 +190,10 @@ print("Let's now filter according the parameters -oi, -oo, -on")
 print()
 
 
-if args.filter_by_org:
+
+if args.org_list_to_ignore:
     print()
-    print("Filtering by org mode")
+    print("Filtering by org mode ( -oi --org_list_to_ignore args)")
     print()
 
     print("\t removing nodes affiliated with", top_firms_that_do_not_matter)
@@ -215,6 +211,10 @@ if args.filter_by_org:
     G.remove_nodes_from(array_of_nodes_to_be_removed)
 
 
+print ()
+print (f"SUCESS: filter out developers affiliated with organizations {args.org_list_to_ignore}")
+
+exit()
 
 if args.top_firms_only:
     print()
