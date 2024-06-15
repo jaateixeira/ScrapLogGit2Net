@@ -57,6 +57,7 @@ parser.add_argument("-oo", "--org_list_only", type=list_of_strings ,
 
 parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings, help="consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google")
 
+parser.add_argument("-c","--org_list_in_config_file", type=str, help="consider only developers affiliated with organizations in lists provided by a configuration file. Example -c test-configurations/filters.scraplog.conf")
 
 args = parser.parse_args()
 
@@ -78,7 +79,7 @@ if args.org_list_only:
     print()
     print("In filtering by org mode - consider only the given organizations")
     print("consider only developers affiliated with organizations in a given list. Example: -oo google,microsoft")
-    print(f'org_list_only={org_list_only}')
+    print(f'org_list_only={args.org_list_only}')
     print()
 
 if args.org_list_and_neighbours_only:
@@ -88,7 +89,10 @@ if args.org_list_and_neighbours_only:
     print(f'org_list_and_neighbours_only={args.org_list_and_neighbours_only}')
     print()
 
-
+if args.org_list_in_config_file:
+    print("Filter by config files - not implemented yet")
+    print("See test-configurations/filters.scraplog.conf")
+    sys.exit()
     
 if args.plot:
     print()
@@ -196,12 +200,12 @@ if args.org_list_to_ignore:
     print("Filtering by org mode ( -oi --org_list_to_ignore args)")
     print()
 
-    print("\t removing nodes affiliated with", top_firms_that_do_not_matter)
+    print("\t removing nodes affiliated with", args.org_list_to_ignore,":")
 
     array_of_nodes_to_be_removed = []
 
     for node, data in G.nodes(data=True):
-                if (data['affiliation'] in  top_firms_that_do_not_matter):
+                if data['affiliation'] in  args.org_list_to_ignore:
                         array_of_nodes_to_be_removed.append(node)
                         if args.verbose:
                             print ()
@@ -214,18 +218,18 @@ if args.org_list_to_ignore:
 print ()
 print (f"SUCESS: filter out developers affiliated with organizations {args.org_list_to_ignore}")
 
-exit()
 
-if args.top_firms_only:
+if args.org_list_only:
     print()
-    print("Removing edges not in top_firms_that_matter")
+    print("Removing nodes that are not affiliated with organizations in the given list ")
     print()
+    print("\t removing nodes not affiliated with", args.org_list_only,":")
 
                         
     array_of_nodes_to_be_removed = []
 
     for node, data in G.nodes(data=True):
-                if (data['affiliation'] not in top_firms_that_matter):
+                if (data['affiliation'] not in args.org_list_only):
                         array_of_nodes_to_be_removed.append(node)
                         if args.verbose:
                             print ()
@@ -235,19 +239,77 @@ if args.top_firms_only:
     G.remove_nodes_from(array_of_nodes_to_be_removed)
                                   
 
+
+print ()
+print (f"SUCESS: considered only developers affiliated with organizations in {args.org_list_only}")
+
+
+if args.org_list_and_neighbours_only:
+    print()
+    print("Removing nodes that are not affiliated with organizations in the given list or do not collaborate with them (i.e., neighbours)")
+    print()
+    print("\t removing nodes not affiliated with or not collaborating (i.e.,neighbours) with", args.org_list_and_neighbours_only,":")
+
+    array_of_nodes_to_be_removed = []
+    array_of_good_neighbours = []
+
+    for node, data in G.nodes(data=True):
+        if data['affiliation'] not in args.org_list_and_neighbours_only:
+            if args.verbose:
+                print ("\tConsidering what to do with" + node,data)
+                print ("\tNeighbourhood" , G[node])
+                print ("\tNeighbourhood affiliations")
+
+                "Iterates over the neighbours of node"
+                for neightbour_node in G[node]:
+                    print(f"\t\t neighbour_node_id={neightbour_node}")
+                    print(f"\t\t neighbour affiliation -> {nx.get_node_attributes(G, 'affiliation')[neightbour_node]}")
+
+                node_neighbourhood_affiliations = []
+                "Iterates over the neighbours of node"
+                for neightbour_node in G[node]:
+                    node_neighbourhood_affiliations.append(nx.get_node_attributes(G, 'affiliation')[neightbour_node])
+
+                "At list one of the neighbourhood_affiliations needs to be in org_list_and_neighbours_only for the node to survive" 
+                toDel = True
+                for neightbour_affiliation in node_neighbourhood_affiliations:
+                    if neightbour_affiliation in args.org_list_and_neighbours_only:
+                        toDel = False
+                        if args.verbose:
+                            print(f"\t\t Not removing node {node} from {data['affiliation']}, as it have a neighbour from {neightbour_affiliation} that is in args.org_list_and_neighbours_only={args.org_list_and_neighbours_only} ")
+                        array_of_good_neighbours.append(node)
+                        break 
+
+                if toDel:
+                    array_of_nodes_to_be_removed.append(node)
+                    if args.verbose:
+                        print ("\t\t Removing node",node,data, "no good neighbours found!!")
+            
+                print ()
+                
+
+    # Removes everybody affiliated  with top_firms_that_matter)
+    G.remove_nodes_from(array_of_nodes_to_be_removed)
+
+
+print ()
+print (f"SUCESS: considered only developers affiliated with organizations in {args.org_list_only} or developers that work with them (e.g, neighbours)")
+if args.org_list_and_neighbours_only:
+    print (f"\t removed nodes={array_of_nodes_to_be_removed}")
+    print (f"\t array_of_good_neighbours={array_of_good_neighbours}")
+
             
 print ()
 print ("Calculating centralities")
 
 degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
-
 sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
 
-#print ("degree_centrality")
+
 if args.verbose:
-    print (degree_centrality)
-#print ("sorted_degree_centrality")
-#print (sorted_degree_centrality)
+    print (f"degree_centrality={degree_centrality}")
+    print (f"sorted_degree_centrality={sorted_degree_centrality}")
+
 
 
 top_10_connected_ind = []
@@ -286,7 +348,7 @@ if args.verbose:
 # See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python
 print()
 print("coloring by firm")
-print ()
+print()
 
 
 
@@ -397,7 +459,7 @@ for key in top_10_org:
 
 
 print()
-print(f"Drawing network according given layout {args.networklayout} ...")
+print(f"Drawing network according given layout {args.network_layout} ...")
 
 
 # setting size of node according centrality
@@ -424,9 +486,9 @@ print ("")
 
 
 
-if args.networklayout == 'circular': 
+if args.network_layout == 'circular': 
     nx.draw_circular(G,node_color=org_colors,**circular_options)
-elif args.networklayout == 'spring':
+elif args.network_layout == 'spring':
     print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
     nx.draw_spring(G, node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()], **spring_options)
 else:
@@ -490,7 +552,7 @@ print()
 print("We have now nodes, edges and legend")
 print("Let's show or save the inter-individual network")
        
-if args.show:
+if args.plot:
     plt.show()
 else:
     if args.networklayout == 'circular':
