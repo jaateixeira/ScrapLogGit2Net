@@ -339,8 +339,6 @@ if args.verbose:
     print()
 
 
-exit()
-
     
 "find the top 10 organization contributing"
 all_affiliations_freq = {}
@@ -394,8 +392,9 @@ print ("")
 
 
 if args.networklayout == 'circular': 
-    nx.draw_circular(Gnode_color=org_colors,**circular_options)
+    nx.draw_circular(G,node_color=org_colors,**circular_options)
 elif args.networklayout == 'spring':
+    print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
     nx.draw_spring(G, node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()], **spring_options)
 else:
     print("Error - Unknow network layout")
@@ -404,12 +403,9 @@ else:
 
 
 
-
-exit()
-
-
 print ("")
-print ("creating labels for top 10 org. with most nodes")
+print ("Network is now drawn - not visible yet")
+print ("Creating now labels for top 10 org. with most nodes")
 
 "top color org is on the"
 "color should be in top_colors otherwise random color "
@@ -437,9 +433,9 @@ for org in top_10_org:
 
 if args.legend:
    if  args.outside_legend_right:
-       # Works but legend get cut
-       fig1.subplots_adjust(right=0.6)
-       fig1.legend(bbox_to_anchor=(1.0, 0.5),
+       # Adjusts legend to the right so it does not cut the network 
+       fig.subplots_adjust(right=0.6)
+       fig.legend(bbox_to_anchor=(1.0, 0.5),
                   borderaxespad=0,
                   loc=('right'),
                   handles=legend_elements,
@@ -448,69 +444,42 @@ if args.legend:
                   )
        "Comment to save legend in separate file" 
        #plt.gca().set_axis_off()
-   else: 
-       fig1.legend(handles=legend_elements,
+   else:
+       # Just puts it center right without adjusting the figure - legend might cover the nodes 
+       fig.legend(handles=legend_elements,
                   loc='center right',
-
                   frameon=False,
-                  prop={'weight': 'bold', 'size': 14, 'family': 'georgia'})     
+                  prop={'weight': 'bold', 'size': 12, 'family': 'georgia'})     
        #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
 
+
+print()
+print("We have now nodes, edges and legend")
+print("Let's show or save the inter-individual network")
+       
 if args.show:
-    
     plt.show()
 else:
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png",bbox_inches='tight')
-    print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf",bbox_inches='tight')
-    print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf")
+    if args.networklayout == 'circular':
+        plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png",bbox_inches='tight')
+        print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
+        plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf",bbox_inches='tight')
+        print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf")
 
-# Clear so graphs do not overlap each other
-
-plt.clf()
-plt.close()
-
-fig2, ax2 = plt.subplots(figsize=(6, 4),  facecolor='0.7')
-
-
-
-
-print ()
-print ("Saving centrality layout")
-print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
-
-"all nodes same size"
-# nx.draw_spring(G, node_color=org_colors, **spring_options)
-"all nodes size based on centrality"
-nx.draw_spring(G, node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()], **spring_options)
-
-
-
-#ax.legend(handles=legend_elements, loc='upper right')
-if args.legend:
-    if  args.outside_legend_right:
-       # Works but legend get cut
-        fig2.subplots_adjust(right=0.6)
-        fig2.legend(bbox_to_anchor=(1.0, 0.5),
-                  borderaxespad=0,
-                  loc=('right'),
-                  handles=legend_elements,
-                  frameon=False,
-                  prop={'weight': 'bold', 'size': 12, 'family': 'georgia'},
-                  )
+    elif args.networklayout == 'spring':
+            plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png",bbox_inches='tight')
+            print("\t See file",prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
+            plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf",bbox_inches='tight')
+            print("\t See file",prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf")
     else:
-        fig2.legend(handles=legend_elements, loc='center right')
+        print("Error - Unknow network layout")
+        sys.exit()
 
-if args.show:
-    plt.show()
-else:
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png",bbox_inches='tight')
-    print("\t See file",prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
-    
-    plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf",bbox_inches='tight')
-    print("\t See file",prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf")
 
-#print()
-#print ("writing Formatted-NetworkFile.graphML")
-#nx.write_graphml_lxml(G, "Formatted-NetworkFile.graphML")
+print()
+print("DONE")
+print("Hope you enjoy the inter-individual network with organizational affiliation atributes")
+print()
+
+
 
