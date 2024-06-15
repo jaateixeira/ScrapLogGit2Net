@@ -81,6 +81,10 @@ if args.legend and args.outside_legend_right:
     print("legend should be outside of plot on the right")
     print()
 
+print()
+print(f"Chosen network layout: {args.networklayout}")
+print()
+    
 
 
 
@@ -207,7 +211,8 @@ degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
 sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
 
 #print ("degree_centrality")
-print (degree_centrality)
+if args.verbose:
+    print (degree_centrality)
 #print ("sorted_degree_centrality")
 #print (sorted_degree_centrality)
 
@@ -233,20 +238,22 @@ if args.verbose:
     print("ids_of_top_10_connected_ind=",ids_of_top_10_connected_ind)
 
 
-
-for node, data in G.nodes(data=True):
-    if node in ids_of_top_10_connected_ind:
-        #print (node)
-        print (data['e-mail'])
-        top_10_connected_ind.append(data['e-mail'])
-
-
+    print("\ne-mails of the most connected individuals:")
+    for node, data in G.nodes(data=True):
+        if node in ids_of_top_10_connected_ind:
+            #print (node)
+            print (f"\t {data['e-mail']}")
+            top_10_connected_ind.append(data['e-mail'])
 
 
 
 
-# See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python 
-print ("coloring by firm")
+
+
+# See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python
+print()
+print("coloring by firm")
+print ()
 
 
 
@@ -322,10 +329,19 @@ for node, data in G.nodes(data=True):
         org_colors.append(color)
         top_colors[data['affiliation']]= color
 
-print(org_colors)
+
+if args.verbose:
+    print()
+    print("Showing color by organizational affiliation_")
+    #print(org_colors)
+    for node, data in G.nodes(data=True):
+        print(f"\t color({data['affiliation']}) -->  {top_colors[data['affiliation']]}")
+    print()
 
 
+exit()
 
+    
 "find the top 10 organization contributing"
 all_affiliations_freq = {}
 for node, data in G.nodes(data=True):
@@ -349,10 +365,12 @@ for key in top_10_org:
     print (key, top_10_org[key]) 
 
 
+print()
+print(f"Drawing network according given layout {args.networklayout} ...")
+
 
 # setting size of node according centrality
 # see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
-
 
 
 circular_options = { 
@@ -361,13 +379,33 @@ circular_options = {
 }
 
 
-fig1, ax1 = plt.subplots(figsize=(6, 4),  facecolor='0.7')
+spring_options = { 
+#    'node_size': 10,
+#   'width': 0.5,
+}
 
+
+
+print("")
+print("Creating a 6 by 4 subplot ...")
+fig, ax = plt.subplots(figsize=(6, 4),  facecolor='0.7')
 print ("")
-print ("Saving circular layout")
-# Random colors 1-256 
-#nx.draw_circular(G,node_color=range(256),**circular_options)
-nx.draw_circular(G,node_color=org_colors,**circular_options)
+
+
+
+if args.networklayout == 'circular': 
+    nx.draw_circular(Gnode_color=org_colors,**circular_options)
+elif args.networklayout == 'spring':
+    nx.draw_spring(G, node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()], **spring_options)
+else:
+    print("Error - Unknow network layout")
+    sys.exit()
+
+
+
+
+
+exit()
 
 
 print ("")
@@ -435,10 +473,6 @@ plt.close()
 fig2, ax2 = plt.subplots(figsize=(6, 4),  facecolor='0.7')
 
 
-spring_options = { 
-#    'node_size': 10,
-#   'width': 0.5,
-}
 
 
 print ()
