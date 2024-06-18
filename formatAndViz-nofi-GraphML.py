@@ -105,6 +105,11 @@ if args.legend and args.outside_legend_right:
     print("legend should be outside of plot on the right")
     print()
 
+if args.save_graphML:
+    print()
+    print("Should save a new graphML network based on organizations to consider and organizations to filter passed a argument (i.e., -on, -oo, oi)")
+    print("Might be wise to save the smaller inter-individual network")
+
 print()
 print(f"Chosen network layout: {args.network_layout}")
 print()
@@ -570,13 +575,13 @@ print("Let's show or save the inter-individual network")
 if args.plot:
     plt.show()
 else:
-    if args.networklayout == 'circular':
+    if args.network_layout == 'circular':
         plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.png",bbox_inches='tight')
         print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.png")
         plt.savefig(prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf",bbox_inches='tight')
         print("\t See",prefix_for_figures_filenames+"Uncolored-Circular-Layout.pdf")
 
-    elif args.networklayout == 'spring':
+    elif args.network_layout == 'spring':
             plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png",bbox_inches='tight')
             print("\t See file",prefix_for_figures_filenames+"Uncolored-Centrality-Layout.png")
             plt.savefig(prefix_for_figures_filenames+"Uncolored-Centrality-Layout.pdf",bbox_inches='tight')
@@ -585,6 +590,22 @@ else:
         print("Error - Unknow network layout")
         sys.exit()
 
+
+print()
+print("Everything went fine")
+
+def determine_file_name(name):
+    counter = 0
+    file_name = '{0}.tex'.format(name)
+    while os.path.exists(file_name):
+        counter += 1
+        file_name = '{0} ({1}).tex'.format(name, counter)
+    return file_name
+
+if args.save_graphML:
+    print("You should save the filtered network of individuals then ...")
+    print("To implement")
+    sys.exit()
 
 print()
 print("DONE")
