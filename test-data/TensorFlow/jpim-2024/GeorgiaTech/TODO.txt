@@ -6,3 +6,7 @@ top20
 list
 top10+list
 all
+
+
+Analysis needs to be limited to top10 collaborators with
+

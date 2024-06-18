@@ -164,11 +164,14 @@ print ("")
 print ("Iterating over all edges of G (network of individuals)")
 print ("")
 
-for edge in G.edges(data=True):
+edges_count_down = G.number_of_edges()
+
+for edge in G.edges(data=False):
 
     org_affiliation_from = nx.get_node_attributes(G, "affiliation")[edge[0]]
     org_affiliation_to = nx.get_node_attributes(G, "affiliation")[edge[1]]
 
+    print(f"Visiting edge{edge}, {edges_count_down} to go") 
     
     if args.verbose:
         print("")
