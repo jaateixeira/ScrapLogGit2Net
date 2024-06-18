@@ -596,16 +596,19 @@ print("Everything went fine")
 
 def determine_file_name(name):
     counter = 0
-    file_name = '{0}.tex'.format(name)
+    file_name = '{0}.graphML'.format(name)
     while os.path.exists(file_name):
         counter += 1
-        file_name = '{0} ({1}).tex'.format(name, counter)
+        file_name = '{0} ({1}).graphML'.format(name, counter)
     return file_name
 
 if args.save_graphML:
     print("You should save the filtered network of individuals then ...")
-    print("To implement")
-    sys.exit()
+    filtered_file_name = determine_file_name(os.path.basename(args.file[0:-8] + '-filtered'))
+    print("Saving filtered network to " + filtered_file_name )
+
+    nx.write_graphml_lxml(G, filtered_file_name)
+    print(f"See{ filtered_file_name}")
 
 print()
 print("DONE")
