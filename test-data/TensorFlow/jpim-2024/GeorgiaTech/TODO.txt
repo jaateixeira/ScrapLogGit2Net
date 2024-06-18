@@ -1,0 +1,8 @@
+legend options
+
+top5 
+top10
+top20
+list
+top10+list
+all
