@@ -169,7 +169,7 @@ for edge in G.edges(data=True):
     org_affiliation_from = nx.get_node_attributes(G, "affiliation")[edge[0]]
     org_affiliation_to = nx.get_node_attributes(G, "affiliation")[edge[1]]
 
-        
+    
     if args.verbose:
         print("")
         print("\t Edge info: "+ str(edge) + " FROM node id" + edge[0] + " TO node id" + edge[1] )
