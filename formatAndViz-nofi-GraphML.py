@@ -119,23 +119,9 @@ print()
 input_file_name = args.file
 
 
-
 G = nx.read_graphml(input_file_name)
 
-
-
 prefix_for_figures_filenames= os.path.basename(input_file_name)
-
-
-
-# I want alum to be alum.mit.edu # 
-#	<data key="d0">rryan@alum.mit.edu</data>
-# Only for ICIS paper 
-
-
-for node, data in G.nodes(data=True):
-    if (data['affiliation'] == 'alum'):
-        data['affiliation'] = 'alum.mit.edu'
 
 
 def printGraph_as_dict_of_dicts(graph):
@@ -165,6 +151,35 @@ print ("Number_of_nodes="+str(G.number_of_nodes()))
 print ("Number_of_edges="+str(G.number_of_edges()))
 print ("Number_of_isolates="+str(nx.number_of_isolates(G)))
 
+
+
+print()
+print("Now that graph is imported ...")
+print("Let's do some data-cleaning hacks")
+
+# I want alum to be alum.mit.edu # 
+#	<data key="d0">rryan@alum.mit.edu</data>
+
+# I also want us.ibm to be ibm
+
+
+for node, data in G.nodes(data=True):
+    
+    if (data['affiliation'] == 'alum'):
+        data['affiliation'] = 'alum.mit.edu'
+        print (f"node {node} with data={data} set to be affiliated with alum.mit.edu")
+        if 'mit' not in data['e-mail']:
+            print ("ERROR - found a alumni account that is not related to MIT")
+            sys.exit()
+            
+    if (data['affiliation'] == 'us'):
+        data['affiliation'] = 'ibm'
+        print (f"node {node} with data={data} set to be affiliated with ibm")
+        if 'ibm' not in data['e-mail']:
+            print ("ERROR - found a us affiliation that is not related to IBM")
+            sys.exit()
+            
+print("SUCESS - data cleasing worked nicely")
 
 print ("")
 print ("Checking for isolates")
