@@ -39,7 +39,7 @@ parser.add_argument("-p", "--plot", action="store_true",
                     help="plot the visualization (aka show), otherwises saves to png and pdf")
 
 parser.add_argument("-l", "--legend", action="store_true",
-                    help="adds a legend to the sociogram")
+                    help="adds a affiliation attribute legend to the sociogram - by default shows the top 10 org with most nodes")
 
 parser.add_argument("-r", "--outside_legend_right", action="store_true",
                             help="the legend to the sociogram goes outside to the right")
@@ -57,7 +57,28 @@ parser.add_argument("-oo", "--org_list_only", type=list_of_strings ,
 
 parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings, help="consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google")
 
+
+parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top20','top10+1','top10+n'], default='top10',
+                    help="the type of legend to be included  choices=[top5,top10,top20,top10+1,top10+n] and top10 by default")
+
+
+parser.add_argument("-le", "--legend_extras", type=list_of_strings,
+                    help="adds t othe legend some extra nodes given in list of string. eg. -le mit,ibm")
+
+
+parser.add_argument("-lf", "--legend_in_separate_file",
+                    help="Saves the legend is two separate files (png and pdf) - might be easier to include it in articles or websites")
+
+
+parser.add_argument("-to", "--top_org_list_only", choices=['top5','top10','top20','top10+1','top10+n'], default='top10',
+                    help="consider only developers affiliated with the top x organizations with most nodes. TOP 10 by default")
+
+
 parser.add_argument("-c","--org_list_in_config_file", type=str, help="consider only developers affiliated with organizations in lists provided by a configuration file. Example -c test-configurations/filters.scraplog.conf")
+
+
+
+
 
 args = parser.parse_args()
 
@@ -89,6 +110,18 @@ if args.org_list_and_neighbours_only:
     print(f'org_list_and_neighbours_only={args.org_list_and_neighbours_only}')
     print()
 
+
+if args.top_org_list_only:
+    print()
+    print('We should consider only top organizations')
+    print("consider only developers affiliated with organizations with most n nodes")
+    print(f"top mode ={args.top_org_list_only}")
+    print("Not implemented yet")
+    sys.exit()
+    print()
+
+    
+    
 if args.org_list_in_config_file:
     print("Filter by config files - not implemented yet")
     print("See test-configurations/filters.scraplog.conf")
@@ -104,6 +137,32 @@ if args.legend and args.outside_legend_right:
     print()
     print("legend should be outside of plot on the right")
     print()
+
+
+
+if args.legend_type:
+
+    print()
+    print(f"legend type should be {args.legend_type}")
+    print("Not implemented yet")
+    sys.exit()
+    print()
+
+if args.legend_extras:
+    print()
+    print(f"We have some extra nodes to add to the legend {args.legend_extras}")
+    print("Not implemented yet")
+    sys.exit()
+    print()
+
+    
+
+if args.legends_in_separate_file:
+    print()
+    print("legends_in_separate_file: NOT IMPLEMENTED YET")
+    sys.exit()
+    print()
+    
 
 if args.save_graphML:
     print()
