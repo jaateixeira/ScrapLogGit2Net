@@ -162,7 +162,7 @@ orgG= nx.Graph()
 # 
 # TO TRANSFORM the following algorith is applied
 # For each edge in G:
-# If edge nodes are connected to developer of another companirs  then add OrgX with weight 1.0 except if that relation was already modelled
+# If edge nodes are connected to developer of another companire  then add OrgX with weight 1.0 except if that relation was already modelled
 #
 
 
@@ -175,6 +175,14 @@ print ("")
 
 edges_count_down = G.number_of_edges()
 
+# Creating edges for the organizational network
+
+
+# Creates a dict with default values as zero.
+org_edges = defaultdict(int)
+
+
+# For every inter organization edge, finds what edges are inter-organizational and add the to org_edges
 for edge in G.edges:
 
     org_affiliation_from = nx.get_node_attributes(G, "affiliation")[edge[0]]
@@ -192,32 +200,27 @@ for edge in G.edges:
         if args.verbose:
             print ("\t Intra-firm relationship")
             print("\t\t To IGNORE")
-            continue
+        continue
 
     elif org_affiliation_from != org_affiliation_to:
         if args.verbose:
             print("\t Inter-firm relationship")
-            
-
-        #If inter-organizational edge does not exist yet in orgG add it with weight =1
-        if (not orgG.has_edge(org_affiliation_from,org_affiliation_to)) and (not orgG.has_edge(org_affiliation_to,org_affiliation_from)):
-            orgG.add_edge(org_affiliation_from,org_affiliation_to, weight=1)
-            if args.verbose:
-                print(f"\t\t FOUND NEW orgG relation {org_affiliation_from}  <-->  {org_affiliation_to}. Adding it with weight=1.")
-        #If inter-organizational edge already exists yet add 1 to its weight
-        elif orgG.has_edge(org_affiliation_from,org_affiliation_to) or orgG.has_edge(org_affiliation_to,org_affiliation_from):
-            orgG.edges[org_affiliation_from,org_affiliation_to]['weight']+=1
-            if args.verbose:
-                print(f"\t\t FOUND existing orgG relation {org_affiliation_from}  <-->  {org_affiliation_to}. Increasing the weight atribute by 1")
-
-        else:
-            print ("ERROR: Either a collaborative edge exists or not")
-            sys.exit()                
-                
-    else:
-            print ("\t error - a relation in ScrapLog is either inter or intra firm")
+        # ## 
+        org_edges[frozenset([org_affiliation_from, org_affiliation_to])] += 1
+        if args.verbose:
+            print(f"\t\t FOUND NEW orgG relation {org_affiliation_from}  <-->  {org_affiliation_to}. Increasing the weight atribute by 1 (default is 0)")
         
             
+
+# Add nodes and weighted edges to the inter-organizational network
+for org_edge, weight in org_edges.items():
+    org_u, org_v = list(org_edge)
+    if not orgG.has_node(org_u):
+        orgG.add_node(org_u)
+    if not G_organizations.has_node(org_v):
+        orgG.add_node(org_v)
+    orgG.add_edge(org_u, org_v, weight=weight)
+
 
 print()
 print("Showing current orgG (network of organizations):")
