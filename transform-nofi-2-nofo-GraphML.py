@@ -29,7 +29,7 @@ import os
 import argparse
 
 "To call the visualization script as a subprocess" 
-from subprocess import run
+import subprocess 
 
 
 "filtering of firms is not implemented yet" 
@@ -238,14 +238,33 @@ def determine_file_name(name):
     file_name = '{0}.graphML'.format(name)
     while os.path.exists(file_name):
         counter += 1
-        file_name = '{0} ({1}).graphML'.format(name, counter)
+        file_name = '{0}({1}).graphML'.format(name, counter)
     return file_name
 
 
-filtered_file_name = determine_file_name(os.path.basename(args.file[0:-8] + '-transformed-to-nofo'))
+transformed_file_name = determine_file_name(os.path.basename(args.file[0:-8] + '-transformed-to-nofo'))
 
-nx.write_graphml_lxml(orgG,filtered_file_name)
+nx.write_graphml_lxml(orgG,transformed_file_name)
 
-print(f"File saved at {filtered_file_name}")
+print(f"File saved at {transformed_file_name}")
+
+
+if  args.show:
+    print()
+    print("Displaying the results")
+
+    noo_viz_script="/home/apolinex/rep_clones/own-tools/ScrapLogGit2Net/formatAndViz-nofo-GraphML.py"
+
+    
+    # excape caraters to avoid "/bin/sh: 1: Syntax error: "(" unexpected"
+                                 
+    transformed_file_name= transformed_file_name.replace("(", "\(")
+    transformed_file_name= transformed_file_name.replace(")", "\)")
+    
+    show_cmd = "python3 " + noo_viz_script + " " + transformed_file_name
+
+    print(f"\n Invoking {show_cmd}")
+    
+    subprocess.call(show_cmd, shell=True)
 
 print("DONE")
