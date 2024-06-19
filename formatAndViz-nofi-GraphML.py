@@ -60,12 +60,12 @@ parser.add_argument("-oo", "--org_list_only", type=list_of_strings ,
 parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings, help="consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google")
 
 
-parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top20','top10+1','top10+n'], default='top10',
-                    help="the type of legend to be included  choices=[top5,top10,top20,top10+1,top10+n] and top10 by default")
+parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n'], default='top10',
+                    help="the type of legend to be included  choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n']. Top10+others is the default")
 
 
-parser.add_argument("-le", "--legend_extras", type=list_of_strings,
-                    help="adds t othe legend some extra nodes given in list of string. eg. -le mit,ibm")
+parser.add_argument("-le", "--legend_extra_organizations", type=list_of_strings,
+                    help="adds t othe legend some extra nodes given in list of string. eg. -le mit,ibm." )
 
 
 parser.add_argument("-lf", "--legend_in_separate_file",
@@ -123,10 +123,8 @@ if args.org_list_and_neighbours_only:
 if args.top_org_list_only:
     print()
     print('We should consider only top organizations')
-    print("consider only developers affiliated with organizations with most n nodes")
+    print("consider only developers affiliated with organizations with most n nodes/developers (e.g., top 5, top 10,)")
     print(f"top mode ={args.top_org_list_only}")
-    print("Not implemented yet")
-    sys.exit()
     print()
 
     
@@ -153,22 +151,18 @@ if args.legend_type:
 
     print()
     print(f"legend type should be {args.legend_type}")
-    print("Not implemented yet")
-    sys.exit()
     print()
 
-if args.legend_extras:
+if args.legend_extra_organizations:
     print()
-    print(f"We have some extra nodes to add to the legend {args.legend_extras}")
-    print("Not implemented yet")
-    sys.exit()
+    print(f"We have some extra organizations to add to the legend {args.legend_extra_organizations}")
     print()
 
     
 
-if args.legends_in_separate_file:
+if args.legend_in_separate_file:
     print()
-    print("legends_in_separate_file: NOT IMPLEMENTED YET")
+    print("legend_in_separate_file: NOT IMPLEMENTED YET")
     sys.exit()
     print()
     
@@ -217,13 +211,16 @@ if args.verbose:
     printGraph_notes_and_its_data(G)
     print() 
 
+    
 
+initial_number_of_nodes= G.number_of_nodes()
+initial_number_of_edges= G.number_of_edges()
+initial_number_of_isolates= nx.number_of_isolates(G)
 
-print ("Graph imported successfully")
-print ("Number_of_nodes="+str(G.number_of_nodes()))
-print ("Number_of_edges="+str(G.number_of_edges()))
-print ("Number_of_isolates="+str(nx.number_of_isolates(G)))
-
+print ("Graph imported successfully:")
+print (f"\t Initial number_of_nodes={initial_number_of_nodes}")
+print (f"\t Initial number_of_edges={initial_number_of_edges}" )
+print (f"\t Initial number_of_isolates={initial_number_of_isolates}")
 
 
 print()
@@ -276,6 +273,19 @@ elif isolate_ids == []:
 # Will be implemented as fuction later 
 
 
+def print_current_G_stats_after(action:str)-> None:
+    print("\n\t\t-----------------------------------------------------")
+    print(f"\t\t|     Stat   | Initial  | After {action}|")
+    print(f"\t\t| n.  nodes  |\t{initial_number_of_nodes}\t|\t {G.number_of_nodes()}\t\t     |")
+    print(f"\t\t| n.  edges  |\t{initial_number_of_edges}\t|\t {G.number_of_edges()}\t\t     |")
+    print(f"\t\t| n. isolates|\t{initial_number_of_isolates}\t|\t {nx.number_of_isolates(G)}\t\t     |")
+    print("\t\t-----------------------------------------------------")
+
+print()
+print("Status:after data-cleasing:")
+print_current_G_stats_after("initial data cleasing")
+
+    
 print()
 print("We imported the graph and check for isolates")
 print("Let's now filter according the parameters -oi, -oo, -on")
@@ -307,6 +317,13 @@ print ()
 print (f"SUCESS: filter out developers affiliated with organizations {args.org_list_to_ignore}")
 
 
+
+print()
+print("Status:after filtering out developers affiliated with organizations:")
+print_current_G_stats_after("org_list_to_ignore   ")
+
+
+
 if args.org_list_only:
     print()
     print("Removing nodes that are not affiliated with organizations in the given list ")
@@ -330,6 +347,12 @@ if args.org_list_only:
 
 print ()
 print (f"SUCESS: considered only developers affiliated with organizations in {args.org_list_only}")
+
+
+print()
+print("Status:after considerign only developers affiliated with organizations in {args.org_list_only}")
+print_current_G_stats_after("org_list_only        ")
+
 
 
 if args.org_list_and_neighbours_only:
@@ -386,7 +409,17 @@ if args.org_list_and_neighbours_only:
     print (f"\t removed nodes={array_of_nodes_to_be_removed}")
     print (f"\t array_of_good_neighbours={array_of_good_neighbours}")
 
-            
+
+
+
+print()
+print("Status:after considerign only developers affiliated with organizations in in {args.org_list_only} or developers that work with them (e.g, neighbours)")
+print_current_G_stats_after("list_and_neighbours  ")
+
+
+print("Now that we did all the filtering, it is time to calculate centralities at individual and org level")
+
+    
 print ()
 print ("Calculating centralities")
 
@@ -399,21 +432,29 @@ if args.verbose:
     print (f"sorted_degree_centrality={sorted_degree_centrality}")
 
 
-
-top_10_connected_ind = []
-
-
-print("\nTOP 10 ind. with most edges:")
+# For getting top5,top10,top20,top10+1,top10+n most connected individuals 
+def get_top_n_connected_ind(n:int) -> list:
+    return sorted_degree_centrality[:n]
 
 
-top_10_connected_ind= sorted_degree_centrality[:10]
+# For getting top5,top10,top20,top10+1,top10+n most connected organizations 
+def get_top_n_connected_org(n:int) -> list:
+    print ("Not implemented")
+    sys.exit()
+    return None 
 
+top_10_connected_ind= get_top_n_connected_ind(10)
 ids_of_top_10_connected_ind=(dict(top_10_connected_ind)).keys()
+
+
+top_5_connected_ind= get_top_n_connected_ind(5)
+ids_of_top_5_connected_ind=(dict(top_5_connected_ind)).keys()
+
 
 
 if args.verbose:
     print ("")
-    print("Printing list of the most connected firms") 
+    print("Printing list of the most connected individuals") 
     print("n =", len(top_10_connected_ind))
     print()
     print
@@ -430,14 +471,10 @@ if args.verbose:
 
 
 
-
-
-
 # See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python
 print()
 print("coloring by firm")
 print()
-
 
 
 # less common goes to gray
