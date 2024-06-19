@@ -35,7 +35,7 @@ parser.add_argument("file", type=str, help="the network file (created by ScrapLo
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
 
-parser.add_argument("-g", "--GitHub", type=str, help="Uses GitHub API to retrieve the latest and current affiliation for each node e-mail. Require authentication token")
+parser.add_argument("-g", "--GitHub", type=str, metavar="GitHubAuthToken", help="Uses GitHub API to retrieve the latest and current affiliation for each node e-mail. Require authentication token")
 
 parser.add_argument("-p", "--plot", action="store_true",
                     help="plot the visualization (aka show), otherwises saves to png and pdf")
