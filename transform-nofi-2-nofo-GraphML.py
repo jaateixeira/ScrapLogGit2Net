@@ -28,6 +28,8 @@ import os
 "we need to parse arguments" 
 import argparse
 
+"To call the visualization script as a subprocess" 
+from subprocess import run
 
 
 "filtering of firms is not implemented yet" 
@@ -65,6 +67,10 @@ parser.add_argument("-t", "--top-firms-only", action="store_true",
 parser.add_argument("-f", "--filter-by-org", action="store_true",
                     help="top_firms_that_do_not_matter")
 
+parser.add_argument("-s", "--show", action="store_true",
+                    help="Shows/plots the result with formatAndViz-nofo-GraphML.py")
+
+
 args = parser.parse_args()
 
 
@@ -85,6 +91,9 @@ if  args.filter_by_org:
     print("Not implemented yet")
     sys.exit()
 
+if  args.show:
+    print()
+    print("Should display results")
 
 
 # Lets read the graph then 
@@ -166,7 +175,7 @@ print ("")
 
 edges_count_down = G.number_of_edges()
 
-for edge in G.edges(data=False):
+for edge in G.edges:
 
     org_affiliation_from = nx.get_node_attributes(G, "affiliation")[edge[0]]
     org_affiliation_to = nx.get_node_attributes(G, "affiliation")[edge[1]]
@@ -223,6 +232,20 @@ print()
 print()
 print("Time to save orgG, the inter organizational network with weighted edges into the graphML format") 
 
-nx.write_graphml_lxml(orgG, args.file+"-transformed-to-nofo.graphML")
+
+def determine_file_name(name):
+    counter = 0
+    file_name = '{0}.graphML'.format(name)
+    while os.path.exists(file_name):
+        counter += 1
+        file_name = '{0} ({1}).graphML'.format(name, counter)
+    return file_name
+
+
+filtered_file_name = determine_file_name(os.path.basename(args.file[0:-8] + '-transformed-to-nofo'))
+
+nx.write_graphml_lxml(orgG,filtered_file_name)
+
+print(f"File saved at {filtered_file_name}")
 
 print("DONE")
