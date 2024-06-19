@@ -21,6 +21,9 @@ print ("")
 "we need to handle networks"
 import networkx as nx
 
+"Needed to create dictionaries where value default is 0"
+from collections import defaultdict
+
 "we need system and operating systems untils"
 import sys
 import os
@@ -30,6 +33,8 @@ import argparse
 
 "To call the visualization script as a subprocess" 
 import subprocess 
+
+
 
 
 "filtering of firms is not implemented yet" 
@@ -217,7 +222,7 @@ for org_edge, weight in org_edges.items():
     org_u, org_v = list(org_edge)
     if not orgG.has_node(org_u):
         orgG.add_node(org_u)
-    if not G_organizations.has_node(org_v):
+    if not orgG.has_node(org_v):
         orgG.add_node(org_v)
     orgG.add_edge(org_u, org_v, weight=weight)
 
