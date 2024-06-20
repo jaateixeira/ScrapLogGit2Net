@@ -215,7 +215,7 @@ for edge in G.edges:
         if args.verbose:
             print(f"\t\t FOUND NEW orgG relation {org_affiliation_from}  <-->  {org_affiliation_to}. Increasing the weight atribute by 1 (default is 0)")
         
-            
+    edges_count_down-=1
 
 # Add nodes and weighted edges to the inter-organizational network
 for org_edge, weight in org_edges.items():

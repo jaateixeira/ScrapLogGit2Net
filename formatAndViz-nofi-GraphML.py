@@ -61,11 +61,14 @@ parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings
 
 
 parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n'], default='top10',
-                    help="the type of legend to be included  choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n']. Top10+others is the default")
+                    help="the type of legend to be included  choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n']. Top10+others is the default, affiliated with others are counted n.dev. / n.firms ")
 
+
+parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to-unkown-firms','gray-color-to-unknown-firms','gray-color-to-others-not-in-topn-filter'], default='random-color-to-unkown-firms',
+                    help="Some default colors exist in the top_colors dict (e.g., IBM is blue, RedHat is red, Nvidia is green) but how to color others? Set a coloring strategy")
 
 parser.add_argument("-le", "--legend_extra_organizations", type=list_of_strings,
-                    help="adds t othe legend some extra nodes given in list of string. eg. -le mit,ibm." )
+                    help="adds t othe legend some extra nodes gi. eg. -le mit,ibm." )
 
 
 parser.add_argument("-lf", "--legend_in_separate_file",
@@ -158,7 +161,6 @@ if args.legend_extra_organizations:
     print(f"We have some extra organizations to add to the legend {args.legend_extra_organizations}")
     print()
 
-    
 
 if args.legend_in_separate_file:
     print()
@@ -560,7 +562,7 @@ if args.verbose:
 
 
     
-"find the top 10 organization contributing"
+"find the top 5, top 10 and top 20  organization contributing"
 all_affiliations_freq = {}
 for node, data in G.nodes(data=True):
     affiliation = data['affiliation']
@@ -574,15 +576,57 @@ for node, data in G.nodes(data=True):
 print("\nall_affiliations_freq:")
 print(dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)))
 
+
+top_5_org =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)[:5])
 top_10_org =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)[:10])
+top_20_org =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True)[:20])
+top_all_org  =  dict(sorted(all_affiliations_freq.items(), key=lambda item: item[1],reverse=True))
 
 
+if args.legend_type == 'top10+1+others':
+    print ("\n As the specified legend is top10+1+others, we must calculate the number_of_org_not_intop_10_org and developers not in top10 \n ")
+    
+    # Counts size top_all_org sorted list after removing the first 10 elements 
+    number_of_org_not_intop_10_org = len(list(top_all_org.keys())[10:])
+    print(f"\n\t number_of_org_not_intop_10_org={number_of_org_not_intop_10_org}")
+
+    print ("\n As the specified legend is top10+1+others, we must also calculate the number_of_ind_not_intop_10_org and developers not in top10 \n ")
+
+    # First remove the top 10 keys from top_all_org 
+    others_dict_org = {key: top_all_org[key] for key in top_all_org if key in top_10_org.keys()}
+
+    # Then sum the keys of the remaining dictionary
+    number_of_ind_not_intop_10_org=sum(others_dict_org.values())
+
+    print(f"\n\t number_of_ind_not_intop_10_org ={number_of_ind_not_intop_10_org}")
+    
+    
+
+print("\nTOP 20 org. with more nodes:")
+for key in top_20_org:
+    try:
+        print (key, top_20_org[key])
+    except KeyError:
+        print(f"Top firm not in top_20_org dict")
+        sys.exit()
 
 print("\nTOP 10 org. with more nodes:")
 for key in top_10_org:
-    print (key, top_10_org[key]) 
+    try:
+        print (key, top_10_org[key])
+    except KeyError:
+        print(f"Top firm not in top_20_org dict")
+        sys.exit()
 
+print("\nTOP 5 org. with more nodes:")
+for key in top_5_org:
+    try:
+        print (key, top_5_org[key])
+    except KeyError:
+        print(f"Top firm not in top_20_org dict")
+        sys.exit()
 
+    
 print()
 print(f"Drawing network according given layout {args.network_layout} ...")
 
@@ -625,30 +669,100 @@ else:
 
 print ("")
 print ("Network is now drawn - not visible yet")
-print ("Creating now labels for top 10 org. with most nodes")
+print ("Creating now labels for the organizations  with most nodes :")
 
 "top color org is on the"
 "color should be in top_colors otherwise random color "
 
-for org in top_10_org:
-    try:
-        print (top_colors[org])
-    except KeyError:
-        print(f"Top firm {org}' color is not defined in top_colors")
-        sys.exit()
 
 
-legend_elements = []
+def get_nodes_color()->list:
+    print("Not implemented yet")
+    sys.exit()
+    return[]
+        
+def get_legend_elements()->list:
+    print ()
+    print ("Geeting the organizational affiliations to be included in the legend")
+    print ("\t How should a legend look with the following arguments?")
+    print (f"\t args.legend_type={args.legend_type}")
+    print (f"\t args.legend_extra_organizations = {args.legend_extra_organizations}")
+    print ()
+    
+    legend_items = []
 
-for org in top_10_org:
-    print (org)
-    legend_elements.append(Line2D([0], [0],
+    for org in top_20_org:
+        try: 
+            legend_items.append(Line2D([0], [0],
                                   marker='o',
                                   color=top_colors[org],
-                                  label=org+" n= ("+str(top_10_org[org])+")",
+                                  label=org+" n=("+str(top_20_org[org])+")",
                                   lw=0,
                                   markerfacecolor=top_colors[org],
                                   markersize=5))
+        except KeyError:
+            print(f"Top firm {org}' color is not defined in top_colors")
+            sys.exit()
+
+
+    if args.legend_type == 'top5':
+        print ("With top5 as legend type -> show the 5 organizations with most nodes")
+        return legend_items[:5]
+
+    elif args.legend_type == 'top10':
+        print ("With to10 as legend type -> show the 10 organizations with most nodes")
+        return legend_items[:10]
+
+    elif args.legend_type == 'top20':
+        print ("With top20 as legend type -> show the 20 organizations with most nodes")
+        return legend_items[:20]
+
+    elif args.legend_type == 'top10+1':
+        print ("With top10+1 as legend type -> show the 10 organizations with most nodes")
+        print ("And add the extra organizations")
+
+        legend_items_top10_plus_one = legend_items[:10]
+        legend_items_top10_plus_one.append( Line2D([0], [0],
+                                  marker='o',
+                                  color=top_colors[org],
+                                  label=args.legend_extra_organizations[0] +" n=("+str(top_all_org[org])+")",
+                                  lw=0,
+                                  markerfacecolor=top_colors[org],
+                                  markersize=5))
+        return legend_items_top10_plus_one
+
+    elif args.legend_type == 'top10+1+others':
+        print ("With top10+1+others as legend type -> show the 10 organizations with most nodes")
+        print ("And add the extra organizations")
+        print ("And then a count with developers affiliated with others:")
+        print ("And a c count with all other organizations")
+
+        legend_items_top10_plus_one = legend_items[:10]
+        legend_items_top10_plus_one.append( Line2D([0], [0],
+                                  marker='o',
+                                  color=top_colors[org],
+                                  label=args.legend_extra_organizations[0] +"n= ("+str(top_all_org[org])+")",
+                                  lw=0,
+                                  markerfacecolor=top_colors[org],markersize=5))
+        
+        legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others n.=({number_of_ind_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
+        legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others org.={number_of_org_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
+        return legend_items_top10_plus_one
+
+
+    elif args.legend_type == 'top10+n':
+        print ("With top10+n as legend type -> show the 5 organizations with most nodes")
+        print ("\t\t ERROR, very similar to top10+1 but not implemented yet")
+        sys.exit()
+    else:
+        print ("ERROR: Wrong kind of legend type")
+        sys.exit()
+    
+
+
+    
+    
+    return legend_items
 
 
 if args.legend:
@@ -658,7 +772,7 @@ if args.legend:
        fig.legend(bbox_to_anchor=(1.0, 0.5),
                   borderaxespad=0,
                   loc=('right'),
-                  handles=legend_elements,
+                  handles=get_legend_elements(),
                   frameon=False,
                   prop={'weight': 'bold', 'size': 12, 'family': 'georgia'},
                   )
@@ -666,13 +780,15 @@ if args.legend:
        #plt.gca().set_axis_off()
    else:
        # Just puts it center right without adjusting the figure - legend might cover the nodes 
-       fig.legend(handles=legend_elements,
+       fig.legend(handles=get_legend_elements(),
                   loc='center right',
                   frameon=False,
                   prop={'weight': 'bold', 'size': 12, 'family': 'georgia'})     
        #plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
 
 
+#sys.exit()
+       
 print()
 print("We have now nodes, edges and legend")
 print("Let's show or save the inter-individual network")
@@ -704,7 +820,7 @@ def determine_file_name(name):
     file_name = '{0}.graphML'.format(name)
     while os.path.exists(file_name):
         counter += 1
-        file_name = '{0} ({1}).graphML'.format(name, counter)
+        file_name = '{0}({1}).graphML'.format(name, counter)
     return file_name
 
 if args.save_graphML:

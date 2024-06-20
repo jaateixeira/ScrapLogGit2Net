@@ -1,1 +1,9 @@
 
+
+Notes of the given interest organization should be triangular
+
+If not limiting to the top 10 - Others nodes should be there, should be in leged, but should be colored gray
+
+
+Test for errors -> after filtering, they should not be there.
+
