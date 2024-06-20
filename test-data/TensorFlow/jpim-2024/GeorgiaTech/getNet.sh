@@ -15,7 +15,10 @@ echo ""
 echo "Note: Because the -to is only passed at the end, we are considering only gatech and its neighbours"
 echo 
 
+echo "first havign others" 
+../../../../formatAndViz-nofi-GraphML.py  ../../icis-2024-wp-networks-graphML/tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile.graphML -plrs -oi gmail,ee,hotmail,outlook,yahoo,qq,users,163,gmx -on gatech -lt top10+1+others -to top10+1 -le gatech
 
-../../../../formatAndViz-nofi-GraphML.py  ../../icis-2024-wp-networks-graphML/tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile.graphML -plrs -oi gmail,ee,hotmail,outlook,yahoo,qq,users,163,gmx -on gatech -lt top10+1+others -to top10+1 -le gatech 
+echo "then only having the top 10"
+../../../../formatAndViz-nofi-GraphML.py  ../../icis-2024-wp-networks-graphML/tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile.graphML -plrs -oi gmail,ee,hotmail,outlook,yahoo,qq,users,163,gmx  -oo=google,intel,nvidia,arm,ibm,amd,microsoft,huawei,amazon,naver,gatech   -on gatech -lt top10+1+others -to top10+1 -le gatech
 
 # ../../../../formatAndViz-nofi-GraphML.py ../../icis-2024-wp-networks-graphML/tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile.graphML -plr -oi gmail,ee,hotmail,outlook,yahoo,qq,users,163,gmx -on gatech

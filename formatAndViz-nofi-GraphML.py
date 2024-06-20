@@ -741,7 +741,7 @@ def get_legend_elements()->list:
         legend_items_top10_plus_one.append( Line2D([0], [0],
                                   marker='o',
                                   color=top_colors[org],
-                                  label=args.legend_extra_organizations[0] +"n= ("+str(top_all_org[org])+")",
+                                  label=args.legend_extra_organizations[0] +" n= ("+str(top_all_org[org])+")",
                                   lw=0,
                                   markerfacecolor=top_colors[org],markersize=5))
         
