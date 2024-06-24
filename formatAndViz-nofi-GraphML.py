@@ -210,19 +210,30 @@ if args.legend_type:
         if not args.org_list_and_neighbours_only:
             print("\n ERROR: legend_type == 'top10+1+others' requires --org_list_and_neighbours_only ORG_LIST_AND_NEIGHBOURS_ONLY")
             print("\n Explanation: When somebody wants to see the neigbours of IBM, legend would be top 10 + IBM (the + 1).")
+            print("\n Provide --org_list_and_neighbours_only and try again")
             sys.exit()
 
-    # In the case of 'top10+1+others': there are two argument dependencies 
-    if args.legend_type == 'top10+1+others':
+    # In the case of 'top10+1+others': there are two argument dependencies or one argument dependecie
+    # if we are looking at neigbours onlythere are two argument dependencies if we are looking at neigbours only 
+    # In the case of 'top10+1+others': there are two argument dependencies if we are looking at neigbours only
+    if args.legend_type == 'top10+1+others' :
         if args.verbose:
             print ("\n \t With top10+1+others as legend type:")
             print ("\t\t Show the 10 organizations with most nodes")
-            print ("\t\t And the +1 organization from --org_list_and_neighbours_only")
+            print ("\t\t And the +1 organization from --org_list_and_neighbours_only in org_list_and_neighbours_only")
             print ("\t\t And the others organizations are the list of -le LEGEND_EXTRA_ORGANIZATIONS")
 
-        if not args.org_list_and_neighbours_only or not args.legend_extra_organizations:
-            print("\n ERROR: legend_type == 'top10+1+others' requires -le LEGEND_EXTRA_ORGANIZATIONS and --org_list_and_neighbours_only ORG_LIST_AND_NEIGHBOURS_ONLY")
-            print("\n Explanation: When somebody wants to see the neigbours of IBM, legend would be top 10 + IBM (the + 1) and optionally a list of others that do not make it to top10")
+    
+        if args.org_list_and_neighbours_only and (not args.org_list_and_neighbours_only or not args.legend_extra_organizations):
+            print("\n ERROR: legend_type == 'top10+1+others' requires -le LEGEND_EXTRA_ORGANIZATIONS when considering neighbours only (org_list_and_neighbours_only)")
+            print("\n Explanation: When somebody wants to see the neigbours of IBM, legend would be top 10 + IBM (the + 1) and optionally list of others that do not make it to top10")
+            print("\n Provide --org_list_and_neighbours_only and try again")
+            sys.exit()
+
+        if not  args.org_list_and_neighbours_only and not args.legend_extra_organizations:
+            print("\n ERROR: legend_type == 'top10+1+others' requires -le LEGEND_EXTRA_ORGANIZATIONS when not considering neighbours only (org_list_and_neighbours_only)")
+            print("\n Explanation: When somebody wants to see IBM along the top10 org, legend would be top 10 + IBM (the + 1) an optinally a list of others that do not make it to top10")
+            print("\n Provide --org_list_and_neighbours_only and try again")
             sys.exit()
 
         
@@ -612,40 +623,6 @@ top_colors = {
     '126': 'gray',
 }
 
-# The actual colors to be shown <- depend on top colors
-org_colors = []
-
-# list with top 10 org contributors 
-top_10 = {}
-
-for node, data in G.nodes(data=True):
-        #print (node)
-    #print (data['affiliation'])
-
-    affiliation = data['affiliation']
-    if data['affiliation'] in list(top_colors.keys()):
-        org_colors.append(top_colors[affiliation])
-    else:
-        "Gray for everything not in top_colors"
-        #org_colors.append('gray')
-        "random color for everyhing not in top_colors" 
-        r = random.random()
-        b = random.random()
-        g = random.random()
-
-        color = (r, g, b)
-        org_colors.append(color)
-        top_colors[data['affiliation']]= color
-
-
-if args.verbose:
-    print()
-    print("Showing color by organizational affiliation_")
-    #print(org_colors)
-    for node, data in G.nodes(data=True):
-        print(f"\t color({data['affiliation']}) -->  {top_colors[data['affiliation']]}")
-    print()
-
 
     
 "find the top 5, top 10 and top 20  organization contributing"
@@ -717,58 +694,56 @@ print()
 print(f"Drawing network according given layout {args.network_layout} ...")
 
 
-# setting size of node according centrality
-# see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
-
-
-circular_options = { 
-    'node_size': 10,
-    'width': 0.1,
-}
-
-
-spring_options = { 
-#    'node_size': 10,
-#   'width': 0.5,
-}
-
-
-
-print("")
-print("Creating a 6 by 4 subplot ...")
-fig, ax = plt.subplots(figsize=(6, 4),  facecolor='0.7')
-print ("")
-
-
-if args.network_layout == 'circular': 
-    nx.draw_circular(G,node_color=org_colors,**circular_options)
-elif args.network_layout == 'spring':
-    print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
-    nx.draw_spring(G, node_color=org_colors,node_size=[v * 100 for v in degree_centrality.values()], **spring_options)
-else:
-    print("Error - Unknow network layout")
-    sys.exit()
-
-
-
-
-print ("")
-print ("Network is now drawn - not visible yet")
-print ("Creating now labels for the organizations  with most nodes :")
-
-"top color org is on the"
-"color should be in top_colors otherwise random color "
-
 
 
 def get_nodes_color()->list:
-    print("Not implemented yet")
-    sys.exit()
-    return[]
-        
+
+    # The actual colors to be shown <- depend on top colors
+    org_colors = []
+
+
+    for node, data in G.nodes(data=True):
+        #print (node)
+        #print (data['affiliation'])
+
+        affiliation = data['affiliation']
+        if data['affiliation'] in list(top_colors.keys()):
+            org_colors.append(top_colors[affiliation])
+        else:
+            "Gray for everything not in top_colors"
+            #org_colors.append('gray')
+            "random color for everyhing not in top_colors" 
+            r = random.random()
+            b = random.random()
+            g = random.random()
+
+            color = (r, g, b)
+            org_colors.append(color)
+            top_colors[data['affiliation']]= color
+
+    if org_colors == []:
+        print ("ERROR: How come the list of colors to be shown is empty")
+        sys.exit()
+
+
+
+    if args.verbose:
+        print()
+        print("Showing color by organizational affiliation_")
+        #print(org_colors)
+        for node, data in G.nodes(data=True):
+            print(f"\t color({data['affiliation']}) -->  {top_colors[data['affiliation']]}")
+        print()
+
+    return org_colors
+
+def get_nodes_size()->list:
+    return [v * 100 for v in degree_centrality.values()]
+
+
 def get_legend_elements()->list:
     print ()
-    print ("Geeting the organizational affiliations to be included in the legend")
+    print ("Getting the organizational affiliations to be included in the legend")
     print ("\t How should a legend look with the following arguments?")
     print (f"\t args.legend_type={args.legend_type}")
     print (f"\t args.legend_extra_organizations = {args.legend_extra_organizations}")
@@ -824,7 +799,9 @@ def get_legend_elements()->list:
         
         return legend_items_top10_plus_one
 
-    elif args.legend_type == 'top10+1+others':
+
+
+    elif args.org_list_and_neighbours_only and args.legend_type == 'top10+1+others':
         print ("With top10+1+others as legend type -> show the 10 organizations with most nodes")
         print ("And add the extra organizations")
         print ("And then a count with developers affiliated with others:")
@@ -834,13 +811,16 @@ def get_legend_elements()->list:
 
         print ("Requires -le LEGEND_EXTRA_ORGANIZATIONS and --org_list_and_neighbours_only")
 
-        print("ERROR: to implmenent")
-        sys.exit()
-        
+        # Just in case the command line parser is not insuring the dependencies 
+        if not args.org_list_and_neighbours_only or not args.legend_extra_organizations:
+            print("\n ERROR: legend_type == 'top10+1+others' requires -le LEGEND_EXTRA_ORGANIZATIONS and --org_list_and_neighbours_only ORG_LIST_AND_NEIGHBOURS_ONLY")
+            sys.exit()
 
+        
         if args.verbose:
-            print("\t Checking if other is on the top_all_org")
+            print("\t Checking if is on the top_all_org")
             print(f"\t top_all_org={top_all_org}")
+
 
         legend_items_top10_plus_one = legend_items[:10]
         legend_items_top10_plus_one.append( Line2D([0], [0],
@@ -855,6 +835,40 @@ def get_legend_elements()->list:
         return legend_items_top10_plus_one
 
 
+    elif not args.org_list_and_neighbours_only and args.legend_type == 'top10+1+others':
+        print ("With top10+1+others as legend type  ouside of the filtering by neighbours -> show the 10 organizations with most nodes")
+        print ("And add the extra organizations")
+        print ("And then a count with developers affiliated with others:")
+        print ("And then count with all other organizations")
+        print ("Here the +1  is the first element of LEGEND_EXTRA_ORGANIZATIONS")
+
+        print ("Requires -le LEGEND_EXTRA_ORGANIZATIONS ")
+
+
+        if not args.legend_extra_organizations:
+            print("\n ERROR: legend_type == 'top10+1+others' requires first element of -le LEGEND_EXTRA_ORGANIZATIONS")
+            sys.exit()
+
+        
+        if args.verbose:
+            print("\t Checking if is on the top_all_org")
+            print(f"\t top_all_org={top_all_org}")
+
+
+        legend_items_top10_plus_one = legend_items[:10]
+        legend_items_top10_plus_one.append( Line2D([0], [0],
+                                  marker='o',
+                                  color=top_colors[org],
+                                  label=args.legend_extra_organizations[0] +" n= ("+str(top_all_org[org])+")",
+                                  lw=0,
+                                  markerfacecolor=top_colors[org],markersize=10))
+        
+        legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others n.=({number_of_ind_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
+        legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others org.={number_of_org_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
+        return legend_items_top10_plus_one
+
+
+    
     elif args.legend_type == 'top10+n':
         print ("With top10+n as legend type -> show the 5 organizations with most nodes")
         print ("\t\t ERROR, very similar to top10+1 but not implemented yet")
@@ -864,10 +878,97 @@ def get_legend_elements()->list:
         sys.exit()
     
 
-
-    
     
     return legend_items
+
+
+# setting size of node according centrality
+# see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
+
+
+circular_options = { 
+    'node_size': 10,
+    'width': 0.1,
+}
+
+
+spring_options = { 
+#    'node_size': 10,
+#   'width': 0.5,
+}
+
+
+
+
+
+
+print("")
+print("Creating a 6 by 4 subplot ...")
+fig, ax = plt.subplots(figsize=(6, 4),  facecolor='0.7')
+print ("")
+
+
+
+print("Drawing inter indovidual network in given layout ...")
+print()
+
+
+if args.network_layout == 'circular': 
+    pos=nx.circular_layout(G)
+
+    circular_options = { 
+    'node_size': 200
+    }
+
+    
+elif args.network_layout == 'spring':
+    print ("Position nodes using Fruchterman-Reingold force-directed algorithm.")
+    
+    pos=nx.spring_layout(G)
+
+    spring_options = { 
+    }
+
+
+      
+else:
+    print("Error - Unknow network layout")
+    sys.exit()
+
+
+    
+print("Drawing inter individual network nodes ... ")
+
+
+if args.network_layout == 'circular': 
+    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(),**circular_options)
+    
+elif args.network_layout == 'spring':
+    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(),node_size=get_nodes_size())
+    #nx.draw_networkx_nodes(G, pos, node_shape='s', node_color=get_nodes_color(),node_size=[v * 100 for v in degree_centrality.values()])
+
+else:
+    print("Error - Unknow network layout")
+    sys.exit()
+
+
+
+print("Drawing inter individual network edges ... ")
+
+nx.draw_networkx_edges(G, pos, width=1)
+
+
+
+
+print ("")
+print ("Network is now drawn - not visible yet")
+print ("Creating now labels for the organizations  with most nodes :")
+
+"top color org is on the"
+"color should be in top_colors otherwise random color "
+
+
+
 
 
 if args.legend:
@@ -937,6 +1038,11 @@ if args.plot and args.verbose:
     
 
 if args.plot:
+    ax = plt.gca()
+    ax.margins(0.08)
+    plt.axis("off")
+    #plt.tight_layout()
+    
     plt.show()
 else:
     if args.network_layout == 'circular':
@@ -968,7 +1074,7 @@ def determine_file_name(name):
 
 if args.save_graphML:
     print("You should save the filtered network of individuals then ...")
-    filtered_file_name = determine_file_name(os.path.basename(args.file[0:-8] + '-filtered'))
+    filtered_file_name = determine_file_name(os.path.basename(args.infile[0:-8] + '-filtered'))
     print("Saving filtered network to " + filtered_file_name )
 
     nx.write_graphml_lxml(G, filtered_file_name)

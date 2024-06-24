@@ -295,6 +295,10 @@ nx.draw_networkx_edge_labels(G, pos, edge_labels=weight_labels)
 
 
 ax = plt.gca()
+
+ax.set_facecolor('white')
+fig.set_facecolor('white')
+
 ax.margins(0.08)
 plt.axis("off")
 plt.tight_layout()
