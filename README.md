@@ -1,14 +1,15 @@
 # ScrapLogGit2Net
-Tools supporting the mining of Git repositories. It creates social networks based on common source-code file edits. 
+A toolset for mining and visualizing [Git](https://git-scm.com/) repositories with [Social Network Analysis](https://en.wikipedia.org/wiki/Social_network_analysis).  ScrapLogGit2Net allows its users to create and visualize social networks based on common source-code file edits for any given Git repository. 
 
-The tool was first developed by Jose Apolinário Teixeira during his doctoral studies with some guidance from  Software Engineering scholars with expertise in the mining of software repositories. 
+The toolset was first developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) during his doctoral studies with some guidance from  Software Engineering scholars with expertise in the mining of software repositories. The tool merits by considering both individuals and organizations. The tool maps developers to organisations by the commit email address and external [APIs](https://en.wikipedia.org/wiki/API) such as the [REST](https://docs.github.com/en/rest?apiVersion=2022-11-28) and [GraphQL](https://docs.github.com/en/graphql) ones provided by [GitHub](https://github.com/). 
 
 Newer features allow you to: 
+- Transforms a network of individuals/individuals into a network of organisations/firms.  The weighted edge between organizations is the sum of developers that worked together (i.e., co-edited the same source-code files). 
 - Filter developers by email (handy to deal with bots that commit code)
 - Support for parallel edges (.e., multiple edges between two nodes) that allow attributing weight to a cooperative relationship between two developers (e.g., the number of times they co-edited a source code file).
 - Visualize collaborations dynamically using  [NetworkX is a Python package](https://networkx.org/documentation/latest/) and [Matplotlib: Visualization with Python](https://matplotlib.org/). 
 
-The code was also recently made compliant with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) data structures and the [python 3.10 version](https://networkx.org/documentation/latest/) runtime which simplified the original code base. 
+The code was also recently (i.e., Spring 2024) made compliant with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) data structures and the [python 3.10 version](https://networkx.org/documentation/latest/) runtime which simplified the original code base. 
 
 For more information, see the publication and related website: 
 
@@ -23,15 +24,25 @@ Hard to figure out who works with whom in complex software projects.
 # Vision
 A world where software co-production analytics put social network visualizations at the side of standard quantitative statistical data.  All towards the improved management and engineering of complex software projects orchestrated on Git. 
 
-# Inputs #
+
+# Executable tools 
+- **scrapLog.py** - Mines a Git log with SNA (associating developers that co-edit the same source-code files) and outputs a graphML network file (IN Git log -> GraphML).
+- formatAndReport-nofi-GraphML.py - Outputs a spreadsheet full of inter-individual network metrics from a given graphML network file created with scrapLog (IN GraphML -> .csv or .xls).
+- formatAndReport-nofo-GraphML.py - Outputs a spreadsheet full of inter-organizational network metrics from a given graphML network file created with scrapLog (IN GraphML ->  .csv or .xls).
+- formatAndViz-nofi-GraphML.py - Formats and visualises a network of individuals from a given graphML network file created with scrapLog (IN GraphML -> pdf or png).
+- formatAndViz-nofo-GraphML.py - Formats and visualises a network of organizations from a given graphML network file created with scrapLog (IN GraphML -> pdf or png).
+- transform-nofi-2-nofo-GraphML.py - Transforms a network into a network of organizations Graphml file (IN graphML, OUT graphML). 
+
+
+# **scrapLog.py** Inputs #
 
 A git repository and its commit logs.
 
-
-# Outputs #
+# **scrapLog.py** Outputs #
 Social networks that capture who codes who who in a repository (note that a software project can have multiple repositories).
 
-# How it works #
+
+# How  **scrapLog.py** works #
 
 It uses the commit logs of a git repository
 ```git log --pretty=format:"==%an;%ae;%ad=="  --name-only```
@@ -51,7 +62,7 @@ Note that:
 - Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected.  For example, when  analysing projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination. 
 
   
-# How to use it  #
+# How to use **scrapLog.py** #
 
 You need basic skills of Git and basic skills on how to invoke python scripts (test case scripts are implemented in bash).  Knowing python code will also help a lot. 
 You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it usefull, please contribute to the project. 
