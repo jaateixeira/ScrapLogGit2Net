@@ -822,7 +822,10 @@ if args.legend:
 print()
 print("We have now nodes, edges and legend")
 print("Let's show or save the inter-individual network")
-       
+
+
+plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
+
 if args.plot:
     plt.show()
 else:
