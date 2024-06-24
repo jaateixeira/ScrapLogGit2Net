@@ -30,7 +30,7 @@ def list_of_strings(arg):
 
 parser = argparse.ArgumentParser(prog="formatAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
 
-parser.add_argument("file", type=str, help="the network file (created by ScrapLogGit2Net)")
+parser.add_argument("file", type=argparse.FileType('r', encoding='latin-1'), help="the network file (created by ScrapLogGit2Net)")
 
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
