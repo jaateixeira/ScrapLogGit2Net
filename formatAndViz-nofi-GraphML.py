@@ -198,6 +198,35 @@ if args.legend_type:
     print(f"legend type should be {args.legend_type}")
     print()
 
+    # Legend_type must be in choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n'], default='top10'
+
+    # In the case of 'top10+1': there is one argument dependencie
+    if args.legend_type == 'top10+1':
+        if args.verbose:
+            print ("\n \t With top10+1 as legend type:")
+            print ("\t\t Show the 10 organizations with most nodes")
+            print ("\t\t And the +1 organization from --org_list_and_neighbours_only")
+
+        if not args.org_list_and_neighbours_only:
+            print("\n ERROR: legend_type == 'top10+1+others' requires --org_list_and_neighbours_only ORG_LIST_AND_NEIGHBOURS_ONLY")
+            print("\n Explanation: When somebody wants to see the neigbours of IBM, legend would be top 10 + IBM (the + 1).")
+            sys.exit()
+
+    # In the case of 'top10+1+others': there are two argument dependencies 
+    if args.legend_type == 'top10+1+others':
+        if args.verbose:
+            print ("\n \t With top10+1+others as legend type:")
+            print ("\t\t Show the 10 organizations with most nodes")
+            print ("\t\t And the +1 organization from --org_list_and_neighbours_only")
+            print ("\t\t And the others organizations are the list of -le LEGEND_EXTRA_ORGANIZATIONS")
+
+        if not args.org_list_and_neighbours_only or not args.legend_extra_organizations:
+            print("\n ERROR: legend_type == 'top10+1+others' requires -le LEGEND_EXTRA_ORGANIZATIONS and --org_list_and_neighbours_only ORG_LIST_AND_NEIGHBOURS_ONLY")
+            print("\n Explanation: When somebody wants to see the neigbours of IBM, legend would be top 10 + IBM (the + 1) and optionally a list of others that do not make it to top10")
+            sys.exit()
+
+        
+    
 if args.legend_extra_organizations:
     print()
     print(f"We have some extra organizations to add to the legend {args.legend_extra_organizations}")
@@ -775,8 +804,14 @@ def get_legend_elements()->list:
 
     elif args.legend_type == 'top10+1':
         print ("With top10+1 as legend type -> show the 10 organizations with most nodes")
-        print ("And add the extra organizations")
+        print ("And add the extra organization")
+        print ("Here the extra organization is the first element of the list of -le LEGEND_EXTRA_ORGANIZATIONS")
 
+        print("ERROR: to implmenent")
+        print("requires -le LEGEND_EXTRA_ORGANIZATIONS")
+        sys.exit()
+
+        
         legend_items_top10_plus_one = legend_items[:10]
         legend_items_top10_plus_one.append( Line2D([0], [0],
                                   marker='o',
@@ -785,6 +820,8 @@ def get_legend_elements()->list:
                                   lw=0,
                                   markerfacecolor=top_colors[org],
                                   markersize=5))
+        
+        
         return legend_items_top10_plus_one
 
     elif args.legend_type == 'top10+1+others':
@@ -792,6 +829,14 @@ def get_legend_elements()->list:
         print ("And add the extra organizations")
         print ("And then a count with developers affiliated with others:")
         print ("And then count with all other organizations")
+        print ("Here the +1 is the organization passed in --org_list_and_neighbours_only")
+        print ("Here the others organizations are the list of -le LEGEND_EXTRA_ORGANIZATIONS")
+
+        print ("Requires -le LEGEND_EXTRA_ORGANIZATIONS and --org_list_and_neighbours_only")
+
+        print("ERROR: to implmenent")
+        sys.exit()
+        
 
         if args.verbose:
             print("\t Checking if other is on the top_all_org")
@@ -868,11 +913,11 @@ if args.plot and args.verbose:
         
     if  args.org_list_to_ignore:
         print(f'\t org_list_to_ignore={args.org_list_to_ignore}', fontsize=8)
-        plt.figtext(0.0, 0.3,f'org_list_to_ignore={args.org_list_to_ignore}', fontsize=8)
+        plt.figtext(0.5, 0.8,f'org_list_to_ignore={args.org_list_to_ignore}', fontsize=8)
     
     if args.org_list_only:
         print(f'\t org_list_only={args.org_list_only}')
-        plt.figtext(0.0, 0.4,f'org_list_only={args.org_list_only}', fontsize=8)
+        plt.figtext(0.5, 0.05,f'org_list_only={args.org_list_only}', fontsize=8)
 
     if args.org_list_and_neighbours_only:
         print(f'\t org_list_and_neighbours_only={args.org_list_and_neighbours_only}')
