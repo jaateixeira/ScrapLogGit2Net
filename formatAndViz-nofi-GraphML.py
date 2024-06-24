@@ -160,7 +160,19 @@ if args.top_org_list_only:
     print(f"top mode ={args.top_org_list_only}")
     print()
 
-    
+    # Options are top5,top10,top20,top10+1,top10+n
+    # But if we are using to10+1 or top10+n, we need to know that others to display and include in legend 
+
+    if  args.top_org_list_only == 'top10+1' and not args.legend_extra_organizations:
+        print ("ERROR: If you want to consider only developers affilated with top10 + 1, provide additional -le LEGEND_EXTRA_ORGANIZATIONS widh comma separated values")
+        sys.exit()
+
+
+    if  args.top_org_list_only == 'top10+n' and not args.legend_extra_organizations:
+        print ("ERROR: If you want to consider only developers affilated with top10 + 1, provide additional -le LEGEND_EXTRA_ORGANIZATIONS widh comma separated values")
+        sys.exit()
+
+
     
 if args.org_list_in_config_file:
     print("Filter by config files - not implemented yet")
@@ -684,7 +696,6 @@ fig, ax = plt.subplots(figsize=(6, 4),  facecolor='0.7')
 print ("")
 
 
-
 if args.network_layout == 'circular': 
     nx.draw_circular(G,node_color=org_colors,**circular_options)
 elif args.network_layout == 'spring':
@@ -824,7 +835,42 @@ print("We have now nodes, edges and legend")
 print("Let's show or save the inter-individual network")
 
 
-plt.figtext(0, 0, "Visualization of "+(str(prefix_for_figures_filenames))+"on circular layout",  fontsize = 8) 
+
+if args.plot and args.verbose:
+    print("In verbose mode:")
+    print("\n Showing some debug info on the plot")
+
+    
+    plt.figtext(0.0,0.95,f"Visualization of {prefix_for_figures_filenames} on {args.network_layout} layout",  fontsize = 8)
+
+    if args.GitHub:
+        print ("\t We are resolving affiliations using GitHub API")
+        plt.figtext(0.1, 0.2,f"Affiliations resolved using GitHub API",  fontsize = 8)
+        
+    if  args.org_list_to_ignore:
+        print(f'\t org_list_to_ignore={args.org_list_to_ignore}', fontsize=8)
+        plt.figtext(0.0, 0.3,f'org_list_to_ignore={args.org_list_to_ignore}', fontsize=8)
+    
+    if args.org_list_only:
+        print(f'\t org_list_only={args.org_list_only}')
+        plt.figtext(0.0, 0.4,f'org_list_only={args.org_list_only}', fontsize=8)
+
+    if args.org_list_and_neighbours_only:
+        print(f'\t org_list_and_neighbours_only={args.org_list_and_neighbours_only}')
+        plt.figtext(0.0, 0.5,f'org_list_and_neighbours_only={args.org_list_and_neighbours_only}',  fontsize=8)
+
+    if args.top_org_list_only:
+        print(f'\t top mode={args.top_org_list_only}')
+        plt.figtext(0.1, 0.10,f'top mode={args.top_org_list_only} - Should show only developers affiliated with {args.top_org_list_only}',  fontsize=8)
+
+    if args.legend_type:
+        print(f'\t legend type={args.legend_type}')
+        plt.figtext(0.1, 0.05,f"legend type={args.legend_type}", fontsize=8)
+
+    if args.legend_extra_organizations:
+        print(f'\t extra organizations to add to the legend {args.legend_extra_organizations}')
+        plt.figtext(0.0, 0.8,f"We have some extra organizations to add to the legend {args.legend_extra_organizations}", fontsize=8)
+    
 
 if args.plot:
     plt.show()
