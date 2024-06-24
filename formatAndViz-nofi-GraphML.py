@@ -43,7 +43,7 @@ parser = argparse.ArgumentParser(prog="formatAndViz-nofi-GraphML.py",description
 
 parser.add_argument('--version', action='version', version='%(prog)s 1.0RC')
 
-parser.add_argument('infile', nargs='?', type=argparse.FileType('r',encoding='latin-1'), help="the network file (created by ScrapLogGit2Net)")
+parser.add_argument('infile', nargs='?', type=str, help="the network file (created by ScrapLogGit2Net)")
 
 
 parser.add_argument("-o", '--outfile', nargs='?', type=argparse.FileType('w',encoding='latin-1'))
@@ -112,8 +112,18 @@ if args.verbose:
 if not args.infile:
     print("GraphML file encoding network of individuals not provided")
     print("Asking user for a file to fix the issue")
-    args.infile= filedialog.askopenfilename()
 
+    input_file_name= filedialog.askopenfilename()
+else:
+    print("\n GraphML file encoding network of individuals was provided")
+    print(f"\t args.infile={args.infile}")
+    input_file_name = args.infile
+
+if not os.path.isfile(input_file_name):
+    print (f"{input_file_name} is not a file as expected")
+    print ("ERROR: ScrapLog expects a file")
+    sys.exit()
+    
 if args.GitHub:
     print("Before creating the visualization, we use GitHub API to retrieve the latest and current affiliation for each node e-mail")
     print("Require authentication token")
@@ -205,7 +215,7 @@ print()
 #exit()
 
 
-input_file_name = args.infile
+
 
 
 G = nx.read_graphml(input_file_name)
