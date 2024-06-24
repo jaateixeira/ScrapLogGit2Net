@@ -446,12 +446,15 @@ if args.org_list_and_neighbours_only:
     # Removes everybody affiliated  with top_firms_that_matter)
     G.remove_nodes_from(array_of_nodes_to_be_removed)
 
+    
 
 print ()
 print (f"SUCESS: considered only developers affiliated with organizations in {args.org_list_only} or developers that work with them (e.g, neighbours)")
 if args.org_list_and_neighbours_only:
     print (f"\t removed nodes={array_of_nodes_to_be_removed}")
     print (f"\t array_of_good_neighbours={array_of_good_neighbours}")
+
+    
 
 
 
@@ -461,9 +464,21 @@ print("Status:after considerign only developers affiliated with organizations in
 print_current_G_stats_after("list_and_neighbours  ")
 
 
+# Tests that we did not end up with a empty graph
+if G.number_of_nodes() == 0 :
+    print (f"ERROR: After removing  some many developers, we got an empty network - Time to leave")
+    sys.exit()
+    
+
+
+
 print("Now that we did all the filtering, it is time to calculate centralities at individual and org level")
 
-    
+
+
+
+
+
 print ()
 print ("Calculating centralities")
 
@@ -776,7 +791,11 @@ def get_legend_elements()->list:
         print ("With top10+1+others as legend type -> show the 10 organizations with most nodes")
         print ("And add the extra organizations")
         print ("And then a count with developers affiliated with others:")
-        print ("And a c count with all other organizations")
+        print ("And then count with all other organizations")
+
+        if args.verbose:
+            print("\t Checking if other is on the top_all_org")
+            print(f"\t top_all_org={top_all_org}")
 
         legend_items_top10_plus_one = legend_items[:10]
         legend_items_top10_plus_one.append( Line2D([0], [0],
