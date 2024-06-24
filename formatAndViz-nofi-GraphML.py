@@ -16,10 +16,21 @@ import networkx as nx
 import sys
 import os
 
+# For parsing command line arguments 
 import argparse
 
+# For asking user what files to open and what files to save
+import tkinter as tk
+from tkinter import *
+from tkinter import filedialog
+from tkinter.filedialog import askopenfile
 
+
+# For iterating 
 import numpy as np
+
+# Required for coloring nodes randomly
+
 import turtle, math, random, time
 
 # Define a custom argument type for a list of strings
@@ -30,7 +41,12 @@ def list_of_strings(arg):
 
 parser = argparse.ArgumentParser(prog="formatAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
 
-parser.add_argument("file", type=argparse.FileType('r', encoding='latin-1'), help="the network file (created by ScrapLogGit2Net)")
+parser.add_argument('--version', action='version', version='%(prog)s 1.0RC')
+
+parser.add_argument('infile', nargs='?', type=argparse.FileType('r',encoding='latin-1'), help="the network file (created by ScrapLogGit2Net)")
+
+
+parser.add_argument("-o", '--outfile', nargs='?', type=argparse.FileType('w',encoding='latin-1'))
 
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
@@ -93,6 +109,10 @@ if args.verbose:
     print("Here is the list of arguments")
     print(f"\targs={args}")
 
+if not args.infile:
+    print("GraphML file encoding network of individuals not provided")
+    print("Asking user for a file to fix the issue")
+    args.infile= filedialog.askopenfilename()
 
 if args.GitHub:
     print("Before creating the visualization, we use GitHub API to retrieve the latest and current affiliation for each node e-mail")
@@ -185,7 +205,7 @@ print()
 #exit()
 
 
-input_file_name = args.file
+input_file_name = args.infile
 
 
 G = nx.read_graphml(input_file_name)
