@@ -100,13 +100,16 @@ if  args.filter_by_org:
     print("In filtering by org mode")
     print()
 
-
 if args.show:
     print()
     print("In snow mode")
     print()
 
-
+if args.legend:
+    print()
+    print("Show a legend")
+    print()
+    
 if args.legend and args.outside_legend_right:
     print()
     print("legend should be outside of plot on the right")
@@ -293,6 +296,53 @@ print("\t  weight_labels = " + str(weight_labels))
 #nx.draw_networkx_edge_labels(G, pos, edge_labels)
 nx.draw_networkx_edge_labels(G, pos, edge_labels=weight_labels)  
 
+
+def get_legend_elements(known_org_node_colors:list)->list:
+    print ()
+    print ("Getting the organizational affiliations to be included in the legend")
+    print ("\t How should a legend look with the following arguments?")
+    print ()
+    
+    legend_items = []
+    for org  in G.nodes:
+        try:
+            if args.verbose:
+                print(f"Adding legend to organization/node={org}")
+            legend_items.append(Line2D([0], [0],
+                                  marker='o',
+                                  color=known_org_node_colors[org],
+                                  label=org,
+                                  lw=0,
+                                  markerfacecolor=known_org_node_colors[org],
+                                  markersize=5))
+        except KeyError:
+            print(f"Dirm {org}' color is not defined in top_colors")
+            sys.exit()
+
+
+        
+        #legend_items_top10_plus_one = legend_items[:10]
+        #egend_items_top10_plus_one.append( Line2D([0], [0],
+        #                         marker='o',
+        #                         color=top_colors[org],
+        #                         label=args.legend_extra_organizations[0] +" n=("+str(top_all_org[org])+")",
+        #                         lw=0,
+        #                         markerfacecolor=top_colors[org],
+        #                         markersize=5))
+                
+    return legend_items
+
+
+
+if args.legend:
+    print("\t Adding a legend") 
+
+    plt.legend(handles=get_legend_elements(known_org_node_colors),
+                  loc='center right',
+                  frameon=False,
+                  prop={'weight': 'bold', 'size': 12, 'family': 'georgia'})     
+
+    
 
 ax = plt.gca()
 ax.margins(0.08)
