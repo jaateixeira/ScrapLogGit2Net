@@ -738,6 +738,8 @@ def get_nodes_color()->list:
     return org_colors
 
 def get_nodes_size()->list:
+    # setting size of node according centrality
+    # see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
     return [v * 100 for v in degree_centrality.values()]
 
 
@@ -831,7 +833,7 @@ def get_legend_elements()->list:
                                   markerfacecolor=top_colors[org],markersize=5))
         
         legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others n.=({number_of_ind_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
-        legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others org.={number_of_org_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
+        legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others org.=({number_of_org_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
         return legend_items_top10_plus_one
 
 
@@ -882,8 +884,15 @@ def get_legend_elements()->list:
     return legend_items
 
 
-# setting size of node according centrality
-# see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
+
+
+print("")
+print("Start laying out the network")
+print("Creating a 6 by 4 subplot ...")
+fig, ax = plt.subplots(figsize=(6, 4),  facecolor='0.7')
+print ("")
+
+
 
 
 circular_options = { 
@@ -898,14 +907,6 @@ spring_options = {
 }
 
 
-
-
-
-
-print("")
-print("Creating a 6 by 4 subplot ...")
-fig, ax = plt.subplots(figsize=(6, 4),  facecolor='0.7')
-print ("")
 
 
 
@@ -1038,9 +1039,12 @@ if args.plot and args.verbose:
     
 
 if args.plot:
+    fig.set_facecolor('white')
     ax = plt.gca()
-    ax.margins(0.08)
+    ax.set_facecolor('white')
+    ax.margins(0.00)
     plt.axis("off")
+
     #plt.tight_layout()
     
     plt.show()
