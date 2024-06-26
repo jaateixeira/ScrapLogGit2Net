@@ -115,8 +115,11 @@ print()
 print(f"Chosen network layout: {args.network_layout}")
 print()
 
+print (f"Visualizing the {args.file} inter organizational network created with transform-nofi-2-nofo-GraphML.py")
+
 # Reads the GraphML network using NetworkX
 input_file_name = args.file
+
 G = nx.read_graphml(input_file_name)
 prefix_for_figures_filenames = os.path.basename(input_file_name)
 

@@ -221,15 +221,15 @@ for edge in G.edges:
 if args.verbose:
     print("\n Adding nodes and weighted edges to the inter-organizational network:")
 
-for org_edge, weight in org_edges.items():
-    if args.verbose:
-        print(f"\n\t org_edge={org_edge=},weight={weight}")
-    org_u, org_v = list(org_edge)
-    if not orgG.has_node(org_u):
-        orgG.add_node(org_u)
-    if not orgG.has_node(org_v):
-        orgG.add_node(org_v)
-    orgG.add_edge(org_u, org_v, weight=weight)
+#for org_edge, weight in org_edges.items():
+#    if args.verbose:
+#        print(f"\n\t org_edge={org_edge=},weight={weight}")
+ #   org_u, org_v = list(org_edge)
+ #   if not orgG.has_node(org_u):
+ #       orgG.add_node(org_u)
+ #   if not orgG.has_node(org_v):
+ #       orgG.add_node(org_v)
+ #   orgG.add_edge(org_u, org_v, weight=weight)
 
 
 print()

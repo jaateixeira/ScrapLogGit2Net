@@ -22,7 +22,7 @@ echo $cmd
 
 echo ""
 echo "Showing original network"
-./formatAndViz-nofi-GraphML.py -pls  test-data/2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML
+./formatAndViz-nofi-GraphML.py -pls test-data/2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML &
 sleep 1
 
 echo "transforming it"
@@ -31,4 +31,4 @@ echo "transforming it"
 
 sleep 1
 echo "You should now see only one edge between two nodes"
-./formatAndViz-nofo-GraphML.py -v  2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship-filtered.graphML
+./formatAndViz-nofo-GraphML.py -v 2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship-transformed-to-nofo.graphML
