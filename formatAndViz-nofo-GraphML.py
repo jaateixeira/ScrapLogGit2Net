@@ -260,6 +260,8 @@ print("\t Calculating edge thinkness ... ")
 
 edge_thinkness = []
 for u,v,a in G.edges(data=True):
+    if args.verbose:
+        print(f"u={u}, v={v}, a={a}")
     "Using weights as they are"
     #edge_thinkness.append(a['weight'])
     "Using log base 2"
@@ -275,9 +277,9 @@ nx.draw_networkx_labels(G, pos, font_size=10, font_family="sans-serif")
 print("Drawing inter-organizational edge weight labels") 
 
 
-print("\t Calculating edge labels based on weight atribute ... ")
+print("\t Calculating edge labels based on weight attribute ... ")
 
-weight_labels = nx.get_edge_attributes(G, 'weight')
+weight_labels = nx.get_edge_attributes(G,name='weight')
 print("\t  weight_labels = " + str(weight_labels))
 
 #nx.draw_networkx_edge_labels(G, pos, edge_labels)
