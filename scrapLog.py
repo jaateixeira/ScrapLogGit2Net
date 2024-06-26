@@ -11,13 +11,19 @@
  
 import sys
 import re 
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-import itertools
 import argparse
 from pathlib import Path
+
+# For time stamping networks
+from datetime import datetime
+
+# Bread and better for networks in python
 import networkx as nx
-from colorama import Fore, Back, Style
+import itertools
+
+
+# For coloring nodes
+from colorama import Fore, Style
 import numpy as np
 from itertools import groupby
 
@@ -895,7 +901,7 @@ def main():
                         except IOError as e:
                                 print ("")
                                 print ("I/O error({0}): {1}".format(e.errno, e.strerror))
-                                print ("Can't open "+filter_file+". Should it contain emails that should not be considered by ScrapLog.py? ")
+                                print (f"Can't open {args.filter_emails}. Should it contain emails that should not be considered by ScrapLog.py? ")
                                 print ("Check arguments. ./scrapLog.py --help")
                                 sys.exit()
                         except Exception as err: #handle other exceptions such as attribute errors
