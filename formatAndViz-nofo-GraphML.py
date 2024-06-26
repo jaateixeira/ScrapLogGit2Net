@@ -112,7 +112,7 @@ if args.legend and args.outside_legend_right:
 
 
 print()
-print(f"Chosen network layout: {args.networklayout}")
+print(f"Chosen network layout: {args.network_layout}")
 print()
 
 # Reads the GraphML network using NetworkX
@@ -227,9 +227,9 @@ print("Drawing inter organizational network in given layout ...")
 print()
 
 
-if args.networklayout == 'circular': 
+if args.network_layout == 'circular':
     pos = nx.circular_layout(G)
-elif args.networklayout == 'spring':
+elif args.network_layout == 'spring':
     pos = nx.spring_layout(G)
 else:
     print("Error - Unknow network layout")
