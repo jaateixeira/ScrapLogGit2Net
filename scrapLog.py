@@ -22,14 +22,14 @@ import networkx as nx
 import itertools
 from itertools import groupby
 
+# For persistence of logs
+# So that we don't need to parse logs all the time
+import pickle
+
+
 # For coloring nodes
 from colorama import Fore, Style
 
-
-try:
-	import six.moves.cPickle as pickle
-except:
-	import pickle
 
 
 import exportLogData
@@ -115,6 +115,7 @@ list_of_emails_to_filter = []
 # Note its efficient to just filter while scrapping, because then there are less  (i.e., edges or connections) to process 
 # This because is slow to check if x is member of a list all the time
 list_of_files_to_filter = []
+
 
 
 # TODO Merge into org agregator 
@@ -968,7 +969,6 @@ def main():
                     else:
                         print ("ERROR: Something wrong with the changeLog blocks L 107") 
                         sys.exit()
-                        break
 
 
         if (RAW_MODE):
