@@ -22,13 +22,16 @@ echo $cmd
 
 echo ""
 echo "Showing original network"
-./formatAndViz-nofi-GraphML.py -pls test-data/2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML &
+./formatAndViz-nofi-GraphML.py -pls -s  original-noi-tmp.graphML  test-data/2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML &
 sleep 1
 
 echo "transforming it"
-./transform-nofi-2-nofo-GraphML.py  -v  test-data/2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML
+./transform-nofi-2-nofo-GraphML.py  -v  original-noi-tmp.graphML -s
 
+#sleep 1
+#echo "You should now see only one edge between two nodes"
+#./formatAndViz-nofo-GraphML.py -v
 
 sleep 1
-echo "You should now see only one edge between two nodes"
-./formatAndViz-nofo-GraphML.py -v 2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship-transformed-to-nofo.graphML
+echo "Removing test file"
+rm original-noi-tmp.graphML

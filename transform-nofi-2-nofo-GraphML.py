@@ -262,7 +262,7 @@ nx.write_graphml_lxml(orgG,transformed_file_name)
 print(f"File saved at {transformed_file_name}")
 
 
-if  args.show:
+if args.show:
     print()
     print("Displaying the results")
 
