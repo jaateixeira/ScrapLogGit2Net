@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
 # Formats and visualizes a graphML file capturing a weighted Network of Organizations created by ScrapLog
-# Edges thinkness maps its weight 
-# Colorize nodes accourding to affiliation atribute
+# Edges thickness maps its weight
+# Colorize nodes according to affiliation attribute
 
 
 # Example of use: 
@@ -60,7 +60,7 @@ print ("")
 parser = argparse.ArgumentParser(prog="formatAndViz-nofo-GraphML.py",description="Formats and visualizes a graphML file capturing a weighted Network of Organizations")
 parser.add_argument("file", type=str, help="the network file")
 
-parser.add_argument("-n", "--networklayout",  choices=['circular', 'spring'],  default='spring', help="the type of network visualization layout (i.e., node positioning algorithm)")
+parser.add_argument("-n", "--network_layout",  choices=['circular', 'spring'],  default='spring', help="the type of network visualization layout (i.e., node positioning algorithm)")
 
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
@@ -72,30 +72,25 @@ parser.add_argument("-f", "--filter-by-org", action="store_true",
                     help="top_firms_that_do_not_matter")
 
 parser.add_argument("-s", "--show", action="store_true",
-                    help="show the visualization, otherwises saves to png and pdf")
+                    help="show the visualization, otherwise saves to png and pdf")
 
 parser.add_argument("-l", "--legend", action="store_true",
                     help="adds a legend to the sociogram")
 
 parser.add_argument("-r", "--outside-legend-right", action="store_true",
-                            help="the legend to the sociogram goes outside to the right")
-
-
+                    help="the legend to the sociogram goes outside to the right")
 
 args = parser.parse_args()
 
-
-
 if args.verbose:
     print("In verbose mode")
-
 
 if args.top_firms_only:
     print()
     print("In top-firms only mode")
     print()
 
-if  args.filter_by_org:
+if args.filter_by_org:
     print()
     print("In filtering by org mode")
     print()
@@ -119,14 +114,11 @@ if args.legend and args.outside_legend_right:
 print()
 print(f"Chosen network layout: {args.networklayout}")
 print()
-    
-    
 
+# Reads the GraphML network using NetworkX
 input_file_name = args.file
 G = nx.read_graphml(input_file_name)
-prefix_for_figures_filenames= os.path.basename(input_file_name)
-
-
+prefix_for_figures_filenames = os.path.basename(input_file_name)
 
 if args.verbose:
     print() 
@@ -141,32 +133,31 @@ if args.verbose:
     print() 
 
 
-
-print ("Inter organizational weighted Graph imported successfully")
-print ("Number_of_nodes="+str(G.number_of_nodes()))
-print ("Number_of_edges="+str(G.number_of_edges()))
-print ("Number_of_isolates="+str(nx.number_of_isolates(G)))
+print("Inter organizational weighted Graph imported successfully")
+print("Number_of_nodes="+str(G.number_of_nodes()))
+print("Number_of_edges="+str(G.number_of_edges()))
+print("Number_of_isolates="+str(nx.number_of_isolates(G)))
 
 
 # See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python 
-print ("coloring by firm")
+print("coloring by firm")
 
 
 # less common goes to gray
 # Convention of black gro research institutes
-# Gray for anunomous eemails
-# Yellow for statups 
+# Gray for anonymous e-mails
+# Yellow for startups
 known_org_node_colors = {
-    'google':'red',
-    'nvidia':'lime',
-    'intel':'lightblue',
-    'amd':'black',
-    'gmu':'brown',
-    'arm':'steelblue',
-    'amazon':'orange',
-    'ibm':'darkblue',
-    'linaro':'pink',
-    'gtu':'black',
+    'google': 'red',
+    'nvidia': 'lime',
+    'intel': 'lightblue',
+    'amd': 'black',
+    'gmu': 'brown',
+    'arm': 'steelblue',
+    'amazon': 'orange',
+    'ibm': 'darkblue',
+    'linaro': 'pink',
+    'gtu': 'black',
     'users': 'gray',
     'gmail': 'gray',
     'inailuig': 'gray',
@@ -177,25 +168,25 @@ known_org_node_colors = {
     'outlook': 'gray',
     'gmail': 'gray',
     'tensorflow': 'white',
-    'fastmail':'gray',
-    'ornl':'gray',
-    'meta':'blue',
-    'polymagelabs':'gray',
+    'fastmail': 'gray',
+    'ornl': 'gray',
+    'meta': 'blue',
+    'polymagelabs': 'gray',
     'cern': 'black',
     'nicksweeting': 'gray',
-    'borgerding':'gray',
-    'apache':'gray',
-    'hyperscience':'gray',
+    'borgerding': 'gray',
+    'apache': 'gray',
+    'hyperscience': 'gray',
     'microsoft': 'darkorange',
-    'mit':'black',
-    'alum':'gray',
-    'us':'white',
-    '163':'gray',
-    'huawei':'darkred',
-    'graphcore':'pink',
+    'mit': 'black',
+    'alum': 'gray',
+    'us': 'white',
+    '163': 'gray',
+    'huawei': 'darkred',
+    'graphcore': 'pink',
     'ispras': 'black',
     'gatech': 'black',
-    'alum.mit.edu':'black',
+    'alum.mit.edu': 'black',
     '126': 'gray',
     'rijksmuseum': 'orange',
 }
@@ -208,9 +199,9 @@ print()
 # Colors to actually be shown - In known_org_node_colors or random color 
 org_colors = []
 
-for node  in G.nodes:
-    #print (node)
-
+for node in G.nodes:
+    if args.verbose:
+        print(f"node={node}")
     if node in list(known_org_node_colors.keys()):
         org_colors.append(known_org_node_colors[node])
     else:
@@ -232,16 +223,14 @@ print("Colors assigned to organizations/nodes:")
 print(org_colors)
 print()
 
-
-
 print("Drawing inter organizational network in given layout ...")
 print()
 
 
 if args.networklayout == 'circular': 
-    pos=nx.circular_layout(G)
+    pos = nx.circular_layout(G)
 elif args.networklayout == 'spring':
-    pos=nx.spring_layout(G)
+    pos = nx.spring_layout(G)
 else:
     print("Error - Unknow network layout")
     sys.exit()
@@ -254,7 +243,7 @@ node_circular_options = {
 }
 
 
-nx.draw_networkx_nodes(G, pos, node_color=org_colors,**node_circular_options)
+nx.draw_networkx_nodes(G, pos, node_color=org_colors, **node_circular_options)
 
 
 
@@ -269,7 +258,7 @@ edge_circular_options = {
 
 print("\t Calculating edge thinkness ... ")
 
-edge_thinkness=[]
+edge_thinkness = []
 for u,v,a in G.edges(data=True):
     "Using weights as they are"
     #edge_thinkness.append(a['weight'])
@@ -279,8 +268,6 @@ for u,v,a in G.edges(data=True):
 print("\t  edge_thinkness = " + str(edge_thinkness))
 
 nx.draw_networkx_edges(G, pos, width=edge_thinkness)
-
-
 
 print("Drawing organizations  node labels") 
 nx.draw_networkx_labels(G, pos, font_size=10, font_family="sans-serif")
@@ -297,11 +284,11 @@ print("\t  weight_labels = " + str(weight_labels))
 nx.draw_networkx_edge_labels(G, pos, edge_labels=weight_labels)  
 
 
-def get_legend_elements(known_org_node_colors:list)->list:
-    print ()
-    print ("Getting the organizational affiliations to be included in the legend")
-    print ("\t How should a legend look with the following arguments?")
-    print ()
+def get_legend_elements(known_org_colors:list)->list:
+    print()
+    print("Getting the organizational affiliations to be included in the legend")
+    print("\t How should a legend look with the following arguments?")
+    print()
     
     legend_items = []
     for org  in G.nodes:
@@ -309,18 +296,16 @@ def get_legend_elements(known_org_node_colors:list)->list:
             if args.verbose:
                 print(f"Adding legend to organization/node={org}")
             legend_items.append(Line2D([0], [0],
-                                  marker='o',
-                                  color=known_org_node_colors[org],
-                                  label=org,
-                                  lw=0,
-                                  markerfacecolor=known_org_node_colors[org],
-                                  markersize=5))
+                                       marker='o',
+                                       color=known_org_colors[org],
+                                       label=org,
+                                       lw=0,
+                                       markerfacecolor=known_org_colors[org],
+                                       markersize=5))
         except KeyError:
             print(f"Dirm {org}' color is not defined in top_colors")
             sys.exit()
 
-
-        
         #legend_items_top10_plus_one = legend_items[:10]
         #egend_items_top10_plus_one.append( Line2D([0], [0],
         #                         marker='o',
@@ -338,9 +323,9 @@ if args.legend:
     print("\t Adding a legend") 
 
     plt.legend(handles=get_legend_elements(known_org_node_colors),
-                  loc='center right',
-                  frameon=False,
-                  prop={'weight': 'bold', 'size': 12, 'family': 'georgia'})     
+               loc='center right',
+               frameon=False,
+               prop={'weight': 'bold', 'size': 12, 'family': 'georgia'})
 
     
 
