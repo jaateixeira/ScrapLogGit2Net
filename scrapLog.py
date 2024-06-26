@@ -20,12 +20,11 @@ from datetime import datetime
 # Bread and better for networks in python
 import networkx as nx
 import itertools
-
+from itertools import groupby
 
 # For coloring nodes
 from colorama import Fore, Style
-import numpy as np
-from itertools import groupby
+
 
 try:
 	import six.moves.cPickle as pickle
@@ -34,7 +33,10 @@ except:
 
 
 import exportLogData
-import networkMeasures 
+
+# Depecrated as networkx implements same meazures
+# Here only to document and preserve history
+# import networkMeasures
 
 
 print(("Executing " + str(sys.argv)))
@@ -62,14 +64,14 @@ G_network_Dev2Dev_multiEdges = nx.MultiGraph()
 
 # Inter organizational network - edges are eighted - eights are atributed by on how many developers cooperated between two companies 
 # Stores nodes and edges with optional data, or attributes. Holds undirected edges. Self loops are allowed but multiple (parallel) edges are not.
-G_network_Org2Org_singleEdges = nx.Graph()
+G_network_Org2Org_singleEdges_weighted = nx.Graph()
 
 
 # Inter organizational network - edges are  not eighted. 
 # Stores nodes and edges with optional data, or attributes. Holds undirected edges.
 # Self loops and  multiple (parallel) edges are allowed.
 # Multiedges are multiple edges between two nodes. Each edge can hold optional data or attributes.
-G_network_Org2Org_singleEdges = nx.MultiGraph()
+G_network_Org2Org_singleEdges_unweighted = nx.MultiGraph()
 
 
 ## Keeps statistics of the scrappping 
@@ -145,7 +147,7 @@ EMAIL_FILTERING_MODE = 0
 
 
 def getAffiliationFromEmail(email):
-    "gets affiliation from an given email" 
+    "gets affiliation from an given email"
 
     #print ("getAffiliationFromEmail("+email+")")
     if(globals()['DEBUG_MODE']):
@@ -323,16 +325,14 @@ def findFilesOnBlock(block):
 
 
     for line in block: 
-    	#print ("line=["+line+"]")
-    	if line == []:
-    		break
-    	if line == '\n': 
-    		break
-    	"append the file path (removing the last caracted \n)"	
-    	linesWithCode.append(line[:-1]) 
-    	stats['nBlocksChagingCode']+=1
-    		
-     
+        #print ("line=["+line+"]")
+        if line == []:
+            break
+        if line == '\n':
+            break
+        "append the file path (removing the last caracted \n)"
+        linesWithCode.append(line[:-1])
+        stats['nBlocksChagingCode']+=1
 
     #print ("Lines of changed code:")
     #for line in linesWithCode:
