@@ -1086,7 +1086,7 @@ if args.save_graphML:
 
 print()
 print("DONE")
-print("Hope you enjoy the inter-individual network with organizational affiliation atributes")
+print("Hope you enjoy visualizing the inter-individual network with organizational affiliation atributes")
 print()
 
 
