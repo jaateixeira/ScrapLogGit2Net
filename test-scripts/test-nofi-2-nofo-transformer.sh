@@ -4,6 +4,30 @@ echo "This tests ./transform-nofi-2-nofo-GraphML.py by executing it against grap
 echo "part of the ScrapLogGit2Net open-source project"
 echo "Developed by Jose Teixeira <jose.teixeira@abo.fi> "
 
+# Checking if dependencies exit 
+exists()
+{
+  command -v "$1" >/dev/null 2>&1
+}
+
+
+
+if exists grep; then
+  echo 'grep exists!'
+else
+    echo 'ERROR: Your system does not have grep'
+    exit 
+fi
+
+if exists xmllint; then
+  echo 'xmllint exists!'
+else
+    echo 'ERROR Your system does not have xmllint'
+    exit
+fi
+
+
+
 GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 NC=$(tput sgr0)
