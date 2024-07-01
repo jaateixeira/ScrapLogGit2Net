@@ -28,44 +28,71 @@ echo $cmd
 
 echo ""
 echo "Showing original network"
-./formatAndViz-nofi-GraphML.py -pl  $TC1FILE &
+./formatAndViz-nofi-GraphML.py -pl  $TC1FILE & 
 sleep 1
 
 
 echo "transforming it"
-./transform-nofi-2-nofo-GraphML.py  -v  $TC1FILE --show 
+./transform-nofi-2-nofo-GraphML.py  -v  $TC1FILE --show  
 
 sleep 1
 echo "You should now see only one edge between two nodes"
+ 
 
 
-
-
-
-#lastline=$(tail -n1 testResults.tmp)
-#expectedLastLine="ERROR collaboration tuplesList is empty"
-
-#echo lastline=[$lastline]
-#echo expextedLastLine=[$expectedLastLine]
-
-
-
-#echo 
-#if [[  "$lastline" =~ "$expectedLastLine" ]]; then
-#    echo "${GREEN}TESTCASE 1 passed${NC}"
-#else
-#    echo "${RED}TESTCASE 1 did not pass${NC}"
-#    echo "ScrapLog should end with 'ERROR collaboration tuplesList is empty expected'"
-    
-#fi
-
-
-
+echo ""
+echo "Checking now if the test case 1 have the  right output"
+echo "\t Inter-organizational network should have one edge with weight=1 between two nodes only"
+echo ""
 
 
 TC1OUTFILE=2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship-transformed-to-nofo.graphML
 
+
+
+
+expectedString="data" 
+
+
+echo ""
+echo -e "\t Testing if $TC1OUTFILE is a valid under the graphML xml schema"
+echo ""
+
+
+if ! xmllint --schema http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd $TC1OUTFILE ; then
+    echo "ERROR: $TC1OUTFILE is not a valid XML graphML file"
+    exit 
+fi
+
+
+
+
+
+echo "" 
+echo -e "\t checking now if the  $TC1OUTFILE have the expected content" 
+echo ""
+
+if [ ! -f "$TC1OUTFILE" ]; then
+    echo "ERROR: $TC1OUTFILE does not exist."
+    exit 
+fi
+
+
+expectedString=\<data\ key=\"d0\"\>1\<\/data\>
+echo "Expected String="$expectedString
+
+if grep -q \<data\ key=\"d0\"\>1\<\/data\>  "$TC1OUTFILE" ; then
+    echo "${GREEN}TESTCASE 1 passed${NC}"
+    echo $expectedString "is in the output inter-org network as expected" 
+else
+       echo "echo ${RED}TESTCASE 1 did not pass${NC}"
+       echo $expectedString should be in $TC1OUTFILE
+       exit
+       
+fi 
+
+
 sleep 1
 echo "Removing inter-organizational network that resulted from transformation"
-rm  $TC1OUTFILE
+#rm  $TC1OUTFILE
 
