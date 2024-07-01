@@ -118,5 +118,91 @@ fi
 
 sleep 1
 echo "Removing inter-organizational network that resulted from transformation"
-#rm  $TC1OUTFILE
+rm  $TC1OUTFILE
+
+
+
+
+
+# TEST CASE 2
+# Transforms a small network where there should be only one inter-organizational edge with a weight of 3. 
+# test-data/2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML
+
+TC2FILE=test-data/2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML
+
+if [ ! -f "$TC2FILE" ]; then
+    echo "ERROR $TC2FILE does not exist."
+    exit 
+fi
+
+
+echo ""
+echo "TC2: Testing with $TC2FILE"
+cmd="./formatAndViz-nofi-GraphML.py -pl  $TC2FILE"
+echo $cmd
+
+echo ""
+echo "TC2: Showing original network"
+./formatAndViz-nofi-GraphML.py -pl  $TC2FILE & 
+sleep 1
+
+echo "TC2: transforming it"
+./transform-nofi-2-nofo-GraphML.py  -v  $TC2FILE --show  
+
+sleep 1
+echo "TC2: You should now see only one edge between two nodes with a weight of 3, as three developers from the two organizations worked together"
+
+
+echo ""
+echo "TC2: Checking now if the test case 1 have the  right output"
+echo "\t Inter-organizational network should have one edge with weight=1 between two nodes only"
+echo ""
+
+
+TC2OUTFILE=2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships-transformed-to-nofo.graphML
+
+
+
+
+echo ""
+echo -e "\t Testing if $TC2OUTFILE is a valid under the graphML xml schema"
+echo ""
+
+
+if ! xmllint --schema http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd $TC2OUTFILE ; then
+    echo "ERROR: $TC1OUTFILE is not a valid XML graphML file"
+    exit 
+fi
+
+
+
+
+
+echo "" 
+echo -e "\t checking now if the  $TC2OUTFILE have the expected content" 
+echo ""
+
+if [ ! -f "$TC2OUTFILE" ]; then
+    echo "ERROR: $TC2OUTFILE does not exist."
+    exit 
+fi
+
+
+expectedString=\<data\ key=\"d0\"\>3\<\/data\>
+echo -e "\t Expected String="$expectedString
+
+if grep -q \<data\ key=\"d0\"\>3\<\/data\>  "$TC2OUTFILE" ; then
+    echo "${GREEN}TESTCASE 2 passed${NC}"
+    echo -e "\t" $expectedString "is in the output inter-org network as expected" 
+else
+       echo "echo ${RED}TESTCASE 2 did not pass${NC}"
+       echo $expectedString should be in $TC2OUTFILE
+       exit
+       
+fi 
+
+
+sleep 1
+echo "Removing inter-organizational network that resulted from transformation"
+rm  $TC2OUTFILE
 
