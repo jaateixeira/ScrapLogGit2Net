@@ -4,7 +4,30 @@ echo "This tests ./transform-nofi-2-nofo-GraphML.py by executing it against grap
 echo "part of the ScrapLogGit2Net open-source project"
 echo "Developed by Jose Teixeira <jose.teixeira@abo.fi> "
 
-# Checking if dependencies exit 
+
+# Fuction that validates if a fiven XML file is valid 
+validGraphmlXMLfile() {
+    # First check if file exists
+    if ! test -f $1; then
+	echo -e "\t File $1 does not exist."
+	return "false"
+    fi
+
+    if ! xmllint --schema http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd $1 ; then
+	echo -e "\t File $1 is not a valid graphml xml file"
+	echo -e "\t It does no comply with with schema at http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"
+	return "false" 
+    fi
+    
+    return "true"
+}
+
+
+
+
+
+
+# FUCTION that checks if a given command exists / is isntalled. 
 exists()
 {
   command -v "$1" >/dev/null 2>&1
@@ -12,6 +35,7 @@ exists()
 
 
 
+# Checking if dependencies for the test script exit 
 if exists grep; then
   echo 'grep exists!'
 else
@@ -154,7 +178,7 @@ echo "TC2: You should now see only one edge between two nodes with a weight of 3
 
 
 echo ""
-echo "TC2: Checking now if the test case 1 have the  right output"
+echo "TC2: Checking now if the test case 2 have the  right output"
 echo "\t Inter-organizational network should have one edge with weight=1 between two nodes only"
 echo ""
 
@@ -170,7 +194,7 @@ echo ""
 
 
 if ! xmllint --schema http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd $TC2OUTFILE ; then
-    echo "ERROR: $TC1OUTFILE is not a valid XML graphML file"
+    echo "ERROR: $TC2OUTFILE is not a valid XML graphML file"
     exit 
 fi
 
@@ -206,3 +230,101 @@ sleep 1
 echo "Removing inter-organizational network that resulted from transformation"
 rm  $TC2OUTFILE
 
+
+
+
+###########################################################################################################
+# TEST CASE 3
+# Transforms a 5 nodes pentagon star, 5 dev, 3, org, all connected in star format, where weights shoould be 4, 2,2. 
+# test-data/5-pentagon-with-star.graphML 
+###########################################################################################################
+TC3FILE=test-data/test-data/5-pentagon-with-star.graphML 
+
+if [ ! -f "$TC3FILE" ]; then
+    echo "ERROR $TC3FILE does not exist."
+    exit 
+fi
+
+
+echo ""
+echo "TC3: Testing with $TC3FILE"
+cmd="./formatAndViz-nofi-GraphML.py -pl  $TC3FILE"
+echo $cmd
+
+echo ""
+echo "TC3: Showing original network"
+./formatAndViz-nofi-GraphML.py -pl  $TC3FILE & 
+sleep 1
+
+echo "TC3: transforming it"
+./transform-nofi-2-nofo-GraphML.py  -v  $TC3FILE --show  
+
+sleep 1
+echo "TC2: You should now see only one edge between two nodes with a weight of 3, as three developers from the two organizations worked together"
+
+
+echo ""
+echo "TC3: Checking now if the test case 3 have the  right output"
+echo "\t Inter-organizational network should have one edge with weight=1 between two nodes only"
+echo ""
+
+
+TC3OUTFILE=5-pentagon-with-star-transformed-to-nofo.graphML
+
+
+
+
+echo ""
+echo -e "\t Testing if $TC3OUTFILE is a valid under the graphML xml schema"
+echo ""
+
+
+if ! xmllint --schema http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd $TC3OUTFILE ; then
+    echo "ERROR: $TC3OUTFILE is not a valid XML graphML file"
+    exit 
+fi
+
+
+
+
+
+echo "" 
+echo -e "\t checking now if the  $TC2OUTFILE have the expected content" 
+echo ""
+
+if [ ! -f "$TC2OUTFILE" ]; then
+    echo "ERROR: $TC2OUTFILE does not exist."
+    exit 
+fi
+
+
+expectedString=\<data\ key=\"d0\"\>3\<\/data\>
+echo -e "\t Expected String="$expectedString
+
+if grep -q \<data\ key=\"d0\"\>3\<\/data\>  "$TC2OUTFILE" ; then
+    echo "${GREEN}TESTCASE 2 passed${NC}"
+    echo -e "\t" $expectedString "is in the output inter-org network as expected" 
+else
+       echo "echo ${RED}TESTCASE 2 did not pass${NC}"
+       echo $expectedString should be in $TC2OUTFILE
+       exit
+       
+fi 
+
+
+sleep 1
+echo "Removing inter-organizational network that resulted from transformation"
+rm  $TC2OUTFILE
+
+
+
+
+
+str="
+this is
+a multiple
+line
+string"
+if grep -Fqz "$str" some_file.txt; then
+     echo "exsts"
+fi
