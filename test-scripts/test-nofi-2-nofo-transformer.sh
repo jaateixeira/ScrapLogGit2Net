@@ -5,14 +5,13 @@ echo "part of the ScrapLogGit2Net open-source project"
 echo "Developed by Jose Teixeira <jose.teixeira@abo.fi> "
 echo -e "\n"
 
-
+echo "" 
 echo -e "\t Testing validGraphmlXMLfile() and command_exits() functions"
-
+echo "" 
 
 GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 NC=$(tput sgr0)
-
 
 
 # Fuction that validates if a fiven XML file is valid 
@@ -74,11 +73,79 @@ fi
 echo -e "\t\t command_exists() passed test"
 
 
+
+
+
+
+# Adds escape characters to a string, so it can be passed as an argument to grep
+escape_grep_string() {
+    local input="$1"
+    local escaped=$(echo "$input" | sed 's/[\.\*\?\+\[\]\ \^\$\|\\]/\\&/g')
+    echo "$escaped"
+}
+
+# Removes escape caracters 
+unescape_string() {
+    local input="$1"
+    local unescaped=$(echo -e "$input")
+    echo "$unescaped"
+}
+
+echo "" 
+echo -e "\t Testing escape_grep_string()  and unescape_string() functions"
+echo ""
+
+# Unit test for function escape_grep_string()
+
+
+#original_string='<data key="d0">kyle@bywatersolutions.com</date>'
+original_string='<data key="d0">kyle@bywatersolutions.com</data>'
+escaped_string=$(escape_grep_string "$original_string")
+
+
+echo -e "\t \t orginal String for grep:"
+echo -e  "\t \t" $original_string "\n"
+
+echo -e "\t \t Escaped String for grep:"
+echo  -e "\t \t" $escaped_string "\n"
+
+
+unescaped_string=$(unescape_string "$escaped_string")
+echo -e "\t\t Unescaped String:"
+echo -e "\t\t" $unescaped_string "\n"
+
+
+TEST_NOI_FILE=test-data/5-pentagon-with-star.graphML 
+
+echo -e "\n testing GREP with:"
+echo grep  -e \'$escaped_string\' "$TEST_NOI_FILE"
+
+echo ""
+echo "GREP results:"
+echo ""
+
+if grep -e "$escaped_string" "$TEST_NOI_FILE" ; then
+
+    echo -e "\n\t" $escaped_string "is in the output inter-individual network as expected \n"
+else 
+       echo "ERROR" $escaped_string "shouled be in " "$TEST_NOI_FILE"
+       exit
+       
+fi 
+
+
+echo ""
+echo -e "\t\t escape_grep_string  passed test"
+echo "" 
+
+
+# Unit test for function unescape_string()
+echo -e "\t\t unescape_string() passed test"
+
 echo -e "${GREEN}\n \t functions passed unit tests${NC}"
 
 
 echo -e "\n \t Cheking now for the grep and xmllint dependencies"
-
 
 
 
