@@ -2,16 +2,14 @@
 
 **formatAndViz-nofi-GraphML.py** is a shell executable python script for visualizining graphML files created with the ScrapLogGit2Net tools for modelling inter-individual networks of software developers that collaborate via Git.
 
-
-** formatAndViz-nofi-GraphML.py**: 
+The **formatAndViz-nofi-GraphML.py** excutable:  
 - formats and visualize a graphml file.
 - plots the network with a circular or spring layout (default:spring). 
 - colorizes nodes accourding to affiliation atribute
 - sets the size of the nodes according centralities or all with the same size (default:centralities). 
 
 
-The formatAndViz-nofi-GraphML.py visualization was developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) in 2024, to speed up the process of modelling and visualizing inter-indivisual networks created by ScrapLogGit2Net. It is an alternative to import the graphML file in a network analysis visualization software such as Tulip, Gephi or Visone. 
-
+The **formatAndViz-nofi-GraphML.py** visualization tool was developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) in 2024, to speed up the process of modelling and visualizing inter-indivisual networks created by ScrapLogGit2Net. It is an alternative to import the graphML file in a network analysis visualization software such as Tulip, Gephi or Visone. 
 
 For more information, see the publication and related websites: 
 
