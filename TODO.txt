@@ -1,3 +1,9 @@
+Make it work for top10 legend type
+Make then wortk for top 10+ others as default. All not in top 10 gend diff color.
+
+
+ ./formatAndViz-nofi-GraphML.py -pl test-data/5-pentagon-with-star.graphML
+
 
 * Implement ll argument outside 'outside_center_right'
 Mart other options as not implmented

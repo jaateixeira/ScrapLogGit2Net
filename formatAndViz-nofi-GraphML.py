@@ -105,7 +105,8 @@ parser.add_argument("-ll", "--legend_location",
 
 
 
-parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+extra'], default='top10+others',
+parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+extra'],
+                    default='top10',
                     help="The type of legend to be included. Top10+others is the default, affiliated with others are counted n.dev. / n.firms. With Top10+1, or top10+extra you need to provided also -le LEGEND_EXTRA_ORGANIZATIONS.")
 
 
@@ -208,7 +209,7 @@ if args.plot:
     print()
 
 
-if args.legend and args.outside_legend_right:
+if args.legend == 'outside_center_right':
     print()
     print("legend should be outside of plot on the right")
     print()
@@ -890,9 +891,15 @@ def get_legend_elements()->list:
 
     
     elif args.legend_type == 'top10+n':
-        print ("With top10+n as legend type -> show the 5 organizations with most nodes")
+        print ("With top10+n as legend type -> show the q0 organizations with most nodes")
         print ("\t\t ERROR, very similar to top10+1 but not implemented yet")
         sys.exit()
+
+    elif args.legend_type == 'top10+others':
+        print("With top10+other as legend type -> All the ones not in top10 should be in grapy")
+        print("\t\t ERROR, very similar to top10+1 but not implemented yet")
+        sys.exit()
+
     else:
         print ("ERROR: Wrong kind of legend type")
         sys.exit()
@@ -991,7 +998,7 @@ print ("Creating now labels for the organizations  with most nodes :")
 
 
 if args.legend:
-   if  args.outside_legend_right:
+   if  args.legend == 'outside_center_right':
        # Adjusts legend to the right so it does not cut the network 
        fig.subplots_adjust(right=0.6)
        fig.legend(bbox_to_anchor=(1.0, 0.5),
