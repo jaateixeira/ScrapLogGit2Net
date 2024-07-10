@@ -13,11 +13,14 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 import networkx as nx
+
+# SYS and OS utils 
 import sys
-import os 
+import os
+
+# For parsing arguments 
 import argparse
 
-import numpy as np
 
 "needed to assign random colors"
 import random

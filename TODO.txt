@@ -1,3 +1,5 @@
+The testcase 3 needs to be more sofisticated
+
 Create documentation folder 
 Document formatAndViz-nofi-GraphML.py add link to README.MD
 Document formatAndViz-nofo-GraphML.py add link to README.MD

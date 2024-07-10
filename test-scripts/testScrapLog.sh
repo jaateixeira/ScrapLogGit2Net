@@ -24,8 +24,8 @@ echo "./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.
 lastline=$(tail -n1 testResults.tmp)
 expectedLastLine="ERROR collaboration tuplesList is empty"
 
-#echo lastline=[$lastline]
-#echo expextedLastLine=[$expectedLastLine]
+echo lastline=[$lastline]
+echo expextedLastLine=[$expectedLastLine]
 
 # Test if "ERROR collaboration tuplesList is empty" is on the last line of the scrapLog STDOUT 
 

@@ -184,6 +184,8 @@ edges_count_down = G.number_of_edges()
 
 
 # Creates a dict with default values as zero.
+# The functionality of both dictionaries and defaultdict are almost same except for the fact that defaultdict never raises a KeyError. It provides a default value for the key that does not exists. In this case 0.
+
 org_edges = defaultdict(int)
 
 
@@ -210,7 +212,7 @@ for edge in G.edges:
     elif org_affiliation_from != org_affiliation_to:
         if args.verbose:
             print("\t Inter-firm relationship")
-        # ## 
+        # By using frozenset, the edges in the org_edge Defaultdict are imutable
         org_edges[frozenset([org_affiliation_from, org_affiliation_to])] += 1
         if args.verbose:
             print(f"\t\t FOUND NEW orgG relation {org_affiliation_from}  <-->  {org_affiliation_to}. Increasing the weight atribute by 1 (default is 0)")
@@ -225,10 +227,10 @@ for org_edge, weight in org_edges.items():
     if args.verbose:
         print(f"\n\t org_edge={org_edge=},weight={weight}")
     org_u, org_v = list(org_edge)
-    if not orgG.has_node(org_u):
-        orgG.add_node(org_u)
-    if not orgG.has_node(org_v):
-        orgG.add_node(org_v)
+    #if not orgG.has_node(org_u):
+    #    orgG.add_node(org_u)
+    #if not orgG.has_node(org_v):
+    #    orgG.add_node(org_v)
     orgG.add_edge(org_u, org_v, weight=weight)
 
 
