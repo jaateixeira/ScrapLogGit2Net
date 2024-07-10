@@ -1,16 +1,18 @@
 # ScrapLogGit2Net - formatAndViz-nofi-GraphML.py
 
-**formatAndViz-nofi-GraphML.py** is a shell executable python script for visualizining graphML files created with the ScrapLogGit2Net tools for modelling inter-individual networks of software developers that collaborate via Git.
+## Documentation of the tool for visualizing the network of individual software developers 
+
+**formatAndViz-nofi-GraphML.py** is a shell executable python script for visualizing graphML files created with the ScrapLogGit2Net tools for modelling inter-individual networks of software developers that collaborate via Git.
 
 The **formatAndViz-nofi-GraphML.py** excutable:  
-- formats and visualize a graphml file.
-- plots the network with a circular or spring layout (default:spring). 
-- colorizes nodes accourding to affiliation atribute
-- sets the size of the nodes according centralities or all with the same size (default:centralities). 
+- formats and visualizes a graphML file.
+- plots the network with a circular or spring layout (default: spring). 
+- colourizes nodes according to the affiliation attribute. 
+- sets the size of the nodes according to centralities or all with the same size (default: centralities). 
+- can filter what nodes are visualized according to the organisational affiliation of the developers (aka nodes). 
 
 
-The **formatAndViz-nofi-GraphML.py** visualization tool was developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) in 2024, to speed up the process of modelling and visualizing inter-indivisual networks created by ScrapLogGit2Net. It is an alternative to import the graphML file in a network analysis visualization software such as Tulip, Gephi or Visone. 
-
+The **formatAndViz-nofi-GraphML.py** visualization tool was developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) in 2024, to speed up the process of modelling and visualizing inter-individual networks created by ScrapLogGit2Net. It is an alternative to importing the graphML file in a network analysis visualization software such as Tulip, Gephi or Visone. It speeds up the process of obtaining fast network visualizations bypassing in certain case the need for specialized network visualization tools. 
 For more information, see the publication and related websites: 
 
 - Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. for more information. Available open-access at  [https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2](https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2).
