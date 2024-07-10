@@ -2,6 +2,7 @@
 * Implement ll argument outside 'outside_center_right'
 Mart other options as not implmented
 * Mark down that node coloring and what node sizing strategies are not implemented
+* Mark the legend types that are not implemented
 
 The testcase 3 needs to be more sofisticated
 

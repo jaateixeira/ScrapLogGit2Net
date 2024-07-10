@@ -105,23 +105,17 @@ parser.add_argument("-ll", "--legend_location",
 
 
 
-
-
-
-
-parser.add_argument("-s", "--save_graphML", action="store_true",
-                            help="save a new graphML network based on organizations to consider and organizations to filter passed as argument (i.e., -on, -oo, oi)")
-
-
-
-parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n'], default='top10',
-                    help="the type of legend to be included  choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n']. Top10+others is the default, affiliated with others are counted n.dev. / n.firms.")
+parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+extra'], default='top10+others',
+                    help="The type of legend to be included. Top10+others is the default, affiliated with others are counted n.dev. / n.firms. With Top10+1, or top10+extra you need to provided also -le LEGEND_EXTRA_ORGANIZATIONS.")
 
 
 
 parser.add_argument("-le", "--legend_extra_organizations", type=list_of_strings,
                     help="adds t othe legend some extra nodes gi. eg. -le mit,ibm." )
 
+
+parser.add_argument("-s", "--save_graphML", action="store_true",
+                            help="save a new graphML network based on organizations to consider and organizations to filter passed as argument (i.e., -on, -oo, oi)")
 
 
 
@@ -177,7 +171,7 @@ if args.org_list_only:
 if args.org_list_and_neighbours_only:
     print()
     print('We should consider only a list of organizations and its neighbours')
-    print("consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google")
+    print("consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with). Example: -on  nokia google")
     print(f'org_list_and_neighbours_only={args.org_list_and_neighbours_only}')
     print()
 
@@ -193,12 +187,12 @@ if args.top_org_list_only:
     # But if we are using to10+1 or top10+n, we need to know that others to display and include in legend 
 
     if  args.top_org_list_only == 'top10+1' and not args.legend_extra_organizations:
-        print ("ERROR: If you want to consider only developers affilated with top10 + 1, provide additional -le LEGEND_EXTRA_ORGANIZATIONS widh comma separated values")
+        print ("ERROR: If you want to consider only developers affilated with top10 + 1, provide one organization -le LEGEND_EXTRA_ORGANIZATIONS ")
         sys.exit()
 
 
     if  args.top_org_list_only == 'top10+n' and not args.legend_extra_organizations:
-        print ("ERROR: If you want to consider only developers affilated with top10 + 1, provide additional -le LEGEND_EXTRA_ORGANIZATIONS widh comma separated values")
+        print ("ERROR: If you want to consider only developers affilated with top10 + n, provide additional -le LEGEND_EXTRA_ORGANIZATIONS widh comma separated values")
         sys.exit()
 
 
