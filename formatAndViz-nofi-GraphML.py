@@ -998,7 +998,7 @@ print ("Creating now labels for the organizations  with most nodes :")
 
 
 if args.legend:
-   if  args.legend == 'outside_center_right':
+   if  args.legend_location == 'outside_center_right':
        # Adjusts legend to the right so it does not cut the network 
        fig.subplots_adjust(right=0.6)
        fig.legend(bbox_to_anchor=(1.0, 0.5),
