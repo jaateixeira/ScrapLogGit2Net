@@ -29,7 +29,7 @@ A world where software co-production analytics put social network visualizations
 
 # **formatAndViz-nofi-GraphML.py** Inputs #
 
-A git repository and its commit logs.
+A graphML file created with the ScrapLogGit2Net or other tool. Note that the network needs to be in a specific format that models developers as nodes, and associates them to organizations using node attributes. 
 
 # **scrapLog.py** Outputs #
 A social network visualization that captures who codes with who in a repository (note that developers can be affiliated with firms via an affiliation attribute.). The script plots the network using Python NetworkX and Python MathLibPlot and it can then be exported to several formats such as pdf and png. 
