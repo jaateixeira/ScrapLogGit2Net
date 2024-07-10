@@ -68,6 +68,15 @@ parser.add_argument("-oo", "--org_list_only", type=list_of_strings ,
 parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings, help="consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google.")
 
 
+
+parser.add_argument("-to", "--top_org_list_only", choices=['top5','top10','top20','top10+1','top10+n'], default='top10',
+                    help="Consider only developers affiliated with the top n organizations with most nodes. TOP 10 by default.")
+
+
+parser.add_argument("-c","--org_list_in_config_file", type=str, help="Consider only developers affiliated with organizations in lists provided by a configuration file. Example -c test-configurations/filters.scraplog.conf.")
+
+
+
 parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to-unknown-firms',
                                                                 'gray-color-to-unknown-firms',
                                                                 'gray-color-to-others-not-in-topn-filter'],
@@ -106,7 +115,7 @@ parser.add_argument("-s", "--save_graphML", action="store_true",
 
 
 parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n'], default='top10',
-                    help="the type of legend to be included  choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n']. Top10+others is the default, affiliated with others are counted n.dev. / n.firms ")
+                    help="the type of legend to be included  choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n']. Top10+others is the default, affiliated with others are counted n.dev. / n.firms.")
 
 
 
@@ -114,12 +123,6 @@ parser.add_argument("-le", "--legend_extra_organizations", type=list_of_strings,
                     help="adds t othe legend some extra nodes gi. eg. -le mit,ibm." )
 
 
-
-parser.add_argument("-to", "--top_org_list_only", choices=['top5','top10','top20','top10+1','top10+n'], default='top10',
-                    help="consider only developers affiliated with the top x organizations with most nodes. TOP 10 by default")
-
-
-parser.add_argument("-c","--org_list_in_config_file", type=str, help="consider only developers affiliated with organizations in lists provided by a configuration file. Example -c test-configurations/filters.scraplog.conf")
 
 
 
