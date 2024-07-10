@@ -1,8 +1,8 @@
 # ScrapLogGit2Net - formatAndViz-nofi-GraphML.py
 
-## Documentation of the tool for visualizing the network of individual software developers 
+## Documentation of the tool formatAndViz-nofi-GraphML.py for visualizing the network of individual software developers 
 
-**formatAndViz-nofi-GraphML.py** is a shell executable python script for visualizing graphML files created with the ScrapLogGit2Net tools for modelling inter-individual networks of software developers that collaborate via Git.
+**formatAndViz-nofi-GraphML.py** is a shell executable python script for visualizing graphML files created with the ScrapLogGit2Net tool for modelling inter-individual networks of software developers that collaborate via Git.
 
 The **formatAndViz-nofi-GraphML.py** excutable:  
 - formats and visualizes a graphML file.
