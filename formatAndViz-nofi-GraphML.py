@@ -41,21 +41,47 @@ def list_of_strings(arg):
 
 parser = argparse.ArgumentParser(prog="formatAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
 
-parser.add_argument('--version', action='version', version='%(prog)s 1.0RC')
+parser.add_argument('--version', action='version', version='%(prog)s Experimental')
 
-parser.add_argument('infile', nargs='?', type=str, help="the network file (created by ScrapLogGit2Net)")
+parser.add_argument('infile', nargs='?', type=str, help="The network file (created by ScrapLogGit2Net)")
 
 
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity.")
 
-parser.add_argument("-g", "--GitHub", type=str, metavar="GitHubAuthToken", help="Uses GitHub API to retrieve the latest and current affiliation for each node e-mail. Require authentication token")
+parser.add_argument("-g", "--GitHub", type=str, metavar="GitHubAuthToken",
+                    help="Uses GitHub API to retrieve the latest and current affiliation for each node e-mail. Require authentication token.")
 
 parser.add_argument("-p", "--plot", action="store_true",
-                    help="plot the visualization (aka show), otherwises saves to png and pdf")
+                    help="Plot the visualization (aka show), otherwises saves to png and pdf.")
+
+parser.add_argument("-nl", "--network_layout",  choices=['circular', 'spring'],  default='spring',
+                    help="The type of network visualization layout (i.e., node positioning algorithm).")
+
+
+parser.add_argument("-oi", "--org_list_to_ignore", type=list_of_strings,
+                    help="Filter out developers affiliated with organizations in a given list. Example: -oi microsoft,meta,amazon.")
+
+parser.add_argument("-oo", "--org_list_only", type=list_of_strings ,
+                    help="Consider only developers affiliated with organizations in a given list. Example: -oo google,microsoft.")
+
+parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings, help="consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google.")
+
+
+parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to-unknown-firms',
+                                                                'gray-color-to-unknown-firms',
+                                                                'gray-color-to-others-not-in-topn-filter'],
+                    default='random-color-to-unknown-firms',
+                    help="Some default colors exist in the top_colors dict (e.g., IBM is blue, RedHat is red, Nvidia is green) but how to color others? Set a coloring strategy.")
+
+
+parser.add_argument("-ns", "--node_sizing_strategy", choices=['all-equal','centrality-score'],
+                    default='centrality-score',
+                    help="How big the nodes/developers should be? All equal or a function of their centrality?")
+
 
 parser.add_argument("-l", "--legend", action="store_true",
-                    help="shows affiliation organizations legend to the sociogram - "
+                    help="Shows affiliation organizations legend to the sociogram - "
                          "by default shows the top 10 org with most nodes")
 
 
@@ -69,29 +95,20 @@ parser.add_argument("-ll", "--legend_location",
                              'separate_file'], default='outside_center_right')
 
 
-parser.add_argument("-r", "--outside_legend_right", action="store_true",
-                            help="the legend to the sociogram goes outside to the right")
+
+
+
+
 
 parser.add_argument("-s", "--save_graphML", action="store_true",
                             help="save a new graphML network based on organizations to consider and organizations to filter passed as argument (i.e., -on, -oo, oi)")
 
-parser.add_argument("-nl", "--network_layout",  choices=['circular', 'spring'],  default='spring', help="the type of network visualization layout (i.e., node positioning algorithm)")
-
-parser.add_argument("-oi", "--org_list_to_ignore", type=list_of_strings, 
-                    help="filter out developers affiliated with organizations in a given list. Example: -oi microsoft,meta,amazon")
-
-parser.add_argument("-oo", "--org_list_only", type=list_of_strings ,
-                    help="consider only developers affiliated with organizations in a given list. Example: -oo google,microsoft")
-
-parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings, help="consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google")
 
 
 parser.add_argument("-lt", "--legend_type", choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n'], default='top10',
                     help="the type of legend to be included  choices=['top5','top10','top10+others','top20','top10+1','top10+1+others','top10+n']. Top10+others is the default, affiliated with others are counted n.dev. / n.firms ")
 
 
-parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to-unkown-firms','gray-color-to-unknown-firms','gray-color-to-others-not-in-topn-filter'], default='random-color-to-unkown-firms',
-                    help="Some default colors exist in the top_colors dict (e.g., IBM is blue, RedHat is red, Nvidia is green) but how to color others? Set a coloring strategy")
 
 parser.add_argument("-le", "--legend_extra_organizations", type=list_of_strings,
                     help="adds t othe legend some extra nodes gi. eg. -le mit,ibm." )
