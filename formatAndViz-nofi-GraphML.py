@@ -46,10 +46,8 @@ parser.add_argument('--version', action='version', version='%(prog)s 1.0RC')
 parser.add_argument('infile', nargs='?', type=str, help="the network file (created by ScrapLogGit2Net)")
 
 
-parser.add_argument("-o", '--outfile', nargs='?', type=argparse.FileType('w',encoding='latin-1'))
-
 parser.add_argument("-v", "--verbose", action="store_true",
-                    help="increase output verbosity")
+                    help="increase output verbosity.")
 
 parser.add_argument("-g", "--GitHub", type=str, metavar="GitHubAuthToken", help="Uses GitHub API to retrieve the latest and current affiliation for each node e-mail. Require authentication token")
 
@@ -57,7 +55,19 @@ parser.add_argument("-p", "--plot", action="store_true",
                     help="plot the visualization (aka show), otherwises saves to png and pdf")
 
 parser.add_argument("-l", "--legend", action="store_true",
-                    help="adds a affiliation attribute legend to the sociogram - by default shows the top 10 org with most nodes")
+                    help="shows affiliation organizations legend to the sociogram - "
+                         "by default shows the top 10 org with most nodes")
+
+
+parser.add_argument("-ll", "--legend_location",
+                    help="Sets where the legend should be displayed",
+                    choices=['upper_right','upper_left',
+                             'center_right','center_left',
+                             'lower_right','lower_left',
+                             'outside_center_right',
+                             'outside_center_left',
+                             'separate_file'], default='outside_center_right')
+
 
 parser.add_argument("-r", "--outside_legend_right", action="store_true",
                             help="the legend to the sociogram goes outside to the right")
@@ -86,9 +96,6 @@ parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to
 parser.add_argument("-le", "--legend_extra_organizations", type=list_of_strings,
                     help="adds t othe legend some extra nodes gi. eg. -le mit,ibm." )
 
-
-parser.add_argument("-lf", "--legend_in_separate_file",
-                    help="Saves the legend is two separate files (png and pdf) - might be easier to include it in articles or websites")
 
 
 parser.add_argument("-to", "--top_org_list_only", choices=['top5','top10','top20','top10+1','top10+n'], default='top10',
@@ -123,12 +130,14 @@ if not os.path.isfile(input_file_name):
     print (f"{input_file_name} is not a file as expected")
     print ("ERROR: ScrapLog expects a file")
     sys.exit()
-    
+
+# Not implemented
 if args.GitHub:
     print("Before creating the visualization, we use GitHub API to retrieve the latest and current affiliation for each node e-mail")
     print("Require authentication token")
     print("Not implemented in public domain due to privacy, security and spam  issues that might arise with improper us of this feature")
     sys.exit()
+
 
 if  args.org_list_to_ignore:
     print()
@@ -244,11 +253,6 @@ if args.legend_extra_organizations:
     print()
 
 
-if args.legend_in_separate_file:
-    print()
-    print("legend_in_separate_file: NOT IMPLEMENTED YET")
-    sys.exit()
-    print()
     
 
 if args.save_graphML:
@@ -1082,7 +1086,7 @@ if args.save_graphML:
     print("Saving filtered network to " + filtered_file_name )
 
     nx.write_graphml_lxml(G, filtered_file_name)
-    print(f"See{ filtered_file_name}")
+    print(f"See {filtered_file_name}")
 
 print()
 print("DONE")
