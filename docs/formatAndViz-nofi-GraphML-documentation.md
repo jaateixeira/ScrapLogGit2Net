@@ -32,33 +32,35 @@ A world where software co-production analytics put social network visualizations
 A git repository and its commit logs.
 
 # **scrapLog.py** Outputs #
-A social network visualization that captures who codes who who in a repository (note that developers can be affiliated with firms via an affiliation atribute.). The script plots the network using python NetworkX and python MatLibPlot and it can then be exported to a number of formats such as pdf and png. 
+A social network visualization that captures who codes with who in a repository (note that developers can be affiliated with firms via an affiliation attribute.). The script plots the network using Python NetworkX and Python MathLibPlot and it can then be exported to several formats such as pdf and png. 
 
 # How  **formatAndViz-nofi-GraphML.py** works #
 
 It simply reads the graphML file and plots it according to the list of parameters passed via the shell. 
 
-With the parameters, you can chose: 
-- To have a legend that depicts the organizational affilation of the developeers or not:
-- To position the legend on a specific position or export it to a separate file. 
-- Filter for specific firms:
-- Filter for specific firms and their close collaboration parters (i.e., neighbouring nodes only)
-- How nodes (aka developers) are colored.
-- How nodes (aka developeer)  are sized.
-- What affiliations should be displayed in the legend 
+With the parameters, you can choose: 
+- To either have a legend that depicts the organizational affiliation of developers or not a legend at all.
+- To position where the legend is placed or export it to a separate file. 
+- Filter for developers affiliated with a set of specific firms.
+- Filter for developers not affiliated with a set of specific firms.
+- Filter for the developers affiliated with the firms with most developers in the networks. 
+- Filter for specific firms and their close collaboration partners (i.e., neighbouring nodes only) leaving all others out. 
+- How nodes (aka developers) are coloured.
+- How nodes (aka developer)  are sized.
+- What organizations/affiliations should be displayed in the legend 
   
 # How to use  **formatAndViz-nofi-GraphML.py**#
 
-You need basic skills of Git and basic skills on how to invoke python scripts (test case scripts are implemented in bash).  Knowing python code will also help a lot. 
-You do not need to be a programmer to use ScrapLogGit2Net and especially the formatAndViz-nofi-GraphML visualizer, but if you are one, and find it usefull, please contribute to the project. 
+You need basic skills how to invoke Python scripts in the shell/terminal.  
+ (test case scripts are implemented in bash).  Knowing basics of linux/unix will help a lot.  You do not need to be a programmer to use ScrapLogGit2Net and especially the formatAndViz-nofi-GraphML visualizer, but if you are one, and find it useful, please contribute to the project. 
 
 
-# Command line options for advanced use
+# Command line options for filterign and formatting the network visualization 
 
 TODO: 
 
 ```
-Copy helå here
+TODO copy help here 
 
 ```
 
