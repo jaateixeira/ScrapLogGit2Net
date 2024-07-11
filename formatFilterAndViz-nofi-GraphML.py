@@ -63,12 +63,24 @@ def setup_logging():
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                         encoding='utf-8',
-                        filename=f'./logs/formatFilterAndViz-nofi-GraphML-{timestamp}.log',
+                        #Comment to get logs to stdout 
+                        #filename=f'./logs/formatFilterAndViz-nofi-GraphML-{timestamp}.log',
                         filemode='w')
 
 
+def log_level_example():
+    logging.debug("Debugging message")
+    logging.info("Informational message")
+    logging.warning("Warning message")
+    logging.error("Error message")
+    logging.critical("Critical message")
+
 # instantiate logger
 setup_logging()
+
+# Some log level examples 
+log_level_example()
+
 
 logger = logging.getLogger(__name__)
 
@@ -1153,6 +1165,8 @@ if args.save_graphML:
 
     nx.write_graphml_lxml(G, filtered_file_name)
     print(f"See {filtered_file_name}")
+
+    logger.info("Filtered GraphML file saved %s", filtered_file_name)
 
 print()
 print("DONE")
