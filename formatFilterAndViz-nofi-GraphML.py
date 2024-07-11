@@ -14,6 +14,11 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import networkx as nx
 
+
+# For logging/debugging 
+import logging
+
+
 import sys
 import os
 
@@ -31,8 +36,10 @@ from tkinter.filedialog import askopenfile
 import numpy as np
 
 # Required for coloring nodes randomly
-
 import turtle, math, random, time
+
+# To be able to load a dictionary key = firm, value = color
+import json 
 
 # Define a custom argument type for a list of strings
 def list_of_strings(arg):
@@ -40,6 +47,26 @@ def list_of_strings(arg):
 
 
 
+
+### START ###
+
+
+##  Sets the logger  ## 
+logging.basicConfig(level=logging.DEBUG,
+format='%(asctime)s %(levelname)s %(message)s',
+      filename='./formatFilterAndViz-nofi-GraphML.log',
+      filemode='w')
+
+###  Predefined log levels include CRITICAL, ERROR, WARNING, INFO, and DEBUG from highest to lowest severity ### 
+logging.basicConfig(filename='', level=logging.INFO)
+
+logging.info('Started')
+        
+
+
+
+
+#Defines the accepted shell arguments 
 parser = argparse.ArgumentParser(prog="formatFilterAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
 
 parser.add_argument('--version', action='version', version='%(prog)s Experimental')
@@ -82,7 +109,7 @@ parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to
                                                                 'gray-color-to-unknown-firms',
                                                                 'gray-color-to-others-not-in-topn-filter'],
                     default='random-color-to-unknown-firms',
-                    help="Some default colors exist in the top_colors dict (e.g., IBM is blue, RedHat is red, Nvidia is green) but how to color others? Set a coloring strategy.")
+                    help="Some default colors exist in the firm_color dict (e.g., IBM is blue, RedHat is red, Nvidia is green) but how to color others? Set a coloring strategy. Default: random-color-to-unknown-firms.")
 
 
 parser.add_argument("-ns", "--node_sizing_strategy", choices=['all-equal','centrality-score'],
@@ -122,7 +149,7 @@ parser.add_argument("-s", "--save_graphML", action="store_true",
 
 
 
-
+logging.info("Parsing aguments")
 
 args = parser.parse_args()
 
@@ -590,60 +617,6 @@ if args.verbose:
 
 
 
-# See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python
-print()
-print("coloring by firm")
-print()
-
-
-# less common goes to gray
-# Convention of black gro research institutes
-# Gray for anunomous eemails
-# Yellow for statups 
-top_colors = {
-    'google':'red',
-    'nvidia':'lime',
-    'intel':'lightblue',
-    'amd':'black',
-    'gmu':'brown',
-    'arm':'steelblue',
-    'amazon':'orange',
-    'ibm':'darkblue',
-    'linaro':'pink',
-    'gtu':'black',
-    'users': 'gray',
-    'gmail': 'gray',
-    'inailuig': 'gray',
-    'bytedance': 'gray',
-    'qq': 'gray',
-    'hotmail': 'gray',
-    'yahoo': 'gray',
-    'outlook': 'gray',
-    'gmail': 'gray',
-    'tensorflow': 'white',
-    'fastmail':'gray',
-    'ornl':'gray',
-    'meta':'blue',
-    'polymagelabs':'gray',
-    'cern': 'black',
-    'nicksweeting': 'gray',
-    'borgerding':'gray',
-    'apache':'gray',
-    'hyperscience':'gray',
-    'microsoft': 'darkorange',
-    'mit':'black',
-    'alum':'gray',
-    'us':'white',
-    '163':'gray',
-    'huawei':'darkred',
-    'graphcore':'pink',
-    'ispras': 'black',
-    'gatech': 'black',
-    'alum.mit.edu':'black',
-    '126': 'gray',
-}
-
-
     
 "find the top 5, top 10 and top 20  organization contributing"
 all_affiliations_freq = {}
@@ -683,6 +656,8 @@ if args.legend_type == 'top10+1+others':
 
     print(f"\n\t number_of_ind_not_intop_10_org ={number_of_ind_not_intop_10_org}")
     
+
+
     
 
 print("\nTOP 20 org. with more nodes:")
@@ -709,15 +684,31 @@ for key in top_5_org:
         print(f"Top firm not in top_20_org dict")
         sys.exit()
 
+
+
+
     
+        
 print()
 print(f"Drawing network according given layout {args.network_layout} ...")
 
 
 
+# Given a coloring strategy passed as argument, returns how a node should be colored 
+def get_nodes_color(coloring_strategy:str="random-color-to-unknown-firms")->list:
 
-def get_nodes_color()->list:
+    coloring_strategy_possible_choices=['random-color-to-unknown-firms','gray-color-to-unknown-firms', 'gray-color-to-others-not-in-topn-filter']
 
+    if coloring_strategy not in coloring_strategy_possible_choices:
+        print ("ERROR Invalid coloring_strategy")
+        sys.exit()
+        
+
+    if coloring_strategy not in ['random-color-to-unknown-firms','gray-color-to-unknown-firms']:
+        print ("ERROR, Only 'random-color-to-unknown-firms' and 'gray-color-to-unknown-firms' coloring strategies were implemented so far")
+        sys.exit()
+
+    
     # The actual colors to be shown <- depend on top colors
     org_colors = []
 
@@ -726,25 +717,30 @@ def get_nodes_color()->list:
         #print (node)
         #print (data['affiliation'])
 
-        affiliation = data['affiliation']
-        if data['affiliation'] in list(top_colors.keys()):
-            org_colors.append(top_colors[affiliation])
+        node_affiliation = data['affiliation']
+        if node_affiliation in list(firm_color.keys()):
+            org_colors.append(firm_color[node_affiliation])
         else:
-            "Gray for everything not in top_colors"
-            #org_colors.append('gray')
-            "random color for everyhing not in top_colors" 
-            r = random.random()
-            b = random.random()
-            g = random.random()
+            if coloring_strategy == 'gray-color-to-unknown-firms':
+                "Gray for everything not in firm_color"
+                org_colors.append('gray')
+                firm_color[data['affiliation']]= 'gray'
+            elif coloring_strategy == 'random-color-to-unknown-firms':
+                "random color for everyhing not in firm_color" 
+                r = random.random()
+                b = random.random()
+                g = random.random()
 
-            color = (r, g, b)
-            org_colors.append(color)
-            top_colors[data['affiliation']]= color
+                color = (r, g, b)
+                org_colors.append(color)
+                firm_color[data['affiliation']]= color
+            else:
+                print ("ERROR, Only 'random-color-to-unknown-firms' and 'gray-color-to-unknown-firms' coloring strategies were implemented so far")
+                sys.exit()
 
     if org_colors == []:
         print ("ERROR: How come the list of colors to be shown is empty")
         sys.exit()
-
 
 
     if args.verbose:
@@ -752,7 +748,7 @@ def get_nodes_color()->list:
         print("Showing color by organizational affiliation_")
         #print(org_colors)
         for node, data in G.nodes(data=True):
-            print(f"\t color({data['affiliation']}) -->  {top_colors[data['affiliation']]}")
+            print(f"\t color({data['affiliation']}) -->  {firm_color[data['affiliation']]}")
         print()
 
     return org_colors
@@ -777,13 +773,13 @@ def get_legend_elements()->list:
         try: 
             legend_items.append(Line2D([0], [0],
                                   marker='o',
-                                  color=top_colors[org],
+                                  color=firm_color[org],
                                   label=org+" n=("+str(top_20_org[org])+")",
                                   lw=0,
-                                  markerfacecolor=top_colors[org],
+                                  markerfacecolor=firm_color[org],
                                   markersize=5))
         except KeyError:
-            print(f"Top firm {org}' color is not defined in top_colors")
+            print(f"Top firm {org}' color is not defined in firm_color dict")
             sys.exit()
 
 
@@ -812,10 +808,10 @@ def get_legend_elements()->list:
         legend_items_top10_plus_one = legend_items[:10]
         legend_items_top10_plus_one.append( Line2D([0], [0],
                                   marker='o',
-                                  color=top_colors[org],
+                                  color=firm_color[org],
                                   label=args.legend_extra_organizations[0] +" n=("+str(top_all_org[org])+")",
                                   lw=0,
-                                  markerfacecolor=top_colors[org],
+                                  markerfacecolor=firm_colors[org],
                                   markersize=5))
         
         
@@ -847,10 +843,10 @@ def get_legend_elements()->list:
         legend_items_top10_plus_one = legend_items[:10]
         legend_items_top10_plus_one.append( Line2D([0], [0],
                                   marker='o',
-                                  color=top_colors[org],
+                                  color=firm_color[org],
                                   label=args.legend_extra_organizations[0] +" n= ("+str(top_all_org[org])+")",
                                   lw=0,
-                                  markerfacecolor=top_colors[org],markersize=5))
+                                  markerfacecolor=firm_color[org],markersize=5))
         
         legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others n.=({number_of_ind_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
         legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others org.=({number_of_org_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
@@ -880,10 +876,10 @@ def get_legend_elements()->list:
         legend_items_top10_plus_one = legend_items[:10]
         legend_items_top10_plus_one.append( Line2D([0], [0],
                                   marker='o',
-                                  color=top_colors[org],
+                                  color=firm_color[org],
                                   label=args.legend_extra_organizations[0] +" n= ("+str(top_all_org[org])+")",
                                   lw=0,
-                                  markerfacecolor=top_colors[org],markersize=10))
+                                  markerfacecolor=firm_colors[org],markersize=10))
         
         legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others n.=({number_of_ind_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
         legend_items_top10_plus_one.append( Line2D([0], [0], marker='o', color = 'gray',  label = f"others org.={number_of_org_not_intop_10_org})", lw=0, markerfacecolor='gray', markersize=5))
@@ -909,6 +905,26 @@ def get_legend_elements()->list:
     
     return legend_items
 
+
+
+
+# See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python
+print()
+print("Coloring by firm")
+print()
+
+
+
+
+with open('business_firm_color_dictionary_json/firm_color_dict.json', 'r') as file:
+    firm_color = json.load(file)
+
+
+print()
+print("Insuring every company have a color")
+print()
+
+get_nodes_color(args.node_coloring_strategy)
 
 
 
@@ -968,10 +984,10 @@ print("Drawing inter individual network nodes ... ")
 
 
 if args.network_layout == 'circular': 
-    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(),**circular_options)
+    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(args.node_coloring_strategy),**circular_options)
     
 elif args.network_layout == 'spring':
-    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(),node_size=get_nodes_size())
+    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(args.node_coloring_strategy),node_size=get_nodes_size())
     #nx.draw_networkx_nodes(G, pos, node_shape='s', node_color=get_nodes_color(),node_size=[v * 100 for v in degree_centrality.values()])
 
 else:
@@ -1115,5 +1131,8 @@ print("DONE")
 print("Hope you enjoy visualizing the inter-individual network with organizational affiliation atributes")
 print()
 
+logging.info('Finished')
+
+### END ### 
 
 
