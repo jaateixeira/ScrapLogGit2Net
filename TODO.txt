@@ -1,3 +1,10 @@
+Radical approach to make it working with simple
+
+node lists and label list
+
+nodelist TOP10 --- ALLNOTINTOP10  expand
+labellist the same this will simplify
+
 
 if -nc gray-color-to-unknown-firms and top10+other 
 

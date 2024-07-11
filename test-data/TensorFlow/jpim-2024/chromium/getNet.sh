@@ -47,9 +47,9 @@ echo "../../../../formatFilterAndViz-nofi-GraphML.py  ../../icis-2024-wp-network
 echo I got the following almost done 
 
 
-#SNU  c&p 
-#../../../../formatAndViz-nofi-GraphML.py  ../../icis-2024-wp-networks-graphML/tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile.graphML -plrs -oi gmail,ee,hotmail,outlook,yahoo,qq,users,163,gmx  -oo=google,intel,nvidia,arm,ibm,amd,microsoft,huawei,amazon,naver,snu   -on snu -lt top10+1+others -to top10+1 -le snu
-
 With top10+1 as legend type -> show the 10 organizations with most nodes
 And add the extra organization
 Here the extra organization is the first element of the list of -le LEGEND_EXTRA_ORGANIZATIONS
+
+
+Then I fixed the coed and worked 
