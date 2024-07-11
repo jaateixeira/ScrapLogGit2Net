@@ -124,7 +124,7 @@ parser.add_argument("-p", "--plot", action="store_true",
                     help="Plot the visualization (aka show), otherwises saves to png and pdf.")
 
 parser.add_argument("-nl", "--network_layout",  choices=['circular', 'spring'],  default='spring',
-                    help="The type of network visualization layout (i.e., node positioning algorithm).")
+                    help="The type of network visualization layout (i.e., node positioning algorithm). Spring is the default")
 
 
 parser.add_argument("-oi", "--org_list_to_ignore", type=list_of_strings,
@@ -133,12 +133,14 @@ parser.add_argument("-oi", "--org_list_to_ignore", type=list_of_strings,
 parser.add_argument("-oo", "--org_list_only", type=list_of_strings ,
                     help="Consider only developers affiliated with organizations in a given list. Example: -oo google,microsoft.")
 
+#Depecrated for simplifing the arguments list 
+#parser.add_argument("-to", "--top_org_list_only", choices=['top5','top10','top20','top10+1','top10+n'], default='top10',
+
+parser.add_argument("-ot", "--org_list_top_only", choices=['top5','top10','top20'], default='top10',
+                    help="Consider only developers affiliated with the top n organizations with most nodes. TOP 10 by default.")
+
 parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings, help="consider only developers affiliated with organizations in a given list and its neighbours (i.e., people they work with. Example: -on  nokia google.")
 
-
-
-parser.add_argument("-to", "--top_org_list_only", choices=['top5','top10','top20','top10+1','top10+n'], default='top10',
-                    help="Consider only developers affiliated with the top n organizations with most nodes. TOP 10 by default.")
 
 
 parser.add_argument("-c","--org_list_in_config_file", type=str, help="Consider only developers affiliated with organizations in lists provided by a configuration file. Example -c test-configurations/filters.scraplog.conf.")
@@ -245,22 +247,22 @@ if args.org_list_and_neighbours_only:
     print()
 
 
-if args.top_org_list_only:
+if args.org_list_top_only:
     print()
     print('We should consider only top organizations')
     print("consider only developers affiliated with organizations with most n nodes/developers (e.g., top 5, top 10,)")
-    print(f"top mode ={args.top_org_list_only}")
+    print(f"top mode ={args.org_list_top_only}")
     print()
 
     # Options are top5,top10,top20,top10+1,top10+n
-    # But if we are using to10+1 or top10+n, we need to know that others to display and include in legend 
+    # But if we are using to10+1 or top10+n, we need to know that others to display and include in legend  --> Depecrated 
 
-    if  args.top_org_list_only == 'top10+1' and not args.legend_extra_organizations:
+    if  args.org_list_top_only  == 'top10+1' and not args.legend_extra_organizations:
         print ("ERROR: If you want to consider only developers affilated with top10 + 1, provide one organization -le LEGEND_EXTRA_ORGANIZATIONS ")
         sys.exit()
 
 
-    if  args.top_org_list_only == 'top10+n' and not args.legend_extra_organizations:
+    if  args.org_list_top_only == 'top10+n' and not args.legend_extra_organizations:
         print ("ERROR: If you want to consider only developers affilated with top10 + n, provide additional -le LEGEND_EXTRA_ORGANIZATIONS widh comma separated values")
         sys.exit()
 
@@ -840,9 +842,10 @@ def get_legend_elements()->list:
         print ("And add the extra organization")
         print ("Here the extra organization is the first element of the list of -le LEGEND_EXTRA_ORGANIZATIONS")
 
-        print("ERROR: to implmenent")
-        print("requires -le LEGEND_EXTRA_ORGANIZATIONS")
-        sys.exit()
+
+        if not args.legend_extra_organizations:
+            print("ERROR: requires -le LEGEND_EXTRA_ORGANIZATIONS")
+            sys.exit()
 
         
         legend_items_top10_plus_one = legend_items[:10]
@@ -851,7 +854,7 @@ def get_legend_elements()->list:
                                   color=firm_color[org],
                                   label=args.legend_extra_organizations[0] +" n=("+str(top_all_org[org])+")",
                                   lw=0,
-                                  markerfacecolor=firm_colors[org],
+                                  markerfacecolor=firm_color[org],
                                   markersize=5))
         
         
