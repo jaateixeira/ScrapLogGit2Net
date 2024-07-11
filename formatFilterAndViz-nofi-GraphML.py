@@ -10,17 +10,25 @@
 # ./formatFilterAndViz-nofi-GraphML.py  -svtfl test-data/TensorFlow/icis-2024-wp-networks-graphML/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML 
 
 
+# For modelling networks 
+import networkx as nx
+
+# For visualizing networks 
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-import networkx as nx
+
 
 
 # For logging/debugging 
 import logging
+import logging.config
 
-
+# System utils 
 import sys
 import os
+
+# For getting current time 
+from datetime import datetime
 
 # For parsing command line arguments 
 import argparse
@@ -31,8 +39,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter.filedialog import askopenfile
 
-
-# For iterating 
+# For iterating objects with default values 
 import numpy as np
 
 # Required for coloring nodes randomly
@@ -41,32 +48,53 @@ import turtle, math, random, time
 # To be able to load a dictionary key = firm, value = color
 import json 
 
-# Define a custom argument type for a list of strings
-def list_of_strings(arg):
-    return arg.split(',')
-
-
 
 
 ### START ###
 
 
-##  Sets the logger  ## 
-logging.basicConfig(level=logging.DEBUG,
-format='%(asctime)s %(levelname)s %(message)s',
-      filename='./formatFilterAndViz-nofi-GraphML.log',
-      filemode='w')
+##  Sets the logger  ##
 
-###  Predefined log levels include CRITICAL, ERROR, WARNING, INFO, and DEBUG from highest to lowest severity ### 
-logging.basicConfig(filename='', level=logging.INFO)
 
-logging.info('Started')
+
+def setup_logging():
+
+    timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
+
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
+                        encoding='utf-8',
+                        filename=f'./logs/formatFilterAndViz-nofi-GraphML-{timestamp}.log',
+                        filemode='w')
+
+
+# instantiate logger
+setup_logging()
+
+logger = logging.getLogger(__name__)
+
+# Predefined log levels include CRITICAL, ERROR, WARNING, INFO, and DEBUG from highest to lowest severity ### 
+logger.setLevel(logging.INFO)
+
+
+logger.info("Program started")
+
+
+
+
+
+#logging.basicConfig(filename='', level=logging.INFO)
+
+#logging.info('Started')
         
 
 
+## Setting the the arguments ## 
+
+# Define a custom argument type for a list of strings
+def list_of_strings(arg):
+    return arg.split(',')
 
 
-#Defines the accepted shell arguments 
 parser = argparse.ArgumentParser(prog="formatFilterAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
 
 parser.add_argument('--version', action='version', version='%(prog)s Experimental')
@@ -1131,8 +1159,7 @@ print("DONE")
 print("Hope you enjoy visualizing the inter-individual network with organizational affiliation atributes")
 print()
 
-logging.info('Finished')
-
+logger.info("Program finished")
 ### END ### 
 
 
