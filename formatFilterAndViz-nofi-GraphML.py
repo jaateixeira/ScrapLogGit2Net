@@ -6,7 +6,7 @@
 # nodesize according centralities 
 
 #Example of use verbose,fitering and only top firms with legend
-# ./formatAndViz-nofi-GraphML.py  -svtfl test-data/TensorFlow/icis-2024-wp-networks-graphML/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML 
+# ./formatFilterAndViz-nofi-GraphML.py  -svtfl test-data/TensorFlow/icis-2024-wp-networks-graphML/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML 
 
 
 import matplotlib.pyplot as plt
@@ -39,7 +39,7 @@ def list_of_strings(arg):
 
 
 
-parser = argparse.ArgumentParser(prog="formatAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
+parser = argparse.ArgumentParser(prog="formatFilterAndViz-nofi-GraphML.py",description="Formats and visualizes a graphML file capturing a unweighted network of individuals affiliated with organizations")
 
 parser.add_argument('--version', action='version', version='%(prog)s Experimental')
 
