@@ -1,4 +1,9 @@
 
+if -nc gray-color-to-unknown-firms and top10+other 
+
+we must have a square for others in gray
+
+
 Make business-firm-color-dictionary-json github project as a public project
 
 Make it work for top10 legend type
