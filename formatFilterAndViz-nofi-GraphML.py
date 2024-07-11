@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 # formats and visualizes a graphml file
+# filters by organizational affiliation
 # layout can be circular or spring (default)
 # colorize accourding to affiliation atribute
 # nodesize according centralities 
