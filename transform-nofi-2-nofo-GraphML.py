@@ -9,6 +9,11 @@
 #  Nokia and Apple are then connected with a edge weight of 3 
 # 
 
+#
+# TODO Rich progress bars
+# Ice Cream debugger
+#
+
 
 #Example of use verbose,fitering and only top firms
 # ./transform-nofi-2-nofo-GraphML.py -v test-data/icis-2024-wp-networks-graphML/tensorFlowGitLog-2022-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML
@@ -20,8 +25,6 @@ print ("")
 
 
 
-from icecream import install
-install()
 
 
 "we need to handle networks"
