@@ -10,6 +10,19 @@
 # ./formatFilterAndViz-nofi-GraphML.py  -svtfl test-data/TensorFlow/icis-2024-wp-networks-graphML/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML 
 
 
+######################### How it works ##########################################
+#  
+# 1- Loads the networks as a networkX object
+# 2- Data-cleasing 
+# 3- Filtering by org mode (  --org_list_to_ignore args)
+# 4- Removing nodes that are not affiliated with organizations in the given list -- args.org_list_only
+# 5- Removing nodes that are not affiliated with organizations in the given list or do not collaborate with them (i.e., neighbours)
+# 6- Calculates nodes centralities
+# 7- Shows/plots and saves the network
+
+#################################################################################
+
+
 # For modelling networks 
 import networkx as nx
 
