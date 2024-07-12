@@ -1,4 +1,5 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # Transforms a network of individuals  Graphml File into a network of Organization Graphml file 
 # Edge between of org. networks is the sum of developers that worked together
@@ -16,6 +17,11 @@ print ("")
 print ("transform-nofi-2-nofo-GraphML.py - transforming unweighted networks of individuals into weighted networks of organizations since June 2024")
 print ("Let's go")
 print ("")
+
+
+
+from icecream import install
+install()
 
 
 "we need to handle networks"
