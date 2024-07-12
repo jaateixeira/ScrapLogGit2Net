@@ -32,6 +32,7 @@ du -sh $INPUT
 echo -e "Network is transformed, let's now see  the network \n"
 ../../../../formatFilterAndViz-nofo-GraphML.py -l $OUTPUT
 
+grep chromium $OUTPUT
 
 
 

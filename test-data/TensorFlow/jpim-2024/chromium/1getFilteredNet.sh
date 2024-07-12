@@ -85,3 +85,5 @@ du -sh $INPUT
 du -sh $FILTERED_FILE
 
 echo -e "Let's now transform the network \n"
+
+grep chromium $FILTERED_FILE
