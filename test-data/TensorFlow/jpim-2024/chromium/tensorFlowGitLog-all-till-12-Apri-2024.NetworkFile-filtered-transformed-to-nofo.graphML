@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="edge" attr.name="weight" attr.type="long" />
+  <graph edgedefault="undirected">
+    <node id="google" />
+    <node id="amazon" />
+    <node id="intel" />
+    <node id="nvidia" />
+    <node id="amd" />
+    <node id="ibm" />
+    <node id="microsoft" />
+    <node id="arm" />
+    <node id="huawei" />
+    <node id="chromium" />
+    <node id="naver" />
+    <edge source="google" target="amazon">
+      <data key="d0">800</data>
+    </edge>
+    <edge source="google" target="intel">
+      <data key="d0">12889</data>
+    </edge>
+    <edge source="google" target="nvidia">
+      <data key="d0">8328</data>
+    </edge>
+    <edge source="google" target="amd">
+      <data key="d0">3781</data>
+    </edge>
+    <edge source="google" target="ibm">
+      <data key="d0">3496</data>
+    </edge>
+    <edge source="google" target="microsoft">
+      <data key="d0">1068</data>
+    </edge>
+    <edge source="google" target="arm">
+      <data key="d0">3106</data>
+    </edge>
+    <edge source="google" target="huawei">
+      <data key="d0">1469</data>
+    </edge>
+    <edge source="google" target="chromium">
+      <data key="d0">360</data>
+    </edge>
+    <edge source="google" target="naver">
+      <data key="d0">424</data>
+    </edge>
+    <edge source="amazon" target="nvidia">
+      <data key="d0">25</data>
+    </edge>
+    <edge source="amazon" target="amd">
+      <data key="d0">15</data>
+    </edge>
+    <edge source="amazon" target="intel">
+      <data key="d0">47</data>
+    </edge>
+    <edge source="amazon" target="ibm">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="amazon" target="microsoft">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="amazon" target="naver">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="amazon" target="arm">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="amazon" target="huawei">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="intel" target="nvidia">
+      <data key="d0">525</data>
+    </edge>
+    <edge source="intel" target="ibm">
+      <data key="d0">193</data>
+    </edge>
+    <edge source="intel" target="microsoft">
+      <data key="d0">86</data>
+    </edge>
+    <edge source="intel" target="arm">
+      <data key="d0">312</data>
+    </edge>
+    <edge source="intel" target="amd">
+      <data key="d0">292</data>
+    </edge>
+    <edge source="intel" target="chromium">
+      <data key="d0">23</data>
+    </edge>
+    <edge source="intel" target="huawei">
+      <data key="d0">37</data>
+    </edge>
+    <edge source="nvidia" target="amd">
+      <data key="d0">236</data>
+    </edge>
+    <edge source="nvidia" target="ibm">
+      <data key="d0">94</data>
+    </edge>
+    <edge source="nvidia" target="microsoft">
+      <data key="d0">40</data>
+    </edge>
+    <edge source="nvidia" target="huawei">
+      <data key="d0">26</data>
+    </edge>
+    <edge source="nvidia" target="arm">
+      <data key="d0">68</data>
+    </edge>
+    <edge source="nvidia" target="chromium">
+      <data key="d0">13</data>
+    </edge>
+    <edge source="nvidia" target="naver">
+      <data key="d0">14</data>
+    </edge>
+    <edge source="amd" target="arm">
+      <data key="d0">28</data>
+    </edge>
+    <edge source="amd" target="microsoft">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="amd" target="chromium">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="amd" target="ibm">
+      <data key="d0">31</data>
+    </edge>
+    <edge source="amd" target="huawei">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="amd" target="naver">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ibm" target="chromium">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="ibm" target="microsoft">
+      <data key="d0">27</data>
+    </edge>
+    <edge source="ibm" target="huawei">
+      <data key="d0">18</data>
+    </edge>
+    <edge source="ibm" target="arm">
+      <data key="d0">27</data>
+    </edge>
+    <edge source="ibm" target="naver">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="microsoft" target="chromium">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="microsoft" target="arm">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="microsoft" target="naver">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="microsoft" target="huawei">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="arm" target="chromium">
+      <data key="d0">13</data>
+    </edge>
+    <edge source="arm" target="huawei">
+      <data key="d0">54</data>
+    </edge>
+    <edge source="arm" target="naver">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="huawei" target="chromium">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="huawei" target="naver">
+      <data key="d0">5</data>
+    </edge>
+  </graph>
+</graphml>

@@ -13,3 +13,4 @@ apt-get install python3-xlwt
 
 # To validate GraphML XML files 
 apt-get install libxml2-utils
+git clone https://github.com/jaateixeira/business_firm_color_dictionary_json.git

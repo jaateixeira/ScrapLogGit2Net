@@ -1,3 +1,30 @@
+Radical approach to make it working with simple
+
+node lists and label list
+
+nodelist TOP10 --- ALLNOTINTOP10  expand
+labellist the same this will simplify
+
+
+if -nc gray-color-to-unknown-firms and top10+other 
+
+we must have a square for others in gray
+
+
+Make business-firm-color-dictionary-json github project as a public project
+
+Make it work for top10 legend type
+Make then wortk for top 10+ others as default. All not in top 10 gend diff color.
+Implement logging 
+
+ ./formatAndViz-nofi-GraphML.py -pl test-data/5-pentagon-with-star.graphML
+
+
+* Implement ll argument outside 'outside_center_right'
+Mart other options as not implmented
+* Mark down that node coloring and what node sizing strategies are not implemented
+* Mark the legend types that are not implemented
+
 The testcase 3 needs to be more sofisticated
 
 Create documentation folder 
