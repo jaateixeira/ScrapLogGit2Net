@@ -292,6 +292,17 @@ def get_nodes_size()->list:
     # see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
     return [v * 100 for v in degree_centrality.values()]
 
+circular_options = {
+    'node_size': 10,
+}
+
+
+spring_options = {
+#    'node_size': 10,
+#   'width': 0.5,
+}
+
+
 
 print("Drawing inter individual network nodes ... ")
 
