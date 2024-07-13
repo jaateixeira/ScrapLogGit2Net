@@ -415,7 +415,8 @@ if args.legend:
     print("\t Adding a legend") 
 
     plt.legend(handles=get_legend_elements(known_org_node_colors),
-               loc='right',
+               loc='center left',
+               bbox_to_anchor=(0.95, 0.5),
                frameon=False,
                prop={'weight': 'bold', 'size': 12, 'family': 'georgia'})
 
