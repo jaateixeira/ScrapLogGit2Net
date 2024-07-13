@@ -418,7 +418,7 @@ if args.legend:
                loc='center left',
                bbox_to_anchor=(0.95, 0.5),
                frameon=False,
-               prop={'weight': 'bold', 'size': 12, 'family': 'georgia'})
+               prop={'weight': 'bold', 'size': 12, 'family': 'sans-serif'})
 
 
 
