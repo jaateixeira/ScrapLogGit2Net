@@ -971,7 +971,7 @@ print()
 
 
 
-
+# Loads the firm-color dictionary - Now we know how to map firm to a color
 with open('business_firm_color_dictionary_json/firm_color_dict.json', 'r') as file:
     firm_color = json.load(file)
 

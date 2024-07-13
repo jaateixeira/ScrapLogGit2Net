@@ -26,7 +26,11 @@ import argparse
 import random
 
 "need for logarithms"
-import math 
+import math
+
+# To be able to load a dictionary key = firm, value = color
+import json
+
 
 def printGraph_as_dict_of_dicts(graph):
     print (nx.to_dict_of_dicts(graph))
@@ -153,49 +157,11 @@ print("coloring by firm")
 # Convention of black gro research institutes
 # Gray for anonymous e-mails
 # Yellow for startups
-known_org_node_colors = {
-    'google': 'red',
-    'nvidia': 'lime',
-    'intel': 'lightblue',
-    'amd': 'black',
-    'gmu': 'brown',
-    'arm': 'steelblue',
-    'amazon': 'orange',
-    'ibm': 'darkblue',
-    'linaro': 'pink',
-    'gtu': 'black',
-    'users': 'gray',
-    'gmail': 'gray',
-    'inailuig': 'gray',
-    'bytedance': 'gray',
-    'qq': 'gray',
-    'hotmail': 'gray',
-    'yahoo': 'gray',
-    'outlook': 'gray',
-    'gmail': 'gray',
-    'tensorflow': 'white',
-    'fastmail': 'gray',
-    'ornl': 'gray',
-    'meta': 'blue',
-    'polymagelabs': 'gray',
-    'cern': 'black',
-    'nicksweeting': 'gray',
-    'borgerding': 'gray',
-    'apache': 'gray',
-    'hyperscience': 'gray',
-    'microsoft': 'darkorange',
-    'mit': 'black',
-    'alum': 'gray',
-    'us': 'white',
-    '163': 'gray',
-    'huawei': 'darkred',
-    'graphcore': 'pink',
-    'ispras': 'black',
-    'gatech': 'black',
-    'alum.mit.edu': 'black',
-    '126': 'gray',
-    'rijksmuseum': 'orange',
-}
+
+# Loads the firm-color dictionary - Now we know how to map firm to a color
+with open('business_firm_color_dictionary_json/firm_color_dict.json', 'r') as file:
+    known_org_node_colors = json.load(file)
+
 
 
 print()
