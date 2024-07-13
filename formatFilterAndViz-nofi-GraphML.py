@@ -993,16 +993,6 @@ print ("")
 
 
 
-circular_options = { 
-    'node_size': 10,
-    'width': 0.1,
-}
-
-
-spring_options = { 
-#    'node_size': 10,
-#   'width': 0.5,
-}
 
 
 

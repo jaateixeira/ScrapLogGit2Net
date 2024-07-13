@@ -1,3 +1,8 @@
+
+./formatFilterAndViz-nofo-GraphML.py -l test-data/TensorFlow/jpim-2024/chromium/tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile-filtered-transformed-to-nofo.graphML -ns centrality-score -v
+Works fine.
+Just legend should be more to the right
+
 Radical approach to make it working with simple
 
 node lists and label list
@@ -105,6 +110,6 @@ Implement verbose even more verbosity - while scrapping log
 Filter for emails by github
 
 Investigate noreply emails
-
 Make -e export  social netowor GraphML by defeaut
 -ef  exprt format
+

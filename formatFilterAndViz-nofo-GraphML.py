@@ -31,6 +31,9 @@ import math
 # To be able to load a dictionary key = firm, value = color
 import json
 
+from rich import (print as rprint)
+# For nicer terminal outputs
+
 
 def printGraph_as_dict_of_dicts(graph):
     print (nx.to_dict_of_dicts(graph))
@@ -163,7 +166,7 @@ print("Number_of_isolates="+str(nx.number_of_isolates(G)))
 print ()
 print ("Calculating centralities")
 
-degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
+degree_centrality = nx.eigenvector_centrality(G)  # sort by de
 sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
 
 
@@ -280,26 +283,31 @@ def get_nodes_color(coloring_strategy: str = "random-color-to-unknown-firms") ->
         print()
         print("Showing color by organizational affiliation_")
         # print(org_colors)
-        for node, data in G.nodes(data=True):
-            print(f"\t color({data['affiliation']}) -->  {firm_color[data['affiliation']]}")
+        for node in G.nodes(data=False):
+            print(f"\t color({node}) -->  {known_org_node_colors[node]}")
         print()
 
     return org_colors
 
 
 def get_nodes_size()->list:
+    custom_factor = 20
     # setting size of node according centrality
     # see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
-    return [v * 100 for v in degree_centrality.values()]
+    return [v * custom_factor * 100 for v in degree_centrality.values()]
 
-circular_options = {
+
+if args.verbose:
+    print("\n Node sizes \n \t")
+    rprint(get_nodes_size())
+
+node_circular_options = {
     'node_size': 10,
 }
 
 
-spring_options = {
-#    'node_size': 10,
-#   'width': 0.5,
+node_spring_options = {
+'alpha':0.75
 }
 
 
@@ -308,11 +316,13 @@ print("Drawing inter individual network nodes ... ")
 
 if args.network_layout == 'circular':
     nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(args.node_coloring_strategy),
-                           **circular_options)
+                           **node_circular_options)
 
 elif args.network_layout == 'spring':
-    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(args.node_coloring_strategy),
-                           node_size=get_nodes_size())
+    nx.draw_networkx_nodes(G, pos, node_shape='o',
+                           node_size=get_nodes_size(),
+                           node_color=get_nodes_color(args.node_coloring_strategy),
+                           **node_spring_options)
     # nx.draw_networkx_nodes(G, pos, node_shape='s', node_color=get_nodes_color(),node_size=[v * 100 for v in degree_centrality.values()])
 
 else:
@@ -321,9 +331,13 @@ else:
 
 
 
+
+
+
 print("Drawing inter organizational edges ... ")
 
-edge_circular_options = { 
+edge_options = {
+'alpha':0.2
 }
 
 
@@ -331,21 +345,24 @@ edge_circular_options = {
 
 print("\t Calculating edge thinkness ... ")
 
-edge_thinkness = []
+edge_thickness = []
 for u,v,a in G.edges(data=True):
     if args.verbose:
         print(f"u={u}, v={v}, a={a}")
     "Using weights as they are"
-    #edge_thinkness.append(a['weight'])
+    #edge_thickness.append(a['weight'])
     "Using log base 2"
-    edge_thinkness.append(1+math.log(a['weight'], 2))
+    edge_thickness.append(1+math.log(a['weight'], 2))
 
-print("\t  edge_thinkness = " + str(edge_thinkness))
 
-nx.draw_networkx_edges(G, pos, width=edge_thinkness)
+if args.verbose:
+    print("\t  edge_thickness:")
+    rprint(edge_thickness)
+
+nx.draw_networkx_edges(G, pos, width=edge_thickness, **edge_options)
 
 print("Drawing organizations  node labels") 
-nx.draw_networkx_labels(G, pos, font_size=10, font_family="sans-serif")
+nx.draw_networkx_labels(G, pos, font_size=10, font_family="sans-serif",font_weight="bold", font_color='black',alpha=1.0)
 
 print("Drawing inter-organizational edge weight labels") 
 
@@ -398,17 +415,33 @@ if args.legend:
     print("\t Adding a legend") 
 
     plt.legend(handles=get_legend_elements(known_org_node_colors),
-               loc='center right',
+               loc='right',
                frameon=False,
                prop={'weight': 'bold', 'size': 12, 'family': 'georgia'})
 
-    
+
+
+
+
 
 ax = plt.gca()
 ax.margins(0.08)
+
+custom_radius= 0.15
+Drawing_colored_circle = plt.Circle(pos['chromium'], custom_radius, fill=False, alpha=0.5)
+
+
+ax.add_artist(Drawing_colored_circle)
+#plt.title('Colored Circle')
+
+
 plt.axis("off")
 plt.tight_layout()
 plt.show()
+
+rprint(f"The position of cromiuum is:")
+rprint(pos['chromium'])
+
 
 
 print("")
