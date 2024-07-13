@@ -72,6 +72,17 @@ parser.add_argument("-n", "--network_layout",  choices=['circular', 'spring'],  
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
 
+parser.add_argument("-ns", "--node_sizing_strategy", choices=['all-equal','centrality-score'],
+                    default='centrality-score',
+                    help="How big the nodes/developers should be? All equal or a function of their centrality?")
+
+parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to-unknown-firms',
+                                                                'gray-color-to-unknown-firms',
+                                                                'gray-color-to-others-not-in-topn-filter'],
+                    default='random-color-to-unknown-firms',
+                    help="Some default colors exist in the firm_color dict (e.g., IBM is blue, RedHat is red, Nvidia is green) but how to color others? Set a coloring strategy. Default: random-color-to-unknown-firms.")
+
+
 parser.add_argument("-t", "--top-firms-only", action="store_true",
                     help="only top_firms_that_matter")
 
@@ -149,6 +160,14 @@ print("Number_of_edges="+str(G.number_of_edges()))
 print("Number_of_isolates="+str(nx.number_of_isolates(G)))
 
 
+print ()
+print ("Calculating centralities")
+
+degree_centrality = nx.centrality.degree_centrality(G)  # sort by de
+sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
+
+
+
 # See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python 
 print("coloring by firm")
 
@@ -210,13 +229,84 @@ else:
 
 print("Drawing inter organizational nodes ... ")
 
-node_circular_options = { 
-    'node_size': 200
-}
+
+def get_nodes_color(coloring_strategy: str = "random-color-to-unknown-firms") -> list:
+    coloring_strategy_possible_choices = ['random-color-to-unknown-firms', 'gray-color-to-unknown-firms',
+                                          'gray-color-to-others-not-in-topn-filter']
+
+    if coloring_strategy not in coloring_strategy_possible_choices:
+        print("ERROR Invalid coloring_strategy")
+        sys.exit()
+
+    if coloring_strategy not in ['random-color-to-unknown-firms', 'gray-color-to-unknown-firms']:
+        print(
+            "ERROR, Only 'random-color-to-unknown-firms' and 'gray-color-to-unknown-firms' coloring strategies were implemented so far")
+        sys.exit()
+
+    # The actual colors to be shown <- depend on top colors
+    org_colors = []
+
+    for node in G.nodes(data=False):
+        # print (node)
+        # print (data['affiliation'])
 
 
-nx.draw_networkx_nodes(G, pos, node_color=org_colors, **node_circular_options)
+        if node in list(known_org_node_colors.keys()):
+            org_colors.append(known_org_node_colors[node])
+        else:
+            if coloring_strategy == 'gray-color-to-unknown-firms':
+                "Gray for everything not in firm_color"
+                org_colors.append('gray')
+                known_org_node_colors[node] = 'gray'
+            elif coloring_strategy == 'random-color-to-unknown-firms':
+                "random color for everyhing not in firm_color"
+                r = random.random()
+                b = random.random()
+                g = random.random()
 
+                color = (r, g, b)
+                org_colors.append(color)
+                known_org_node_colors[node] = color
+            else:
+                print(
+                    "ERROR, Only 'random-color-to-unknown-firms' and 'gray-color-to-unknown-firms' coloring strategies were implemented so far")
+                sys.exit()
+
+    if org_colors == []:
+        print("ERROR: How come the list of colors to be shown is empty")
+        sys.exit()
+
+    if args.verbose:
+        print()
+        print("Showing color by organizational affiliation_")
+        # print(org_colors)
+        for node, data in G.nodes(data=True):
+            print(f"\t color({data['affiliation']}) -->  {firm_color[data['affiliation']]}")
+        print()
+
+    return org_colors
+
+
+def get_nodes_size()->list:
+    # setting size of node according centrality
+    # see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
+    return [v * 100 for v in degree_centrality.values()]
+
+
+print("Drawing inter individual network nodes ... ")
+
+if args.network_layout == 'circular':
+    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(args.node_coloring_strategy),
+                           **circular_options)
+
+elif args.network_layout == 'spring':
+    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(args.node_coloring_strategy),
+                           node_size=get_nodes_size())
+    # nx.draw_networkx_nodes(G, pos, node_shape='s', node_color=get_nodes_color(),node_size=[v * 100 for v in degree_centrality.values()])
+
+else:
+    print("Error - Unknow network layout")
+    sys.exit()
 
 
 
