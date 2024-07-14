@@ -86,10 +86,15 @@ parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to
                     help="Some default colors exist in the firm_color dict (e.g., IBM is blue, RedHat is red, Nvidia is green) but how to color others? Set a coloring strategy. Default: random-color-to-unknown-firms.")
 
 
-parser.add_argument("-t", "--top-firms-only", action="store_true",
+
+
+parser.add_argument("-ff", "--focal_firm",required=True,
+                    help="the focal firm we want to highlight")
+
+parser.add_argument("-t", "--top_firms_only", action="store_true",
                     help="only top_firms_that_matter")
 
-parser.add_argument("-f", "--filter-by-org", action="store_true",
+parser.add_argument("-f", "--filter_by_org", action="store_true",
                     help="top_firms_that_do_not_matter")
 
 parser.add_argument("-s", "--show", action="store_true",
@@ -98,8 +103,6 @@ parser.add_argument("-s", "--show", action="store_true",
 parser.add_argument("-l", "--legend", action="store_true",
                     help="adds a legend to the sociogram")
 
-parser.add_argument("-r", "--outside-legend-right", action="store_true",
-                    help="the legend to the sociogram goes outside to the right")
 
 args = parser.parse_args()
 
@@ -116,6 +119,9 @@ if args.filter_by_org:
     print("In filtering by org mode")
     print()
 
+if args.focal_firm:
+    print(f"\n\t focal_firm = {args.focal_firm}\n")
+    
 if args.show:
     print()
     print("In snow mode")
@@ -124,11 +130,6 @@ if args.show:
 if args.legend:
     print()
     print("Show a legend")
-    print()
-    
-if args.legend and args.outside_legend_right:
-    print()
-    print("legend should be outside of plot on the right")
     print()
 
 
@@ -143,6 +144,15 @@ input_file_name = args.file
 
 G = nx.read_graphml(input_file_name)
 prefix_for_figures_filenames = os.path.basename(input_file_name)
+
+
+if args.focal_firm:
+
+    if args.focal_firm not in G.nodes():
+        rprint ("Error- focal firm is not in the G nodes list")
+        sys.exit()
+
+
 
 if args.verbose:
     print() 
@@ -428,11 +438,13 @@ if args.legend:
 ax = plt.gca()
 ax.margins(0.08)
 
-custom_radius= 0.15
-Drawing_colored_circle = plt.Circle(pos['chromium'], custom_radius, fill=False, alpha=0.5)
 
+if args.focal_firm:
 
-ax.add_artist(Drawing_colored_circle)
+    if args.focal_firm not in G.nodes():
+        rprint ("Error- focal firm is on in G nodes list")
+        sys.exit()
+
 #plt.title('Colored Circle')
 
 
