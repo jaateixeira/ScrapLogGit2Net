@@ -31,7 +31,7 @@ du -sh $INPUT
 
 
 echo -e "Network is transformed, let's now see  the network \n"
-../../../../formatFilterAndViz-nofo-GraphML.py -ff $FOCAL_ORG -l $OUTPUT
+../../../../formatFilterAndViz-nofo-GraphML.py -v -l -ff $FOCAL_ORG $OUTPUT
 
 grep  $FOCAL_ORG $OUTPUT
 
