@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source config.cfg
+
 INPUT=../../icis-2024-wp-networks-graphML/tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile.graphML 
 echo -e  "Analysing network $INPUT" "\n"
 

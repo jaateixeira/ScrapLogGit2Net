@@ -1,9 +1,11 @@
 #!/bin/bash
 
-FILTERED_FILE=tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile-filtered.graphML 
+source config.cfg
+
+
+
 INPUT=$FILTERED_FILE
 
-TRANSFORMED_FILE=tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile-filtered-transformed-to-nofo.graphML
 OUTPUT=$TRANSFORMED_FILE
 
 
