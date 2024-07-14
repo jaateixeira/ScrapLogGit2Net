@@ -121,6 +121,7 @@ if args.filter_by_org:
 
 if args.focal_firm:
     print(f"\n\t focal_firm = {args.focal_firm}\n")
+
     
 if args.show:
     print()
@@ -131,7 +132,7 @@ if args.legend:
     print()
     print("Show a legend")
     print()
-
+    
 
 print()
 print(f"Chosen network layout: {args.network_layout}")
@@ -144,15 +145,6 @@ input_file_name = args.file
 
 G = nx.read_graphml(input_file_name)
 prefix_for_figures_filenames = os.path.basename(input_file_name)
-
-
-if args.focal_firm:
-
-    if args.focal_firm not in G.nodes():
-        rprint ("Error- focal firm is not in the G nodes list")
-        sys.exit()
-
-
 
 if args.verbose:
     print() 
@@ -433,8 +425,46 @@ if args.legend:
 
 
 
+def get_first_half(s):
+    """
+    Returns the first half of the string.
+    If the length of the string is odd, the extra character will be included in the first half.
+    
+    Parameters:
+    s (str): The input string
+    
+    Returns:
+    str: The first half of the input string
+    """
+    mid_index = (len(s) + 1) // 2  # Middle index, rounded up for odd lengths
+    return s[:mid_index]
+
+def get_second_half(s):
+    """
+    Returns the second half of the string.
+    If the length of the string is odd, the extra character will be included in the first half.
+    
+    Parameters:
+    s (str): The input string
+    
+    Returns:
+    str: The second half of the input string
+    """
+    mid_index = (len(s) + 1) // 2  # Middle index, rounded up for odd lengths
+    return s[mid_index:]
 
 
+
+first_half = get_first_half(str(args))
+second_half = get_second_half(str(args))
+
+print("First Half:", first_half)  # Output: "abcd"
+print("Second Half:", second_half)  # Output: "efgh"
+
+    
+
+#plt.title(first_half+"\n"+second_half)
+    
 ax = plt.gca()
 ax.margins(0.08)
 
@@ -444,8 +474,12 @@ if args.focal_firm:
     if args.focal_firm not in G.nodes():
         rprint ("Error- focal firm is on in G nodes list")
         sys.exit()
+    
+    custom_radius= 0.10
+    Drawing_colored_circle = plt.Circle(pos[args.focal_firm], custom_radius, fill=False, alpha=0.5)
 
-#plt.title('Colored Circle')
+    ax.add_artist(Drawing_colored_circle)
+    
 
 
 plt.axis("off")
