@@ -484,8 +484,8 @@ plt.axis("off")
 plt.tight_layout()
 plt.show()
 
-rprint(f"The position of cromiuum is:")
-rprint(pos['chromium'])
+rprint(f"The position of {args.focal_firm } is:")
+rprint(pos[args.focal_firm ])
 
 
 
