@@ -479,8 +479,6 @@ if args.focal_firm:
     Drawing_colored_circle = plt.Circle(pos[args.focal_firm], custom_radius, fill=False, alpha=0.5)
 
     ax.add_artist(Drawing_colored_circle)
-    
-
 
 plt.axis("off")
 plt.tight_layout()

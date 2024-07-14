@@ -2,14 +2,6 @@
 
 source config.cfg
 
-INPUT=../../icis-2024-wp-networks-graphML/tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile.graphML 
-echo -e  "Analysing network $INPUT" "\n"
-
-FOCAL_ORG=chromium
-
-TOP10_ORG=google,intel,nvidia,arm,ibm,amd,microsoft,huawei,amazon,naver
-
-FILTERED_FILE=tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile-filtered.graphML 
 
 du -sh $INPUT
 
