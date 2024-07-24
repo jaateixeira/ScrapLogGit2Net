@@ -18,6 +18,14 @@ source config.cfg
 
 echo "Testing if $FOCAL_ORG pdf figure is there"
 
+{
+if [ ! -f $FOCAL_ORG.pdf ]; then
+    echo "$FOCAL_ORG.pdf - File not found!"
+    exit 0
+fi
+}
+
+
 CMD="du -sh $FOCAL_ORG.pdf"
 echo $CMD
 eval $CMD
