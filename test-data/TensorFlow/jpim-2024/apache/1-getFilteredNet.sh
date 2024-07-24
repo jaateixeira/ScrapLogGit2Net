@@ -1,5 +1,18 @@
 #!/bin/bash
 
+
+if [ ! "$BASH_VERSION" ] ; then
+    echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2
+    exit 1
+fi
+
+
+
+if [ ! "$BASH_VERSION" ] ; then
+    exec /bin/bash "$0" "$@"
+fi
+
+
 source config.cfg
 
 
@@ -63,7 +76,7 @@ echo -e "Then I fixed the code  and worked" "\n"
 
 echo  -e "So to get the filterd network I just need to invoke the abover commend with  --save_graphML so we can transform it"
 
-CMD="../../../../formatFilterAndViz-nofi-GraphML.py  $INPUT -pl   -oi gmail,ee,hotmail,outlook,yahoo,qq,users,163,gmx  -oo $TOP10_ORG,chromium  --legend_type=top10+1 --org_list_and_neighbours_only chromium --legend_extra_organizations $FOCAL_ORG --save_graphML" 
+CMD="../../../../formatFilterAndViz-nofi-GraphML.py  $INPUT -pl   -oi gmail,ee,hotmail,outlook,yahoo,qq,users,163,gmx  -oo $TOP10_ORG,$FOCAL_ORG  --legend_type=top10+1 --org_list_and_neighbours_only chromium --legend_extra_organizations $FOCAL_ORG --save_graphML" 
 
 
 echo -e "Excecutiong:\n  $CMD \n"
