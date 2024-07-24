@@ -43,7 +43,8 @@ import argparse
 "To call the visualization script as a subprocess" 
 import subprocess 
 
-
+"for fancy progress bars" 
+from rich.progress import track
 
 
 "filtering of firms is not implemented yet" 
@@ -199,12 +200,12 @@ org_edges = defaultdict(int)
 
 
 # For every inter organization edge, finds what edges are inter-organizational and add the to org_edges
-for edge in G.edges:
+for edge in track(G.edges):
 
     org_affiliation_from = nx.get_node_attributes(G, "affiliation")[edge[0]]
     org_affiliation_to = nx.get_node_attributes(G, "affiliation")[edge[1]]
 
-    print(f"Visiting edge{edge}, {edges_count_down} to go") 
+    #print(f"Visiting edge{edge}, {edges_count_down} to go") 
     
     if args.verbose:
         print("")
