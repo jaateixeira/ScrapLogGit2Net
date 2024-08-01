@@ -5,9 +5,10 @@ Welcome to the project! We're excited to have you contribute. This guide will he
 ## Table of Contents
 1. [Setting Up Your Development Environment](#setting-up-your-development-environment)
 2. [Coding Style](#coding-style)
-3. [Logging](#logging)
-4. [Progress Bars](#progress-bars)
-5. [Git Workflow](#git-workflow)
+3. [Architecture](#architecture)
+4. [Logging](#logging)
+5. [Progress Bars](#progress-bars)
+6. [Git Workflow](#git-workflow)
 8. [Contact](#contact)
 
 ## Setting Up Your Development Environment
@@ -23,6 +24,78 @@ Welcome to the project! We're excited to have you contribute. This guide will he
 ## Coding Style 
 
 PEP 8 is the style guide for writing clean, readable Python code. See 
+
+
+## Project Architecture
+
+The ScrapLogGit2Net project leverages several powerful Python libraries to achieve its functionality. This section provides an overview of the key libraries used and how they fit into the project's architecture.
+
+### NumPy
+
+**NumPy** is used for numerical operations, including the creation and manipulation of arrays and matrices. It provides support for large multi-dimensional arrays and matrices, along with a collection of mathematical functions to operate on these arrays efficiently.
+
+- **Usage**: NumPy is typically used for data manipulation, mathematical calculations, and handling large datasets.
+- **Documentation**: [NumPy Documentation](https://numpy.org/doc/stable/)
+
+### NetworkX
+
+**NetworkX** is utilized for creating, manipulating, and studying the structure, dynamics, and functions of complex networks. It allows for the creation of both undirected and directed graphs, along with various algorithms to analyze them.
+
+- **Usage**: NetworkX is used for constructing and analyzing network graphs, which is a core part of the project's functionality.
+- **Documentation**: [NetworkX Documentation](https://networkx.org/documentation/stable/)
+
+### Matplotlib
+
+**Matplotlib** is a plotting library used for creating static, interactive, and animated visualizations in Python. It is heavily used for generating plots, charts, and other graphical representations of data.
+
+- **Usage**: Matplotlib is used to visualize data, such as network graphs and other statistical plots.
+- **Documentation**: [Matplotlib Documentation](https://matplotlib.org/stable/contents.html)
+
+### Argparse 
+
+### Rich
+
+**Rich** is a library for rich text and beautiful formatting in the terminal. It is used to create aesthetically pleasing and user-friendly command-line interfaces with features like progress bars, tables, and syntax highlighting.
+
+- **Usage**: Rich is used to enhance the terminal output, making it more informative and visually appealing, especially for progress indicators and formatted output.
+- **Documentation**: [Rich Documentation](https://rich.readthedocs.io/en/stable/)
+
+
+**Rich** is used for 
+
+Printing colored text in the console (e.g., debug information)
+Printing tex in the MarkDown format for better 
+Priting emojis that reflect feeling in the console 
+Inspect function to help you learn about objects
+Colored Logging in integration Loguru 
+Good looking Tables
+Progress Bars and Wait Spinners
+Better Looking Errors, with colored stacks 
+
+See (https://www.youtube.com/watch?v=JrGFQp9njas)(https://www.youtube.com/watch?v=JrGFQp9njas) for a video tutorial 
+
+### Loguru
+
+**Loguru** is a library designed for simple and effective logging. It simplifies the process of logging by providing an easy-to-use and powerful logging mechanism.
+
+- **Usage**: Loguru is used to handle logging throughout the project, ensuring that logs are informative, easy to read, and useful for debugging.
+- **Documentation**: [Loguru Documentation](https://loguru.readthedocs.io/en/stable/)
+
+### Integration and Workflow
+
+The integration of these libraries follows a well-structured workflow:
+1. **Data Handling**: NumPy is used to preprocess and handle data efficiently.
+2. **Network Construction**: NetworkX is used to construct and manipulate network graphs from the data.
+3. **Visualization**: Matplotlib is used to create visual representations of the network graphs and other data.
+4. **User Interface**: Rich is used to create an enhanced command-line interface for better user interaction.
+5. **Logging**: Loguru is used throughout the project to log important information, errors, and debugging details.
+
+By leveraging these libraries, ScrapLogGit2Net achieves a robust, efficient, and user-friendly architecture that simplifies complex data operations, network analysis, visualization, and interaction.
+
+For more detailed guidelines on how to contribute to the project, please refer to the rest of the `CONTRIBUTING.md` file.
+
+Thank you for your contributions and helping improve ScrapLogGit2Net!
+
 
 ### PEP 8 Coding Style Guide
 
@@ -46,6 +119,9 @@ pip install flake8
 ```bash
 flake8 your_module.py
 ```
+
+
+
 
 
 
