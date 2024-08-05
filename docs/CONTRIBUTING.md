@@ -1,6 +1,6 @@
 # Contributor Guide
 
-Welcome to the project! We're excited to have you contribute. This guide will help you get started and ensure that your contributions are aligned with our project's standards.
+Welcome to the project! We're excited to have you contribute to ScrapLogGit2Net. This guide will help you get started and ensure that your contributions are aligned with our project's standards.
 
 ## Table of Contents
 1. [Setting Up Your Development Environment](#setting-up-your-development-environment)
@@ -9,12 +9,15 @@ Welcome to the project! We're excited to have you contribute. This guide will he
 4. [Logging](#logging)
 5. [Progress Bars](#progress-bars)
 6. [Git Workflow](#git-workflow)
+7. [Easy hacks] [#easy-hacks]
 8. [Contact](#contact)
 
 ## Setting Up Your Development Environment
 
 1. **Fork the repository** on GitHub.
-2. **Clone your forked repository** to your local machine:
+   To fork the ScrapLogGit2Net repository on GitHub, go to [https://github.com/jaateixeira/ScrapLogGit2Net/](https://github.com/jaateixeira/ScrapLogGit2Net/) . In the top right corner of the page, you will see a "Fork" button. Click on this button, and GitHub will create a copy of the repository under your GitHub account. This forked repository is now independent of the original repository, allowing you to freely make changes without affecting the original project. You can then clone your forked repository to your local machine, make your changes, and push them back to your fork on GitHub.
+
+3. **Clone your forked repository** to your local machine:
    ```bash
    git clone https://github.com/jaateixeira/ScrapLogGit2Net.git
 
@@ -200,3 +203,7 @@ Please be responsive to feedback and make the necessary changes promptly to expe
 
 
 ## Contact
+
+## Easy Hacks
+
+
