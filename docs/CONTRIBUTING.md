@@ -62,10 +62,10 @@ The following global variable ex
 
 Please use, the the built-in globals() function to access the global scope’s name table. This signals developers that we are dealing with a imporant global variable that we should not mess up with. 
 
-TODO
+TODO Table 
 
 | File              | Variable | Type | Description |
-| :---------------- | :------: | ----: |
+| :---------------- | :------: |  :------: | ----: |
 | scrapLog.py       |   G_network_Dev2Dev_singleEdges   | nx.Graph() | Inter individual network - edges are unweighted  |
 | scrapLog.py       |  G_network_Dev2Dev_multiEdges |  nx.MultiGraph() | Inter individual network - edges can be weighted (using edge-attributes) | 
 | scrapLog.py       | stats | Dictionary with imutable keys | Keeps statistics of the scrappping| 
