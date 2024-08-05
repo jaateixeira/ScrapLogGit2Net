@@ -26,7 +26,12 @@ Welcome to the project! We're excited to have you contribute to ScrapLogGit2Net.
 
 ## Coding Style 
 
-PEP 8 is the style guide for writing clean, readable Python code. See 
+We adopt the PEP 8 style guide towards writing clean, readable Python code. 
+
+ScrapLogGit2Net started as quick script for scientific research. Fastly obtaining and processing data for research papers was the main goal. This is not a large, clean, object oriented, test-driven master piece. 
+Still, good principles for Python programming apply:  (1) Follow naming conventions, (2) type check your function parameters, and careful use of global variables. Variables should have descriptive names in snake_case for readability and consistency. Type hints should be used in function definitions to specify expected input and output types, enhancing code clarity and facilitating debugging. Accessing global variables should be minimized, as it can lead to code that is difficult to understand and maintain. Instead, use function parameters and return values to manage data flow whenever possible, promoting modularity and reducing side effects.
+
+
 ### PEP 8 Coding Style Guide
 
 PEP 8 is the style guide for Python code. It promotes readability and consistency in Python codebases. Following these guidelines will help improve the readability and maintainability of your code.
@@ -49,6 +54,29 @@ pip install flake8
 ```bash
 flake8 your_module.py
 ```
+
+
+### Allowed global variables 
+
+The following global variable ex
+
+Please use, the the built-in globals() function to access the global scope’s name table. This signals developers that we are dealing with a imporant global variable that we should not mess up with. 
+
+TODO
+
+| File              | Variable | Type | Description |
+| :---------------- | :------: | ----: |
+| scrapLog.py       |   G_network_Dev2Dev_singleEdges   | nx.Graph() | Inter individual network - edges are unweighted  |
+| scrapLog.py       |  G_network_Dev2Dev_multiEdges |  nx.MultiGraph() | Inter individual network - edges can be weighted (using edge-attributes) | 
+| scrapLog.py       | stats | Dictionary with imutable keys | Keeps statistics of the scrappping| 
+| formatFilterAndViz-nofi-GraphML.py   | TODO         |   TODO    | TODO |
+| transform-nofi-2-nofo-GraphML.py    | TODO         |   TODO    | TODO |
+| formatFilterAndViz-nofo-GraphML.py  | TODO         |   TODO    | TODO |
+
+
+
+
+
 
 
 ## Project Architecture
