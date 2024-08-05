@@ -27,6 +27,28 @@ Welcome to the project! We're excited to have you contribute to ScrapLogGit2Net.
 ## Coding Style 
 
 PEP 8 is the style guide for writing clean, readable Python code. See 
+### PEP 8 Coding Style Guide
+
+PEP 8 is the style guide for Python code. It promotes readability and consistency in Python codebases. Following these guidelines will help improve the readability and maintainability of your code.
+
+For the full PEP 8 documentation, please visit the official page: [PEP 8 -- Style Guide for Python Code](https://peps.python.org/pep-0008/)
+
+#### Using flake8 for PEP 8 Compliance
+
+`flake8` is a tool that checks your Python code against the PEP 8 style guide. It helps identify and fix stylistic issues in your code.
+
+#### Setting Up flake8
+
+To install `flake8`, run the following command:
+
+```bash
+pip install flake8
+```
+#### To check your Python files for PEP 8 compliance, navigate to your project directory and run:
+
+```bash
+flake8 your_module.py
+```
 
 
 ## Project Architecture
@@ -57,6 +79,8 @@ The ScrapLogGit2Net project leverages several powerful Python libraries to achie
 ### Argparse 
 
 ### Rich
+ the ScrapLogGit2Net repository on GitHub, go to https://github.com/jaateixeira/ScrapLogGit2Net/ . In the top right corner of the page, you will see a "Fork" button. Click on this button, and GitHub will create a copy of the repository under your GitHub account. This forked repository is now independent of the original repository, allowing you to freely make changes without affecting the original project. You can then clone your forked repository to your local machine, make your changes, and push them back to your fork on GitHub.
+
 
 **Rich** is a library for rich text and beautiful formatting in the terminal. It is used to create aesthetically pleasing and user-friendly command-line interfaces with features like progress bars, tables, and syntax highlighting.
 
@@ -100,28 +124,6 @@ For more detailed guidelines on how to contribute to the project, please refer t
 Thank you for your contributions and helping improve ScrapLogGit2Net!
 
 
-### PEP 8 Coding Style Guide
-
-PEP 8 is the style guide for Python code. It promotes readability and consistency in Python codebases. Following these guidelines will help improve the readability and maintainability of your code.
-
-For the full PEP 8 documentation, please visit the official page: [PEP 8 -- Style Guide for Python Code](https://peps.python.org/pep-0008/)
-
-#### Using flake8 for PEP 8 Compliance
-
-`flake8` is a tool that checks your Python code against the PEP 8 style guide. It helps identify and fix stylistic issues in your code.
-
-#### Setting Up flake8
-
-To install `flake8`, run the following command:
-
-```bash
-pip install flake8
-```
-#### To check your Python files for PEP 8 compliance, navigate to your project directory and run:
-
-```bash
-flake8 your_module.py
-```
 
 
 
