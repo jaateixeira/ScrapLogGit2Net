@@ -9,7 +9,7 @@ Welcome to the project! We're excited to have you contribute to ScrapLogGit2Net.
 4. [Logging](#logging)
 5. [Progress Bars](#progress-bars)
 6. [Git Workflow](#git-workflow)
-7. [Easy hacks] [#easy-hacks]
+7. [Easy Hacks] [#easy-hacks]
 8. [Contact](#contact)
 
 ## Setting Up Your Development Environment
@@ -68,7 +68,7 @@ TODO Table
 | :---------------- | :------: |  :------: | ----: |
 | scrapLog.py       |   G_network_Dev2Dev_singleEdges   | nx.Graph() | Inter individual network - edges are unweighted  |
 | scrapLog.py       |  G_network_Dev2Dev_multiEdges |  nx.MultiGraph() | Inter individual network - edges can be weighted (using edge-attributes) | 
-| scrapLog.py       | stats | Dictionary with imutable keys | Keeps statistics of the scrappping| 
+| scrapLog.py       | stats | Dictionary (imutable keys) | Keeps statistics of the scrappping| 
 | formatFilterAndViz-nofi-GraphML.py   | TODO         |   TODO    | TODO |
 | transform-nofi-2-nofo-GraphML.py    | TODO         |   TODO    | TODO |
 | formatFilterAndViz-nofo-GraphML.py  | TODO         |   TODO    | TODO |
