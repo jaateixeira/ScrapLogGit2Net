@@ -9,7 +9,7 @@ Welcome to the project! We're excited to have you contribute to ScrapLogGit2Net.
 4. [Logging](#logging)
 5. [Progress Bars](#progress-bars)
 6. [Git Workflow](#git-workflow)
-7. [Easy Hacks] [#easy-hacks]
+7. [Easy Hacks](#easy-hacks)
 8. [Contact](#contact)
 
 ## Setting Up Your Development Environment
