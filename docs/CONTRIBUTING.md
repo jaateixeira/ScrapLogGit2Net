@@ -83,6 +83,8 @@ TODO Table
 
 The ScrapLogGit2Net project leverages several powerful Python libraries to achieve its functionality. This section provides an overview of the key libraries used and how they fit into the project's architecture.
 
+![ScrapLogGit2Net Architecture Diagram](path/to/ScrapLogGit2Net_architecture.svg)
+
 ### NumPy
 
 **NumPy** is used for numerical operations, including the creation and manipulation of arrays and matrices. It provides support for large multi-dimensional arrays and matrices, along with a collection of mathematical functions to operate on these arrays efficiently.
