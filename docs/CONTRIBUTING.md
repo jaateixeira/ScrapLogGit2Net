@@ -234,6 +234,9 @@ Please be responsive to feedback and make the necessary changes promptly to expe
 
 ## Contact
 
-## Easy Hacks
+Jose Teixeira <jose.teixeira@abo.fi> 
+
+## Easy Hacks 
+TODO 
 
 
