@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+read_graphml_fast#!/usr/bin/env python3
 
 import argparse
 import networkx as nx
@@ -10,10 +10,10 @@ from loguru import logger
 def read_graph(file_path):
     """Read a GraphML file and return the graph."""
     logger.info(f"Reading graph from file: {file_path}")
-    return nx.read_graphml(file_path)
+    return nx.read_graphml(file_path, node_type=str)
 
 def reduce_graph(graph, percentage=1.0):
-    """Reduce the graph size to a given percentage."""
+    """Reduce the graph size to a given percentage while preserving node attributes."""
     if percentage <= 0 or percentage > 100:
         raise ValueError("Percentage must be between 0 and 100.")
     
@@ -32,8 +32,16 @@ def reduce_graph(graph, percentage=1.0):
     
     # Create a new graph with the reduced size
     reduced_graph = nx.Graph()
-    reduced_graph.add_nodes_from(nodes_to_keep)
-    reduced_graph.add_edges_from(edges_to_keep)
+    
+    # Preserve node attributes
+    for node in nodes_to_keep:
+        reduced_graph.add_node(node, **graph.nodes[node])
+    
+    # Add edges to the reduced graph
+    for edge in edges_to_keep:
+        u, v = edge
+        if u in nodes_to_keep and v in nodes_to_keep:
+            reduced_graph.add_edge(u, v, **graph.get_edge_data(u, v))
     
     return reduced_graph
 
