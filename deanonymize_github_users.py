@@ -269,8 +269,6 @@ def display_emojis():
         text = Text(f"{description}: {emoji}", style="bold magenta")
         console.print(text)
 
-if __name__ == "__main__":
-    display_emojis()
 
     
 def progress_bars_demo():
@@ -336,14 +334,16 @@ def is_valid_graphml(file_path):
         return False
 
 def deanonymize_github_user(email):
+    logger.info(f"deanonymizing github user for {email=}")
+
     if '@users.noreply.github.com' not in email:
         raise ValueError("The provided email address is not a valid GitHub noreply email.")
 
     # Extract the username part from the email
-    try:
-        username = email.split('+')[1].split('@')[0]
-    except IndexError:
-        raise ValueError("Unable to extract GitHub username from the email address.")
+    #try:
+    #    username = email.split('+')[1].split('@')[0]
+    #except IndexError:
+    #    raise ValueError("Unable to extract GitHub username from the email address.")
 
     # GitHub API URL for the user's profile
     url = f"https://api.github.com/users/jaateixeira"
@@ -560,7 +560,7 @@ def iterate_graph(input_file, output_file):
         old_email = data['e-mail']
 
         if '@users.noreply.github.com' in old_email:
-            deanonymize_github_user(email)
+            deanonymize_github_user(old_email)
 
     
 
