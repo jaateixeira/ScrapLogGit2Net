@@ -12,37 +12,76 @@ import sys
 import argparse
 import networkx as nx
 
+from typing import Tuple 
 
 from loguru import logger
-from rich.console import Console
+
+
 from rich.logging import RichHandler
-from rich.progress import track
+from rich.console import Console
+from rich.table import Table
+#from rich.pretty import Pretty
+from rich import print as rprint
+from rich.live import Live
+from rich.text import Text
+from rich.markdown import Markdown
+
+# For progress while reading GraphML files
+from rich.progress import Progress, TaskID
+import time
+
+# For configuring 
+from rich.traceback import install
+# Install the Rich Traceback handler with custom options
+install(
+    show_locals=True,  # Show local variables in the traceback
+    locals_max_length=10, locals_max_string=80, locals_hide_dunder=True, locals_hide_sunder=False,
+    indent_guides=True,
+    suppress=[__name__],
+    # suppress=[your_module],  # Suppress tracebacks from specific modules
+    max_frames=3,  # Limit the number of frames shown
+    width=50,  # Set the width of the traceback display
+    extra_lines=3,  # Show extra lines of code around the error
+    theme="solarized-dark",  # Use a different color theme
+    word_wrap=True,  # Enable word wrapping for long lines
+)
 
 
-# Initialize Rich console for formatted output
+
+# Create a Rich console
 console = Console()
 
-# Configure Loguru to use Rich for logging
-logger.remove()  # Remove the default logger configuration
-
-# Add a new logger with RichHandler to format the output
+# Add RichHandler to the loguru logger
+logger.remove()  # Remove the default logger
 logger.add(
-    RichHandler(console=console, level="DEBUG", show_time=True, show_level=True, show_path=True),
-    level="DEBUG"
+    RichHandler(console=console, show_time=True, show_path=True, rich_tracebacks=True),
+    format="{message}",  # You can customize this format as needed
+    level="DEBUG",  # Set the desired logging level
 )
 
 def log_messages():
+    rprint("\n\t Testing logger messages:\n")
+    
     # Log messages at different levels
     logger.debug("This is a debug message.")
     logger.info("This is an info message.")
     logger.warning("This is a warning message.")
     logger.error("This is an error message.")
     logger.critical("This is a critical message.")
+    rprint("\n")
 
-# Configure Loguru to use Rich for formatting exceptions
-logger.remove()  # Remove default logger
-logger.add(sys.stdout, level="DEBUG", format="{message}", backtrace=True, diagnose=True)
+    rprint("\n\t Testing console messages:\n")
 
+    markdown_text = Markdown("# This is a heading\n\n- This is a list item\n- Another item")
+    console.print(markdown_text)
+
+    
+    # An example of a styled message
+    console.print("[bold blue]Welcome to [blink]Rich[/blink]![/bold blue]")
+    console.print("[bold green]Success:[/bold green] Your operation completed successfully.")
+    console.print("[bold red]Error:[/bold red] Something went wrong. Please try again.")
+    
+    rprint("\n\t error traces are handled by rich.traceback\n")
 
 
 # For the GitHub REST APY
@@ -57,7 +96,7 @@ config.read('config.ini')
 
 GITHUB_TOKEN = config.get('github', 'token', fallback=None)
 
-print("\tGITHUB_TOKEN=[",GITHUB_TOKEN,"]")
+rprint("\t Accessing GitHub Rest API with GITHUB_TOKEN=[",GITHUB_TOKEN,"]")
 
 if not GITHUB_TOKEN:
     raise ValueError("Please set the GITHUB_TOKEN in the config.ini file")
@@ -80,11 +119,11 @@ def is_valid_graphml(file_path):
         tree = ET.parse(file_path)
         root = tree.getroot()
 
+        logger.debug(f"checking graphml file root tag {root.tag=}")
+
         # Check if the root tag is 'graphml'
-        if root.tag == 'graphml':
-            # Check if the namespace is correct
-            if root.attrib.get('xmlns') == 'http://graphml.graphdrawing.org/xmlns':
-                return True
+        if  'graphml' in root.tag:
+            return True
         return False
     except ET.ParseError:
         return False
@@ -123,58 +162,187 @@ def deanonymize_github_user(email):
         raise ValueError(f"Failed to retrieve information for GitHub user: {username}")
 
 # Example Usage
-email = "userID+username@users.noreply.github.com"
-try:
-    result = deanonymize_github_user(email)
-    print(json.dumps(result, indent=4))
-except ValueError as e:
-    print(e)
+#email = "userID+username@users.noreply.github.com"
+#try:
+#    result = deanonymize_github_user(email)
+#    print(json.dumps(result, indent=4))
+#except ValueError as e:
+#    print(e)
+
+
+def print_all_nodes(network: nx.Graph):
+    """
+    Print all nodes in a NetworkX graph along with their attributes using rich for pretty formatting.
+
+    Parameters:
+    network (nx.Graph): The NetworkX graph.
+    """
+
+    logger.info(f"Printing all nodes in network {network=}:")
+    
+    if not isinstance(network, nx.Graph):
+        raise TypeError("The input must be a NetworkX graph.")
+
+    console = Console()
+    table = Table(title="Nodes and Attributes")
+
+    # Add columns to the table
+    table.add_column("Node ID", style="bold cyan")
+    table.add_column("Attributes", style="bold magenta")
+
+    # Iterate over the nodes and their attributes
+    for node, attributes in network.nodes(data=True):
+        attr_str = ", ".join(f"{key}: {value}" for key, value in attributes.items())
+        table.add_row(str(node), attr_str if attr_str else "None")
+
+    # Print the table
+    console.print(table)
 
 
 
+    
+def read_graphml_with_progress(file_path: str) -> nx.Graph:
+    """
+    Read a GraphML file and display a progress bar using rich.
+
+    Parameters:
+    file_path (str): The path to the GraphML file.
+
+    Returns:
+    nx.Graph: The NetworkX graph.
+    """
+    progress = Progress(console=console)
+
+    # Create a task for the progress bar
+    task_id = progress.add_task("[cyan]Reading GraphML file...", total=100)
+
+    # Start the progress bar
+    progress.start()
+
+    try:
+        # Read the graph using networkx.read_graphml
+        graph = nx.read_graphml(file_path)
+
+        # Simulate progress updates (since networkx.read_graphml does not provide progress callbacks)
+        for i in range(100):
+            time.sleep(0.01)  # Simulate work being done
+            progress.update(task_id, advance=1)
+
+        progress.update(task_id, completed=100)
+        progress.stop()
+
+        return graph
+    except Exception as e:
+        progress.stop()
+        console.print(f"[red]Error reading GraphML file: {e}[/red]")
+        raise
+
+
+
+def copy_graph_with_attributes(source_graph: nx.Graph) -> nx.Graph:
+    """
+    Copy nodes, edges, and their attributes from the source graph to a new target graph.
+
+    Parameters:
+    source_graph (nx.Graph): The source graph.
+
+    Returns:
+    nx.Graph: The new target graph with copied nodes, edges, and attributes.
+    """
+    target_graph = nx.Graph()
+
+    # Copy nodes with attributes
+    for node, attributes in source_graph.nodes(data=True):
+        target_graph.add_node(node, **attributes)
+
+    # Copy edges with attributes
+    for u, v, attributes in source_graph.edges(data=True):
+        target_graph.add_edge(u, v, **attributes)
+
+    return target_graph
+
+    
 def iterate_graph(input_file, output_file):
-    logger.info(f"Iterating network in file graph({input_file=} to copy to {output_file=} with  deanonymize github user emails")
+    logger.info(f"Iterating network in file graph({input_file=} to copy to {output_file=} with  deanonymized github user emails")
     
 
     if not check_file_exists(input_file):
-        logger.error(f"The file '{file_path}' does not exist.")
+        logger.error(f"The file '{input_file}' does not exist.")
         sys.exit()
-
-    if is_valid_graphml(input_file):
-        logger.error(f"The file '{file_path}' is a valid GraphML file.")
     else:
-        sys.exit()
+        logger.info (f"The file '{input_file}' to be copied and deanonymize  exist.")
+    
 
-    
-    
+    #if is_valid_graphml(input_file):
+    #    logger.info(f"The file '{input_file}' is a valid GraphML file.")
+    #else:
+    #    logger.error(f"The file '{input_file}' is an invalid GraphML file.")
+    #    sys.exit()
+
+
 
     # Read the input GraphML file
     logger.info(f"Reading input GraphML file: {input_file}")
-    G = nx.read_graphml(input_file)
+
+
+    # Option 1) With the facing progress 
+    try:
+        G = read_graphml_with_progress(input_file)
+        console.print("[green]Graph read successfully![/green]")
+        # You can now work with the graph
+        print(f"Number of nodes: {graph.number_of_nodes()}")
+        print(f"Number of edges: {graph.number_of_edges()}")
+    except Exception as e:
+        console.print(f"[red]Failed to read the graph: {e}[/red]")
+        
+
+    # Option 2) Without the facing progress 
+    #G = nx.read_graphml(input_file)
 
     # Create a new directed graph for the output
-    G_copy = nx.DiGraph()
+    G_copy = nx.Graph()
 
-    # Copy nodes from the input graph to the new graph
-    for node in track(G.nodes(), description="Copying nodes..."):
-        loger.debug("Iterating {node=}")
 
-        G_copy.add_node(node)
-        logger.debug(f"Copied node: {node}")
+    #print_all_nodes(G)
+    
 
-        # We want to copy edges also to preserve network 
-        # for edge in G.edges():
-        G_copy.add_edge(*edge)
-        logger.debug(f"Copied edge: {edge}")
+  # Retrieve nodes and attributes
+    nodes_data = G.nodes(data=True)
 
+    table = Table(title="Nodes and Attributes")
+
+    # Add columns to the table
+    table.add_column("Node ID", style="bold cyan")
+    table.add_column("Attributes", style="bold magenta")
+    
+    # Create a Live display
+    with Live(table, console=console, refresh_per_second=3) as live:
+        # Iterate over the nodes and their attributes
+        for node, attributes in nodes_data:
+            attr_str = ", ".join(f"{key}: {value}" for key, value in attributes.items())
+            table.add_row(str(node), attr_str if attr_str else "None")
+            live.update(table)
+
+
+
+    logger.info(f"Coping node {G=} to {G_copy=}")
+    G_copy=copy_graph_with_attributes(G)
+
+    logger.info(f"Iterating over the copy {G_copy} and replace email atributte")
+
+    sys.exit()
+    
         # Write the copied graph to the output GraphML file
-        logger.info(f"Writing output GraphML file: {output_file}")
-        nx.write_graphml(G_copy, output_file)
+    logger.info(f"Writing output GraphML file: {output_file}")
+    nx.write_graphml(G_copy, output_file)
 
-        console.print(f"[bold green]Successfully copied the graph to {output_file}[/bold green]")
+    console.print(f"[bold green]Successfully copied the graph to {output_file}[/bold green]")
 
 
 def main():
+
+    log_messages()
+    
     parser = argparse.ArgumentParser(description="Copy nodes from an input GraphML file to an output GraphML file.")
     parser.add_argument("input", type=str, help="Input GraphML file path")
     parser.add_argument("output", type=str, help="Output GraphML file path")
