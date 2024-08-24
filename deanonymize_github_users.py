@@ -290,8 +290,6 @@ def progress_bars_demo():
     print("Counting to 100 and 200 completed!")
     
 
-
-
     
 # For the GitHub REST APY
 import requests
@@ -408,7 +406,6 @@ def print_all_nodes(network: nx.Graph):
     console.print(table)
 
 
-
     
 def read_graphml_with_progress(file_path: str) -> nx.Graph:
     """
@@ -420,32 +417,45 @@ def read_graphml_with_progress(file_path: str) -> nx.Graph:
     Returns:
     nx.Graph: The NetworkX graph.
     """
-    progress = Progress(console=console)
 
-    # Create a task for the progress bar
-    task_id = progress.add_task("[cyan]Reading GraphML file...", total=100)
+    from rich.console import Console
+from rich.progress import Progress
+import networkx as nx
+import os
 
-    # Start the progress bar
-    progress.start()
+def read_graphml_with_progress(file_path):
+    console = Console()
 
-    try:
-        # Read the graph using networkx.read_graphml
-        graph = nx.read_graphml(file_path)
+    # Get the total size of the file
+    total_size = os.path.getsize(file_path)
+    
+    # Initialize the progress bar
+    with Progress() as progress:
+        task = progress.add_task("[cyan]Reading file...", total=total_size)
+        
+        # Open the file for reading
+        with open(file_path, "rb") as file:
+            content = b""
+            while not progress.finished:
+                # Read a chunk of the file
+                chunk = file.read(1024)  # 1 KB chunks
+                if not chunk:
+                    break
+                # Update the progress bar
+                progress.update(task, advance=len(chunk))
+                # Append chunk to content
+                content += chunk
 
-        # Simulate progress updates (since networkx.read_graphml does not provide progress callbacks)
-        for i in range(100):
-            time.sleep(0.01)  # Simulate work being done
-            progress.update(task_id, advance=1)
+    # Load the graph from the content
+    # Convert bytes content to string
+    content_str = content.decode('utf-8')
+    # Use networkx to read the GraphML data from the string
+    graph = nx.parse_graphml(content_str)
 
-        progress.update(task_id, completed=100)
-        progress.stop()
+    # Print basic info about the graph
+    console.print(f"Graph loaded: {graph.number_of_nodes()} nodes and {graph.number_of_edges()} edges", style="bold green")
 
-        return graph
-    except Exception as e:
-        progress.stop()
-        console.print(f"[red]Error reading GraphML file: {e}[/red]")
-        raise
-
+    return graph
 
 
 def copy_graph_with_attributes(source_graph: nx.Graph) -> nx.Graph:
@@ -550,13 +560,13 @@ def iterate_graph(input_file, output_file):
 
 def main():
 
-    log_messages()
-    console_messages()
-    display_advanced_text()
-    display_emojis()
-    demonstrate_traceback_exceptions()
-    status_messages()
-    progress_bars_demo()
+    #log_messages()
+    #console_messages()
+    #display_advanced_text()
+    #display_emojis()
+    #demonstrate_traceback_exceptions()
+    #status_messages()
+    #progress_bars_demo()
     
     parser = argparse.ArgumentParser(description="Copy nodes from an input GraphML file to an output GraphML file.")
     parser.add_argument("input", type=str, help="Input GraphML file path")
