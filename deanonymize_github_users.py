@@ -418,14 +418,6 @@ def read_graphml_with_progress(file_path: str) -> nx.Graph:
     nx.Graph: The NetworkX graph.
     """
 
-    from rich.console import Console
-from rich.progress import Progress
-import networkx as nx
-import os
-
-def read_graphml_with_progress(file_path):
-    console = Console()
-
     # Get the total size of the file
     total_size = os.path.getsize(file_path)
     
@@ -458,9 +450,15 @@ def read_graphml_with_progress(file_path):
     return graph
 
 
+def read_graphml_fast(file_path: str) -> nx.Graph:
+    return nx.read_graphml(file_path)
+
+    
+
 def copy_graph_with_attributes(source_graph: nx.Graph) -> nx.Graph:
     """
     Copy nodes, edges, and their attributes from the source graph to a new target graph.
+    Both node attributes and edge attributes 
 
     Parameters:
     source_graph (nx.Graph): The source graph.
@@ -504,9 +502,14 @@ def iterate_graph(input_file, output_file):
     logger.info(f"Reading input GraphML file: {input_file}")
 
 
-    # Option 1) With the facing progress 
+    
     try:
-        G = read_graphml_with_progress(input_file)
+        # Option 1) With the facing progress 
+        # G = read_graphml_with_progress(input_file)
+
+        # Option 2) Without the facing progress 
+        G = read_graphml_fast(input_file)
+        
         console.print("[green]Graph read successfully![/green]")
         # You can now work with the graph
         print(f"Number of nodes: {graph.number_of_nodes()}")
@@ -515,8 +518,6 @@ def iterate_graph(input_file, output_file):
         console.print(f"[red]Failed to read the graph: {e}[/red]")
         
 
-    # Option 2) Without the facing progress 
-    #G = nx.read_graphml(input_file)
 
     # Create a new directed graph for the output
     G_copy = nx.Graph()
@@ -547,8 +548,23 @@ def iterate_graph(input_file, output_file):
     logger.info(f"Coping node {G=} to {G_copy=}")
     G_copy=copy_graph_with_attributes(G)
 
-    logger.info(f"Iterating over the copy {G_copy} and replace email atributte")
+    console.rule("Replacing emails and affiliations for each node using GitHub REST API")
 
+    logger.info("Looking for @users.noreply.github.com emails to call the API")
+    
+    for node, data in G_copy.nodes(data=True):
+        logger.debug("iterating over {node=}")
+        
+        console.print(f"Checking {node=} with {data['e-mail']=} and {data['affiliation']=}")
+
+        old_email = data['e-mail']
+
+        if '@users.noreply.github.com' in old_email:
+            deanonymize_github_user(email)
+
+    
+
+            
     sys.exit()
     
         # Write the copied graph to the output GraphML file
@@ -558,6 +574,13 @@ def iterate_graph(input_file, output_file):
     console.print(f"[bold green]Successfully copied the graph to {output_file}[/bold green]")
 
 
+
+def validate_input_file(input_file):
+    # Check if the file has a .graphML extension
+    if not input_file.lower().endswith('.graphml'):
+        logger.error(f"Error: The input file '{input_file}' does not have a .graphML extension.")
+        sys.exit(1)  # Exit the program with an error code
+    
 def main():
 
     #log_messages()
@@ -568,13 +591,39 @@ def main():
     #status_messages()
     #progress_bars_demo()
     
-    parser = argparse.ArgumentParser(description="Copy nodes from an input GraphML file to an output GraphML file.")
-    parser.add_argument("input", type=str, help="Input GraphML file path")
-    parser.add_argument("output", type=str, help="Output GraphML file path")
+    parser = argparse.ArgumentParser(description="Creates a more correct GraphML file by  correcting e-mails and affiliations via the GitHub REST API.")
+
+
+
+
+    # Add input file argument - a must one 
+    parser.add_argument(
+        'input', 
+        type=str, 
+        help='Path to the input GraphML file.'
+    )
+    
+    # Add output file argument with default value 
+    parser.add_argument(
+        'output', 
+        type=str, 
+        nargs='?',  # This makes the argument optional
+        default=None,  # Default is None, will be set based on input_file
+        help='Path to the output file (default: input_file.out).'
+    )
     
     args = parser.parse_args()
 
-    # Call the function to copy the graph
+        # Validate input file
+    validate_input_file(args.input)
+    
+    # Set default for output_file if not provided
+    if args.output is None:
+        # Generate default output file name
+        base, ext = os.path.splitext(args.input)
+        args.output_file = f"{base}.out.graphML"
+
+    # Call the function to copy and modify the graph
     iterate_graph(args.input, args.output)
 
 if __name__ == "__main__":
