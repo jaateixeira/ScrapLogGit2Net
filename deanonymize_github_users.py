@@ -57,8 +57,8 @@ logger.remove()  # Remove the default logger
 logger.add(
     RichHandler(console=console, show_time=True, show_path=True, rich_tracebacks=True),
     format="{message}",  # You can customize this format as needed
-    #level="DEBUG",  # Set the desired logging level
-    level="INFO",  # Set the desired logging level
+    level="DEBUG",  # Set the desired logging level
+    #level="INFO",  # Set the desired logging level
 )
 
 
@@ -199,8 +199,6 @@ def status_messages():
     console.print("[green]Counting completed!")
 
 def display_advanced_text():
-    # Initialize the console
-    console = Console()
 
     # Create various styles and formats
     text1 = Text("Bold and Italic", style="bold italic cyan")
@@ -306,6 +304,7 @@ rprint("\t Accessing GitHub Rest API with GITHUB_TOKEN=[",GITHUB_TOKEN,"]")
 if not GITHUB_TOKEN:
     raise ValueError("Please set the GITHUB_TOKEN in the config.ini file")
 
+git_hub_auth_headers = {'Authorization': GITHUB_TOKEN}
 
 
 import requests
@@ -333,48 +332,159 @@ def is_valid_graphml(file_path):
     except ET.ParseError:
         return False
 
-def deanonymize_github_user(email):
+
+
+
+def print_GitHub_user_data(user_data:dict) -> None: 
+    table = Table(show_header=True, header_style="bold magenta")
+    table.add_column("Key")
+    table.add_column("Value")
+
+    for key, value in user_data.items():
+        table.add_row(key, str(value))
+
+    console.print(table)
+
+    
+
+
+ 
+already_known_user_affiliations = {}
+""" 
+Global dictionary
+already_known_user_affiliations key is email 
+already_known_user_affiliations value is a tuble[str,str] with (email,affiliation)
+"""
+
+
+def get_user_organizations(username):
+    """
+    Fetch the organizations a GitHub user belongs to.
+
+    Parameters:
+    - username (str): The GitHub username.
+
+    Returns:
+    - list: A list of organization names (str) the user belongs to.
+    """
+    url = f'https://api.github.com/users/{username}/orgs'
+    
+
+    
+    response = requests.get(url, headers=git_hub_auth_headers)
+    
+    if response.status_code == 200:
+        orgs_data = response.json()
+        organizations = [org['login'] for org in orgs_data]
+
+        
+        console.print("\n")
+        console.print(":star_struck: :astonished: Wow, that's amazing. !")
+        console.print("Found organizations for {username}:")
+        for org in organizations:
+            console.print(f"{org=}")
+        console.print("\n")
+        
+        
+        return organizations
+    else:
+        print(f"Failed to retrieve organizations: {response.status_code}")
+        return []
+
+
+    
+def deanonymize_github_user(email: str) -> tuple[str, str]:
+    """
+    De-anonymizes a GitHub user based on their email address.
+
+    Args:
+        email (str): The email address of the GitHub user.
+
+    Returns:
+        tuple[str, str]: A tuple containing the email address and affiliation of the GitHub user.
+            The first element of the tuple is the email address (str), and the second
+            element is the affiliation (str). If the email address or affiliation cannot
+            be determined, the corresponding element in the tuple will be None.
+    """
+
+    
     logger.info(f"deanonymizing github user for {email=}")
 
     if '@users.noreply.github.com' not in email:
         raise ValueError("The provided email address is not a valid GitHub noreply email.")
 
-    # Extract the username part from the email
-    #try:
-    #    username = email.split('+')[1].split('@')[0]
-    #except IndexError:
-    #    raise ValueError("Unable to extract GitHub username from the email address.")
 
-    # GitHub API URL for the user's profile
-    url = f"https://api.github.com/users/jaateixeira"
+    if email in globals()['already_known_user_affiliations']:
+        logger.info(f"Key {email=} already exists in the global dictionary. Not calling API")
+        return globals()['already_known_user_affiliations'][email]
+    
+    
+    GitHub_email = "Unknown-by-GitHub"
+    GitHub_affiliation = "Unknown-by-GitHub" 
+    
+    
+    # Extract the username from the email address
+    try:
+        if '+' in email:
+            username = email.split('+')[1].split('@')[0]
+        else:
+            username = email.split('@')[0]
+    except IndexError:
+        raise ValueError("Unable to extract GitHub username from the email address.")
 
-    # Perform the API request
-    response = requests.get(url)
 
+    # Make a GET request to the GitHub API to retrieve the user's public profile information
+    response = requests.get(f'https://api.github.com/users/{username}',headers=git_hub_auth_headers)
+
+    logger.debug(f'{response.status_code=}')
+
+    user_data = response.json()
+    
+    # If the request was successful, extract the email, company, and organization from the response
     if response.status_code == 200:
-        user_data = response.json()
-        
-        # Extracting affiliation/organization information
-        affiliation = user_data.get('company', 'No affiliation/organization available')
-        
-        return {
-            "username": username,
-            "affiliation": affiliation,
-            "profile_url": user_data.get("html_url"),
-            "name": user_data.get("name", "Name not available"),
-            "location": user_data.get("location", "Location not available"),
-            "bio": user_data.get("bio", "Bio not available"),
-        }
-    else:
-        raise ValueError(f"Failed to retrieve information for GitHub user: {username}")
 
-# Example Usage
-#email = "userID+username@users.noreply.github.com"
-#try:
-#    result = deanonymize_github_user(email)
-#    print(json.dumps(result, indent=4))
-#except ValueError as e:
-#    print(e)
+        logger.debug(f"response for user {username} was successfull")
+    
+        
+        print_GitHub_user_data(user_data)
+
+        
+        if "email" or "e-mail" not in user_data:
+            logger.warning("email not in user_data for {username}")
+
+
+        if "company" or "organization" or "affiliation " not in user_data:
+            logger.warning("company not in user_data for {username}")
+        
+
+        if user_data['email'] != "None":
+            GitHub_email = user_data['email']
+
+        if user_data['company'] != "None":
+            GitHub_affiliation = user_data['company']
+
+
+        # We must also check organizations
+        logger.info(f"check if the user {username=}is a member of one or more organizations")
+        organizations = get_user_organizations(username)
+        console.print(f"Organizations for {username}: {organizations}")
+
+    
+        
+    elif response.status_code == 403:
+        if "API rate limit exceeded" in user_data["message"] or "API rate limit exceeded" in user_data:
+            logger.critical("API rate limit exceeded, enought for today.")
+            sys.exit()
+        else:
+            logger.warning("Unexpected API message")
+            logger.info(f'{user_data["message"]=}')
+        
+    else:
+        console.print(json.dumps(response.json(), indent=4))
+        logger.error(f"Failed to retrieve information for GitHub user: {username}")
+
+    globals()['already_known_user_affiliations'][email]=(GitHub_email, GitHub_affiliation)
+    return (GitHub_email, GitHub_affiliation)
 
 
 def print_all_nodes(network: nx.Graph):
