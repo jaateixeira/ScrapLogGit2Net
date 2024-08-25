@@ -19,3 +19,4 @@ git clone https://github.com/jaateixeira/business_firm_color_dictionary_json.git
 pip install pdfCropMargins --upgrade 
 pip3 install requests_cache
 pip3 install github
+pip3 install PyGithub

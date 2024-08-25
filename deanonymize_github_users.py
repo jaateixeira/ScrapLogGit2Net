@@ -290,12 +290,17 @@ def progress_bars_demo():
     
 
     
-# For the GitHub REST APY
+# For the GitHub REST API
 import requests
 import configparser
 
+# Use cache as there are API request hourly limits 
 import requests_cache
 from github import Github, GithubException
+
+
+# Set up requests-cache
+requests_cache.install_cache('github_cache', expire_after=3600)
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -398,6 +403,73 @@ def get_user_organizations(username):
         return []
 
 
+
+def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str]:
+    """
+    De-anonymizes a GitHub user based on their email address.
+
+    Args:
+        email (str): The email address of the GitHub user.
+
+    Returns:
+        tuple[str, str]: A tuple containing the email address and affiliation of the GitHub user.
+            The first element of the tuple is the email address (str), and the second
+            element is the affiliation (str). If the email address or affiliation cannot
+            be determined, the corresponding element in the tuple will be None.
+    """
+
+    logger.info(f"Deanonymizing GitHub user for {email=}")
+
+    if '@users.noreply.github.com' not in email:
+        raise ValueError("The provided email address is not a valid GitHub noreply email.")
+
+    if email in globals()['already_known_user_affiliations']:
+        logger.info(f"Key {email=} already exists in the global dictionary. Not calling API")
+        return globals()['already_known_user_affiliations'][email]
+
+    GitHub_email = "Unknown-by-GitHub"
+    GitHub_affiliation = "Unknown-by-GitHub"
+
+    # Extract the username from the email address
+    try:
+        if '+' in email:
+            username = email.split('+')[1].split('@')[0]
+        else:
+            username = email.split('@')[0]
+    except IndexError:
+        raise ValueError("Unable to extract GitHub username from the email address.")
+
+    # Use PyGithub to retrieve the user's public profile information
+    g = Github()
+    try:
+        user = g.get_user(username)
+        logger.debug(f"Successfully retrieved information for GitHub user: {username}")
+
+        print_GitHub_user_data(user.raw_data)
+
+        if user.email:
+            GitHub_email = user.email
+
+        if user.company:
+            GitHub_affiliation = user.company
+
+        # We must also check organizations
+        logger.info(f"Checking if the user {username=} is a member of one or more organizations")
+        organizations = [org.login for org in user.get_orgs()]
+        console.print(f"Organizations for {username}: {organizations}")
+
+    except GithubException as e:
+        if e.status == 403 and "API rate limit exceeded" in e.data["message"]:
+            logger.critical("API rate limit exceeded, enough for today.")
+            sys.exit()
+        else:
+            logger.warning("Unexpected API message")
+            logger.info(f'{e.data["message"]=}')
+
+    globals()['already_known_user_affiliations'][email] = (GitHub_email, GitHub_affiliation)
+    return (GitHub_email, GitHub_affiliation)
+
+    
     
 def deanonymize_github_user(email: str) -> tuple[str, str]:
     """
@@ -676,14 +748,13 @@ def iterate_graph(input_file, output_file):
         old_email = data['e-mail']
 
         if '@users.noreply.github.com' in old_email:
-            deanonymize_github_user(old_email)
-
-    
-
+            new_email, new_affiliation = deanonymize_github_user_with_cache_andPyGuthub (old_email)
+            logger.info(f"Updating {node=}) with API results {new_email=} and {new_affiliation=}")
+            data['e-mail']= new_email
+            data['affiliation']= new_affiliation
+                    
             
-    sys.exit()
-    
-        # Write the copied graph to the output GraphML file
+    # Write the copied graph to the output GraphML file
     logger.info(f"Writing output GraphML file: {output_file}")
     nx.write_graphml(G_copy, output_file)
 
