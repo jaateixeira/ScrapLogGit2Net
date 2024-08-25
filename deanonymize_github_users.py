@@ -405,6 +405,8 @@ def get_user_organizations(username):
 def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str]:
     """
     De-anonymizes a GitHub user based on their email address.
+    Uses cache for avoiding REST API  request limits 
+    Once it hits those limits, it sleeps for an hour 
 
     Args:
         email (str): The email address of the GitHub user.
@@ -417,6 +419,7 @@ def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str
     """
 
     logger.info(f"Deanonymizing GitHub user for {email=}")
+    
 
     if '@users.noreply.github.com' not in email:
         raise ValueError("The provided email address is not a valid GitHub noreply email.")
@@ -455,6 +458,10 @@ def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str
         logger.info(f"Checking if the user {username=} is a member of one or more organizations")
         organizations = [org.login for org in user.get_orgs()]
         console.print(f"Organizations for {username}: {organizations}")
+
+        
+        if organization not None and organization[0] != 'home-assistant':
+            GitHub_affiliation = organizations[0] 
 
     except RateLimitExceededException:
         logger.warning("API rate limit exceeded. Sleeping for one hour...")
