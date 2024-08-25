@@ -694,8 +694,13 @@ def copy_graph_with_attributes(source_graph: nx.Graph) -> nx.Graph:
         target_graph.add_node(node, **attributes)
 
     # Copy edges with attributes
-    for u, v, attributes in source_graph.edges(data=True):
-        target_graph.add_edge(u, v, **attributes)
+    #for u, v, attributes in source_graph.edges(data=True):
+    #    target_graph.add_edge(u, v, **attributes)
+
+    # Copy edges without attributes 
+    for u, v in source_graph.edges(data=False):
+        target_graph.add_edge(u, v)
+
 
     return target_graph
 

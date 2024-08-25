@@ -138,12 +138,17 @@ if __name__ == '__main__':
     parser.add_argument('graph2', type=str, help='Path to the second GraphML file')
     args = parser.parse_args()
 
+    logger.info("Reading 1st graphml file {args.graph1}")
+    graph1 = nx.read_graphml(args.graph1)
+    logger.info("Reading 2nd graphml file {args.graph2}")
+    graph2 = nx.read_graphml(args.graph2)
+    
+    #graph1 = load_graph_with_progress(args.graph1)
+    #graph2 = load_graph_with_progress(args.graph2)
 
-    graph1 = load_graph_with_progress(args.graph1)
-    graph2 = load_graph_with_progress(args.graph2)
-
-    # Compare the graphs
-    compare_graphs(graph1, graph2)
+    
+    # Compare the graphs visually 
+    #compare_graphs(graph1, graph2)
 
     # Compare node attributes 
     compare_node_attributes(graph1, graph2)
