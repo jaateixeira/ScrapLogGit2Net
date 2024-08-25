@@ -363,19 +363,10 @@ def get_rate_limit():
 def display_rate_limit():
     logger.info("display_rate_limit()")
 
-    table = Table(show_header=False, box=None)
-    table.add_column("")
-    table.add_column("")
-
-    
+        
     rate_limit = get_rate_limit()
-    table.rows = [
-            ("Limit:", str(rate_limit["limit"])),
-            ("Used:", str(rate_limit["used"])),
-            ("Remaining:", str(rate_limit["remaining"])),
-        ]
-    aligned_table = Align.right(table)
-    console.print(aligned_table)
+    
+    console.print(rate_limit)
     
     
 def print_GitHub_user_data(user_data:dict) -> None: 
