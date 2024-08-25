@@ -9,6 +9,8 @@ This module  deanonymizes GitHub noreply emails in gramphML files created with S
 
 
 import sys
+import os
+
 import argparse
 import networkx as nx
 
@@ -101,6 +103,36 @@ install(
 )
 
 
+
+# For the GitHub REST API
+import requests
+import configparser
+
+# Use cache as there are API request hourly limits 
+import requests_cache
+from github import Github, GithubException, RateLimitExceededException
+
+# Set up requests-cache
+requests_cache.install_cache('github_cache', expire_after=3600)
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+# Use GITHUB_TOKEN in your requests
+# Replace with your personal access token if needed
+
+GITHUB_TOKEN = config.get('github', 'token', fallback=None)
+
+rprint("\t Accessing GitHub Rest API with GITHUB_TOKEN=[",GITHUB_TOKEN,"]")
+
+if not GITHUB_TOKEN:
+    raise ValueError("Please set the GITHUB_TOKEN in the config.ini file")
+
+git_hub_auth_headers = {'Authorization': GITHUB_TOKEN}
+
+
+# For validating a GraphML File
+import xml.etree.ElementTree as ET
 
 
 
@@ -290,40 +322,6 @@ def progress_bars_demo():
     
 
     
-# For the GitHub REST API
-import requests
-import configparser
-
-# Use cache as there are API request hourly limits 
-import requests_cache
-from github import Github, GithubException
-
-
-# Set up requests-cache
-requests_cache.install_cache('github_cache', expire_after=3600)
-
-config = configparser.ConfigParser()
-config.read('config.ini')
-
-# Use GITHUB_TOKEN in your requests
-# Replace with your personal access token if needed
-
-GITHUB_TOKEN = config.get('github', 'token', fallback=None)
-
-rprint("\t Accessing GitHub Rest API with GITHUB_TOKEN=[",GITHUB_TOKEN,"]")
-
-if not GITHUB_TOKEN:
-    raise ValueError("Please set the GITHUB_TOKEN in the config.ini file")
-
-git_hub_auth_headers = {'Authorization': GITHUB_TOKEN}
-
-
-import requests
-import json
-
-
-import os
-import xml.etree.ElementTree as ET
 
 def check_file_exists(file_path):
     return os.path.isfile(file_path)
@@ -427,8 +425,8 @@ def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str
         logger.info(f"Key {email=} already exists in the global dictionary. Not calling API")
         return globals()['already_known_user_affiliations'][email]
 
-    GitHub_email = "Unknown-by-GitHub"
-    GitHub_affiliation = "Unknown-by-GitHub"
+    GitHub_email = "unknown-by-GitHub"
+    GitHub_affiliation = "unknown-by-GitHub"
 
     # Extract the username from the email address
     try:
@@ -458,18 +456,18 @@ def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str
         organizations = [org.login for org in user.get_orgs()]
         console.print(f"Organizations for {username}: {organizations}")
 
+    except RateLimitExceededException:
+        logger.warning("API rate limit exceeded. Sleeping for one hour...")
+        time.sleep(3600)
+        logger.info("Resuming API requests...")
+        return deanonymize_github_user(email)
+
     except GithubException as e:
-        if e.status == 403 and "API rate limit exceeded" in e.data["message"]:
-            logger.critical("API rate limit exceeded, enough for today.")
-            sys.exit()
-        else:
-            logger.warning("Unexpected API message")
-            logger.info(f'{e.data["message"]=}')
+        logger.warning("Unexpected API message")
+        logger.info(f'{e.data["message"]=}')
 
     globals()['already_known_user_affiliations'][email] = (GitHub_email, GitHub_affiliation)
     return (GitHub_email, GitHub_affiliation)
-
-    
     
 def deanonymize_github_user(email: str) -> tuple[str, str]:
     """
@@ -808,7 +806,7 @@ def main():
     if args.output is None:
         # Generate default output file name
         base, ext = os.path.splitext(args.input)
-        args.output_file = f"{base}.out.graphML"
+        args.output = f"{base}.out.graphML"
 
     # Call the function to copy and modify the graph
     iterate_graph(args.input, args.output)
