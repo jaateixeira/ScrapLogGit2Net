@@ -5,7 +5,59 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from rich import print
 from loguru import logger
-from tqdm import tqdm
+from rich.progress import track
+
+
+import networkx as nx
+from rich.progress import Progress
+from networkx import Graph
+from typing import Any
+
+def load_graph_with_progress(filepath: str) -> Graph:
+    """
+    Load a GraphML file into a NetworkX graph with a progress bar.
+
+    This function reads a GraphML file, creates a NetworkX graph, and shows the 
+    loading progress using the `rich` library's progress bar.
+
+    Args:
+        filepath (str): The path to the GraphML file.
+
+    Returns:
+        Graph: The loaded NetworkX graph.
+    """
+
+    with Progress() as progress:
+        # Initialize a progress task for the GraphML file loading process
+        task = progress.add_task("[cyan]Loading GraphML file...", total=100)
+
+        # Load the graph from the GraphML file
+        graph: Graph = nx.read_graphml(filepath)
+        
+        # Get the number of nodes and edges in the graph
+        num_nodes: int = graph.number_of_nodes()
+        num_edges: int = graph.number_of_edges()
+
+        # Update progress bar less frequently, every 10% of nodes
+        for i, node in enumerate(graph.nodes(data=True)):
+            if i % (num_nodes // 10 + 1) == 0:  # Avoid division by zero
+                progress.update(task, advance=10)
+
+        # Update progress bar less frequently, every 10% of edges
+        for i, edge in enumerate(graph.edges(data=True)):
+            if i % (num_edges // 10 + 1) == 0:  # Avoid division by zero
+                progress.update(task, advance=10)
+
+        # Complete the progress bar
+        progress.update(task, advance=100)
+
+    return graph
+
+# Example usage: Load the graph and display the number of nodes and edges
+if __name__ == "__main__":
+    graph = load_graph_with_progress("your_large_graph.graphml")
+    print(f"Graph loaded with {graph.number_of_nodes()} nodes and {graph.number_of_edges()} edges.")
+
 
 def compare_graphs(graph1, graph2):
     # Create a new graph to store the differences
@@ -63,12 +115,9 @@ if __name__ == '__main__':
     parser.add_argument('graph2', type=str, help='Path to the second GraphML file')
     args = parser.parse_args()
 
-    # Load the first graph with a progress bar
-    with open(args.graph1, 'rb') as f:
-        graph1 = nx.read_graphml(f, node_type=tqdm)
 
-    # Load the second graph
-    graph2 = nx.read_graphml(args.graph2)
+    graph1 = load_graph_with_progress(args.graph1)
+    graph2 = load_graph_with_progress(args.graph2)
 
     # Compare the graphs
     compare_graphs(graph1, graph2)
