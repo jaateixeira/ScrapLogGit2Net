@@ -32,7 +32,8 @@ A world where software co-production analytics put social network visualizations
 - formatFilterAndViz-nofi-GraphML.py - Formats, filters, and visualises a network of individuals from a given graphML network file created with scrapLog (IN GraphML -> pdf or png).
 - formatFilterAndViz-nofo-GraphML.py - Formats, filters, and visualises a network of organizations from a given graphML network file created with scrapLog (IN GraphML -> pdf or png).
 - transform-nofi-2-nofo-GraphML.py - Transforms a network into a network of organizations Graphml file (IN graphML, OUT graphML). 
-
+- deanonymize_github_users.py - Deanonymises developers' email and affiliation using GitHub REST API
+- 
 
 # **scrapLog.py** Inputs #
 
@@ -244,7 +245,9 @@ network file in the standard XML based format GraphML.
 - Dynamic node size based on degree centrality in the circular and centrality layouts. High connected nodes are bigger, less connected nodes are smaller.
 - Transformation of unweighted inter-individual networks into weighted inter-organizational networks. The weight is equal to the number of inter-organizational relationships. Intra-organizational relationships are ignored. 
 
-## To implement (voluntears welcome)
+## To implement (volunteers welcome)
+- Cache the API requests using https://pypi.org/project/requests-cache/ as GitHub REST API replies are limited
+- Test the possible integration with the PyGithub API library
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the  trailer tof the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
 - Account for commits on behalf of organizations using the 'on-behalf-of: @ORG NAME[AT]ORGANIZATION.COM' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-on-behalf-of-an-organization).
 - Possibility to add an argument pointing to a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company).
