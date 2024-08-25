@@ -355,27 +355,28 @@ def is_valid_graphml(file_path):
 
 
 def get_rate_limit():
+    logger.info("get_rate_limit()")
     response = requests.get("https://api.github.com/rate_limit",headers=git_hub_auth_headers)
     data = response.json()
     return data["resources"]["core"]
 
 def display_rate_limit():
+    logger.info("display_rate_limit()")
+
     table = Table(show_header=False, box=None)
     table.add_column("")
     table.add_column("")
 
-    while True:
-        rate_limit = get_rate_limit()
-        table.rows = [
+    
+    rate_limit = get_rate_limit()
+    table.rows = [
             ("Limit:", str(rate_limit["limit"])),
             ("Used:", str(rate_limit["used"])),
             ("Remaining:", str(rate_limit["remaining"])),
         ]
-        aligned_table = Align.right(table)
-        with Live(aligned_table, refresh_per_second=1):
-            time.sleep(1)
-
-
+    aligned_table = Align.right(table)
+    console.print(aligned_table)
+    
     
 def print_GitHub_user_data(user_data:dict) -> None: 
     table = Table(show_header=True, header_style="bold magenta")
@@ -477,9 +478,9 @@ def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str
         raise ValueError("Unable to extract GitHub username from the email address.")
 
     # Use PyGithub to retrieve the user's public profile information
-    g = Github()
+    g = Github(GITHUB_TOKEN)
     try:
-        user = g.get_user(username,headers=git_hub_auth_headers)
+        user = g.get_user(username)
         logger.debug(f"Successfully retrieved information for GitHub user: {username}")
 
         print_GitHub_user_data(user.raw_data)
