@@ -75,6 +75,9 @@ from rich.table import Table
 # It's handy to annimate tables that grow row by row 
 from rich.live import Live
 
+# Rich provides the Align class to align rendable objects
+from rich.align import Align
+
 # Rich can display continuously updated information regarding the progress of long running tasks / file copies etc. The information displayed is configurable, the default will display a description of the ‘task’, a progress bar, percentage complete, and estimated time remaining.
 from rich.progress import Progress, TaskID
 
@@ -122,11 +125,16 @@ config.read('config.ini')
 # Replace with your personal access token if needed
 
 GITHUB_TOKEN = config.get('github', 'token', fallback=None)
+CURRENT_PROJECT = config.get('github', 'current_project', fallback=None)
+
 
 rprint("\t Accessing GitHub Rest API with GITHUB_TOKEN=[",GITHUB_TOKEN,"]")
 
 if not GITHUB_TOKEN:
     raise ValueError("Please set the GITHUB_TOKEN in the config.ini file")
+
+if not CURRENT_PROJECT:
+    raise ValueError("Please set the current project in the config.ini file")
 
 git_hub_auth_headers = {'Authorization': GITHUB_TOKEN}
 
@@ -319,6 +327,8 @@ def progress_bars_demo():
             progress.update(task2, advance=0.5)  # Update the second progress bar more slowly
             
     print("Counting to 100 and 200 completed!")
+
+
     
 
     
@@ -344,6 +354,29 @@ def is_valid_graphml(file_path):
 
 
 
+def get_rate_limit():
+    response = requests.get("https://api.github.com/rate_limit",headers=git_hub_auth_headers)
+    data = response.json()
+    return data["resources"]["core"]
+
+def display_rate_limit():
+    table = Table(show_header=False, box=None)
+    table.add_column("")
+    table.add_column("")
+
+    while True:
+        rate_limit = get_rate_limit()
+        table.rows = [
+            ("Limit:", str(rate_limit["limit"])),
+            ("Used:", str(rate_limit["used"])),
+            ("Remaining:", str(rate_limit["remaining"])),
+        ]
+        aligned_table = Align.right(table)
+        with Live(aligned_table, refresh_per_second=1):
+            time.sleep(1)
+
+
+    
 def print_GitHub_user_data(user_data:dict) -> None: 
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("Key")
@@ -418,6 +451,9 @@ def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str
             be determined, the corresponding element in the tuple will be None.
     """
 
+    logger.info(f"Checking API requre reate limit")
+    display_rate_limit()
+    
     logger.info(f"Deanonymizing GitHub user for {email=}")
     
 
@@ -443,7 +479,7 @@ def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str
     # Use PyGithub to retrieve the user's public profile information
     g = Github()
     try:
-        user = g.get_user(username)
+        user = g.get_user(username,headers=git_hub_auth_headers)
         logger.debug(f"Successfully retrieved information for GitHub user: {username}")
 
         print_GitHub_user_data(user.raw_data)
@@ -459,8 +495,8 @@ def deanonymize_github_user_with_cache_andPyGuthub(email: str) -> tuple[str, str
         organizations = [org.login for org in user.get_orgs()]
         console.print(f"Organizations for {username}: {organizations}")
 
-        
-        if organization not None and organization[0] != 'home-assistant':
+        # If there was sume results from the users.get_orgs call  and they are not the home-assistant project 
+        if organizations and organizations[0] != 'home-assistant':
             GitHub_affiliation = organizations[0] 
 
     except RateLimitExceededException:
