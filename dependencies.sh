@@ -17,3 +17,5 @@ git clone https://github.com/jaateixeira/business_firm_color_dictionary_json.git
 
 # For cropping the white margins of a pdf output to include in papers 
 pip install pdfCropMargins --upgrade 
+pip3 install requests_cache
+pip3 install github

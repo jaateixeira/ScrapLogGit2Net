@@ -37,6 +37,9 @@ from rich import print_json
 from rich.json import JSON
 
 
+
+
+
 # Strings may contain Console Markup which can be used to insert color and styles in to the output.
 from rich.markdown import Markdown
 
@@ -290,6 +293,9 @@ def progress_bars_demo():
 # For the GitHub REST APY
 import requests
 import configparser
+
+import requests_cache
+from github import Github, GithubException
 
 config = configparser.ConfigParser()
 config.read('config.ini')
