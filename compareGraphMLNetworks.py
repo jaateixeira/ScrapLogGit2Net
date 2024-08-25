@@ -53,11 +53,34 @@ def load_graph_with_progress(filepath: str) -> Graph:
 
     return graph
 
-# Example usage: Load the graph and display the number of nodes and edges
-if __name__ == "__main__":
-    graph = load_graph_with_progress("your_large_graph.graphml")
-    print(f"Graph loaded with {graph.number_of_nodes()} nodes and {graph.number_of_edges()} edges.")
 
+
+def compare_node_attributes(graph1, graph2):
+    # Iterate over the nodes in graph1
+    for node1 in graph1.nodes(data=True):
+        node_id = node1[0]
+        node_attrs1 = node1[1]
+
+        # Check if the node exists in graph2
+        if node_id in graph2.nodes:
+            node_attrs2 = graph2.nodes[node_id]
+
+            # Compare the attributes
+            for attr_name, attr_value1 in node_attrs1.items():
+                if attr_name in node_attrs2:
+                    attr_value2 = node_attrs2[attr_name]
+                    if attr_value1 != attr_value2:
+                        print(f"Node {node_id}: attribute '{attr_name}' differs: {attr_value1} != {attr_value2}")
+                else:
+                    print(f"Node {node_id}: attribute '{attr_name}' not found in graph2")
+
+            # Check for attributes in graph2 that are not in graph1
+            for attr_name, attr_value2 in node_attrs2.items():
+                if attr_name not in node_attrs1:
+                    print(f"Node {node_id}: attribute '{attr_name}' not found in graph1")
+
+        else:
+            print(f"Node {node_id} not found in graph2")
 
 def compare_graphs(graph1, graph2):
     # Create a new graph to store the differences
@@ -121,4 +144,7 @@ if __name__ == '__main__':
 
     # Compare the graphs
     compare_graphs(graph1, graph2)
+
+    # Compare node attributes 
+    compare_node_attributes(graph1, graph2)
 
