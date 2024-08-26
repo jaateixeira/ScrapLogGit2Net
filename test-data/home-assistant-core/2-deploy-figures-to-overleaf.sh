@@ -45,7 +45,7 @@ echo ""
 
 echo "Cropping the margins"
 
-CMD="pdf-crop-margins -v -p 0 -a -1 $FIGURE_TO_DEPLOY  "
+CMD="pdf-crop-margins -v -p 0 -a -1 $FIGURE_TO_DEPLOY -o  $FIGURE_TO_DEPLOY""_cropped.pdf"
 echo $CMD
 eval $CMD
 echo ""
@@ -53,17 +53,9 @@ echo ""
 
 
 
-echo "Coping the result to the Figures folder" 
-
-CMD="cp $FIGURE_TO_DEPLOY ./Figures/" 
-echo $CMD
-eval $CMD
-echo ""
 
 
 echo "Showing the result"
-
-
 
 
 CMD="okular $FIGURE_TO_DEPLOY""_cropped.pdf"
@@ -97,13 +89,20 @@ echo $PWD
 echo "I moved to $PWD"
 echo ""
 
-CMD="git add $FOCAL_ORG""_cropped.pdf"
+cd ..
+echo $PWD
+echo "I moved to Overlead project root"
+echo ""
+
+
+
+CMD="git add $FIGURE_TO_DEPLOY""_cropped.pdf"
 echo $CMD
 eval $CMD
 echo ""
 
 
-CMD="git commit $FIGURE_TO_DEPLOY""_cropped.pdf -m '4-deploy-to-overlead.sh added pdfFigure for $FOCAL_ORG'"
+CMD="git commit $FIGURE_TO_DEPLOY""_cropped.pdf -m '4-deploy-to-overlead.sh added pdfFigure for $FIGURE_TO_DEPLOY'"
 echo $CMD
 eval $CMD
 echo ""
