@@ -14,12 +14,14 @@ fi
 
 
 source config.cfg
-source untils.sh 
+source utils.sh 
 echo -e "\n Figures should be in Figures folder\n"
 FIGURE_TO_DEPLOY=Figures/all-known-org.pdf
 
 
 file_exists_and_is_not_empty "$FIGURE_TO_DEPLOY"
+
+command_exists "pdf-crop-margins"
 
 
 CMD="du -sh $FIGURE_TO_DEPLOY"

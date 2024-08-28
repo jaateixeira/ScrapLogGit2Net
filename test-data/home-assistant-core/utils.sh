@@ -62,6 +62,21 @@ function file_exists() {
 }
 
 
+# Function to check if a shell command exists
+function command_exists() {
+    local COMMAND=$1
+    # Check if the command exists
+    if command -v "$COMMAND" >/dev/null 2>&1; then
+        # If the command exists, print a success message in green
+        echo -e "${GREEN}Command $COMMAND exists.${NC}"
+    else
+        # If the command does not exist, print an error message in red and exit with a non-zero status
+        echo -e "${RED}Error: Command $COMMAND does not exist.${NC}"
+        exit 1
+    fi
+}
+
+
 
 
 
