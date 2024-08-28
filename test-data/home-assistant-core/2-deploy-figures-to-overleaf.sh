@@ -36,17 +36,37 @@ echo $CMD
 eval $CMD
 echo ""
 
-
-
 echo "Cropping the margins"
-
 CMD="pdf-crop-margins -v -p 0 -a -1 $FIGURE_TO_DEPLOY -o  $FIGURE_TO_DEPLOY""_cropped.pdf"
-echo $CMD
-eval $CMD
-echo ""
 
 
+# Ask the user if they want to crop the white-space margins of the figure
+read -p "Do you want to crop the white-space margins of the figure $FILE? (y/n) " choice
 
+# Perform the selected action
+case $choice in
+    [Yy]* )
+        # Call the function to check if the file exists and is a PDF
+        if file_exists_and_is_pdf "$FILE"; then
+            # If the file exists and is a PDF, crop the white-space margins using pdf-crop-margins
+	    echo $CMD
+	    eval $CMD	    
+            echo -e "${GREEN}White-space margins of $FILE have been cropped.${NC}"
+        else
+            # If the file does not exist or is not a PDF, print an error message in red
+            echo -e "${RED}Error: File $FILE does not exist or is not a PDF.${NC}"
+	    echo ""
+        fi
+        ;;
+    [Nn]* )
+        # Do nothing
+        echo "White-space margins of $FILE have not been cropped."
+        ;;
+    * )
+        # If the user entered an invalid choice, print an error message in red
+        echo -e "${RED}Error: Invalid choice.${NC}"
+        ;;
+esac
 
 
 
@@ -77,6 +97,12 @@ eval $CMD
 echo ""
 
 
+
+file_exists_and_is_not_empty "$FIGURE_TO_DEPLOY"
+echo Checking if  "$OVERLEAF_FOLDER"/"$FIGURE_TO_DEPLOY"_cropped.pdf exists 
+file_exists_and_is_not_empty "$OVERLEAF_FOLDER"/"$FIGURE_TO_DEPLOY"_cropped.pdf
+
+
 echo "Adding to version control"
 cd $OVERLEAF_FIGURES_FOLDERS
 
@@ -90,11 +116,15 @@ echo "I moved to Overlead project root"
 echo ""
 
 
+file_exists_and_is_not_empty $FIGURE_TO_DEPLOY""_cropped.pdf
 
 CMD="git add $FIGURE_TO_DEPLOY""_cropped.pdf"
 echo $CMD
 eval $CMD
 echo ""
+
+
+
 
 
 CMD="git commit $FIGURE_TO_DEPLOY""_cropped.pdf -m '4-deploy-to-overlead.sh added pdfFigure for $FIGURE_TO_DEPLOY'"
@@ -113,6 +143,7 @@ echo "back to origin"
 cd - 
 
 echo "DONE"
+print_happy_smile
 
 
 

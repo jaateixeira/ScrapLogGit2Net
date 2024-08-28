@@ -80,3 +80,29 @@ function command_exists() {
 
 
 
+# Function to print a happy smile emoji
+function print_happy_smile() {
+    echo -e "\xF0\x9F\x98\x8A"
+}
+
+# Function to print a sad smile emoji
+function print_sad_smile() {
+    echo -e "\xF0\x9F\x98\x9E"
+}
+
+# Function to print a heart emoji
+function print_heart() {
+    echo -e "\xE2\x99\xA5"
+}
+
+# Function to print a thumbs up emoji
+function print_thumbs_up() {
+    echo -e "\xF0\x9F\x91\x8D"
+}
+
+# Function to print a thumbs down emoji
+function print_thumbs_down() {
+    echo -e "\xF0\x9F\x91\x8E"
+}
+
+
