@@ -1,4 +1,4 @@
-#!/bin/bash
+1#!/bin/bash
 
 
 if [ ! "$BASH_VERSION" ] ; then
@@ -16,7 +16,8 @@ fi
 source config.cfg
 source utils.sh 
 echo -e "\n Figures should be in Figures folder\n"
-FIGURE_TO_DEPLOY=Figures/all-known-org.pdf
+#FIGURE_TO_DEPLOY=Figures/all-known-org.pdf
+FIGURE_TO_DEPLOY=Figures/NetOfOrg.pdf
 
 
 file_exists_and_is_not_empty "$FIGURE_TO_DEPLOY"
@@ -40,6 +41,7 @@ echo "Cropping the margins"
 CMD="pdf-crop-margins -v -p 0 -a -1 $FIGURE_TO_DEPLOY -o  $FIGURE_TO_DEPLOY""_cropped.pdf"
 
 
+FILE=$FIGURE_TO_DEPLOY
 # Ask the user if they want to crop the white-space margins of the figure
 read -p "Do you want to crop the white-space margins of the figure $FILE? (y/n) " choice
 
@@ -49,7 +51,7 @@ case $choice in
         # Call the function to check if the file exists and is a PDF
         if file_exists_and_is_pdf "$FILE"; then
             # If the file exists and is a PDF, crop the white-space margins using pdf-crop-margins
-	    echo $CMD
+	    echo -e $CMD
 	    eval $CMD	    
             echo -e "${GREEN}White-space margins of $FILE have been cropped.${NC}"
         else
