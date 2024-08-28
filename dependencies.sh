@@ -27,3 +27,4 @@ pip3 install PyGithub
 
 # Cropping images and deploying latex code 
 sudo apt-get install texlive-latex-recommended texlive-extra-utils texlive-latex-extra
+pip3 install pdfCropMargins --user --upgrade --only-binary pymupdf
