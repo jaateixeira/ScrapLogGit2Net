@@ -1,4 +1,7 @@
 
+Implment report from deanonumuzation?
+Example -> What was deanonuymized
+
 ./formatFilterAndViz-nofo-GraphML.py -l test-data/TensorFlow/jpim-2024/chromium/tensorFlowGitLog-all-till-12-Apri-2024.NetworkFile-filtered-transformed-to-nofo.graphML -ns centrality-score -v
 Works fine.
 Just legend should be more to the right
