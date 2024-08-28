@@ -39,7 +39,7 @@ eval $CMD
 echo -e "TESTED" "Worked" "\n"
 
 
-FILTERED_FILE=core.NetworkFile.out-filtered.graphML
+
 
 echo -e "Filtered file saved at $FILTERED_FILE" "\n"
 
