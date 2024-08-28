@@ -17,6 +17,14 @@ git clone https://github.com/jaateixeira/business_firm_color_dictionary_json.git
 
 # For cropping the white margins of a pdf output to include in papers 
 pip install pdfCropMargins --upgrade 
+
+# Caching API requests 
 pip3 install requests_cache
+
+# Using the existing PyGitHub lib 
 pip3 install github
 pip3 install PyGithub
+
+# Cropping images and deploying latex code 
+sudo apt-get install texlive-latex-recommended texlive-extra-utils texlive-latex-extra
+pip3 install pdfCropMargins --user --upgrade --only-binary pymupdf
