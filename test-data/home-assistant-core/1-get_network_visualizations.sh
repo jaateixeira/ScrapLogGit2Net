@@ -38,12 +38,14 @@ eval $CMD
 
 echo -e "TESTED" "Worked" "\n"
 
+
+FILTERED_FILE=core.NetworkFile.out-filtered.graphML
+
 echo -e "Filtered file saved at $FILTERED_FILE" "\n"
 
-file_exists_and_is_not_empty  "$INPUT"
+file_exists_and_is_not_empty  $FILTERED_FILE
 
-
-du sh $INPUT
 du sh $FILTERED_FILE
 
+print_thumbs_up
 
