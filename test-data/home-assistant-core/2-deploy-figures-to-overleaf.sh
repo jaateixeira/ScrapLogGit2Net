@@ -14,19 +14,12 @@ fi
 
 
 source config.cfg
-
+source untils.sh 
 echo -e "\n Figures should be in Figures folder\n"
 FIGURE_TO_DEPLOY=Figures/all-known-org.pdf
 
 
-echo "Testing if $FOCAL_ORG pdf figure is there"
-
-{
-if [ ! -f $FIGURE_TO_DEPLOY]; then
-    echo "$FIGURE_TO_DEPLOY - File not found!"
-    exit 0
-fi
-}
+file_exists_and_is_not_empty "$FIGURE_TO_DEPLOY"
 
 
 CMD="du -sh $FIGURE_TO_DEPLOY"
