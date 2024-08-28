@@ -11,7 +11,7 @@ fi
 
 
 source config.cfg
-
+source utils.sh 
 
 echo  e "Invoking the $FFV_NO_FI_GRAPHML_SCRIPT with save_graphML so we can later transform it"
 
