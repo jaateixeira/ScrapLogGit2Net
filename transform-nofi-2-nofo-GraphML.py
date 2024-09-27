@@ -278,9 +278,11 @@ if args.show:
     print()
     print("Displaying the results")
 
-    noo_viz_script="/home/apolinex/rep_clones/own-tools/ScrapLogGit2Net/formatAndViz-nofo-GraphML.py"
+    #noo_viz_script="/home/apolinex/rep_clones/own-tools/ScrapLogGit2Net/formatAndViz-nofo-GraphML.py
+    noo_viz_script="/home/apolinex/rep-clones/own-tools/ScrapLogGit2Net/formatFilterAndViz-nofo-GraphML.py
 
-    
+    "
+
     # excape caraters to avoid "/bin/sh: 1: Syntax error: "(" unexpected"
                                  
     transformed_file_name= transformed_file_name.replace("(", "\(")
