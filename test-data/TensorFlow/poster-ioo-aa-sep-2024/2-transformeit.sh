@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 if [ ! "$BASH_VERSION" ] ; then
     echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2
     exit 1
@@ -17,43 +16,38 @@ source config.cfg
 source utils.sh 
 
 
-
-echo INPUT=$INPUT
-echo FILTERED_FILE=$FILTERED_FILE
-echo TOP10_ORG=$TOP10_ORG
-echo FOCAL_ORG=$FOCAL_ORG
-echo FFV_NO_FI_GRAPHML_SCRIPT=$FFV_NO_FI_GRAPHML_SCRIPT
-echo TRANSFORM_GRAPHML_SCRIPT=$TRANSFORM_GRAPHML_SCRIPT
-echo COMPANIES_TO_IGNORE=$COMPANIES_TO_IGNORE
-
 INPUT=$FILTERED_FILE
-OUTPUT=$TRANSFORMED_FILE
 
+OUTPUT=core.NetworkFile.out-filtered-transformed-to-nofo.graphML
+
+file_exists_and_is_not_empty "$INPUT"
+print_happy_smile
+command_exists "$TRANSFORM_NO_FI_GRAPHML_SCRIPT" 
+print_happy_smile
+
+
+echo -e "We have a network file and a transformer"
+
+print_heart     
 
 echo -e  "Transforming network $INPUT" "\n"
 
-du -sh $INPUT
 
-echo -r "Taking $FOCAL_ORG as the network we are transforming" "\n"
 
-CMD="$TRANSFORM_GRAPHML_SCRIPT -s $INPUT"
+
+CMD="$TRANSFORM_NO_FI_GRAPHML_SCRIPT  --show $INPUT"
 
 
 echo -e "Excecutiong:\n  $CMD \n"
-
-exit 
 
 eval $CMD
 
 echo -e "TESTED" "Worked" "\n"
 
-du -sh $INPUT
-
 
 echo -e "Network is transformed, let's now see  the network \n"
-../../../../formatFilterAndViz-nofo-GraphML.py -l $OUTPUT
 
-grep chromium $OUTPUT
+file_exists_and_is_not_empty "$OUTPUT"
 
-
+print_happy_smile
 
