@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 if [ ! "$BASH_VERSION" ] ; then
     echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2
     exit 1
@@ -16,8 +17,15 @@ source config.cfg
 
 
 
-INPUT=$FILTERED_FILE
+echo INPUT=$INPUT
+echo FILTERED_FILE=$FILTERED_FILE
+echo TOP10_ORG=$TOP10_ORG
+echo FOCAL_ORG=$FOCAL_ORG
+echo FFV_NO_FI_GRAPHML_SCRIPT=$FFV_NO_FI_GRAPHML_SCRIPT
+echo TRANSFORM_GRAPHML_SCRIPT=$TRANSFORM_GRAPHML_SCRIPT
+echo COMPANIES_TO_IGNORE=$COMPANIES_TO_IGNORE
 
+INPUT=$FILTERED_FILE
 OUTPUT=$TRANSFORMED_FILE
 
 
