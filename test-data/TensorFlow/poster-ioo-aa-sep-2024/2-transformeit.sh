@@ -16,9 +16,11 @@ source config.cfg
 source utils.sh 
 
 
-INPUT=$FILTERED_FILE
+TRANSFORM_NO_FI_GRAPHML_SCRIPT=$TRANSFORM_GRAPHML_SCRIPT
 
-OUTPUT=core.NetworkFile.out-filtered-transformed-to-nofo.graphML
+INPUT=$FILTERED_FILE
+OUTPUR=$TRANSFORMED_FILE
+
 
 file_exists_and_is_not_empty "$INPUT"
 print_happy_smile
