@@ -14,6 +14,7 @@ fi
 
 
 source config.cfg
+source utils.sh 
 
 
 
@@ -31,18 +32,16 @@ OUTPUT=$TRANSFORMED_FILE
 
 echo -e  "Transforming network $INPUT" "\n"
 
-FOCAL_ORG=chromium
-
-TOP10_ORG=google,intel,nvidia,arm,ibm,amd,microsoft,huawei,amazon,naver
-
 du -sh $INPUT
 
 echo -r "Taking $FOCAL_ORG as the network we are transforming" "\n"
 
-CMD="../../../../transform-nofi-2-nofo-GraphML.py -s $INPUT"
+CMD="$TRANSFORM_GRAPHML_SCRIPT -s $INPUT"
 
 
 echo -e "Excecutiong:\n  $CMD \n"
+
+exit 
 
 eval $CMD
 
