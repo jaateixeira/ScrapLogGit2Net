@@ -1,4 +1,4 @@
-ScrapLogGit2Net
+# ScrapLogGit2Net
 
 A toolset for mining and visualizing [Git](https://git-scm.com/) repositories with [Social Network Analysis](https://en.wikipedia.org/wiki/Social_network_analysis). ScrapLogGit2Net allows its users to scrape, model, and visualize social networks based on common source-code file edits for any given Git repository.
 
@@ -6,140 +6,125 @@ The toolset was first developed by [Jose Apolinário Teixeira](http://users.abo.
 
 Newer features allow you to:
 - Transform a network of individuals/individuals into a network of organizations/firms. The weighted edge between organizations is the sum of developers that worked together (i.e., co-edited the same source-code files).
-- Filter developers by email (handy to deal with bots that commit code)
-- Support for parallel edges (i.e., multiple edges between two nodes) that allow attributing weight to a cooperative relationship between two developers (e.g., the number of times they co-edited a source code file).
-- Visualize collaborations dynamically using [NetworkX is a Python package](https://networkx.org/documentation/latest/) and [Matplotlib: Visualization with Python](https://matplotlib.org/).
+- Filter developers by email (handy to deal with bots that commit code).
+- Support for parallel edges (i.e., multiple edges between two nodes) that allow attributing weight to a collaborative relationship between two developers (e.g., the number of times they co-edited a source code file).
+- Visualize collaborations dynamically using [NetworkX, a Python package](https://networkx.org/documentation/latest/) and [Matplotlib: Visualization with Python](https://matplotlib.org/).
 
-The code was also recently (i.e., Spring 2024) made compliant with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) data structures and the [Python 3.10 version](https://networkx.org/documentation/latest/) runtime which simplified the original codebase.
+The code was also recently (i.e., Spring 2024) made compliant with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) data structures and the [Python 3.10 version](https://networkx.org/documentation/latest/) runtime, which simplified the original codebase.
 
 For more information, see the publication and related website:
 
-- Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. Available open-access at  [https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2](https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2).
+- Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. Available open-access at [https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2](https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2).
 - Website [http://users.abo.fi/jteixeir/OpenStackSNA/](http://users.abo.fi/jteixeir/OpenStackSNA/) with the obtained social networks and visualizations included [in publications by the author on the OpenStack software ecosystem](http://users.abo.fi/jteixeir/#pub).
-- Website [http://users.abo.fi/jteixeir/TensorFlowSNA/](http://users.abo.fi/jteixeir/TensorFlowSNA/) with the obtained social networks and visualizations for the TensorFlow open and coopetitive project (publication forthcoming).
+- Website [http://users.abo.fi/jteixeir/TensorFlowSNA/](http://users.abo.fi/jteixeir/TensorFlowSNA/) with the obtained social networks and visualizations for the TensorFlow open and cooperative project (publication forthcoming).
 
-
-# Problem statement #
+# Problem statement
 Hard to figure out who works with whom in complex software projects.
 
 # Vision
 A world where software co-production analytics put social network visualizations at the side of standard quantitative statistical data. All towards the improved management and engineering of complex software projects orchestrated on Git.
 
-
 # Executable tools
-- **scrapLog.py** - Mines a Git log with SNA (associating developers that co-edit the same source-code files) and outputs a graphML network file (IN Git log -> GraphML).
-- formatAndReport-nofi-GraphML.py - Outputs a spreadsheet full of inter-individual network metrics from a given graphML network file created with scrapLog (IN GraphML -> .csv or .xls).
-- formatAndReport-nofo-GraphML.py - Outputs a spreadsheet full of inter-organizational network metrics from a given graphML network file created with scrapLog (IN GraphML ->  .csv or .xls).
-- formatFilterAndViz-nofi-GraphML.py - Formats, filters, and visualizes a network of individuals from a given graphML network file created with scrapLog (IN GraphML -> pdf or png).
-- formatFilterAndViz-nofo-GraphML.py - Formats, filters, and visualizes a network of organizations from a given graphML network file created with scrapLog (IN GraphML -> pdf or png).
-- transform-nofi-2-nofo-GraphML.py - Transforms a network into a network of organizations Graphml file (IN graphML, OUT graphML).
-- deanonymize_github_users.py - Deanonymizes developers' email and affiliation using GitHub REST API
+- **scrapLog.py** - Mines a Git log with SNA (associating developers that co-edit the same source-code files) and outputs a GraphML network file (IN Git log -> GraphML).
+- formatAndReport-nofi-GraphML.py - Outputs a spreadsheet full of inter-individual network metrics from a given GraphML network file created with scrapLog (IN GraphML -> .csv or .xls).
+- formatAndReport-nofo-GraphML.py - Outputs a spreadsheet full of inter-organizational network metrics from a given GraphML network file created with scrapLog (IN GraphML ->  .csv or .xls).
+- formatFilterAndViz-nofi-GraphML.py - Formats, filters, and visualizes a network of individuals from a given GraphML network file created with scrapLog (IN GraphML -> pdf or png).
+- formatFilterAndViz-nofo-GraphML.py - Formats, filters, and visualizes a network of organizations from a given GraphML network file created with scrapLog (IN GraphML -> pdf or png).
+- transform-nofi-2-nofo-GraphML.py - Transforms a network into a network of organizations GraphML file (IN GraphML, OUT GraphML).
+- deanonymize_github_users.py - Deanonymizes developers' email and affiliation using GitHub REST API.
 
-# **scrapLog.py** Inputs #
-
+# **scrapLog.py** Inputs
 A Git repository and its commit logs.
 
-# **scrapLog.py** Outputs #
+# **scrapLog.py** Outputs
 Social networks that capture who codes with whom in a repository (note that a software project can have multiple repositories).
 
+# How **scrapLog.py** works
+It uses the commit logs of a Git repository:
+```git log --pretty=format:"==%an;%ae;%ad==" --name-only```
 
-# How  **scrapLog.py** works #
-
-It uses the commit logs of a Git repository
-```git log --pretty=format:"==%an;%ae;%ad=="  --name-only```
-
-- %an stands for author name
-- %ae stands for author email
-- %ad stands for author date
+- %an stands for author name.
+- %ae stands for author email.
+- %ad stands for author date.
 
 Then:
 - It starts by identifying what source-code files were changed by whom at a given point in time.
 - Then associates each file with the developers that co-edited the same source-code file.
-- Then connects developers in a network. Nodes are software developers with a unique email. Edges are established if developers co-edited the same source-code file (i.e., nodes connect by working on the same files).
+- Then connects developers in a network. Nodes are software developers with a unique email. Edges are established if developers co-edited the same source-code file (i.e., nodes are connected by working on the same files).
 
 Note that:
 - Some manual developer email aggregation might be required as the same developers can use multiple emails.
-- Software bots can also commit code, undermining your analysis of human-to-human collaboration.
-- Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected. For example, when analyzing projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination.
+- Software bots can also commit code, undermining your analysis of peer-to-peer collaboration.
+- Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected. For example, when analyzing projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of collaboration.
 
-  
-# How to use **scrapLog.py** #
-
-You need basic skills of Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot.
-You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
+# How to use **scrapLog.py**
+You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
 
 ## First, clone a Git repository
-
 Clone the Git repository you wish to mine with Social Network Analysis. Here is the example for TensorFlow:
-
 ```
 git clone https://github.com/tensorflow/tensorflow.git
 cd tensorflow
 ```
 
-
 ## Second, get the Git logs for scraping
-
-
-Obtain the commit logs that will be the main input for ScrapLogGit2Net. In this example, they are saved to the tensorFlowGitLog.IN file.
-Note that data scraping is a technique where a computer program extracts data from human-readable output coming from another program. In this case ScrapLogGit2Net will extract data coming from Git.
+Obtain the commit logs that will be the main input for ScrapLogGit2Net. In this example, they are saved to the tensorFlowGitLog.IN file. Note that data scraping is a technique where a computer program extracts data from human-readable output coming from another program. In this case ScrapLogGit2Net will extract data coming from Git.
 
 ```
-git log --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog.IN
+git log --pretty=format:"==%an;%ae;%ad==" --name-only > tensorFlowGitLog.IN
 ```
 
 If you are lost by this point, time to learn about Git.
-
 ```
 man git
 man git log
 ```
 
-Congratulations you should have your raw data ready for analysis with ScrapLogGit2Net
+Congratulations you should have your raw data ready for analysis with ScrapLogGit2Net.
 
+Look at your INPUT data. As you can see from the following 4 April 2024 sample data from TensorFlow, you get timestamped data on who changed what files. Note that gardner@tensorflow.org is a bot, not a developer that directly commits code.
 
-Look at your INPUT data.  As you can see from the following 4 April 2024 sample data from TensorFlow, you get timestamped data on who changed what files.
-Note that gardner@tensorflow.org is a bot, not a developer that directly commits code.
+```
+A. Unique TensorFlower;gardener@tensorflow.org;Wed Apr 3 22:39:37 2024 -0700
+tensorflow/core/tfrt/saved_model/tests/BUILD
+tensorflow/core/tfrt/saved_model/tests/saved_model_test.cc
 
-     A. Unique TensorFlower;gardener@tensorflow.org;Wed Apr 3 22:39:37 2024 -0700
-     tensorflow/core/tfrt/saved_model/tests/BUILD
-     tensorflow/core/tfrt/saved_model/tests/saved_model_test.cc
+Doyeon Kim;doyeonkim@google.com;Wed Apr 3 20:54:06 2024 -0700
+tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
+tensorflow/compiler/mlir/quantization/stablehlo/python/integration_test/quantize_model_test.py
+tensorflow/compiler/mlir/quantization/stablehlo/python/quantization.py
+tensorflow/compiler/mlir/quantization/stablehlo/quantization_config.proto
 
-     Doyeon Kim;doyeonkim@google.com;Wed Apr 3 20:54:06 2024 -0700
-     tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
-     tensorflow/compiler/mlir/quantization/stablehlo/python/integration_test/quantize_model_test.py
-     tensorflow/compiler/mlir/quantization/stablehlo/python/quantization.py
-     tensorflow/compiler/mlir/quantization/stablehlo/quantization_config.proto
+Jiyoun (Jen) Ha;jiyounha@google.com;Wed Apr 3 18:50:32 2024 -0700
+tensorflow/lite/core/subgraph.cc
 
-     Jiyoun (Jen) Ha;jiyounha@google.com;Wed Apr 3 18:50:32 2024 -0700
-     tensorflow/lite/core/subgraph.cc
+Doyeon Kim;doyeonkim@google.com;Wed Apr 3 17:46:07 2024 -0700
+tensorflow/compiler/mlir/lite/quantization/stablehlo/BUILD
+tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
+```
 
-     Doyeon Kim;doyeonkim@google.com;Wed Apr 3 17:46:07 2024 -0700
-     tensorflow/compiler/mlir/lite/quantization/stablehlo/BUILD
-     tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
-
-
-What ScrapLogGit2Net does is to parse these timestamps and associate developers that co-edited the same source-code file in a social network. If two developers co-edit the same source-code file over time, we can assume that they cooperate with each other. A bit like scientists that co-author papers.  
-
+What ScrapLogGit2Net does is parse these timestamps and associate developers that co-edited the same source-code file in a social network. If two developers co-edit the same source-code file over time, we can assume that they cooperate with each other. A bit like scientists that co-author papers.
 
 Note the example year covers almost 10 years of commit logs in the TensorFlow project. It might be wise to narrow down the time window you want to analyze.
 
+```
+git log --pretty=format:"==%an;%ae;%ad==" --name-only
+```
 
-```git log --pretty=format:"==%an;%ae;%ad=="  --name-only```
+In the following example, you are checking commit logs between 1st and 4th of April 2021:
+```
+git log --since='Apr 1 2021' --until='Apr 4 2021' --pretty=format:"==%an;%ae;%ad==" --name-only
+```
 
-In the following example, you are checking commit logs between 1st and 4th of April 2021
+And this example you check what developers did on 1st of April 2024:
+```
+git log --since='Mar 31 2024' --until='Apr 1 2024' --pretty=format:"==%an;%ae;%ad==" --name-only
+```
 
-```git log --since='Apr 1 2021' --until='Apr 4 2021' --pretty=format:"==%an;%ae;%ad=="  --name-only```
-
-And this example you check what developers did on 1st of April 2024
-
-
-```git log --since='Mar 31 2024' --until='Apr 1 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only```
-
-Finally, the last example goes to the TensorFlow repository and gets the data to study the first trimester for 2024
-
-```cd tensorflow && git log --since='Jan 1 2024' --until='Mar 31 2024' --pretty=format:"==%an;%ae;%ad=="  --name-only > tensorFlowGitLog-first-trimester-2024.IN ```
-
+Finally, the last example goes to the TensorFlow repository and gets the data to study the first trimester for 2024:
+```
+cd tensorflow && git log --since='Jan 1 2024' --until='Mar 31 2024' --pretty=format:"==%an;%ae;%ad==" --name-only > tensorFlowGitLog-first-trimester-2024.IN
+```
 
 - Now let's analyze some data.
 
@@ -149,12 +134,10 @@ Finally, the last example goes to the TensorFlow repository and gets the data to
 ```
 or
 ```
-`python3 scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN
+python3 scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN
 ```
 
-By default, and all goes well, you get a "NetworkFile.graphML" file prefixed with the data input filename (e.g., tensorFlowGitLog-first-trimester-2024.IN.NetworkFile.graphML) capturing the social network.
-Congrats. You collected social network data ready for analysis.
-
+By default, and all goes well, you get a "NetworkFile.graphML" file prefixed with the data input filename (e.g., tensorFlowGitLog-first-trimester-2024.IN.NetworkFile.graphML) capturing the social network. Congrats. You collected social network data ready for analysis.
 
 # Known issues on mining Git repositories from a network perspective with ScrapLogGit2Net
 
@@ -171,11 +154,11 @@ The approach works well, most of the time. But there are known issues that shoul
 
 If a developer has two or more organization emails (e.g., works part-time for two organizations). Should it be treated as two developers!!  Or merged into one? This might require additional investigation on the developer and its contributions to figure out the best way to model the social network.
 If a developer changes organization (e.g., changed email), by default ScrapLogGit2Net models him as another developer. You might want to model it in another way.
-If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., IBM, Amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with Gmail. But it might make sense to associate him with the firm he also commits. Should contributions submitted with personal use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with?
+If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., IBM, Amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with Gmail. But it might make sense to associate him with the firm he also commits. Should contributions submitted with personal-use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with?
 
 When associating emails with developers, and developers with firms, it is a good approach to find suspicious similarities in the strings identifying actors in the network. The Python package [strsimpy](https://pypi.org/project/strsimpy/) implements many algorithms for string similarity. The names 'George Tony' and 'George Toony' have a very high string similarity score, so they are probably the same person. Test for similarity in names and emails to enhance the robustness of the social network model.
 
-### A developer can have several emails!   ###
+### A developer can have multiple emails!   ###
 
 There are many ways to deal with developers that use several emails. The simplest one is to use the approach by [Augustina Ragwitz (2017)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the
 first email address found in the commit log for an author is then the authoritative one. According to her:
@@ -186,20 +169,17 @@ If the Git repository is hosted on GitHub, you can dig and solve this issue with
 
 Note, however, that GitHub GraphQL API was designed in a way that you can retrieve relational graph-oriented data more efficiently from large social networks.
 
-If the Git repository is not hosted on GitHub, you can use the approach by [Teixeira, Leppänen and Hyrynsalmi (2020)](https://arxiv.org/pdf/2106.09329) that used pattern-matching techniques with regular expressions to identify unique names and emails. Note that in their study of code reviews on the Linux Kernel, they adopted a strictly extrarelational approach: individuals are identified by their real names, while all affiliations are based on explicit data extraction from the domain names in individuals’ e-mail addresses. ScrapLogGit2Net gets developers' IDs and their affiliations from e-mail addresses, simply ignoring their names.
-
-
+If the Git repository is not hosted on GitHub, you can use the approach by [Teixeira, Leppänen and Hyrynsalmi (2020)](https://arxiv.org/pdf/2106.09329) that used pattern-matching techniques with regular expressions to identify unique names and emails. Note that in their study of code reviews on the Linux Kernel, they adopted a strictly extra-relational approach: individuals are identified by their real names, while all affiliations are based on explicit data extraction from the domain names in individuals’ e-mail addresses. ScrapLogGit2Net gets developers' IDs and their affiliations from e-mail addresses, simply ignoring their names.
 
 ### A developer can hide his email!   ###
 
-Most developers do not hide their email from the git logs. Like scientists in their articles, they want to keep their names as authors or contributors. However, they can remain anonymous or simply do not want to be contacted or avoid spam. This is popular since GitHub started allowing the association of pseudo email addresses in the format [8 digit number]+[username]@users.noreply.github.com that are still associated with their GitHub profile. For example, a git commit from Ruslan Inovic <rroinov@gmail.com> might appear as <608192+rosmanov@users.noreply.github.com>. See GitHub documentation on the issue at [GitHub Docs](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address#about-commit-email-addresses). Once again using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)) would allow mapping the @users.noreply.github.com with developers or other emails used by them. Note that once a developer commits code with an email, it will always be associated with him on GitHub. When a developer sets commits to be signed with a no-reply email, he is only affecting future commits, not the past recorded ones.
+Most developers do not hide their email from the git logs. Like scientists in their articles, they want to keep their names as authors or contributors. However, they can remain anonymous or simply do not want to be contacted or avoid spam. This is popular since GitHub started allowing the association of pseudo email addresses in the format [8 digit number]+[username]@users.noreply.github.com that are still associated with their GitHub profile. For example, a git commit from Ruslan Inovic <rroinov@gmail.com> might appear as <608192+rosmanov@users.noreply.github.com>. See GitHub documentation on the issue at [GitHub Docs](https://docs.github.com/en/account-and-profile/setting-up-and-management-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address#about-commit-email-addresses). Once again using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)) would allow mapping the @users.noreply.github.com with developers or other emails used by them. Note that once a developer commits code with an email, it will always be associated with him on GitHub. When a developer sets commits to be signed with a no-reply email, he is only affecting future commits, not the past recorded ones.
 
 ## Some collaborative edges are missed with longitudinal segmentation!
 
 As pointed out by [Teixeira et al. (2015)](https://link.springer.com/article/10.1186/s13174-015-0028-2), when studying code-collaboration as a synchronous behaviour happening across different time windows (release after release or year after year), you will miss some collaboration edges between two developers who contributed to the same file that started before the time-window opened for analysis or did not end before the time-window closed. See [https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3](https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3).
 
 A way to quantify this issue is to first analyze all the historical data. From day 0 to the last day save the edges. Then conduct the analysis in segments (e.g., year after year, release after release, etc). Then see how many edges there are in the network from all the time that were not captured by the time-limited analysis. 0 is ideal. But expect a few. Given that people tend to drop coding efforts before Xmas and New Year, or before releasing a new version (they as mostly stabilizing over developing new features), the impacts on the model validity are very small.
-
 
 # Command line options for advanced use
 
@@ -231,7 +211,6 @@ For example, the following command
 scrapes the Git log in the test-data/tensorFlowGitLog-all-till-12-April-2024.IN input file, ignores emails listed in the test-configurations/TensorFlowBots.txt file, and prints debug information in a verbose way. By default, it also creates a
 network file in the standard XML-based format GraphML.
 
-
 # Features
 
 ## Recently implemented features
@@ -239,7 +218,7 @@ network file in the standard XML-based format GraphML.
 - Optional verbose debug output.
 - Use of a serialized changelog, so we don't need to use RAW Git logs every time. Saves a lot of time for analyzing complex projects.
 - Possibility of adding an argument pointing to a file with emails to ignore (e.g., bots and spam email addresses).
-- Dynamic export of social network visualizations within the circular and centrality layouts.
+- Dynamic export of social network visualizations within the circular and central layouts.
 - Dynamic node size based on degree centrality in the circular and centrality layouts. Highly connected nodes are bigger; less connected nodes are smaller.
 - Transformation of unweighted inter-individual networks into weighted inter-organizational networks. The weight is equal to the number of inter-organizational relationships. Intra-organizational relationships are ignored.
 
