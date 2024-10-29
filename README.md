@@ -21,7 +21,7 @@ For more information, see the publication and related website:
 
 # Problem statement
 
-Hard to figure out who works with whom in complex software projects.
+Hard to figure out (visualize) who works with whom in complex software projects.
 
 # Vision
 
