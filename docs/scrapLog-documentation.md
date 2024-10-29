@@ -1,4 +1,4 @@
-"#ScrapLogGit2Net
+#ScrapLogGit2Net
 A toolset for mining and visualizing [Git](https://git-scm.com/) repositories with [Social Network Analysis](https://en.wikipedia.org/wiki/Social_network_analysis). ScrapLogGit2Net allows its users to scrape, model, and visualize social networks based on common source-code file edits for any given Git repository.
 
 The toolset was first developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) during his doctoral studies with some guidance from Software Engineering scholars with expertise in the mining of software repositories. The tool merits by considering both individuals and organizations. The tool maps developers to organizations by the commit email address and external [APIs](https://en.wikipedia.org/wiki/API) such as the [REST](https://docs.github.com/en/rest?apiVersion=2022-11-28) and [GraphQL](https://docs.github.com/en/graphql) ones provided by [GitHub](https://github.com/).
@@ -308,5 +308,5 @@ Jose Teixeira
 Jose Teixeira
 
 # License
-GNU General Public License v3.0"
+GNU General Public License v3.0
 
