@@ -15,22 +15,22 @@ Welcome to the project! We're excited to have you contribute to ScrapLogGit2Net.
 ## Setting Up Your Development Environment
 
 1. **Fork the repository** on GitHub.
-   To fork the ScrapLogGit2Net repository on GitHub, go to [https://github.com/jaateixeira/ScrapLogGit2Net/](https://github.com/jaateixeira/ScrapLogGit2Net/) . In the top right corner of the page, you will see a "Fork" button. Click on this button, and GitHub will create a copy of the repository under your GitHub account. This forked repository is now independent of the original repository, allowing you to freely make changes without affecting the original project. You can then clone your forked repository to your local machine, make your changes, and push them back to your fork on GitHub.
+   To fork the ScrapLogGit2Net repository on GitHub, go to [https://github.com/jaateixeira/ScrapLogGit2Net/](https://github.com/jaateixeira/ScrapLogGit2Net/). In the top right corner of the page, you will see a "Fork" button. Click on this button, and GitHub will create a copy of the repository under your GitHub account. This forked repository is now independent of the original repository, allowing you to freely make changes without affecting the original project. You can then clone your forked repository to your local machine, make your changes, and push them back to your fork on GitHub.
 
-3. **Clone your forked repository** to your local machine:
+2. **Clone your forked repository** to your local machine:
    ```bash
    git clone https://github.com/jaateixeira/ScrapLogGit2Net.git
+   ```
 
-2. Install the dependencies
+3. **Install the dependencies**
    See dependencies.sh
 
-## Coding Style 
+## Coding Style
 
-We adopt the PEP 8 style guide towards writing clean, readable Python code. 
+We adopt the PEP 8 style guide towards writing clean, readable Python code.
 
-ScrapLogGit2Net started as quick script for scientific research. Fastly obtaining and processing data for research papers was the main goal. This is not a large, clean, object oriented, test-driven master piece. 
-Still, good principles for Python programming apply:  (1) Follow naming conventions, (2) type check your function parameters, and careful use of global variables. Variables should have descriptive names in snake_case for readability and consistency. Type hints should be used in function definitions to specify expected input and output types, enhancing code clarity and facilitating debugging. Accessing global variables should be minimized, as it can lead to code that is difficult to understand and maintain. Instead, use function parameters and return values to manage data flow whenever possible, promoting modularity and reducing side effects.
-
+ScrapLogGit2Net started as a quick script for scientific research. Quickly obtaining and processing data for research papers was the main goal. This is not a large, clean, object-oriented, test-driven masterpiece.
+Still, good principles for Python programming apply: (1) Follow naming conventions, (2) type-check your function parameters, and be careful with the use of global variables. Variables should have descriptive names in snake_case for readability and consistency. Type hints should be used in function definitions to specify expected input and output types, enhancing code clarity and facilitating debugging. Accessing global variables should be minimized, as it can lead to code that is difficult to understand and maintain. Instead, use function parameters and return values to manage data flow whenever possible, promoting modularity and reducing side effects.
 
 ### PEP 8 Coding Style Guide
 
@@ -49,35 +49,27 @@ To install `flake8`, run the following command:
 ```bash
 pip install flake8
 ```
+
 #### To check your Python files for PEP 8 compliance, navigate to your project directory and run:
 
 ```bash
 flake8 your_module.py
 ```
 
+### Allowed Global Variables
 
-### Allowed global variables 
+The following global variables exist:
 
-The following global variable ex
+Please use the built-in `globals()` function to access the global scope’s name table. This signals developers that we are dealing with an important global variable that we should not mess up with.
 
-Please use, the the built-in globals() function to access the global scope’s name table. This signals developers that we are dealing with a imporant global variable that we should not mess up with. 
-
-TODO Table 
-
-| File              | Variable | Type | Description |
-| :---------------- | :------: |  :------: | ----: |
-| scrapLog.py       |   G_network_Dev2Dev_singleEdges   | nx.Graph() | Inter individual network - edges are unweighted  |
-| scrapLog.py       |  G_network_Dev2Dev_multiEdges |  nx.MultiGraph() | Inter individual network - edges can be weighted (using edge-attributes) | 
-| scrapLog.py       | stats | Dictionary (imutable keys) | Keeps statistics of the scrappping| 
-| formatFilterAndViz-nofi-GraphML.py   | TODO         |   TODO    | TODO |
-| transform-nofi-2-nofo-GraphML.py    | TODO         |   TODO    | TODO |
-| formatFilterAndViz-nofo-GraphML.py  | TODO         |   TODO    | TODO |
-
-
-
-
-
-
+| File                              | Variable                        | Type                | Description                                           |
+| :-------------------------------- | :-----------------------------: | :----------------:  | :--------------------------------------------------- |
+| scrapLog.py                       | G_network_Dev2Dev_singleEdges   | nx.Graph()          | Inter-individual network - edges are unweighted       |
+| scrapLog.py                       | G_network_Dev2Dev_multiEdges    | nx.MultiGraph()     | Inter-individual network - edges can be weighted      |
+| scrapLog.py                       | stats                           | Dictionary (immutable keys) | Keeps statistics of the scraping               |
+| formatFilterAndViz-nofi-GraphML.py| TODO                            | TODO                | TODO                                                  |
+| transform-nofi-2-nofo-GraphML.py  | TODO                            | TODO                | TODO                                                  |
+| formatFilterAndViz-nofo-GraphML.py| TODO                            | TODO                | TODO                                                  |
 
 ## Project Architecture
 
@@ -106,30 +98,26 @@ The ScrapLogGit2Net project leverages several powerful Python libraries to achie
 - **Usage**: Matplotlib is used to visualize data, such as network graphs and other statistical plots.
 - **Documentation**: [Matplotlib Documentation](https://matplotlib.org/stable/contents.html)
 
-### Argparse 
+### Argparse
 
 ### Rich
- the ScrapLogGit2Net repository on GitHub, go to https://github.com/jaateixeira/ScrapLogGit2Net/ . In the top right corner of the page, you will see a "Fork" button. Click on this button, and GitHub will create a copy of the repository under your GitHub account. This forked repository is now independent of the original repository, allowing you to freely make changes without affecting the original project. You can then clone your forked repository to your local machine, make your changes, and push them back to your fork on GitHub.
-
 
 **Rich** is a library for rich text and beautiful formatting in the terminal. It is used to create aesthetically pleasing and user-friendly command-line interfaces with features like progress bars, tables, and syntax highlighting.
 
 - **Usage**: Rich is used to enhance the terminal output, making it more informative and visually appealing, especially for progress indicators and formatted output.
 - **Documentation**: [Rich Documentation](https://rich.readthedocs.io/en/stable/)
 
+Rich is used for:
+- Printing colored text in the console (e.g., debug information)
+- Printing text in Markdown format for better readability
+- Printing emojis that reflect the state or mood in the console
+- Inspect function to help you learn about objects
+- Colored Logging in integration with Loguru
+- Good-looking Tables
+- Progress Bars and Wait Spinners
+- Better Looking Errors, with colored stack traces
 
-**Rich** is used for 
-
-Printing colored text in the console (e.g., debug information)
-Printing tex in the MarkDown format for better 
-Priting emojis that reflect feeling in the console 
-Inspect function to help you learn about objects
-Colored Logging in integration Loguru 
-Good looking Tables
-Progress Bars and Wait Spinners
-Better Looking Errors, with colored stacks 
-
-See (https://www.youtube.com/watch?v=JrGFQp9njas)(https://www.youtube.com/watch?v=JrGFQp9njas) for a video tutorial 
+See [video tutorial](https://www.youtube.com/watch?v=JrGFQp9njas) for more information.
 
 ### Loguru
 
@@ -153,17 +141,6 @@ For more detailed guidelines on how to contribute to the project, please refer t
 
 Thank you for your contributions and helping improve ScrapLogGit2Net!
 
-
-
-
-
-
-
-
-
-
-Thank you for your interest in contributing to ScrapLogGit2Net! To ensure a smooth contribution process, please follow the instructions below to submit a pull request with a feature branch.
-
 ## Git Workflow
 1. [Fork the Repository](#fork-the-repository)
 2. [Clone the Forked Repository](#clone-the-forked-repository)
@@ -185,60 +162,59 @@ Thank you for your interest in contributing to ScrapLogGit2Net! To ensure a smoo
 2. Clone your forked repository to your local machine:
    ```bash
    git clone https://github.com/your-username/ScrapLogGit2Net.git
-
+   ```
 
 Sync your fork:
 
-bash
-
+```bash
 git checkout main
 git pull upstream main
 git push origin main
+```
 
-### Create a Feature Branch 
+### Create a Feature Branch
 Create a new branch for your feature/bugfix:
 
-bash
-
+```bash
 git checkout -b feature-branch
+```
 
 Make your changes and commit them:
 
-bash
-
+```bash
 git add .
 git commit -m "Description of your changes"
+```
 
 Push your branch to GitHub:
 
-bash
-
+```bash
 git push origin feature-branch
-
+```
 
 ### Submitting a Pull Request
 
-    Go to your fork on GitHub.
-    Click on the "New Pull Request" button.
-    Select the base fork and branch (our repository's main branch) and compare it with your feature-branch.
-    Create the pull request with a clear and detailed description of your changes.
+1. Go to your fork on GitHub.
+2. Click on the "New Pull Request" button.
+3. Select the base fork and branch (our repository's main branch) and compare it with your feature-branch.
+4. Create the pull request with a clear and detailed description of your changes.
 
 ### Code Review Process
 
 Once you submit your pull request, it will be reviewed by the project maintainers. Here’s what to expect:
 
-    Initial Review: We will review your code for adherence to the coding standards and overall implementation.
-    Feedback: You might receive feedback or requests for changes.
-    Approval: Once your pull request passes review, it will be merged into the main branch.
+1. **Initial Review**: We will review your code for adherence to the coding standards and overall implementation.
+2. **Feedback**: You might receive feedback or requests for changes.
+3. **Approval**: Once your pull request passes review, it will be merged into the main branch.
 
 Please be responsive to feedback and make the necessary changes promptly to expedite the review process.
 
-
 ## Contact
 
-Jose Teixeira <jose.teixeira@abo.fi> 
+Jose Teixeira <jose.teixeira@abo.fi>
 
-## Easy Hacks 
-TODO 
+## Easy Hacks
+TODO
 
+Thank you for your interest in contributing to ScrapLogGit2Net! To ensure a smooth contribution process, please follow the instructions above to submit a pull request with a feature branch.
 
