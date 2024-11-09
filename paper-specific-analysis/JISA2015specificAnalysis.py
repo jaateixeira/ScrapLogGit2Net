@@ -79,5 +79,3 @@ def getEdgesBetweenDates(changeLogData, earlier, later):
 def getEdgesBetweenDates4SelectedFirms(changeLogData,earlier, later, firms):
     print("getEdgesBetweenDates4SelectedFirms not implmented yet") 
     sys.exit()
-
-    
