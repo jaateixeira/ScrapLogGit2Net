@@ -1,37 +1,34 @@
-Lessons learned after retrieving individuals and firm "ids" from git repositories for many years:
+##Lessons Learned from Retrieving Individuals and Firm IDs from Git Repositories
+Automation is Key:
 
-Its a semi-automatic process
-There more can be automated, the better.
-Reprocessing is time consuming.  A wrong visualizaTION, A WRON NETWORK , A WRONG FIGURE IN WEBSITE 
+The process is semi-automatic, and increasing automation reduces errors and saves time. Reprocessing due to mistakes in visualizations, network structures, or figures is highly time-consuming.
+String Similarity Algorithms:
 
+String similarity algorithms are invaluable for identifying similar names and emails. Resources such as Python String Similarity Metrics provide robust tools to address these challenges.
+Using GitHub APIs:
 
-* There are may algoritms for string similarity  https://www.geeksforgeeks.org/python-similarity-metrics-of-strings/ - they can be used to identify similar names and similar emails
+The GitHub REST API and GraphQL API are excellent for resolving email domains like users.noreply.github.com and extracting organization information.
+Challenges with Specific Subdomains:
 
-* GitHub REST and GRAPHML APIs are great to resolve emails and organization with the email domain users.noreply.github.com
+Subdomains for companies like IBM and Intel often require manual grouping, as they don’t easily align with automated processes.
+Identifying Bots:
 
-* IBM and Intel subdomains are problematic and require manual grouping 
+Bots are relatively easy to identify due to their inhuman patterns and behavior in repositories.
+Affiliation Resolution:
 
-* Bots are easy to spot as they look unhuman 
+LinkedIn often helps resolve affiliation problems effectively. However, the increasing trend of using anonymous emails to avoid privacy and spam issues complicates the process.
+Domain-Specific Observations:
 
-* Linked it often resolves affiliation prbles
+Domains such as .com, .org, .edu, and .in generally improve success rates in affiliation resolution. However, domains like .cn, .fi, and .pt can pose challenges.
+For hierarchical domains like a.b.c.com, it is often most effective to affiliate the domain with the top-level c.
+Risks to Consider:
 
-* Increasing trend to use anonynous emails
-to avoid pricacy and spam issues
+Alumni accounts and changes from non-anonymous to anonymous emails can introduce inconsistencies in data.
+Commit annotations, such as "on-behalf-of: @ORG NAME[AT]ORGANIZATION.COM," must be accounted for, as they indicate organizational contributions.
+Robustness Tests:
 
-* danger with .cn .fi .pt 
-
-* danger with alumni accounts
-* Danger with change from non-annonymous to annonymous
-
-.com .org .edu .in help
-
-when domain is a.b.c.com
-sucess is higher if afiiliation is affiliaceted to c. 
-
-Robustness tests
-: String similarity for names
-: String similarty for emails
-: Triangulate with names announced in releases
-: Affiliation triangulaion with GitHub API
-* Account for commits on behalf of organizations using the 'on-behalf-of: @ORG NAME[AT]ORGANIZATION.COM'
-
+Use string similarity checks for names and emails.
+Cross-verify names with those announced in releases.
+Triangulate affiliations using GitHub APIs.
+Ensure accuracy by cross-referencing commits made explicitly on behalf of organizations.
+These lessons emphasize the importance of leveraging robust tools, APIs, and validation techniques to minimize errors and ensure accuracy in analyzing Git repository data

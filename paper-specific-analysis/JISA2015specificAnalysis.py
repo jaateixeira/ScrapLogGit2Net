@@ -1,83 +1,56 @@
-# Code specific for the analysis of the JISA 2014/2015 paper 
-
-from __future__ import absolute_import
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import sys
 
-# Gets connections list among top 10 firms of open stack 
-def getConnectionsAmongTop10Only (con, networked_affiliations, sampled_affiliations): 
+# Gets connections list among top 10 firms of OpenStack
+def getConnectionsAmongTop10Only(con, networked_affiliations, sampled_affiliations): 
     # con is the list of connections 
-    # networked_affiliations is the affilation dictionary (mail -> affiliation)
-    # sample afffiliation to sondsider onlye 
-    # res is a list of connection where both bodes belong to sampled_afiiliations 
+    # networked_affiliations is the affiliation dictionary (mail -> affiliation)
+    # sampled_affiliations to consider only top 10 firms
+
     top10 = sampled_affiliations
+    re = set()  # Using a set to prevent duplicates and improve lookup speed
 
-    re = []
     for edge in con:
-        #print "edge=", edge 
-        (a,b) = edge
-        if (networked_affiliations[a] in top10 and networked_affiliations[b] in top10):
-            if ((a,b) not in re and (b,a) not in re):
-                re.append((a,b))
-    return re 
+        (a, b) = edge
+        if (networked_affiliations.get(a) in top10 and networked_affiliations.get(b) in top10):
+            # Add edge only if (b, a) or (a, b) not already in re
+            if (b, a) not in re:
+                re.add((a, b))
+                
+    return list(re)  # Convert back to list if needed
 
-# from the connections class  
-
+# Retrieve unique nodes from a list of connections
 def getNodesBetweenDatesInConnList(con):
-    "get a list of nodes from change long data between dates earlier later" 
-    #print "getting getNodesBetweenDates", " in ", con 
+    # con: list of connections (tuples of nodes)
     
-    tmpList= []
-    
+    tmpList = set()  # Using a set to prevent duplicates
+
     for edge in con:
-        #print "edge=", edge 
-        (a,b) = edge
-        if (a not in tmpList):
-            tmpList.append(a)
-        elif (b not in tmpList):
-            tmpList.append (b)
-        
-    ## TEST 1 
-    # if there are duplicates in tmpList, something went wrong  
-    if len(tmpList)!=len(set(tmpList)):
-        print("error in getting the nodes list from a connections tuples")
-        sys.exit()
-
-    return tmpList
-
-def getNodesBetweenDates4SelectedFirmsDatesInConnList(con,  networked_affiliations, firms):
-    "get a list of edges  from change long data between dates earlier later" 
-
-    res= getNodesBetweenDatesInConnList(getConnectionsAmongTop10Only(con,networked_affiliations,firms))
+        (a, b) = edge
+        tmpList.add(a)
+        tmpList.add(b)
     
-    ## TEST 1 
-    # if there are duplicates in tmpList, something went wrong  
-    if len(res)!=len(set(res)):
-        print("error in getting the nodes list from a connections tuples")
-        sys.exit()
+    return list(tmpList)  # Convert back to list if needed
 
-    return res 
+# Retrieves nodes between dates for selected firms only
+def getNodesBetweenDates4SelectedFirmsDatesInConnList(con, networked_affiliations, firms):
+    # Returns unique nodes among connections limited to top 10 firms
+    res = getNodesBetweenDatesInConnList(getConnectionsAmongTop10Only(con, networked_affiliations, firms))
+    return res
 
-# From the scraplog class 
-
-
+# Placeholder for unimplemented functions
 def getNodesBetweenDates(ChangeLongdata, earlier, later):
-    "get a list of nodes from change long data between dates earlier later" 
-    print("getNodesBetweenDates not implmented yet") 
+    print("getNodesBetweenDates not implemented yet")
     sys.exit()
 
-def getNodesBetweenDates4SelectedFirms(ChangeLogData ,earlier, later, firms):
-    "get a list of edges  from change long data between dates earlier later" 
-    print("getNodesBetweenDates4SelectedFirms not implmented yet") 
+def getNodesBetweenDates4SelectedFirms(ChangeLogData, earlier, later, firms):
+    print("getNodesBetweenDates4SelectedFirms not implemented yet")
     sys.exit()
-
 
 def getEdgesBetweenDates(changeLogData, earlier, later):
-    print("getEdgessBetweenDates not implmented yet") 
+    print("getEdgesBetweenDates not implemented yet")
     sys.exit()
 
-def getEdgesBetweenDates4SelectedFirms(changeLogData,earlier, later, firms):
-    print("getEdgesBetweenDates4SelectedFirms not implmented yet") 
+def getEdgesBetweenDates4SelectedFirms(changeLogData, earlier, later, firms):
+    print("getEdgesBetweenDates4SelectedFirms not implemented yet")
     sys.exit()
-
-    
