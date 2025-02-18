@@ -275,18 +275,20 @@ Most Linux distributions run ScrapLogGit2Net out of the box. See the file depend
 Across platforms, you can run test cases by invoking the bash script testScrapLog.sh available in the repository. If those cases run well, i.e., you get green color, you installed ScrapLogGit2Net successfully.
 
 # Contributing
-Please create a new branch for any new feature. Branch or fork, code, test, then pull request. Please follow the basic guide on [https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
+Please create a new branch for any new feature. Branch or fork, code, test, then pull request. See  [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for our contribuition guide. 
+
+Before asking, please refer also to [the GitHub guide on how to contribute to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
 
 Note you should not break the test runner bash script (testScrapLog.sh) that runs ScrapLogGit2Net against test-data and compares with the expected output. You might need to change the test runner to comply with new developments.
 
 Jose Teixeira, currently the only maintainer, will review and merge pull requests, update the ChangeLog.txt, acknowledge the contributions, and work on documentation in free time from work.
 
 # Contributors
-Jose Teixeira
-Syed Ahmed 
+- Jose Teixeira
+- Syed Ahmed 
 
 # Maintainers  
-Jose Teixeira
+- Jose Teixeira
 
 # License
 GNU General Public License v3.0
