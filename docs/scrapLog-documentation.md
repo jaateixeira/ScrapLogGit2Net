@@ -26,12 +26,12 @@ A world where software co-production analytics put social network visualizations
 
 # Executable tools
 - **scrapLog.py** - Mines a Git log with SNA (associating developers that co-edit the same source-code files) and outputs a GraphML network file (IN Git log -> GraphML).
-- formatAndReport-nofi-GraphML.py - Outputs a spreadsheet full of inter-individual network metrics from a given GraphML network file created with scrapLog (IN GraphML -> .csv or .xls).
-- formatAndReport-nofo-GraphML.py - Outputs a spreadsheet full of inter-organizational network metrics from a given GraphML network file created with scrapLog (IN GraphML ->  .csv or .xls).
-- formatFilterAndViz-nofi-GraphML.py - Formats, filters, and visualizes a network of individuals from a given GraphML network file created with scrapLog (IN GraphML -> pdf or png).
-- formatFilterAndViz-nofo-GraphML.py - Formats, filters, and visualizes a network of organizations from a given GraphML network file created with scrapLog (IN GraphML -> pdf or png).
-- transform-nofi-2-nofo-GraphML.py - Transforms a network into a network of organizations GraphML file (IN GraphML, OUT GraphML).
-- deanonymize_github_users.py - Deanonymizes developers' email and affiliation using GitHub REST API.
+- **formatAndReport-nofi-GraphML.py** - Outputs a spreadsheet full of inter-individual network metrics from a given GraphML network file created with scrapLog (IN GraphML -> .csv or .xls).
+- **formatAndReport-nofo-GraphML.py** - Outputs a spreadsheet full of inter-organizational network metrics from a given GraphML network file created with scrapLog (IN GraphML ->  .csv or .xls).
+- **formatFilterAndViz-nofi-GraphML.py** - Formats, filters, and visualizes a network of individuals from a given GraphML network file created with scrapLog (IN GraphML -> pdf or png).
+- **formatFilterAndViz-nofo-GraphML.py** - Formats, filters, and visualizes a network of organizations from a given GraphML network file created with scrapLog (IN GraphML -> pdf or png).
+- **transform-nofi-2-nofo-GraphML.py** - Transforms a network into a network of organizations GraphML file (IN GraphML, OUT GraphML).
+- **deanonymize_github_users.py** - Deanonymizes developers' email and affiliation using GitHub REST API.
 
 # **scrapLog.py** Input
 A Git repository and its commit logs.
