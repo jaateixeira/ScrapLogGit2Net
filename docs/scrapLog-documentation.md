@@ -33,10 +33,10 @@ A world where software co-production analytics put social network visualizations
 - transform-nofi-2-nofo-GraphML.py - Transforms a network into a network of organizations GraphML file (IN GraphML, OUT GraphML).
 - deanonymize_github_users.py - Deanonymizes developers' email and affiliation using GitHub REST API.
 
-# **scrapLog.py** Inputs
+# **scrapLog.py** Input
 A Git repository and its commit logs.
 
-# **scrapLog.py** Outputs
+# **scrapLog.py** Output
 Social networks that capture who codes with whom in a repository (note that a software project can have multiple repositories).
 
 # How **scrapLog.py** works
@@ -55,7 +55,7 @@ Then:
 Note that:
 - Some manual developer email aggregation might be required as the same developers can use multiple emails.
 - Software bots can also commit code, undermining your analysis of peer-to-peer collaboration.
-- Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected. For example, when analyzing projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of collaboration.
+- Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected. For example, when analyzing projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination and/or information sharing. 
 
 # How to use **scrapLog.py**
 You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
@@ -103,9 +103,9 @@ tensorflow/compiler/mlir/lite/quantization/stablehlo/BUILD
 tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
 ```
 
-What ScrapLogGit2Net does is parse these timestamps and associate developers that co-edited the same source-code file in a social network. If two developers co-edit the same source-code file over time, we can assume that they cooperate with each other. A bit like scientists that co-author papers.
+What ScrapLogGit2Net does is to parse these timestamps and associate developers that co-edited the same source-code file in a social network. If two developers co-edit the same source-code file over time, we can assume that they cooperate with each other. A bit like scientists that co-author papers.
 
-Note the example year covers almost 10 years of commit logs in the TensorFlow project. It might be wise to narrow down the time window you want to analyze.
+Note that this example covers almost 10 years of commit logs in the TensorFlow project. It might be wise to narrow down the time window you want to analyze.
 
 ```
 git log --pretty=format:"==%an;%ae;%ad==" --name-only
@@ -179,7 +179,7 @@ Most developers do not hide their email from the git logs. Like scientists in th
 
 As pointed out by [Teixeira et al. (2015)](https://link.springer.com/article/10.1186/s13174-015-0028-2), when studying code-collaboration as a synchronous behaviour happening across different time windows (release after release or year after year), you will miss some collaboration edges between two developers who contributed to the same file that started before the time-window opened for analysis or did not end before the time-window closed. See [https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3](https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3).
 
-A way to quantify this issue is to first analyze all the historical data. From day 0 to the last day save the edges. Then conduct the analysis in segments (e.g., year after year, release after release, etc). Then see how many edges there are in the network from all the time that were not captured by the time-limited analysis. 0 is ideal. But expect a few. Given that people tend to drop coding efforts before Xmas and New Year, or before releasing a new version (they as mostly stabilizing over developing new features), the impacts on the model validity are very small.
+A way to quantify this issue is to first analyze all the historical data. From day 0 to the last day save the edges. Then conduct the analysis in segments (e.g., year after year, release after release, etc). Then see how many edges there are in the network from all the time that were not captured by the time-limited analysis. 0 is ideal. But expect a few. Given that people tend to drop coding efforts before Xmas and New Year, or before releasing a new version (as they concentrate efforts on stabilizing over developing new features), the impacts on the model validity are very small.
 
 # Command line options for advanced use
 
@@ -223,7 +223,7 @@ network file in the standard XML-based format GraphML.
 - Transformation of unweighted inter-individual networks into weighted inter-organizational networks. The weight is equal to the number of inter-organizational relationships. Intra-organizational relationships are ignored.
 
 ## To implement (volunteers welcome)
-- Cache the API requests using https://pypi.org/project/requests-cache/ as GitHub REST API replies are limited
+- Cache the API requests using https://pypi.org/project/requests-cache/ as GitHub REST API replies are limited for regular for non-paying users 
 - Test the possible integration with the PyGithub API library
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
 - Account for commits on behalf of organizations using the 'on-behalf-of: @ORG NAME[AT]ORGANIZATION.COM' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-on-behalf-of-an-organization).
@@ -238,7 +238,7 @@ network file in the standard XML-based format GraphML.
 - Reporting analysis in LaTeX, Markdown, HTML, and text files. Should include quantitative metrics (e.g., n. commits, n. lines of code per dev, most co-edited files) and relational metrics (e.g., centrality, density).
 - Support for other network formats besides GraphML (see [https://socnetv.org/docs/formats.html](https://socnetv.org/docs/formats.html)).
 - Support for community detection.
-- Use a logging system (e.g., [https://docs.python.org/3/library/logging.html](https://docs.python.org/3/library/logging.html) or [https://github.com/gruns/icecream](https://github.com/gruns/icecream)) instead of print statements for debugging.
+- Use a logging system (e.g., [https://docs.python.org/3/library/logging.html](https://docs.python.org/3/library/logging.html) instead of print statements for debugging.
 - Write unit tests for the main functions in ScrapLogGit2Net (see [https://docs.python.org/3/library/unittest.html](https://docs.python.org/3/library/unittest.html)).
 - Use config files as there are already so many parameters.
 - Integrate with the [TNM Tool for Mining of Socio-Technical Data from Git Repositories](https://github.com/JetBrains-Research/tnm). Cool, advanced, research-based but coded in Java. See [TNM tool presentation at MSR (2021) conference](https://www.youtube.com/watch?v=-NXaY8zTEOU).
@@ -283,6 +283,7 @@ Jose Teixeira, currently the only maintainer, will review and merge pull request
 
 # Contributors
 Jose Teixeira
+Syed Ahmed 
 
 # Maintainers  
 Jose Teixeira
