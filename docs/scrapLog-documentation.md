@@ -285,6 +285,9 @@ Jose Teixeira, currently the only maintainer, will review and merge pull request
 - Jose Teixeira
 - Syed Ahmed 
 
+# Acknowledgments
+Åbo Akademi Library for hiring Master student during the summer of 2014 to contribute to the project as an open-science initiative. 
+
 # Maintainers  
 - Jose Teixeira
 
