@@ -224,9 +224,9 @@ if args.focal_firm:
 
     
 if args.show:
-    print()
-    print("In snow mode")
-    print()
+    rprint("\n In snow mode \n")
+else:
+    rprint("\n In save png and pdf mode \n")
 
 if args.legend:
     print()
@@ -582,7 +582,15 @@ if args.focal_firm:
 
 plt.axis("off")
 plt.tight_layout()
-plt.show()
+
+if args.show:
+    plt.show()
+else:
+    # Save the plot as a PDF file
+    plt.savefig(f'{args.file}-{args.network_layout}.pdf', format='pdf')
+
+    # Save the plot as a PNG file
+    plt.savefig(f'{args.file}-{args.network_layout}.png', format='png')
 
 "prints the position of the focal firm if any given by the cli"
 
