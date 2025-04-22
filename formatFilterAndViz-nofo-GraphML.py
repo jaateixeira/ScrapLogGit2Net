@@ -9,6 +9,106 @@
 # ./formatAndViz-nofo-GraphML.py test-data/2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML-transformed-to-nofo.graphML 
 
 
+
+
+import sys
+import os
+
+import argparse
+import networkx as nx
+
+from typing import Tuple
+
+import time
+from time import sleep
+
+
+# Combining loguru with rich provides a powerful logging setup that enhances readability and adds visual appeal to your logs. This integration makes it easier to debug and monitor applications by presenting log messages in a clear, color-coded, and structured format while using loguru's other features, such as log rotation and filtering,
+from loguru import logger
+
+# You can then print strings or objects to the terminal in the usual way. Rich will do some basic syntax highlighting and format data structures to make them easier to read.
+from rich import print as rprint
+
+
+# For complete control over terminal formatting, Rich offers a Console class.
+# Most applications will require a single Console instance, so you may want to create one at the module level or as an attribute of your top-level object.
+from rich.console import Console
+
+# Initialize the console
+console = Console()
+
+# JSON gets easier to understand
+from rich import print_json
+from rich.json import JSON
+
+
+
+
+
+# Strings may contain Console Markup which can be used to insert color and styles in to the output.
+from rich.markdown import Markdown
+
+# Python data structures can be automatically pretty printed with syntax highlighting.
+from rich import pretty
+from rich.pretty import pprint
+pretty.install()
+
+# Rich has an inspect() function which can generate a report on any Python object. It is a fantastic debug aid
+from rich import inspect
+from rich.color import Color
+
+#Rich supplies a logging handler which will format and colorize text written by Python’s logging module.
+from rich.logging import RichHandler
+
+# Add RichHandler to the loguru logger
+logger.remove()  # Remove the default logger
+logger.add(
+    RichHandler(console=console, show_time=True, show_path=True, rich_tracebacks=True),
+    format="{message}",  # You can customize this format as needed
+    level="DEBUG",  # Set the desired logging level
+    #level="INFO",  # Set the desired logging level
+)
+
+
+# Rich’s Table class offers a variety of ways to render tabular data to the terminal.
+from rich.table import Table
+
+
+# Rich provides the Live  class to to animate parts of the terminal
+# It's handy to annimate tables that grow row by row
+from rich.live import Live
+
+# Rich provides the Align class to align rendable objects
+from rich.align import Align
+
+# Rich can display continuously updated information regarding the progress of long running tasks / file copies etc. The information displayed is configurable, the default will display a description of the ‘task’, a progress bar, percentage complete, and estimated time remaining.
+from rich.progress import Progress, TaskID
+
+# Rich has a Text class you can use to mark up strings with color and style attributes.
+from rich.text import Text
+
+
+from rich.traceback import Traceback
+
+# For configuring
+from rich.traceback import install
+# Install the Rich Traceback handler with custom options
+install(
+    show_locals=True,  # Show local variables in the traceback
+    locals_max_length=10, locals_max_string=80, locals_hide_dunder=True, locals_hide_sunder=False,
+    indent_guides=True,
+    suppress=[__name__],
+    # suppress=[your_module],  # Suppress tracebacks from specific modules
+    #max_frames=3,  # Limit the number of frames shown
+    max_frames=5,  # Limit the number of frames shown
+    #width=50,  # Set the width of the traceback display
+    width=100,  # Set the width of the traceback display
+    extra_lines=3,  # Show extra lines of code around the error
+    theme="solarized-dark",  # Use a different color theme
+    word_wrap=True,  # Enable word wrapping for long lines
+)
+
+
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
@@ -88,7 +188,7 @@ parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to
 
 
 
-parser.add_argument("-ff", "--focal_firm",required=True,
+parser.add_argument("-ff", "--focal_firm",
                     help="the focal firm we want to highlight")
 
 parser.add_argument("-t", "--top_firms_only", action="store_true",
@@ -484,8 +584,11 @@ plt.axis("off")
 plt.tight_layout()
 plt.show()
 
-rprint(f"The position of {args.focal_firm } is:")
-rprint(pos[args.focal_firm ])
+"prints the position of the focal firm if any given by the cli"
+
+if args.focal_firm:
+    rprint(f"The position of {args.focal_firm } is:")
+    rprint(pos[args.focal_firm ])
 
 
 
