@@ -590,7 +590,10 @@ else:
     plt.savefig(f'{args.file}-{args.network_layout}.pdf', format='pdf')
 
     # Save the plot as a PNG file
-    plt.savefig(f'{args.file}-{args.network_layout}.png', format='png')
+    plt.savefig(f'{args.file}-{args.network_layout}'
+                f''
+                f''
+                f'.png', format='png')
 
 "prints the position of the focal firm if any given by the cli"
 
