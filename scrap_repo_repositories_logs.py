@@ -548,26 +548,6 @@ def get_commit_dates_for_release(repo_path: str, release_branch: str) -> Tuple[O
     return (first_commit_date_time, last_commit_date_time)
 
 
-def get_column_values(table: Table, column_index: int) -> List[str]:
-    """
-    Extract all values from a specific column in a Rich Table.
-
-    Args:
-        table: The Rich Table object
-        column_index: Zero-based column index (e.g., 1 for 2nd column)
-
-    Returns:
-        List of string values (excluding header)
-    """
-    column_values = []
-
-    # Access the table's internal data structure
-    for row in getattr(table, "_rows", []):
-        if column_index < len(row.cells):
-            # Get raw text from the cell (strip formatting markup)
-            cell_content = str(row.cells[column_index])
-            column_values.append(cell_content)
-
 
 def print_commit_dates(repo_path: str, release_branch: str):
     """Print commit dates with rich formatting"""
@@ -753,6 +733,7 @@ def main():
             console.print("\t 🏀 Its a git directory 😀")
         else:
             logger.error("Not a git repository")
+
             sys.exit()
 
         if not args.releases:
@@ -808,9 +789,20 @@ def main():
             console.print(timeline_table)
 
             " Get and print the 2nd column values"
-            first_dates = get_column_values(timeline_table, 3)
-            console.print("\nExtracted First Commit Dates:", first_dates)
 
+            headers = [str(column.header) for column in timeline_table.columns]
+
+            #rprint(headers)
+            #sys.exit()
+
+            # Access table rows (using protected attribute)
+            rows_data = []
+
+            for column in timeline_table.columns:
+                if column.header == "Last Commit":
+                    rprint (column.header)
+                    rprint(column)
+                    rprint(column._cells)
 
 
 
