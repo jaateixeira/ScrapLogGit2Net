@@ -506,9 +506,47 @@ def get_commit_dates_for_release(repo_path: str, release_branch: str) -> Tuple[O
         console.print("-" * 40)  # Separator for clarity
         sys.exit(1)
 
+    # First commit (oldest)
+    cmd = f"git -C {str(path)} rev-list --max-parents=0 HEAD --format=\"%cd\" --date=format:'%Y-%m-%d %H:%M:%S' | tail -1"
 
-    sys.exit()
-        #return (first_date, last_date)
+    logger.info(f"Getting the first commit (oldest) using [ $ {cmd}]")
+
+    try:
+        stdout, stderr, rc = run_cmd_subprocess(
+            cmd,
+            check=True,
+            shell=True,
+        )
+        logger.info(f"\t {cmd} [bold green]Success![/]")
+        logger.info(f"\t Extracting the date from [{stdout.strip()}]")
+
+        date_str = stdout.strip()
+
+        # Validate format
+        first_commit_date_time = validate_and_parse_datetime(date_str)
+
+        if first_commit_date_time:
+            logger.info(f"Valid first commit datetime: {first_commit_date_time} (Type: {type(first_commit_date_time)})")
+        else:
+            logger.info("Invalid first commit (oldest) datetime format!")
+
+        logger.success(f"Valid commit date: {date_str}")
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Git command failed (exit {e.returncode}): {e.stderr}")
+        sys.exit(1)
+    except FileNotFoundError:
+        logger.error("Git not installed or command not found!")
+        sys.exit(1)
+    except Exception as e:  # Catch-all for other errors
+        console.print(f"[bold yellow]{e} occurred:[/bold yellow]", style="bold red")
+        # Print formatted traceback using Rich
+        console.print(Traceback(), style="bold red")
+        console.print("-" * 40)  # Separator for clarity
+        sys.exit(1)
+
+
+    return (first_commit_date_time, last_commit_date_time)
 
 
 
