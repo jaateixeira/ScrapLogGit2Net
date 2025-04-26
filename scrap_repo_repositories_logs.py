@@ -25,18 +25,15 @@ import re
 
 from pathlib import Path
 import subprocess
+
 import shlex
 
 import argparse
-import networkx as nx
+
 
 from datetime import datetime
 
-from typing import Optional, Tuple
-from typing import Tuple
-
-import time
-from time import sleep
+from typing import Dict, Tuple, Optional
 
 
 # Combining loguru with rich provides a powerful logging setup that enhances readability and adds visual appeal to your logs. This integration makes it easier to debug and monitor applications by presenting log messages in a clear, color-coded, and structured format while using loguru's other features, such as log rotation and filtering,
@@ -63,10 +60,12 @@ from rich.json import JSON
 
 # Strings may contain Console Markup which can be used to insert color and styles in to the output.
 from rich.markdown import Markdown
+from rich.style import Style
 
 # Python data structures can be automatically pretty printed with syntax highlighting.
 from rich import pretty
 from rich.pretty import pprint
+
 pretty.install()
 
 # Rich has an inspect() function which can generate a report on any Python object. It is a fantastic debug aid
@@ -549,6 +548,26 @@ def get_commit_dates_for_release(repo_path: str, release_branch: str) -> Tuple[O
     return (first_commit_date_time, last_commit_date_time)
 
 
+def get_column_values(table: Table, column_index: int) -> List[str]:
+    """
+    Extract all values from a specific column in a Rich Table.
+
+    Args:
+        table: The Rich Table object
+        column_index: Zero-based column index (e.g., 1 for 2nd column)
+
+    Returns:
+        List of string values (excluding header)
+    """
+    column_values = []
+
+    # Access the table's internal data structure
+    for row in getattr(table, "_rows", []):
+        if column_index < len(row.cells):
+            # Get raw text from the cell (strip formatting markup)
+            cell_content = str(row.cells[column_index])
+            column_values.append(cell_content)
+
 
 def print_commit_dates(repo_path: str, release_branch: str):
     """Print commit dates with rich formatting"""
@@ -580,6 +599,81 @@ def print_commit_dates(repo_path: str, release_branch: str):
 
     except Exception as e:
         console.print(f"[bold red]Error:[/] {e}", style="bold red")
+
+
+
+
+
+def get_release_commit_timeline(repo_path: str, release_names: List[str]) -> Table:
+    """
+    Generate a colorful table comparing commit dates across releases.
+
+    Args:
+        repo_path: Path to Git repo
+        release_names: List of branch names (e.g., ["main", "release/1.0"])
+
+    Returns:
+        rich.Table with colored output
+    """
+    # Define styles
+    header_style = Style(color="bright_white", bold=True, bgcolor="dark_blue")
+    release_style = Style(color="cyan", bold=True)
+    date_style = Style(color="yellow")
+    duration_style_good = Style(color="green")
+    duration_style_warn = Style(color="yellow")
+    duration_style_bad = Style(color="red")
+
+    table = Table(
+        title="[bold]Release Commit Timeline[/]",
+        title_style=Style(color="bright_magenta", bold=True),
+        header_style=header_style,
+        border_style="bright_blue",
+        row_styles=["none", "dim"]
+    )
+
+    # Add columns
+    table.add_column("Release", style=release_style, min_width=12)
+    table.add_column("First Commit", style=date_style, justify="center")
+    table.add_column("Last Commit", style=date_style, justify="center")
+    table.add_column("Duration (days)", justify="right")
+
+    for branch_name in release_names:
+        try:
+            first_date, last_date = get_commit_dates_for_release(repo_path, branch_name)
+            duration = (last_date - first_date).days
+
+            # Auto-format release name
+            release_name = (
+                f"[bold cyan]v{branch_name.split('/')[-1]}[/]"
+                if '/' in branch_name
+                else f"[bold green]{branch_name}[/]"
+            )
+
+            # Color-code duration
+            if duration < 30:
+                duration_display = f"[green]{duration} 🚀[/]"
+            elif duration < 90:
+                duration_display = f"[yellow]{duration} ⏳[/]"
+            else:
+                duration_display = f"[red]{duration} 🐢[/]"
+
+            table.add_row(
+                release_name,
+                f"[yellow]{first_date.strftime('%Y-%m-%d')}[/]",
+                f"[bright_green]{last_date.strftime('%Y-%m-%d')}[/]",
+                duration_display
+            )
+
+        except Exception as e:
+            table.add_row(
+                f"[red]{branch_name}[/]",
+                "[bright_red]ERROR[/]",
+                "[bright_red]ERROR[/]",
+                "[red]N/A[/]"
+            )
+
+    return table
+
 
 def get_release_branches(repo_path: str) -> List[str]:
     """
@@ -704,8 +798,21 @@ def main():
             console.print("\n\t 🏀 Got a clean list of branches (release branches?) 😀")
             console.print(f"\t release_branches = {release_branches}")
 
-            for release in release_branches:
-                print_commit_dates(args.input_dir, release)
+
+            "Prints the releases info on first and last commit date"
+            #for release in release_branches:
+                #print_commit_dates(args.input_dir, release)
+
+            "builds a rich table with information on last and first commit per release"
+            timeline_table = get_release_commit_timeline(args.input_dir, release_branches)
+            console.print(timeline_table)
+
+            " Get and print the 2nd column values"
+            first_dates = get_column_values(timeline_table, 3)
+            console.print("\nExtracted First Commit Dates:", first_dates)
+
+
+
 
     except Exception as e:
         # Print the exception traceback using Rich
