@@ -23,8 +23,10 @@ import os
 
 import re
 
-from pathlib import Path
 import subprocess
+from pathlib import Path
+from typing import List
+
 
 import shlex
 
@@ -53,10 +55,6 @@ console = Console()
 # JSON gets easier to understand
 from rich import print_json
 from rich.json import JSON
-
-
-
-
 
 # Strings may contain Console Markup which can be used to insert color and styles in to the output.
 from rich.markdown import Markdown
@@ -292,13 +290,7 @@ def check_if_directory_is_a_git_repository(directory_path: str) -> bool:
         return False
 
 
-import subprocess
-from pathlib import Path
-from typing import List
 
-import subprocess
-from pathlib import Path
-from typing import List
 
 
 def get_git_tags(repo_path: str) -> List[str]:
@@ -423,7 +415,7 @@ def validate_and_parse_datetime(date_str: str) -> Optional[datetime]:
         return None
 
 
-def get_commit_dates_for_release(repo_path: str, release_branch: str) -> Tuple[Optional[datetime], Optional[datetime]]:
+def get_commit_dates_for_release(repo_path: Path, release_branch: str) -> Tuple[Optional[datetime], Optional[datetime]]:
     """
     Get first and last commit dates for a specific release branch.
 
@@ -716,7 +708,7 @@ def get_release_branches(repo_path: str) -> List[str]:
 
 
 def get_git_log_file_for_release_time_window(
-        repo_path: str,
+        repo_path: Path,
         release_branch: str,
         since_date: datetime,
         until_date: datetime,
@@ -735,10 +727,11 @@ def get_git_log_file_for_release_time_window(
         true if it works
     """
 
-    #base_cmd = f"git -C {repo_path} log {release_branch}  -since = '{since_date}' - -until = '{until_date}' - -pretty = format:\"==%an;%ae;%ad==\" - -name - only"
+
 
     #base_cmd =  f"git -C {repo_path} log {release_branch}"
-    base_cmd =  f"git -C {repo_path} log {release_branch} --pretty=format:\"==%an;%ae;%ad==\" --name-only"
+    #base_cmd =  f"git -C {repo_path} log {release_branch} --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only"
+    base_cmd = f"git -C {repo_path} log {release_branch} --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only > git_log_{repo_path.name}"
 
     console.print(f"Getting logs with $ {base_cmd}")
 
@@ -858,7 +851,7 @@ def main():
 
         logger.info(f"args={args}")
 
-        if check_if_directory_is_a_git_repository(args.input_dir):
+        if check_if_directory_is_a_git_repository(Path(args.input_dir)):
             console.print("\t 🏀 Its a git directory 😀")
         else:
             logger.error("Not a git repository")
