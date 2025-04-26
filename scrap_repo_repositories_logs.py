@@ -114,7 +114,7 @@ def setup_logging(verbose: int = 0, console: Optional[Console] = None) -> None:
 
 
 # Rich’s Table class offers a variety of ways to render tabular data to the terminal.
-from rich.table import Table
+from rich.table import Table as RichTable
 
 
 # Rich provides the Live  class to to animate parts of the terminal
@@ -581,27 +581,32 @@ def print_commit_dates(repo_path: str, release_branch: str):
         console.print(f"[bold red]Error:[/] {e}", style="bold red")
 
 
+from typing import Tuple, List
+from datetime import datetime
+from rich.table import Table
+from rich.style import Style
 
 
-
-def get_release_commit_timeline(repo_path: str, release_names: List[str]) -> Table:
+def get_release_commit_timeline(repo_path: str, release_names: List[str]) -> Tuple[Table, List[datetime]]:
     """
-    Generate a colorful table comparing commit dates across releases.
+    Generate a colorful table comparing commit dates across releases and return last commit dates.
 
     Args:
         repo_path: Path to Git repo
         release_names: List of branch names (e.g., ["main", "release/1.0"])
 
     Returns:
-        rich.Table with colored output
+        Tuple of (rich.Table, List[datetime]) where:
+        - Table contains the formatted comparison
+        - List contains the last commit dates in datetime format
     """
+    # Initialize storage for last commit dates
+    last_commit_dates = []
+
     # Define styles
     header_style = Style(color="bright_white", bold=True, bgcolor="dark_blue")
     release_style = Style(color="cyan", bold=True)
     date_style = Style(color="yellow")
-    duration_style_good = Style(color="green")
-    duration_style_warn = Style(color="yellow")
-    duration_style_bad = Style(color="red")
 
     table = Table(
         title="[bold]Release Commit Timeline[/]",
@@ -622,14 +627,16 @@ def get_release_commit_timeline(repo_path: str, release_names: List[str]) -> Tab
             first_date, last_date = get_commit_dates_for_release(repo_path, branch_name)
             duration = (last_date - first_date).days
 
-            # Auto-format release name
+            # Store the raw datetime object
+            last_commit_dates.append(last_date)
+
+            # Format for display
             release_name = (
                 f"[bold cyan]v{branch_name.split('/')[-1]}[/]"
                 if '/' in branch_name
                 else f"[bold green]{branch_name}[/]"
             )
 
-            # Color-code duration
             if duration < 30:
                 duration_display = f"[green]{duration} 🚀[/]"
             elif duration < 90:
@@ -645,6 +652,7 @@ def get_release_commit_timeline(repo_path: str, release_names: List[str]) -> Tab
             )
 
         except Exception as e:
+            last_commit_dates.append(None)  # Maintain index alignment
             table.add_row(
                 f"[red]{branch_name}[/]",
                 "[bright_red]ERROR[/]",
@@ -652,7 +660,7 @@ def get_release_commit_timeline(repo_path: str, release_names: List[str]) -> Tab
                 "[red]N/A[/]"
             )
 
-    return table
+    return (table, last_commit_dates)
 
 
 def get_release_branches(repo_path: str) -> List[str]:
@@ -785,24 +793,21 @@ def main():
                 #print_commit_dates(args.input_dir, release)
 
             "builds a rich table with information on last and first commit per release"
-            timeline_table = get_release_commit_timeline(args.input_dir, release_branches)
+            timeline_table , release_closing_datetimes = get_release_commit_timeline(args.input_dir, release_branches)
+
+
+
             console.print(timeline_table)
 
-            " Get and print the 2nd column values"
+            release_closing_dates= []
+            for date in release_closing_datetimes:
+                #rprint(date.strftime('%Y-%m-%d'))  # 2023-12-31 (ISO format)
+                release_closing_dates.append(date.strftime('%Y-%m-%d'))
 
-            headers = [str(column.header) for column in timeline_table.columns]
 
-            #rprint(headers)
-            #sys.exit()
-
-            # Access table rows (using protected attribute)
-            rows_data = []
-
-            for column in timeline_table.columns:
-                if column.header == "Last Commit":
-                    rprint (column.header)
-                    rprint(column)
-                    rprint(column._cells)
+            console.print("\n\t 🏀 Got a clean releases closubg dates 😀")
+            console.print(f"\t release_branches = {release_branches}")
+            console.print(f"\t  release_closing_dates = {release_closing_dates}")
 
 
 
