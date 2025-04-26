@@ -715,81 +715,61 @@ def get_release_branches(repo_path: str) -> List[str]:
 
 
 
-def get_git_log_for_release_file(
+def get_git_log_file_for_release_time_window(
         repo_path: str,
         release_branch: str,
-        since_date: Optional[str] = None,
-        until_date: Optional[str] = None,
-        max_count: Optional[int] = None,
+        since_date: datetime,
+        until_date: datetime,
         date_format: str = "%Y-%m-%d"
-) -> bool
+) -> bool:
     """
     Get git log for a specific release branch and optional file path.
 
     Args:
         repo_path: Path to Git repository
         release_branch: Branch name to analyze
-        file_path: Optional specific file path to filter commits
         since_date: Start date (YYYY-MM-DD format)
         until_date: End date (YYYY-MM-DD format)
-        max_count: Maximum number of commits to return
-        date_format: Date format string
 
     Returns:
-        Dictionary containing:
-        {
-            "metadata": {
-                "branch": str,
-                "file": str,
-                "date_range": str,
-                "commit_count": int
-            },
-            "commits": List[str]  # Formatted commit messages
-        }
+        true if it works
     """
-    console = Console()
-    result = {
-        "metadata": {
-            "branch": release_branch,
-            "file": file_path or "all files",
-            "date_range": f"{since_date or 'start'} to {until_date or 'now'}",
-            "commit_count": 0
-        },
-        "commits": []
-    }
+
+    #base_cmd = f"git -C {repo_path} log {release_branch}  -since = '{since_date}' - -until = '{until_date}' - -pretty = format:\"==%an;%ae;%ad==\" - -name - only"
+
+    #base_cmd =  f"git -C {repo_path} log {release_branch}"
+    base_cmd =  f"git -C {repo_path} log {release_branch} --pretty=format:\"==%an;%ae;%ad==\" --name-only"
+
+    console.print(f"Getting logs with $ {base_cmd}")
+
 
     try:
-        # Build git log command
-        base_cmd = f"git -C {repo_path} log {release_branch}"
+        stdout, stderr, rc = run_cmd_subprocess(
+            base_cmd,
+            check=True,
+            shell=True,
+        )
+        logger.info(f"\t {base_cmd} [bold green]Success![/]")
+        logger.info(f"\t Could run git log [{stdout}]")
 
-        if file_path:
-            base_cmd += f" -- {file_path}"
 
-        if since_date:
-            base_cmd += f" --since='{since_date}'"
 
-        if until_date:
-            base_cmd += f" --until='{until_date}'"
-
-        if max_count:
-            base_cmd += f" -n {max_count}"
-
-        base_cmd += f" --format='%h - %an - %cd - %s' --date=format:'{date_format}'"
-
-        # Execute command
-        output = subprocess.check_output(base_cmd, shell=True, text=True)
-        commits = output.splitlines()
-
-        # Update results
-        result["metadata"]["commit_count"] = len(commits)
-        result["commits"] = commits
+        logger.success(f":)")
 
     except subprocess.CalledProcessError as e:
-        console.print(f"[red]Error getting log for {release_branch}: {e}[/]")
-    except Exception as e:
-        console.print(f"[red]Unexpected error: {e}[/]")
+        logger.error(f"Git command failed (exit {e.returncode}): {e.stderr}")
+        sys.exit(1)
+    except FileNotFoundError:
+        logger.error("Git not installed or command not found!")
+        sys.exit(1)
+    except Exception as e:  # Catch-all for other errors
+        console.print(f"[bold yellow]{e} occurred:[/bold yellow]", style="bold red")
+        # Print formatted traceback using Rich
+        console.print(Traceback(), style="bold red")
+        console.print("-" * 40)  # Separator for clarity
+        sys.exit(1)
 
-    return result
+    return True
 
 
 def display_git_log_table(log_data: Dict[str, List[str]]) -> Table:
@@ -801,6 +781,56 @@ def display_git_log_table(log_data: Dict[str, List[str]]) -> Table:
     )
 
     table.add_column("Commit Hash", style="dim cyan")
+
+
+import subprocess
+from datetime import datetime
+from typing import Dict, List, Tuple, Optional
+from rich.table import Table
+from rich.console import Console
+
+
+def get_git_logs_for_each_release(
+        repo_dir: str,
+        release_branches: List[str],
+        project_kickoff: datetime,
+        release_closing_dates: List[datetime],
+        date_format: str = "%Y-%m-%d"
+) -> bool :
+    """
+    Get git logs for each release branch between project kickoff and closing dates.
+
+    Args:
+        repo_dir: Path to Git repository
+        release_branches: List of release branch names
+        project_kickoff: Project start date (YYYY-MM-DD)
+        release_closing_dates: Dictionary of {branch_name: closing_date}
+        date_format: Date format string
+
+    Returns:
+        True if it works
+    """
+    logger.info(f"Getting logs for {repo_dir}, release branches: {release_branches} project: {project_kickoff}, release closing dates: {release_closing_dates}")
+
+    start_date_and_closing_dates = [project_kickoff.strftime(date_format)] + release_closing_dates
+
+    logger.info(f"start_date_and_closing_dates:{start_date_and_closing_dates}\n")
+
+    console.print("\n \t == Getting now the logs for each release == \n")
+
+    for release in release_branches:
+        window_start = start_date_and_closing_dates.pop(0)
+        window_end = start_date_and_closing_dates[0]
+        console.print(f"\t Getting log for release:{release} on time window > {window_start} and < {window_end}")
+
+        get_git_log_file_for_release_time_window(repo_dir, release, window_start, window_end)
+
+
+    return True
+
+
+
+
 
 
 def main():
@@ -904,6 +934,10 @@ def main():
             kick_of_project, trash = get_commit_dates_for_release(args.input_dir, release_branches[0])
             console.print("\n\t 🏀 Got project kick of date 😀")
             console.print(f"\t  kick_of_project = {kick_of_project.strftime('%Y-%m-%d')}")
+
+
+            get_git_logs_for_each_release(args.input_dir,release_branches,kick_of_project,release_closing_dates)
+
 
     except Exception as e:
         # Print the exception traceback using Rich
