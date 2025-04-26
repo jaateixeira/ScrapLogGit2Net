@@ -22,10 +22,14 @@ import os
 
 from pathlib import Path
 import subprocess
+import shlex
 
 import argparse
 import networkx as nx
 
+from datetime import datetime
+
+from typing import Optional, Tuple
 from typing import Tuple
 
 import time
@@ -69,14 +73,42 @@ from rich.color import Color
 #Rich supplies a logging handler which will format and colorize text written by Python’s logging module.
 from rich.logging import RichHandler
 
-# Add RichHandler to the loguru logger
-logger.remove()  # Remove the default logger
-logger.add(
-    RichHandler(console=console, show_time=True, show_path=True, rich_tracebacks=True),
-    format="{message}",  # You can customize this format as needed
-    level="DEBUG",  # Set the desired logging level
-    #level="INFO",  # Set the desired logging level
-)
+
+def setup_logging(verbose: int = 0, console: Optional[Console] = None) -> None:
+    """Configure loguru logger with RichHandler.
+
+    Args:
+        verbose: Verbosity level (0=WARNING, 1=INFO, >=2=DEBUG)
+        console: Optional Rich Console instance (creates new if None)
+    """
+    # Determine log level from verbosity
+    log_level = "WARNING"
+    if verbose == 1:
+        log_level = "INFO"
+    elif verbose >= 2:
+        log_level = "DEBUG"
+
+    # Create console if not provided
+    if console is None:
+        console = Console()
+
+    # Remove default handler and add RichHandler
+    logger.remove()
+    logger.add(
+        RichHandler(
+            console=console,
+            show_time=True,
+            show_path=True,
+            rich_tracebacks=True,
+            markup=True,
+            show_level=True,
+        ),
+        format="{message}",
+        level=log_level,
+        backtrace=True,
+        diagnose=True,
+    )
+
 
 
 # Rich’s Table class offers a variety of ways to render tabular data to the terminal.
@@ -307,6 +339,148 @@ def get_git_tags(repo_path: str) -> List[str]:
         raise RuntimeError(f"Failed to get Git tags: {e.stderr.strip()}")
 
 
+
+
+def run_cmd_subprocess(
+    cmd_args: List[str],
+    shell: bool = False,
+    check: bool = True,
+    cwd: Optional[str] = None,
+    verbose: bool = False
+) -> Tuple[Optional[str], Optional[str], int]:
+    """
+    Run a command using subprocess with rich output formatting.
+
+    Args:
+        cmd_args: List of command arguments (e.g., ['git', 'log'])
+        shell: Whether to use shell mode (avoid unless needed)
+        check: Raise exception if command fails
+        cwd: Working directory for command
+        verbose: Print debug info
+
+    Returns:
+        Tuple of (stdout, stderr, returncode)
+        Returns (None, None, -1) if KeyboardInterrupt occurs
+    """
+    if verbose:
+        console.rule(f"Running command (shell={shell})")
+        console.print(f"[bold cyan]$ {' '.join(shlex.quote(arg) for arg in cmd_args)}[/]")
+
+    try:
+        result = subprocess.run(
+            cmd_args,
+            shell=shell,
+            check=check,
+            cwd=cwd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding='utf-8'
+        )
+
+        if verbose:
+            if result.stdout:
+                console.print("[green]STDOUT:[/]", result.stdout)
+            if result.stderr:
+                console.print("[yellow]STDERR:[/]", result.stderr)
+
+        return (result.stdout, result.stderr, result.returncode)
+
+    except subprocess.CalledProcessError as e:
+        console.print("[bold red]Command failed![/]")
+        console.print(f"[red]Error ({e.returncode}):[/] {e.stderr.strip()}")
+        if verbose:
+            console.print_exception()
+        raise  # Re-raise if check=True
+
+    except KeyboardInterrupt:
+        console.print("[yellow]Command interrupted by user[/]")
+        return (None, None, -1)
+
+    except Exception as e:
+        console.print(f"[bold red]Unexpected error:[/] {str(e)}")
+        if verbose:
+            console.print_exception()
+        raise
+
+def get_commit_dates_for_release(repo_path: str, release_branch: str) -> Tuple[Optional[datetime], Optional[datetime]]:
+    """
+    Get first and last commit dates for a specific release branch.
+
+    Args:
+        repo_path: Path to Git repository
+        release_branch: Name of release branch (e.g., 'release/1.0')
+
+    Returns:
+        Tuple of (first_commit_date, last_commit_date) as datetime objects
+
+    Raises:
+        ValueError: If invalid repository or branch doesn't exist
+        RuntimeError: If Git commands fail
+    """
+
+    logger.info(f"get_commit_dates_for_release("+repo_path+", "+release_branch+")")
+
+    path = Path(repo_path)
+
+    # Validate repository
+    if not (path / '.git').exists():
+        raise ValueError(f"Not a Git repository: {repo_path}")
+
+    # Checkout the release branch
+    cmd = ['git', '-C', str(path), 'checkout', release_branch]
+    logger.info(f"Checking out at {str(path)} release b"
+                f""
+                f"ranch {release_branch}")
+    try:
+        stdout, stderr, rc = run_cmd_subprocess(
+            cmd,
+            check=True
+        )
+        logger.info(f"\t git -C {str(path)}  checkout  {release_branch} [bold green]Success![/]")
+    except subprocess.CalledProcessError:
+        print("Failed to get commit hash")
+
+
+
+
+
+    sys.exit()
+        #return (first_date, last_date)
+
+
+
+def print_commit_dates(repo_path: str, release_branch: str):
+    """Print commit dates with rich formatting"""
+
+
+    logger.info(f"print_commit_dates({repo_path},{release_branch})")
+
+    try:
+        first_date, last_date = get_commit_dates_for_release(repo_path, release_branch)
+
+        table = Table(title=f"Commit Timeline for {release_branch}", show_header=True)
+        table.add_column("Metric", style="cyan")
+        table.add_column("Date", style="magenta")
+        table.add_column("ISO Format", style="green")
+
+        table.add_row("First Commit",
+                      first_date.strftime('%b %d, %Y'),
+                      first_date.isoformat())
+
+        table.add_row("Last Commit",
+                      last_date.strftime('%b %d, %Y'),
+                      last_date.isoformat())
+
+        table.add_row("Duration",
+                      f"{(last_date - first_date).days} days",
+                      f"{(last_date - first_date).days} days")
+
+        console.print(table)
+
+    except Exception as e:
+        console.print(f"[bold red]Error:[/] {e}", style="bold red")
+
 def get_release_branches(repo_path: str) -> List[str]:
     """
     Get all release branches from a Git repository.
@@ -359,18 +533,15 @@ def get_release_branches(repo_path: str) -> List[str]:
 def main():
     args = parse_args()
 
-    # Configure logging based on verbosity
-    log_level = "WARNING"
-    if args.verbose == 1:
-        log_level = "INFO"
-    elif args.verbose >= 2:
-        log_level = "DEBUG"
-    logger.remove()
-    logger.add(
-        RichHandler(console=console, show_time=True, show_path=True, rich_tracebacks=True),
-        format="{message}",
-        level=log_level
-    )
+
+    setup_logging(verbose=args.verbose)
+
+    # Test logging
+    #logger.debug("Debug message - visible with -vv")
+    #logger.info("Info message - visible with -v")
+    #logger.warning("Warning message - always visible")
+    #logger.error("Error message - always visible")
+
 
     # Validate arguments
     is_valid, validation_msg = validate_args(args)
@@ -400,19 +571,48 @@ def main():
 
             # Get release branches
             release_branches = get_release_branches(args.input_dir)
-            print("\nRelease Branches:")
+            print("\nGetting the release branches:")
 
             console.print("\t 🏀 Got a list of branches (release branches?) 😀")
             console.print(f"\t release_branches = {release_branches}")
+
 
             "Removes the agl/ prefix"
             cleaned_list = [item.replace('agl/', '') for item in release_branches]
             release_branches = cleaned_list
 
-            console.print(f"\t Cleaned release_branches = {release_branches}")
+            if args.verbose >= 2:
+                console.print(f"\t Cleaned release_branches = {release_branches}")
+
+            "Removes the sandbox release branches"
+            cleaned_list = [item for item in release_branches if not item.startswith('sandbox/')]
+            release_branches = cleaned_list
+
+            if args.verbose >= 2:
+                console.print(f"\t Cleaned release_branches = {release_branches}")
+
+
+
+            "Removes the m/icefish"
+            cleaned_list = [item for item in release_branches if not item.startswith('m/')]
+            release_branches = cleaned_list
+
+            if args.verbose >= 2:
+                console.print(f"\t Cleaned release_branches = {release_branches}")
+
+
+            console.print("\n\t 🏀 Got a clean list of branches (release branches?) 😀")
+            console.print(f"\t release_branches = {release_branches}")
+
+            for release in release_branches:
+                print_commit_dates(args.input_dir, release)
 
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        # Print the exception traceback using Rich
+        console.print(f"[bold yellow]{e} occurred:[/bold yellow]", style="bold red")
+        # Print formatted traceback using Rich
+        console.print(Traceback(), style="bold red")
+        console.print("-" * 40)  # Separator for clarity
         sys.exit(1)
 
 
