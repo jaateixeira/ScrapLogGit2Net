@@ -20,6 +20,9 @@ Repo is not meant to replace Git, only to make it easier to work with Git. The r
 import sys
 import os
 
+
+import re
+
 from pathlib import Path
 import subprocess
 import shlex
@@ -403,6 +406,24 @@ def run_cmd_subprocess(
             console.print_exception()
         raise
 
+
+def validate_and_parse_datetime(date_str: str) -> Optional[datetime]:
+    """
+    Validate the format '2025-04-02 06:01:34' and return a datetime object.
+    Returns None if invalid.
+    """
+    # Regex to match exactly 'YYYY-MM-DD HH:MM:SS'
+    pattern = r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$"
+
+    if not re.match(pattern, date_str.strip()):
+        return None
+
+    try:
+        return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return None
+
+
 def get_commit_dates_for_release(repo_path: str, release_branch: str) -> Tuple[Optional[datetime], Optional[datetime]]:
     """
     Get first and last commit dates for a specific release branch.
@@ -439,10 +460,51 @@ def get_commit_dates_for_release(repo_path: str, release_branch: str) -> Tuple[O
         )
         logger.info(f"\t git -C {str(path)}  checkout  {release_branch} [bold green]Success![/]")
     except subprocess.CalledProcessError:
-        print("Failed to get commit hash")
+        print("Failed to Git Checkout")
 
 
 
+
+    # Getting the last commit
+
+    cmd = f"git -C {str(path)} log -1 --format=\"%cd\" --date=format:'%Y-%m-%d %H:%M:%S'"
+
+    logger.info(f"Getting last commit using [ $ {cmd}]")
+
+    try:
+        stdout, stderr, rc = run_cmd_subprocess(
+            cmd,
+            check=True,
+            shell=True,
+        )
+        logger.info(f"\t {cmd} [bold green]Success![/]")
+        logger.info(f"\t Extracting the date from [{stdout.strip()}]")
+
+        date_str = stdout.strip()
+
+        # Validate format
+        last_commit_date_time = validate_and_parse_datetime(date_str)
+
+        if last_commit_date_time:
+            logger.info(f"Valid last commit datetime: {last_commit_date_time} (Type: {type(last_commit_date_time)})")
+        else:
+            logger.info("Invalid last commit datetime format!")
+
+
+        logger.success(f"Valid commit date: {date_str}")
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Git command failed (exit {e.returncode}): {e.stderr}")
+        sys.exit(1)
+    except FileNotFoundError:
+        logger.error("Git not installed or command not found!")
+        sys.exit(1)
+    except Exception as e:  # Catch-all for other errors
+        console.print(f"[bold yellow]{e} occurred:[/bold yellow]", style="bold red")
+        # Print formatted traceback using Rich
+        console.print(Traceback(), style="bold red")
+        console.print("-" * 40)  # Separator for clarity
+        sys.exit(1)
 
 
     sys.exit()
