@@ -712,6 +712,97 @@ def get_release_branches(repo_path: str) -> List[str]:
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"Failed to get release branches: {e.stderr.strip()}")
 
+
+
+
+def get_git_log_for_release_file(
+        repo_path: str,
+        release_branch: str,
+        since_date: Optional[str] = None,
+        until_date: Optional[str] = None,
+        max_count: Optional[int] = None,
+        date_format: str = "%Y-%m-%d"
+) -> bool
+    """
+    Get git log for a specific release branch and optional file path.
+
+    Args:
+        repo_path: Path to Git repository
+        release_branch: Branch name to analyze
+        file_path: Optional specific file path to filter commits
+        since_date: Start date (YYYY-MM-DD format)
+        until_date: End date (YYYY-MM-DD format)
+        max_count: Maximum number of commits to return
+        date_format: Date format string
+
+    Returns:
+        Dictionary containing:
+        {
+            "metadata": {
+                "branch": str,
+                "file": str,
+                "date_range": str,
+                "commit_count": int
+            },
+            "commits": List[str]  # Formatted commit messages
+        }
+    """
+    console = Console()
+    result = {
+        "metadata": {
+            "branch": release_branch,
+            "file": file_path or "all files",
+            "date_range": f"{since_date or 'start'} to {until_date or 'now'}",
+            "commit_count": 0
+        },
+        "commits": []
+    }
+
+    try:
+        # Build git log command
+        base_cmd = f"git -C {repo_path} log {release_branch}"
+
+        if file_path:
+            base_cmd += f" -- {file_path}"
+
+        if since_date:
+            base_cmd += f" --since='{since_date}'"
+
+        if until_date:
+            base_cmd += f" --until='{until_date}'"
+
+        if max_count:
+            base_cmd += f" -n {max_count}"
+
+        base_cmd += f" --format='%h - %an - %cd - %s' --date=format:'{date_format}'"
+
+        # Execute command
+        output = subprocess.check_output(base_cmd, shell=True, text=True)
+        commits = output.splitlines()
+
+        # Update results
+        result["metadata"]["commit_count"] = len(commits)
+        result["commits"] = commits
+
+    except subprocess.CalledProcessError as e:
+        console.print(f"[red]Error getting log for {release_branch}: {e}[/]")
+    except Exception as e:
+        console.print(f"[red]Unexpected error: {e}[/]")
+
+    return result
+
+
+def display_git_log_table(log_data: Dict[str, List[str]]) -> Table:
+    """Display git log results in a Rich table"""
+    table = Table(
+        title=f"Git Log for {log_data['metadata']['branch']}",
+        show_header=True,
+        header_style="bold blue"
+    )
+
+    table.add_column("Commit Hash", style="dim cyan")
+
+
 def main():
     args = parse_args()
 
