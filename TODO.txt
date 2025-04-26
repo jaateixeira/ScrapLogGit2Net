@@ -1,4 +1,8 @@
 
+
+Check the since ind before are wokng
+Why git logs so small ?? 
+
 Implment report from deanonumuzation?
 Example -> What was deanonuymized
 

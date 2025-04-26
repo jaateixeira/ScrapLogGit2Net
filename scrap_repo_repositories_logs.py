@@ -14,6 +14,14 @@ Repo helps manage many Git repositories, does the uploads to revision control sy
 Repo is not meant to replace Git, only to make it easier to work with Git. The repo command is an executable Python script that you can put anywhere in your path.
 """
 
+""""
+ Recommend you repo sync with a later version
+ 
+repo init -b your_target_branch
+repo sync
+ 
+  
+"""
 
 
 
@@ -431,7 +439,7 @@ def get_commit_dates_for_release(repo_path: Path, release_branch: str) -> Tuple[
         RuntimeError: If Git commands fail
     """
 
-    logger.info(f"get_commit_dates_for_release("+repo_path+", "+release_branch+")")
+    logger.info(f"get_commit_dates_for_release {repo_path} {release_branch}")
 
     path = Path(repo_path)
 
@@ -579,7 +587,7 @@ from rich.table import Table
 from rich.style import Style
 
 
-def get_release_commit_timeline(repo_path: str, release_names: List[str]) -> Tuple[Table, List[datetime]]:
+def get_release_commit_timeline(repo_path: Path, release_names: List[str]) -> Tuple[Table, List[datetime]]:
     """
     Generate a colorful table comparing commit dates across releases and return last commit dates.
 
@@ -592,6 +600,9 @@ def get_release_commit_timeline(repo_path: str, release_names: List[str]) -> Tup
         - Table contains the formatted comparison
         - List contains the last commit dates in datetime format
     """
+
+    logger.info(f"\nget_release_commit_timeline({repo_path},{release_names})")
+
     # Initialize storage for last commit dates
     last_commit_dates = []
 
@@ -651,6 +662,11 @@ def get_release_commit_timeline(repo_path: str, release_names: List[str]) -> Tup
                 "[bright_red]ERROR[/]",
                 "[red]N/A[/]"
             )
+            console.print(f"[bold yellow]{e} occurred:[/bold yellow]", style="bold red")
+            # Print formatted traceback using Rich
+            console.print(Traceback(), style="bold red")
+            console.print("-" * 40)  # Separator for clarity
+            sys.exit(1)
 
     return (table, last_commit_dates)
 
@@ -727,11 +743,24 @@ def get_git_log_file_for_release_time_window(
         true if it works
     """
 
-
+    # Checkout the release branch
+    cmd = ['git', '-C', repo_path, 'checkout', release_branch]
+    logger.info(f"Checking out at {repo_path} release b"
+                f""
+                f"ranch {release_branch}")
+    try:
+        stdout, stderr, rc = run_cmd_subprocess(
+            cmd,
+            check=True
+        )
+        logger.info(f"\t git -C {repo_path}  checkout  {release_branch} [bold green]Success![/]")
+    except subprocess.CalledProcessError:
+        print("Failed to Git Checkout")
 
     #base_cmd =  f"git -C {repo_path} log {release_branch}"
     #base_cmd =  f"git -C {repo_path} log {release_branch} --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only"
-    base_cmd = f"git -C {repo_path} log {release_branch} --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only > git_log_{repo_path.name}"
+    #base_cmd = f"git -C {repo_path} log {release_branch} --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only > git_log_{repo_path.name}_{release_branch}.txt"
+    base_cmd = f"git -C {repo_path} log  --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only > git_log_{repo_path.name}_{release_branch}.txt"
 
     console.print(f"Getting logs with $ {base_cmd}")
 
@@ -848,10 +877,11 @@ def main():
 
     try:
 
+        input_dir_path = Path(args.input_dir)
 
         logger.info(f"args={args}")
 
-        if check_if_directory_is_a_git_repository(Path(args.input_dir)):
+        if check_if_directory_is_a_git_repository(input_dir_path):
             console.print("\t 🏀 Its a git directory 😀")
         else:
             logger.error("Not a git repository")
@@ -861,13 +891,13 @@ def main():
         if not args.releases:
 
             # Get version tags
-            tags = get_git_tags(args.input_dir)
+            tags = get_git_tags(input_dir_path)
             #print("Version Tags:")
             #for tag in tags:
             #    print(f"- {tag}")
 
             # Get release branches
-            release_branches = get_release_branches(args.input_dir)
+            release_branches = get_release_branches(input_dir_path)
             print("\nGetting the release branches:")
 
             console.print("\t 🏀 Got a list of branches (release branches?) 😀")
@@ -907,7 +937,7 @@ def main():
                 #print_commit_dates(args.input_dir, release)
 
             "builds a rich table with information on last and first commit per release"
-            timeline_table , release_closing_datetimes = get_release_commit_timeline(args.input_dir, release_branches)
+            timeline_table , release_closing_datetimes = get_release_commit_timeline(input_dir_path, release_branches)
 
 
 
@@ -924,12 +954,12 @@ def main():
 
             "looking for the first commit data (start of the project)"
 
-            kick_of_project, trash = get_commit_dates_for_release(args.input_dir, release_branches[0])
+            kick_of_project, trash = get_commit_dates_for_release(input_dir_path, release_branches[0])
             console.print("\n\t 🏀 Got project kick of date 😀")
             console.print(f"\t  kick_of_project = {kick_of_project.strftime('%Y-%m-%d')}")
 
 
-            get_git_logs_for_each_release(args.input_dir,release_branches,kick_of_project,release_closing_dates)
+            get_git_logs_for_each_release(input_dir_path,release_branches,kick_of_project,release_closing_dates)
 
 
     except Exception as e:
