@@ -805,11 +805,14 @@ def main():
                 release_closing_dates.append(date.strftime('%Y-%m-%d'))
 
 
-            console.print("\n\t 🏀 Got a clean releases closubg dates 😀")
-            console.print(f"\t release_branches = {release_branches}")
+            console.print("\n\t 🏀 Got a clean releases closing dates 😀")
             console.print(f"\t  release_closing_dates = {release_closing_dates}")
 
+            "looking for the first commit data (start of the project)"
 
+            kick_of_project, trash = get_commit_dates_for_release(args.input_dir, release_branches[0])
+            console.print("\n\t 🏀 Got project kick of date 😀")
+            console.print(f"\t  kick_of_project = {kick_of_project.strftime('%Y-%m-%d')}")
 
     except Exception as e:
         # Print the exception traceback using Rich
