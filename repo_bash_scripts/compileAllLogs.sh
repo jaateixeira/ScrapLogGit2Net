@@ -1,89 +1,49 @@
 #!/bin/bash
-# compile_all_git_logs.sh - Enhanced AGL repository log collector with detailed format
+# compile_all_git_logs.sh - Minimalist AGL git log collector
 
 set -eo pipefail
 
 # Configuration
-OUTPUT_FILE="agl_git_logs_$(date +%Y%m%d_%H%M%S).txt"
-MAX_LOG_ENTRIES=50  # Reduced due to more verbose output
-DATE_FORMAT="%Y-%m-%d %H:%M:%S %z"  # ISO 8601 format with timezone
+OUTPUT_FILE="agl_raw_logs_$(git branch --show-current)_$(date +%Y%m%d_%H%M%S).txt"
 
-# Initialize timeline tracking
-EARLIEST_DATE=""
-LATEST_DATE=""
+# Console header
+echo "=== AGL Git Log Collector ==="
+echo "Started: $(date -u)"
+echo "Output will contain only raw git log data"
+echo "Processing all repositories..."
 
-# Header
-{
-echo "=== AGL Repository Git Logs ==="
-echo "Generated: $(date -u)"
-echo "Log Format: ==author name;author email;commit date== followed by changed files"
-echo "================================="
-} > "$OUTPUT_FILE"
+# Initialize counters
+TOTAL_REPOS=0
+PROCESSED_REPOS=0
+FAILED_REPOS=0
 
-# Process each repository
+# Process repositories
 repo forall -c '
-    # Repository header
-    echo -e "\n\n[ Repository: $REPO_PROJECT ]"
-    echo "Path: $REPO_PATH"
-    echo "Branch: $(git branch --show-current)"
-    
-    # Get timeline data
-    FIRST_COMMIT=$(git log --reverse --pretty=format:"%ad" --date=format:"'"$DATE_FORMAT"'" -1 2>/dev/null || echo "N/A")
-    LAST_COMMIT=$(git log --pretty=format:"%ad" --date=format:"'"$DATE_FORMAT"'" -1 2>/dev/null || echo "N/A")
-    
-    echo "First commit: $FIRST_COMMIT"
-    echo "Last commit: $LAST_COMMIT"
-    
-    # Update global timeline
-    if [[ "$FIRST_COMMIT" != "N/A" ]]; then
-        if [[ -z "$EARLIEST_DATE" ]] || [[ "$FIRST_COMMIT" < "$EARLIEST_DATE" ]]; then
-            EARLIEST_DATE="$FIRST_COMMIT"
-        fi
-    fi
-    
-    if [[ "$LAST_COMMIT" != "N/A" ]]; then
-        if [[ -z "$LATEST_DATE" ]] || [[ "$LAST_COMMIT" > "$LATEST_DATE" ]]; then
-            LATEST_DATE="$LAST_COMMIT"
-        fi
-    fi
-    
-    # Get detailed logs with changed files
-    echo -e "\nCommit History:"
-    git log \
-        --pretty=format:"==%an;%ae;%ad==" \
-        --date=format:"'"$DATE_FORMAT"'" \
-        --name-only \
-        -'"$MAX_LOG_ENTRIES"'
-    
-    # Separator
-    echo "------------------------------"
-' >> "$OUTPUT_FILE" 2>&1 || {
-    echo "Error: Failed to gather logs from some repositories" >&2
-    exit 1
+    # Only output the raw git log data to file
+    {
+        # echo -e "\n\n[START_REPO:$REPO_PROJECT]"
+        git log \
+        --pretty=format:"==%an;%ae;%ad==" --name-only
+            --pretty=format:"==%an;%ae;%ad=="
+            --name-only
+        # echo -e "[END_REPO:$REPO_PROJECT]"
+    } >> "'"$OUTPUT_FILE"'"
+
+    # Count success
+    exit 0
+' || {
+    # Count failures
+    FAILED_REPOS=$((FAILED_REPOS + 1))
 }
 
-# Summary
-REPO_COUNT=$(repo list | wc -l)
-{
-echo -e "\n\n=== Summary ==="
-echo "Total repositories processed: $REPO_COUNT"
-echo "Project timeline:"
-echo "  First commit in any repo: ${EARLIEST_DATE:-N/A}"
-echo "  Last commit in any repo: ${LATEST_DATE:-N/A}"
-} >> "$OUTPUT_FILE"
+# Get total repo count
+TOTAL_REPOS=$(repo list | wc -l)
+PROCESSED_REPOS=$((TOTAL_REPOS - FAILED_REPOS))
 
-# Calculate duration if possible
-if [[ -n "$EARLIEST_DATE" && -n "$LATEST_DATE" ]]; then
-    START_SEC=$(date -d "$EARLIEST_DATE" +%s 2>/dev/null || echo "")
-    END_SEC=$(date -d "$LATEST_DATE" +%s 2>/dev/null || echo "")
-    
-    if [[ -n "$START_SEC" && -n "$END_SEC" ]]; then
-        DURATION_DAYS=$(( (END_SEC - START_SEC) / 86400 ))
-        echo "  Timespan: $DURATION_DAYS days" >> "$OUTPUT_FILE"
-    fi
-fi
-
-echo -e "\nOutput file: $PWD/$OUTPUT_FILE" >> "$OUTPUT_FILE"
-
-echo -e "\nSuccess! Compiled logs from $REPO_COUNT repositories to $OUTPUT_FILE"
-echo "Project spans from ${EARLIEST_DATE:-N/A} to ${LATEST_DATE:-N/A}"
+# Console summary
+echo -e "\n=== Processing Complete ==="
+echo "Total repositories: $TOTAL_REPOS"
+echo "Successfully processed: $PROCESSED_REPOS"
+echo "Failed: $FAILED_REPOS"
+echo "Raw output file: $PWD/$OUTPUT_FILE"
+echo "Finished: $(date -u)"
