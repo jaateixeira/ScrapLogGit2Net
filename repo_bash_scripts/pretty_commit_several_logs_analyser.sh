@@ -1,62 +1,97 @@
 #!/bin/bash
 
-# Check if at least one log file is provided as an argument
+# Check if at least one log file is provided
 if [ "$#" -lt 1 ]; then
     echo "Usage: $0 <commit_log_file1> <commit_log_file2> ..."
     exit 1
 fi
 
-# Function to format date
-format_date() {
-    local date_str="$1"
-    # Extract the date part and format it
-    echo "$date_str" | grep -oP '(?<===).*(?==)' | xargs -I{} date -d "{}" +"%Y-%m-%d"
+# Color codes
+YELLOW='\033[1;33m'
+GREEN='\033[1;32m'
+NC='\033[0m' # No Color
+
+# Function to extract shortened name
+get_short_name() {
+    local filename=$(basename "$1")
+    # Extract 'chinook' from patterns like:
+    # gl_raw_logs_meta-agl_chinook_20250427_171649.txt.IN_chinook.txt.IN
+    # or gl_raw_logs_meta-agl_halibut_*.txt
+    if [[ $filename =~ gl_raw_logs_meta-agl_([^_]+)_ ]]; then
+        echo "${BASH_REMATCH[1]}"
+    else
+        # Fallback to basename without extension
+        basename "${filename%.*}"
+    fi
 }
 
-# Print header for the table
-echo -e "Log File\tTotal Commits\tFirst Commit Date\tLast Commit Date"
+# Function to transform datetime to YYYY-MM-DD
+transform_datetime() {
+    local datetime_str="$1"
+    echo "$datetime_str" | awk '{
+        month_index = match("JanFebMarAprMayJunJulAugSepOctNovDec", $2)
+        month = sprintf("%02d", (month_index+2)/3)
+        year = $5
+        day = $3
+        printf "%s-%s-%s", year, month, day
+    }'
+}
 
-# Loop through each log file provided as an argument
+# Print header
+printf "%-15s %-15s %-25s %-25s\n" "Release" "Total Commits" "First Commit" "Last Commit"
+echo "-----------------------------------------------------------------------------------"
+
+# Process each log file
 for LOG_FILE in "$@"; do
-    # Check if the log file exists
+    # Verify file exists
     if [ ! -f "$LOG_FILE" ]; then
-        echo "Error: File '$LOG_FILE' not found!"
+        echo -e "Error: File '$LOG_FILE' not found!" >&2
         continue
     fi
+
+    # Get shortened name
+    release_name=$(get_short_name "$LOG_FILE")
 
     # Initialize variables
     total_commits=0
-    first_commit=""
-    last_commit=""
+    first_commit_date=""
+    last_commit_date=""
+    first_commit_raw=""
+    last_commit_raw=""
 
-    # Read the log file line by line
+    # Read the file
     while IFS= read -r line; do
-        # Check if the line is a commit separator
         if [[ "$line" == "=="* ]]; then
-            # Increment the commit count
             ((total_commits++))
 
-            # Update the last commit
-            last_commit="$line"
+            commit_date_raw=$(echo "$line" | cut -d ';' -f 3 | tr -d '==')
 
-            # If it's the first commit, update the first commit
-            if [ -z "$first_commit" ]; then
-                first_commit="$line"
+            if [ -z "$first_commit_raw" ]; then
+                first_commit_raw="$commit_date_raw"
             fi
+            last_commit_raw="$commit_date_raw"
         fi
     done < "$LOG_FILE"
 
-    # Check if any commits were found
+    # Skip if no commits found
     if [ "$total_commits" -eq 0 ]; then
-        echo -e "$LOG_FILE\tNo commits found"
+        printf "%-15s %-15s %-25s %-25s\n" \
+            "$release_name" \
+            "0" \
+            "N/A" \
+            "N/A"
         continue
     fi
 
-    # Extract and format dates from the first and last commits
-    first_commit_date=$(format_date "$first_commit")
-    last_commit_date=$(format_date "$last_commit")
+    # Transform dates
+    first_commit_date=$(transform_datetime "$first_commit_raw")
+    last_commit_date=$(transform_datetime "$last_commit_raw")
 
-    # Print the results in a tabulated format
-    echo -e "$LOG_FILE\t$total_commits\t\e[32m$first_commit_date\e[0m\t\e[32m$last_commit_date\e[0m"
+    # Print results
+    printf "%-15s %-15s ${YELLOW}%-25s${NC} ${GREEN}%-25s${NC}\n" \
+        "$release_name" \
+        "$total_commits" \
+        "$first_commit_date" \
+        "$last_commit_date"
 done
 
