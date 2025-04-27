@@ -396,8 +396,8 @@ def run_cmd_subprocess(
     except subprocess.CalledProcessError as e:
         console.print("[bold red]Command failed![/]")
         console.print(f"[red]Error ({e.returncode}):[/] {e.stderr.strip()}")
-        if verbose:
-            console.print_exception()
+        console.print(f"[red] Problematic cmd ({cmd_args})[/])")
+        console.print_exception()
         raise  # Re-raise if check=True
 
     except KeyboardInterrupt:
@@ -455,22 +455,21 @@ def get_commit_dates_for_release(repo_path: Path, release_branch: str) -> Tuple[
     # Checkout the release branch
     #cmd = ['git', '-C', str(path), 'checkout', release_branch]
 
-    cmd = f"git -c {repo_path} checkout {release_branch}"
+    check_out_cmd = f"git -C {repo_path} checkout {release_branch}"
 
-    logger.info(f"Checking out at {repo_path} release b"
-                f""
-                f"ranch {release_branch}")
+    logger.info(f"Checking out at {repo_path} release branch {release_branch}")
     try:
         stdout, stderr, rc = run_cmd_subprocess(
-            cmd,
-            check=True
+            check_out_cmd,
+            check=True,
+            shell=True,
         )
         logger.info(f"\t git -C {repo_path}  checkout  {release_branch} [bold green]Success![/]")
 
     except subprocess.CalledProcessError:
         console.print("Failed to Git Checkout")
         console.print("Problematic CMD:")
-        console.print(cmd)
+        console.print(check_out_cmd)
         sys.exit()
     except Exception as e:  # Catch-all for o
         # then errors
@@ -478,6 +477,8 @@ def get_commit_dates_for_release(repo_path: Path, release_branch: str) -> Tuple[
         # Print formatted traceback using Rich
         console.print(Traceback(), style="bold red")
         console.print("-" * 40)  # Separator for clarity
+        console.print("Problematic CMD:")
+        console.print(check_out_cmd)
         sys.exit(1)
 
 
@@ -788,6 +789,13 @@ def get_git_log_file_for_release_time_window(
         console.print("Problematic CMD:")
         console.print(cmd)
         sys.exit(1)
+    except Exception as e:  # Catch-all for other errors
+        console.print(f"[bold yellow]{e} occurred:[/bold yellow]", style="bold red")
+        # Print formatted traceback using Rich
+        console.print(Traceback(), style="bold red")
+        console.print("-" * 40)  # Separator for clarity
+        sys.exit(1)
+
 
     #base_cmd =  f"git -C {repo_path} log {release_branch}"
     #base_cmd =  f"git -C {repo_path} log {release_branch} --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only"
