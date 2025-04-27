@@ -48,9 +48,9 @@ for branch in "${RELEASE_BRANCHES[@]}"; do
     }
     
     # Rename output file with branch name
-    latest_log=$(ls -t agl_git_logs_*.txt | head -1)
+    latest_log=$(ls -t agl_raw_logs_*.txt.IN | head -1)
     if [[ -n "$latest_log" ]]; then
-        new_name="${latest_log%.txt}_${branch}.txt"
+        new_name="${latest_log%.txt}_${branch}.txt.IN"
         mv "$latest_log" "$new_name"
         echo -e "\033[1;32mLogs saved to: $new_name\033[0m"
     fi
