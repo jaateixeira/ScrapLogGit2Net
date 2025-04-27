@@ -54,6 +54,8 @@ fi
 first_commit_date=$(echo "$first_commit" | cut -d ';' -f 3)
 last_commit_date=$(echo "$last_commit" | cut -d ';' -f 3)
 
+
+
 # Print the results
 echo "Total number of commits: $total_commits"
 
@@ -63,3 +65,5 @@ echo "Last commit (newest): $last_commit"
 echo "First commit (oldest): $first_commit"
 echo -e "Last commit date (newest): \e[32m$last_commit_date\e[0m"
 echo -e "First commit date (oldest): \e[32m$first_commit_date\e[0m"
+
+
