@@ -304,6 +304,12 @@ def check_if_directory_is_a_git_repository(directory_path: str) -> bool:
         return True
     except subprocess.CalledProcessError:
         return False
+    except Exception as e:
+        console.print(f"[bold red]Unexpected error:[/] {str(e)}")
+        console.print_exception()
+        sys.exit(1)
+
+
 
 
 
@@ -347,36 +353,29 @@ def get_git_tags(repo_path: str) -> List[str]:
         raise RuntimeError("Git command timed out while fetching tags")
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"Failed to get Git tags: {e.stderr.strip()}")
-
-
+    except Exception as e:
+        console.print(f"[bold red]Unexpected error:[/] {str(e)}")
+        if verbose:
+            console.print_exception()
+        raise
 
 
 def run_cmd_subprocess(
-    cmd_args: List[str],
-    shell: bool = False,
-    check: bool = True,
-    cwd: Optional[str] = None,
-    verbose: bool = False
-) -> Tuple[Optional[str], Optional[str], int]:
-    """
-    Run a command using subprocess with rich output formatting.
-
-    Args:
-        cmd_args: List of command arguments (e.g., ['git', 'log'])
-        shell: Whether to use shell mode (avoid unless needed)
-        check: Raise exception if command fails
-        cwd: Working directory for command
-        verbose: Print debug info
-
-    Returns:
-        Tuple of (stdout, stderr, returncode)
-        Returns (None, None, -1) if KeyboardInterrupt occurs
-    """
-    if verbose:
-        console.rule(f"Running command (shell={shell})")
-        console.print(f"[bold cyan]$ {' '.join(shlex.quote(arg) for arg in cmd_args)}[/]")
-
+        cmd_args,
+        shell=False,
+        check=False,
+        cwd=None,
+        verbose=False,
+        debug=False  # New flag for extra debugging
+):
     try:
+        if debug:
+            console.print("\n[bold cyan]DEBUG MODE[/]")
+            console.print(f"[cyan]Command:[/] {cmd_args}")
+            console.print(f"[cyan]Shell:[/] {shell}")
+            console.print(f"[cyan]CWD:[/] {cwd}")
+            console.print(f"[cyan]Environment:[/] {subprocess.os.environ.get('PATH', '')}")
+
         result = subprocess.run(
             cmd_args,
             shell=shell,
@@ -386,32 +385,61 @@ def run_cmd_subprocess(
             stderr=subprocess.PIPE,
             text=True,
             encoding='utf-8',
-            executable="/bin/bash",  # Use Bash explicitly
+            executable="/bin/bash",
         )
 
-        if verbose:
+        if verbose or debug:
+            console.rule("[bold]Command Execution Results[/]")
+            console.print(f"[green]✓ Exit Code:[/] {result.returncode}")
+
             if result.stdout:
-                console.print("[green]STDOUT:[/]", result.stdout)
+                console.print("\n[bold green]STDOUT[/]")
+                console.print(result.stdout.strip())
+
             if result.stderr:
-                console.print("[yellow]STDERR:[/]", result.stderr)
+                console.print("\n[bold yellow]STDERR[/]")
+                console.print(result.stderr.strip())
+
+            if debug and not result.stdout and not result.stderr:
+                console.print("[dim]No output captured[/]")
 
         return (result.stdout, result.stderr, result.returncode)
 
     except subprocess.CalledProcessError as e:
-        console.print("[bold red]Command failed![/]")
-        console.print(f"[red]Error ({e.returncode}):[/] {e.stderr.strip()}")
-        console.print(f"[red] Problematic cmd ({cmd_args})[/])")
-        console.print_exception()
-        raise  # Re-raise if check=True
+        console.rule("[bold red]Command Failed[/]")
+        console.print(f"[red]Exit Code:[/] {e.returncode}")
+        console.print(f"[red]Command:[/] {e.cmd}")
+
+        if e.stdout:
+            console.print("\n[bold]Captured STDOUT[/]")
+            console.print(e.stdout.strip())
+
+        console.print("\n[bold red]STDERR[/]")
+        console.print(e.stderr.strip())
+        console.print(f"An error has occurred with {cmd_args} - but continuing")
+        logger.warning(f"An error has occurred with {cmd_args} - but continuing")
+
+        if debug:
+            console.print("\n[bold]Environment Debug[/]")
+            console.print(f"Working Directory: {cwd}")
+            console.print(f"Shell Path: {subprocess.os.environ.get('SHELL', '')}")
+            console.print(f"PATH: {subprocess.os.environ.get('PATH', '')}")
+
+        return "problematic stdout", "problematic err","-1",
 
     except KeyboardInterrupt:
-        console.print("[yellow]Command interrupted by user[/]")
-        return (None, None, -1)
+        console.print("\n[yellow]⌨️ Command interrupted by user[/]")
+        sys.exit(1)
 
     except Exception as e:
-        console.print(f"[bold red]Unexpected error:[/] {str(e)}")
-        if verbose:
+        console.rule("[bold red]Unexpected Error[/]")
+        console.print(f"[red]Type:[/] {type(e).__name__}")
+        console.print(f"[red]Message:[/] {str(e)}")
+
+        if debug:
+            console.print("\n[bold]Stack Trace[/]")
             console.print_exception()
+
         raise
 
 
@@ -557,6 +585,7 @@ def get_commit_dates_for_release(repo_path: Path, release_branch: str) -> Tuple[
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Git command failed (exit {e.returncode}): {e.stderr}")
+        console.print(Traceback(), style="bold red")
         sys.exit(1)
     except FileNotFoundError:
         logger.error("Git not installed or command not found!")
@@ -770,10 +799,29 @@ def get_git_log_file_for_release_time_window(
     # Checkout the release branch
     #cmd = ['git', '-C', repo_path, 'checkout', release_branch]
 
+    #cmd = f"""
+    #    cd {repo_path} || exit 1
+    #    repo forall -c 'git checkout {release_branch}'
+    #"""
+
     cmd = f"""
-        cd {repo_path} || exit 1
-        repo forall -c 'git checkout {release_branch}'
+    echo 'CMD START'  
+    set -exo pipefail  # Enable strict debugging
+    echo "=== ENVIRONMENT ==="
+    echo "PATH: $PATH"
+    echo "PWD: $(pwd)"
+    echo "=== REPO VERIFICATION ==="
+    whereis repo
+    repo --version 
+    echo "=== EXECUTION ===" 
+    which repo || {{ echo "ERROR: repo not in PATH"; exit 1; }}
+    cd {repo_path}
+    echo "PWD: $(pwd)" 
+    repo forall -c \'git checkout {release_branch}\' 
+    echo 'CMD END'
+
     """
+
 
     logger.info(f"Attempting now to checkout at {repo_path} for release {release_branch}"
                 f""
@@ -792,7 +840,8 @@ def get_git_log_file_for_release_time_window(
         console.print("Failed to Git Checkout")
         console.print("Problematic CMD:")
         console.print(cmd)
-        sys.exit(1)
+        logger.warning(f"cmd={cmd} returned return process error (-1)")
+        return True
     except Exception as e:  # Catch-all for other errors
         console.print(f"[bold yellow]{e} occurred:[/bold yellow]", style="bold red")
         # Print formatted traceback using Rich
