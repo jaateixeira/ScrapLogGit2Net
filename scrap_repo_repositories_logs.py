@@ -4,6 +4,7 @@
 
 
 
+
 """
 This script mines all repository logs for a given Repo / Directory
 Accepts a directory of files / Repo
@@ -31,6 +32,9 @@ repo sync
 import sys
 import os
 
+
+env = os.environ.copy()
+env["PATH"] = "/home/apolinex/bin/repo" + env["PATH"]  # Add repo to PATH
 
 
 import re
