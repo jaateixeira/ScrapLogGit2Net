@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
+
+
 """
 This script mines all repository logs for a given Repo / Directory
 Accepts a directory of files / Repo
@@ -27,6 +30,7 @@ repo sync
 
 import sys
 import os
+
 
 
 import re
@@ -377,7 +381,8 @@ def run_cmd_subprocess(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            encoding='utf-8'
+            encoding='utf-8',
+            executable="/bin/bash",  # Use Bash explicitly
         )
 
         if verbose:
@@ -441,15 +446,18 @@ def get_commit_dates_for_release(repo_path: Path, release_branch: str) -> Tuple[
 
     logger.info(f"get_commit_dates_for_release {repo_path} {release_branch}")
 
-    path = Path(repo_path)
+
 
     # Validate repository
-    if not (path / '.git').exists():
+    if not (repo_path / '.git').exists():
         raise ValueError(f"Not a Git repository: {repo_path}")
 
     # Checkout the release branch
-    cmd = ['git', '-C', str(path), 'checkout', release_branch]
-    logger.info(f"Checking out at {str(path)} release b"
+    #cmd = ['git', '-C', str(path), 'checkout', release_branch]
+
+    cmd = f"git -c {repo_path} checkout {release_branch}"
+
+    logger.info(f"Checking out at {repo_path} release b"
                 f""
                 f"ranch {release_branch}")
     try:
@@ -457,16 +465,27 @@ def get_commit_dates_for_release(repo_path: Path, release_branch: str) -> Tuple[
             cmd,
             check=True
         )
-        logger.info(f"\t git -C {str(path)}  checkout  {release_branch} [bold green]Success![/]")
+        logger.info(f"\t git -C {repo_path}  checkout  {release_branch} [bold green]Success![/]")
+
     except subprocess.CalledProcessError:
-        print("Failed to Git Checkout")
+        console.print("Failed to Git Checkout")
+        console.print("Problematic CMD:")
+        console.print(cmd)
+        sys.exit()
+    except Exception as e:  # Catch-all for o
+        # then errors
+        console.print(f"[bold yellow]{e} occurred:[/bold yellow]", style="bold red")
+        # Print formatted traceback using Rich
+        console.print(Traceback(), style="bold red")
+        console.print("-" * 40)  # Separator for clarity
+        sys.exit(1)
 
 
 
 
     # Getting the last commit
 
-    cmd = f"git -C {str(path)} log -1 --format=\"%cd\" --date=format:'%Y-%m-%d %H:%M:%S'"
+    cmd = f"git -C {repo_path} log -1 --format=\"%cd\" --date=format:'%Y-%m-%d %H:%M:%S'"
 
     logger.info(f"Getting last commit using [ $ {cmd}]")
 
@@ -506,7 +525,7 @@ def get_commit_dates_for_release(repo_path: Path, release_branch: str) -> Tuple[
         sys.exit(1)
 
     # First commit (oldest)
-    cmd = f"git -C {str(path)} rev-list --max-parents=0 HEAD --format=\"%cd\" --date=format:'%Y-%m-%d %H:%M:%S' | tail -1"
+    cmd = f"git -C {repo_path} rev-list --max-parents=0 HEAD --format=\"%cd\" --date=format:'%Y-%m-%d %H:%M:%S' | tail -1"
 
     logger.info(f"Getting the first commit (oldest) using [ $ {cmd}]")
 
@@ -744,23 +763,37 @@ def get_git_log_file_for_release_time_window(
     """
 
     # Checkout the release branch
-    cmd = ['git', '-C', repo_path, 'checkout', release_branch]
-    logger.info(f"Checking out at {repo_path} release b"
+    #cmd = ['git', '-C', repo_path, 'checkout', release_branch]
+
+    cmd = f"""
+        cd {repo_path} || exit 1
+        repo forall -c 'git checkout {release_branch}'
+    """
+
+    logger.info(f"Attempting now to checkout at {repo_path} for release {release_branch}"
                 f""
                 f"ranch {release_branch}")
     try:
         stdout, stderr, rc = run_cmd_subprocess(
             cmd,
-            check=True
+            check=True,
+            shell=True,
         )
-        logger.info(f"\t git -C {repo_path}  checkout  {release_branch} [bold green]Success![/]")
+        console.print(f"\n\t Checking out release {release_branch} with repo forall")
+        console.print(f"\n\t {stdout}")
+        logger.info(f"\t cd  {repo_path}  and report forall checkout  {release_branch} [bold green]Success![/]")
+
     except subprocess.CalledProcessError:
-        print("Failed to Git Checkout")
+        console.print("Failed to Git Checkout")
+        console.print("Problematic CMD:")
+        console.print(cmd)
+        sys.exit(1)
 
     #base_cmd =  f"git -C {repo_path} log {release_branch}"
     #base_cmd =  f"git -C {repo_path} log {release_branch} --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only"
     #base_cmd = f"git -C {repo_path} log {release_branch} --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only > git_log_{repo_path.name}_{release_branch}.txt"
     base_cmd = f"git -C {repo_path} log  --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only > git_log_{repo_path.name}_{release_branch}.txt"
+    base_cmd = f"cd {repo_path} ; repo forall -c  'git  log  --since='{since_date}' --until='{until_date}' --pretty=format:\"==%an;%ae;%ad==\" --name-only > git_log_{repo_path.name}_{release_branch}.txt'"
 
     console.print(f"Getting logs with $ {base_cmd}")
 
