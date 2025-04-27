@@ -4,7 +4,7 @@
 set -eo pipefail
 
 # Configuration
-OUTPUT_FILE="agl_raw_logs_$(git branch --show-current)_$(date +%Y%m%d_%H%M%S).txt"
+OUTPUT_FILE="agl_raw_logs_$(basename "$PWD")_$(git branch --show-current)_$(date +%Y%m%d_%H%M%S).txt"
 
 # Console header
 echo "=== AGL Git Log Collector ==="

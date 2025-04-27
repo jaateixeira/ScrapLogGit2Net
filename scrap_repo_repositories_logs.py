@@ -1052,8 +1052,8 @@ def main():
             console.print("\n\t 🏀 Got project kick of date 😀")
             console.print(f"\t  kick_of_project = {kick_of_project.strftime('%Y-%m-%d')}")
 
-
-            get_git_logs_for_each_release(input_dir_path,release_branches,kick_of_project,release_closing_dates)
+            "Not really working that part. By 27th changed instead to bash scripts"
+            #get_git_logs_for_each_release(input_dir_path,release_branches,kick_of_project,release_closing_dates)
 
 
     except Exception as e:
