@@ -9,7 +9,7 @@ RELEASE_BRANCHES=(
     icefish jellyfish koi lamprey marlin master needlefish next
     octopus pike quillback ricefish salmon
 )
-LOG_SCRIPT="/home/apolinex/rep_clones/own-tools/ScrapLogGit2Net/repo_bash_scripts/compileAllLogs.sh"  # Path to your log compilation script
+LOG_SCRIPT="/home/apolinex/rep_clones/own-tools/ScrapLogGit2Net/repo_bash_scripts/compileAllLogs_filter_time_window.sh"  # Path to your log compilation script
 WORKSPACE_ROOT="$PWD"  # Change if needed
 
 # Validate the log script exists
