@@ -159,7 +159,7 @@ parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings
 parser.add_argument("-c","--org_list_in_config_file", type=str, help="Consider only developers affiliated with organizations in lists provided by a configuration file. Example -c test-configurations/filters.scraplog.conf.")
 
 
-parser.add_argument("-a","affiliation-alias_in_config-file", type=str, help="a list of email domain alias (e.g. cn.ibm.com = ibm). Example -c test-configurations/alias.scraplog.conf")
+parser.add_argument("-a","--affiliation_alias_in_config_file", type=str, help="a list of email domain alias (e.g. cn.ibm.com = ibm). Example -c test-configurations/alias.scraplog.config.ini")
 
 
 
