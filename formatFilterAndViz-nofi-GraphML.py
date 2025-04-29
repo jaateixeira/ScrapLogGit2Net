@@ -134,7 +134,7 @@ parser.add_argument("-g", "--GitHub", type=str, metavar="GitHubAuthToken",
                     help="Uses GitHub API to retrieve the latest and current affiliation for each node e-mail. Require authentication token.")
 
 parser.add_argument("-p", "--plot", action="store_true",
-                    help="Plot the visualization (aka show), otherwises saves to png and pdf.")
+                    help="Plot the visualization (aka show), otherwise saves to png and pdf.")
 
 parser.add_argument("-nl", "--network_layout",  choices=['circular', 'spring'],  default='spring',
                     help="The type of network visualization layout (i.e., node positioning algorithm). Spring is the default")
@@ -157,6 +157,9 @@ parser.add_argument("-on","--org_list_and_neighbours_only", type=list_of_strings
 
 
 parser.add_argument("-c","--org_list_in_config_file", type=str, help="Consider only developers affiliated with organizations in lists provided by a configuration file. Example -c test-configurations/filters.scraplog.conf.")
+
+
+parser.add_argument("-a","affiliation-alias_in_config-file", type=str, help="a list of email domain alias (e.g. cn.ibm.com = ibm). Example -c test-configurations/alias.scraplog.conf")
 
 
 
