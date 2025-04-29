@@ -10,7 +10,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 
 # Read the vizNofI path from the configuration file
-VIZNOFI_PATH=$(grep -Po '(?<=^path=).+' "$CONFIG_FILE")
+VIZNOFI_PATH=$(grep -Po '(?<=^vizNofIpath=).+' "$CONFIG_FILE")
 
 # Check if the vizNofI path is valid
 if [ ! -x "$VIZNOFI_PATH" ]; then
@@ -27,7 +27,7 @@ fi
 # Loop through each argument and call formatFilterAndViz-nofi-GraphML.py with the specified options
 for file in "$@"; do
     if [ -f "$file" ]; then
-        "$VIZNOFI_PATH" -n spring -ff iot "$file"
+        "$VIZNOFI_PATH" -nl spring -l  "$file"
     else
         echo "File $file does not exist."
     fi
