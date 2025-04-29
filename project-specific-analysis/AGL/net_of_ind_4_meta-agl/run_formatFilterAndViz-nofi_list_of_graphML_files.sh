@@ -27,7 +27,7 @@ fi
 # Loop through each argument and call formatFilterAndViz-nofi-GraphML.py with the specified options
 for file in "$@"; do
     if [ -f "$file" ]; then
-        "$VIZNOFI_PATH" -nl spring -l  "$file"
+        "$VIZNOFI_PATH" -nl spring -l  -oi gmail -a  "$file"
     else
         echo "File $file does not exist."
     fi
