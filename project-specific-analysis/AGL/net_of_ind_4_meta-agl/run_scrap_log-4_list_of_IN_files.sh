@@ -25,7 +25,7 @@ if [ "$#" -lt 1 ]; then
 fi
 
 # Loop through each argument and call scrapLog.py -r
-for file in "$@"; then
+for file in "$@"; do
     if [ -f "$file" ]; then
         "$SCRAPLOG_PATH" -r "$file"
     else
