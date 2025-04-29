@@ -46,6 +46,9 @@ from datetime import datetime
 # For parsing command line arguments 
 import argparse
 
+# For loading config files
+import configparser
+
 # For asking user what files to open and what files to save
 import tkinter as tk
 from tkinter import *
@@ -288,6 +291,11 @@ if args.org_list_in_config_file:
     print("Filter by config files - not implemented yet")
     print("See test-configurations/filters.scraplog.conf")
     sys.exit()
+
+if args.affiliation_alias_in_config_file:
+    print("using e-mail domain names alias set in a config files")
+    print("See for example test-configurations/alias.scraplog.config.ini")
+    print(f"Considering then alias in {args.affiliation_alias_in_config_file}")
     
 if args.plot:
     print()
@@ -416,29 +424,51 @@ print()
 print("Now that graph is imported ...")
 print("Let's do some data-cleaning hacks")
 
-# I want alum to be alum.mit.edu # 
+# For example I want alum to be alum.mit.edu #
 #	<data key="d0">rryan@alum.mit.edu</data>
-
 # I also want us.ibm to be ibm
 
 
+
+
+if args.affiliation_alias_in_config_file:
+    config = configparser.ConfigParser()
+    config.read(args.affiliation_alias_in_config_file)
+
+    aliases = dict(config['aliases'])
+    print("\n\t List of aliases to be applied:")
+    print("\t",aliases,"\n")
+
+
 for node, data in G.nodes(data=True):
-    
-    if (data['affiliation'] == 'alum'):
-        data['affiliation'] = 'alum.mit.edu'
-        print (f"node {node} with data={data} set to be affiliated with alum.mit.edu")
-        if 'mit' not in data['e-mail']:
-            print ("ERROR - found a alumni account that is not related to MIT")
-            sys.exit()
-            
-    if (data['affiliation'] == 'us'):
-        data['affiliation'] = 'ibm'
-        print (f"node {node} with data={data} set to be affiliated with ibm")
-        if 'ibm' not in data['e-mail']:
-            print ("ERROR - found a us affiliation that is not related to IBM")
-            sys.exit()
-            
-print("SUCESS - data cleasing worked nicely")
+    if (data['affiliation'] in aliases.keys()):
+
+        # Special case for AGL data
+        if data['affiliation']  == "jp":
+            if "adit" in data['e-mail']:
+                data['affiliation'] = "ADIT"
+                print (f"WARNING: Special affiliation {data['e-mail']} set to ADIT")
+            elif "panasonic"  in data['e-mail']:
+                data['affiliation'] = "Panasonic"
+                print(f"WARNING: Special affiliation {data['e-mail']} set to Panasonic")
+
+            elif "fujitsu"  in data['e-mail']:
+                data['affiliation'] = "Fujitsu"
+                print(f"WARNING: Special affiliation {data['e-mail']} set to Panasonic")
+            else:
+                print (f"Error: Conflicts with {args.affiliation_alias_in_config_file} conf file")
+                print (f"{data['affiliation']}")
+                print (f"{data['e-mail']}")
+                sys.exit(1)
+
+        else: # DEFAULT us the alias
+            data['affiliation'] = aliases[data['affiliation']]
+
+        #print (f"node {node} with data={data} set to be affiliated with {data['affiliation']}")
+        #print (node)
+
+print("SUCESS - setting emails domain aliases based on conf file worked nicely")
+
 
 print ("")
 print ("Checking for isolates")
