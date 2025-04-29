@@ -9,12 +9,12 @@ if [ ! -f "$CONFIG_FILE" ]; then
     exit 1
 fi
 
-# Read the scrapLog path from the configuration file
-SCRAPLOG_PATH=$(grep -Po '(?<=^path=).+' "$CONFIG_FILE")
+# Read the vizNofI path from the configuration file
+VIZNOFI_PATH=$(grep -Po '(?<=^path=).+' "$CONFIG_FILE")
 
-# Check if the scrapLog path is valid
-if [ ! -x "$SCRAPLOG_PATH" ]; then
-    echo "scrapLog.py not found or not executable at path: $SCRAPLOG_PATH"
+# Check if the vizNofI path is valid
+if [ ! -x "$VIZNOFI_PATH" ]; then
+    echo "formatFilterAndViz-nofi-GraphML.py not found or not executable at path: $VIZNOFI_PATH"
     exit 1
 fi
 
@@ -24,10 +24,10 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 
-# Loop through each argument and call scrapLog.py -r
+# Loop through each argument and call formatFilterAndViz-nofi-GraphML.py with the specified options
 for file in "$@"; do
     if [ -f "$file" ]; then
-        "$SCRAPLOG_PATH" -r "$file"
+        "$VIZNOFI_PATH" -n spring -ff iot "$file"
     else
         echo "File $file does not exist."
     fi
