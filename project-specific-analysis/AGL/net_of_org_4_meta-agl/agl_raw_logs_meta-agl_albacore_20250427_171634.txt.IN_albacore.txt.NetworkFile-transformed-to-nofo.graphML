@@ -1,0 +1,800 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d0" for="edge" attr.name="weight" attr.type="long"/>
+<graph edgedefault="undirected"><node id="linuxfoundation"/>
+<node id="aisin"/>
+<node id="konsulko"/>
+<node id="mera"/>
+<node id="gmail"/>
+<node id="nexty-ele"/>
+<node id="iot"/>
+<node id="collabora"/>
+<node id="jp"/>
+<node id="grammer"/>
+<node id="sancloud"/>
+<node id="baylibre"/>
+<node id="opensynergy"/>
+<node id="renesas"/>
+<node id="igalia"/>
+<node id="osg"/>
+<node id="aisin-aw"/>
+<node id="fujitsu"/>
+<node id="xevo"/>
+<node id="advancedtelematic"/>
+<node id="synopsys"/>
+<node id="validmanufacturing"/>
+<node id="virtualopensystems"/>
+<node id="automotivelinux"/>
+<node id="daimler"/>
+<node id="6b3797ab1e90"/>
+<node id="orioninc"/>
+<node id="cn"/>
+<node id="ds"/>
+<node id="ti"/>
+<node id="mail"/>
+<node id="microchip"/>
+<node id="intel"/>
+<node id="fridu"/>
+<node id="witz-inc"/>
+<node id="wdc"/>
+<node id="codethink"/>
+<node id="igel"/>
+<node id="ap"/>
+<node id="windriver"/>
+<node id="mentor"/>
+<node id="k2l"/>
+<node id="here"/>
+<node id="radiosound"/>
+<node id="de"/>
+<node id="qt"/>
+<node id="theqtcompany"/>
+<edge source="linuxfoundation" target="aisin">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="konsulko">
+  <data key="d0">10</data>
+</edge>
+<edge source="linuxfoundation" target="mera">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="gmail">
+  <data key="d0">10</data>
+</edge>
+<edge source="linuxfoundation" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="iot">
+  <data key="d0">13</data>
+</edge>
+<edge source="linuxfoundation" target="collabora">
+  <data key="d0">7</data>
+</edge>
+<edge source="linuxfoundation" target="jp">
+  <data key="d0">7</data>
+</edge>
+<edge source="linuxfoundation" target="grammer">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="sancloud">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="baylibre">
+  <data key="d0">3</data>
+</edge>
+<edge source="linuxfoundation" target="opensynergy">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="renesas">
+  <data key="d0">4</data>
+</edge>
+<edge source="linuxfoundation" target="igalia">
+  <data key="d0">6</data>
+</edge>
+<edge source="linuxfoundation" target="osg">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="aisin-aw">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="fujitsu">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="xevo">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="advancedtelematic">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="synopsys">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="validmanufacturing">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="automotivelinux">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="daimler">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="6b3797ab1e90">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="orioninc">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="cn">
+  <data key="d0">4</data>
+</edge>
+<edge source="linuxfoundation" target="ds">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="ti">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="mail">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="microchip">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="intel">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="fridu">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="witz-inc">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="wdc">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="codethink">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="igel">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="ap">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="windriver">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="mentor">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="k2l">
+  <data key="d0">1</data>
+</edge>
+<edge source="aisin" target="konsulko">
+  <data key="d0">5</data>
+</edge>
+<edge source="aisin" target="mera">
+  <data key="d0">1</data>
+</edge>
+<edge source="aisin" target="gmail">
+  <data key="d0">2</data>
+</edge>
+<edge source="aisin" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="aisin" target="iot">
+  <data key="d0">2</data>
+</edge>
+<edge source="aisin" target="collabora">
+  <data key="d0">2</data>
+</edge>
+<edge source="aisin" target="jp">
+  <data key="d0">1</data>
+</edge>
+<edge source="aisin" target="opensynergy">
+  <data key="d0">1</data>
+</edge>
+<edge source="konsulko" target="mera">
+  <data key="d0">8</data>
+</edge>
+<edge source="konsulko" target="gmail">
+  <data key="d0">28</data>
+</edge>
+<edge source="konsulko" target="nexty-ele">
+  <data key="d0">5</data>
+</edge>
+<edge source="konsulko" target="iot">
+  <data key="d0">49</data>
+</edge>
+<edge source="konsulko" target="collabora">
+  <data key="d0">15</data>
+</edge>
+<edge source="konsulko" target="jp">
+  <data key="d0">18</data>
+</edge>
+<edge source="konsulko" target="grammer">
+  <data key="d0">3</data>
+</edge>
+<edge source="konsulko" target="sancloud">
+  <data key="d0">8</data>
+</edge>
+<edge source="konsulko" target="baylibre">
+  <data key="d0">12</data>
+</edge>
+<edge source="konsulko" target="opensynergy">
+  <data key="d0">1</data>
+</edge>
+<edge source="konsulko" target="renesas">
+  <data key="d0">8</data>
+</edge>
+<edge source="konsulko" target="virtualopensystems">
+  <data key="d0">5</data>
+</edge>
+<edge source="konsulko" target="igalia">
+  <data key="d0">5</data>
+</edge>
+<edge source="konsulko" target="xevo">
+  <data key="d0">8</data>
+</edge>
+<edge source="konsulko" target="osg">
+  <data key="d0">2</data>
+</edge>
+<edge source="konsulko" target="aisin-aw">
+  <data key="d0">4</data>
+</edge>
+<edge source="konsulko" target="fujitsu">
+  <data key="d0">2</data>
+</edge>
+<edge source="konsulko" target="advancedtelematic">
+  <data key="d0">8</data>
+</edge>
+<edge source="konsulko" target="ap">
+  <data key="d0">1</data>
+</edge>
+<edge source="konsulko" target="ds">
+  <data key="d0">5</data>
+</edge>
+<edge source="konsulko" target="synopsys">
+  <data key="d0">1</data>
+</edge>
+<edge source="konsulko" target="validmanufacturing">
+  <data key="d0">3</data>
+</edge>
+<edge source="konsulko" target="ti">
+  <data key="d0">3</data>
+</edge>
+<edge source="konsulko" target="automotivelinux">
+  <data key="d0">3</data>
+</edge>
+<edge source="konsulko" target="daimler">
+  <data key="d0">3</data>
+</edge>
+<edge source="konsulko" target="6b3797ab1e90">
+  <data key="d0">3</data>
+</edge>
+<edge source="konsulko" target="orioninc">
+  <data key="d0">2</data>
+</edge>
+<edge source="konsulko" target="cn">
+  <data key="d0">9</data>
+</edge>
+<edge source="konsulko" target="wdc">
+  <data key="d0">2</data>
+</edge>
+<edge source="konsulko" target="mail">
+  <data key="d0">7</data>
+</edge>
+<edge source="konsulko" target="intel">
+  <data key="d0">4</data>
+</edge>
+<edge source="konsulko" target="microchip">
+  <data key="d0">1</data>
+</edge>
+<edge source="konsulko" target="witz-inc">
+  <data key="d0">2</data>
+</edge>
+<edge source="konsulko" target="codethink">
+  <data key="d0">2</data>
+</edge>
+<edge source="konsulko" target="fridu">
+  <data key="d0">4</data>
+</edge>
+<edge source="konsulko" target="here">
+  <data key="d0">1</data>
+</edge>
+<edge source="konsulko" target="mentor">
+  <data key="d0">3</data>
+</edge>
+<edge source="mera" target="gmail">
+  <data key="d0">3</data>
+</edge>
+<edge source="mera" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="mera" target="iot">
+  <data key="d0">4</data>
+</edge>
+<edge source="mera" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="mera" target="jp">
+  <data key="d0">2</data>
+</edge>
+<edge source="mera" target="daimler">
+  <data key="d0">1</data>
+</edge>
+<edge source="mera" target="advancedtelematic">
+  <data key="d0">1</data>
+</edge>
+<edge source="mera" target="cn">
+  <data key="d0">1</data>
+</edge>
+<edge source="mera" target="ds">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="nexty-ele">
+  <data key="d0">3</data>
+</edge>
+<edge source="gmail" target="iot">
+  <data key="d0">31</data>
+</edge>
+<edge source="gmail" target="orioninc">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="collabora">
+  <data key="d0">4</data>
+</edge>
+<edge source="gmail" target="jp">
+  <data key="d0">6</data>
+</edge>
+<edge source="gmail" target="xevo">
+  <data key="d0">5</data>
+</edge>
+<edge source="gmail" target="advancedtelematic">
+  <data key="d0">4</data>
+</edge>
+<edge source="gmail" target="fujitsu">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="aisin-aw">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="renesas">
+  <data key="d0">7</data>
+</edge>
+<edge source="gmail" target="baylibre">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="ds">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="ti">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="witz-inc">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="wdc">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="automotivelinux">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="opensynergy">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="cn">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="sancloud">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="radiosound">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="virtualopensystems">
+  <data key="d0">4</data>
+</edge>
+<edge source="gmail" target="mail">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="validmanufacturing">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="iot">
+  <data key="d0">4</data>
+</edge>
+<edge source="nexty-ele" target="collabora">
+  <data key="d0">2</data>
+</edge>
+<edge source="nexty-ele" target="grammer">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="xevo">
+  <data key="d0">2</data>
+</edge>
+<edge source="nexty-ele" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="6b3797ab1e90">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="baylibre">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="ds">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="ti">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="jp">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="mail">
+  <data key="d0">2</data>
+</edge>
+<edge source="nexty-ele" target="renesas">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="aisin-aw">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="radiosound">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="iot" target="collabora">
+  <data key="d0">14</data>
+</edge>
+<edge source="iot" target="virtualopensystems">
+  <data key="d0">4</data>
+</edge>
+<edge source="iot" target="xevo">
+  <data key="d0">10</data>
+</edge>
+<edge source="iot" target="6b3797ab1e90">
+  <data key="d0">3</data>
+</edge>
+<edge source="iot" target="baylibre">
+  <data key="d0">3</data>
+</edge>
+<edge source="iot" target="ds">
+  <data key="d0">6</data>
+</edge>
+<edge source="iot" target="ti">
+  <data key="d0">3</data>
+</edge>
+<edge source="iot" target="wdc">
+  <data key="d0">3</data>
+</edge>
+<edge source="iot" target="automotivelinux">
+  <data key="d0">3</data>
+</edge>
+<edge source="iot" target="witz-inc">
+  <data key="d0">4</data>
+</edge>
+<edge source="iot" target="advancedtelematic">
+  <data key="d0">5</data>
+</edge>
+<edge source="iot" target="jp">
+  <data key="d0">15</data>
+</edge>
+<edge source="iot" target="cn">
+  <data key="d0">7</data>
+</edge>
+<edge source="iot" target="fridu">
+  <data key="d0">6</data>
+</edge>
+<edge source="iot" target="de">
+  <data key="d0">1</data>
+</edge>
+<edge source="iot" target="windriver">
+  <data key="d0">2</data>
+</edge>
+<edge source="iot" target="mail">
+  <data key="d0">4</data>
+</edge>
+<edge source="iot" target="renesas">
+  <data key="d0">11</data>
+</edge>
+<edge source="iot" target="aisin-aw">
+  <data key="d0">4</data>
+</edge>
+<edge source="iot" target="radiosound">
+  <data key="d0">4</data>
+</edge>
+<edge source="iot" target="intel">
+  <data key="d0">2</data>
+</edge>
+<edge source="iot" target="sancloud">
+  <data key="d0">2</data>
+</edge>
+<edge source="iot" target="opensynergy">
+  <data key="d0">2</data>
+</edge>
+<edge source="iot" target="grammer">
+  <data key="d0">3</data>
+</edge>
+<edge source="iot" target="fujitsu">
+  <data key="d0">3</data>
+</edge>
+<edge source="iot" target="synopsys">
+  <data key="d0">1</data>
+</edge>
+<edge source="iot" target="igalia">
+  <data key="d0">2</data>
+</edge>
+<edge source="iot" target="k2l">
+  <data key="d0">2</data>
+</edge>
+<edge source="iot" target="mentor">
+  <data key="d0">2</data>
+</edge>
+<edge source="iot" target="here">
+  <data key="d0">1</data>
+</edge>
+<edge source="iot" target="qt">
+  <data key="d0">1</data>
+</edge>
+<edge source="iot" target="theqtcompany">
+  <data key="d0">1</data>
+</edge>
+<edge source="collabora" target="jp">
+  <data key="d0">4</data>
+</edge>
+<edge source="collabora" target="igalia">
+  <data key="d0">4</data>
+</edge>
+<edge source="collabora" target="fujitsu">
+  <data key="d0">3</data>
+</edge>
+<edge source="collabora" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="collabora" target="xevo">
+  <data key="d0">3</data>
+</edge>
+<edge source="collabora" target="6b3797ab1e90">
+  <data key="d0">1</data>
+</edge>
+<edge source="collabora" target="renesas">
+  <data key="d0">1</data>
+</edge>
+<edge source="collabora" target="grammer">
+  <data key="d0">1</data>
+</edge>
+<edge source="collabora" target="orioninc">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="igalia">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="grammer">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="opensynergy">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="renesas">
+  <data key="d0">3</data>
+</edge>
+<edge source="jp" target="virtualopensystems">
+  <data key="d0">2</data>
+</edge>
+<edge source="jp" target="osg">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="ds">
+  <data key="d0">2</data>
+</edge>
+<edge source="jp" target="xevo">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="advancedtelematic">
+  <data key="d0">2</data>
+</edge>
+<edge source="jp" target="wdc">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="automotivelinux">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="witz-inc">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="codethink">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="cn">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="windriver">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="mentor">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="qt">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="k2l">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="theqtcompany">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="aisin-aw">
+  <data key="d0">1</data>
+</edge>
+<edge source="jp" target="mail">
+  <data key="d0">2</data>
+</edge>
+<edge source="grammer" target="xevo">
+  <data key="d0">1</data>
+</edge>
+<edge source="grammer" target="opensynergy">
+  <data key="d0">1</data>
+</edge>
+<edge source="grammer" target="cn">
+  <data key="d0">1</data>
+</edge>
+<edge source="sancloud" target="ti">
+  <data key="d0">1</data>
+</edge>
+<edge source="sancloud" target="advancedtelematic">
+  <data key="d0">1</data>
+</edge>
+<edge source="baylibre" target="mail">
+  <data key="d0">1</data>
+</edge>
+<edge source="baylibre" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="baylibre" target="ds">
+  <data key="d0">1</data>
+</edge>
+<edge source="baylibre" target="ti">
+  <data key="d0">1</data>
+</edge>
+<edge source="opensynergy" target="igalia">
+  <data key="d0">1</data>
+</edge>
+<edge source="opensynergy" target="aisin-aw">
+  <data key="d0">1</data>
+</edge>
+<edge source="opensynergy" target="fujitsu">
+  <data key="d0">1</data>
+</edge>
+<edge source="renesas" target="xevo">
+  <data key="d0">4</data>
+</edge>
+<edge source="renesas" target="advancedtelematic">
+  <data key="d0">2</data>
+</edge>
+<edge source="renesas" target="virtualopensystems">
+  <data key="d0">4</data>
+</edge>
+<edge source="renesas" target="mail">
+  <data key="d0">2</data>
+</edge>
+<edge source="renesas" target="aisin-aw">
+  <data key="d0">1</data>
+</edge>
+<edge source="renesas" target="fujitsu">
+  <data key="d0">2</data>
+</edge>
+<edge source="igalia" target="aisin-aw">
+  <data key="d0">1</data>
+</edge>
+<edge source="aisin-aw" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="aisin-aw" target="mail">
+  <data key="d0">2</data>
+</edge>
+<edge source="aisin-aw" target="fujitsu">
+  <data key="d0">1</data>
+</edge>
+<edge source="aisin-aw" target="xevo">
+  <data key="d0">1</data>
+</edge>
+<edge source="fujitsu" target="xevo">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="virtualopensystems">
+  <data key="d0">2</data>
+</edge>
+<edge source="xevo" target="6b3797ab1e90">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="advancedtelematic">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="witz-inc">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="wdc">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="automotivelinux">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="virtualopensystems">
+  <data key="d0">2</data>
+</edge>
+<edge source="advancedtelematic" target="daimler">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="ti">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="wdc">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="automotivelinux">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="witz-inc">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="here">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="mentor">
+  <data key="d0">1</data>
+</edge>
+<edge source="virtualopensystems" target="6b3797ab1e90">
+  <data key="d0">1</data>
+</edge>
+<edge source="automotivelinux" target="wdc">
+  <data key="d0">1</data>
+</edge>
+<edge source="automotivelinux" target="witz-inc">
+  <data key="d0">1</data>
+</edge>
+<edge source="ds" target="ap">
+  <data key="d0">1</data>
+</edge>
+<edge source="ds" target="ti">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="radiosound">
+  <data key="d0">1</data>
+</edge>
+<edge source="fridu" target="radiosound">
+  <data key="d0">1</data>
+</edge>
+<edge source="witz-inc" target="wdc">
+  <data key="d0">1</data>
+</edge>
+</graph></graphml>
