@@ -205,7 +205,7 @@ parser.add_argument("-le", "--legend_extra_organizations", type=list_of_strings,
 
 
 parser.add_argument("-s", "--save_graphML", action="store_true",
-                            help="save a new graphML network based on organizations to consider and organizations to filter passed as argument (i.e., -on, -oo, oi)")
+                            help="save a new graphML network based on organizations to consider and organizations to filter passed as argument (i.e., -on, -oo, -oi, -ot top10 ... top 20)")
 
 
 
