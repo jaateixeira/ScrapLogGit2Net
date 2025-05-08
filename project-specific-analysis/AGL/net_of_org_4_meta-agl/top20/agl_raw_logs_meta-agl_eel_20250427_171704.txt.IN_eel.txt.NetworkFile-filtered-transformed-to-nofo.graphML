@@ -1,0 +1,266 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d0" for="edge" attr.name="weight" attr.type="long"/>
+<graph edgedefault="undirected"><node id="linuxfoundation"/>
+<node id="advancedtelematic"/>
+<node id="IoT.bzh"/>
+<node id="konsulko"/>
+<node id="xevo"/>
+<node id="Panasonic"/>
+<node id="renesas"/>
+<node id="virtualopensystems"/>
+<node id="intel"/>
+<node id="fridu"/>
+<node id="mentor"/>
+<node id="Fujitsu"/>
+<node id="Mitsubishi"/>
+<node id="nexty-ele"/>
+<node id="validmanufacturing"/>
+<node id="lge"/>
+<node id="ADIT"/>
+<node id="aisin-aw"/>
+<node id="Toyota"/>
+<node id="theqtcompany"/>
+<edge source="linuxfoundation" target="advancedtelematic">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="IoT.bzh">
+  <data key="d0">8</data>
+</edge>
+<edge source="linuxfoundation" target="konsulko">
+  <data key="d0">6</data>
+</edge>
+<edge source="linuxfoundation" target="xevo">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="Panasonic">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="Mitsubishi">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="fridu">
+  <data key="d0">2</data>
+</edge>
+<edge source="linuxfoundation" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="validmanufacturing">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="mentor">
+  <data key="d0">1</data>
+</edge>
+<edge source="linuxfoundation" target="renesas">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="IoT.bzh">
+  <data key="d0">5</data>
+</edge>
+<edge source="advancedtelematic" target="konsulko">
+  <data key="d0">5</data>
+</edge>
+<edge source="advancedtelematic" target="xevo">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="Panasonic">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="renesas">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="mentor">
+  <data key="d0">1</data>
+</edge>
+<edge source="advancedtelematic" target="Fujitsu">
+  <data key="d0">1</data>
+</edge>
+<edge source="IoT.bzh" target="lge">
+  <data key="d0">1</data>
+</edge>
+<edge source="IoT.bzh" target="intel">
+  <data key="d0">2</data>
+</edge>
+<edge source="IoT.bzh" target="konsulko">
+  <data key="d0">28</data>
+</edge>
+<edge source="IoT.bzh" target="Panasonic">
+  <data key="d0">7</data>
+</edge>
+<edge source="IoT.bzh" target="xevo">
+  <data key="d0">7</data>
+</edge>
+<edge source="IoT.bzh" target="renesas">
+  <data key="d0">4</data>
+</edge>
+<edge source="IoT.bzh" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="IoT.bzh" target="fridu">
+  <data key="d0">6</data>
+</edge>
+<edge source="IoT.bzh" target="nexty-ele">
+  <data key="d0">3</data>
+</edge>
+<edge source="IoT.bzh" target="mentor">
+  <data key="d0">2</data>
+</edge>
+<edge source="IoT.bzh" target="Mitsubishi">
+  <data key="d0">4</data>
+</edge>
+<edge source="IoT.bzh" target="ADIT">
+  <data key="d0">2</data>
+</edge>
+<edge source="IoT.bzh" target="aisin-aw">
+  <data key="d0">3</data>
+</edge>
+<edge source="IoT.bzh" target="Fujitsu">
+  <data key="d0">3</data>
+</edge>
+<edge source="IoT.bzh" target="Toyota">
+  <data key="d0">4</data>
+</edge>
+<edge source="IoT.bzh" target="theqtcompany">
+  <data key="d0">2</data>
+</edge>
+<edge source="konsulko" target="lge">
+  <data key="d0">1</data>
+</edge>
+<edge source="konsulko" target="intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="konsulko" target="Panasonic">
+  <data key="d0">5</data>
+</edge>
+<edge source="konsulko" target="nexty-ele">
+  <data key="d0">5</data>
+</edge>
+<edge source="konsulko" target="fridu">
+  <data key="d0">2</data>
+</edge>
+<edge source="konsulko" target="xevo">
+  <data key="d0">5</data>
+</edge>
+<edge source="konsulko" target="Mitsubishi">
+  <data key="d0">4</data>
+</edge>
+<edge source="konsulko" target="Fujitsu">
+  <data key="d0">3</data>
+</edge>
+<edge source="konsulko" target="Toyota">
+  <data key="d0">7</data>
+</edge>
+<edge source="konsulko" target="renesas">
+  <data key="d0">4</data>
+</edge>
+<edge source="konsulko" target="aisin-aw">
+  <data key="d0">3</data>
+</edge>
+<edge source="konsulko" target="mentor">
+  <data key="d0">3</data>
+</edge>
+<edge source="konsulko" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="konsulko" target="validmanufacturing">
+  <data key="d0">2</data>
+</edge>
+<edge source="xevo" target="intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="Panasonic">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="renesas">
+  <data key="d0">2</data>
+</edge>
+<edge source="xevo" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="xevo" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="Panasonic" target="renesas">
+  <data key="d0">1</data>
+</edge>
+<edge source="Panasonic" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="Panasonic" target="ADIT">
+  <data key="d0">1</data>
+</edge>
+<edge source="Panasonic" target="mentor">
+  <data key="d0">1</data>
+</edge>
+<edge source="Panasonic" target="theqtcompany">
+  <data key="d0">2</data>
+</edge>
+<edge source="Panasonic" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="Panasonic" target="Mitsubishi">
+  <data key="d0">1</data>
+</edge>
+<edge source="renesas" target="virtualopensystems">
+  <data key="d0">1</data>
+</edge>
+<edge source="renesas" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="renesas" target="Fujitsu">
+  <data key="d0">1</data>
+</edge>
+<edge source="renesas" target="Toyota">
+  <data key="d0">2</data>
+</edge>
+<edge source="renesas" target="aisin-aw">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="lge">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="fridu">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="fridu" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="Fujitsu" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="Fujitsu" target="Toyota">
+  <data key="d0">2</data>
+</edge>
+<edge source="Fujitsu" target="aisin-aw">
+  <data key="d0">1</data>
+</edge>
+<edge source="Mitsubishi" target="nexty-ele">
+  <data key="d0">1</data>
+</edge>
+<edge source="nexty-ele" target="Toyota">
+  <data key="d0">2</data>
+</edge>
+<edge source="nexty-ele" target="aisin-aw">
+  <data key="d0">1</data>
+</edge>
+<edge source="aisin-aw" target="Toyota">
+  <data key="d0">2</data>
+</edge>
+</graph></graphml>
