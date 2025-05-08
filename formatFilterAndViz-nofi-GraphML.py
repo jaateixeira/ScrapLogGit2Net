@@ -1148,7 +1148,7 @@ if args.plot and args.verbose:
 
     if args.org_list_top_only :
         print(f'\t top mode={args.org_list_top_only}')
-        plt.figtext(0.1, 0.10,f'top mode={args.top_org_list_only} - Should show only developers affiliated with {args.top_org_list_only}',  fontsize=8)
+        plt.figtext(0.1, 0.10,f'top mode={args.org_list_top_only } - Should show only developers affiliated with {args.org_list_top_only}',  fontsize=8)
 
     if args.legend_type:
         print(f'\t legend type={args.legend_type}')
@@ -1189,6 +1189,35 @@ else:
 print()
 print("Everything went fine")
 
+
+def filterAllOrganizationNotInList(graph, companies_list):
+    """
+    Filters a NetworkX graph to retain only the nodes (organizations) that are in the provided companies list.
+
+    Parameters:
+    - graph (nx.Graph): The input graph to be filtered.
+    - companies_list (list): A list of company names to retain in the graph.
+
+    Returns:
+    - nx.Graph: A new graph containing only the nodes that match the companies in the list.
+    """
+    # Create a copy of the original graph to avoid modifying it directly
+    filtered_graph = graph.copy()
+
+    nodes_to_remove = []
+
+    for node, data in filtered_graph.nodes(data=True):
+        # print (node)
+        # print (data['affiliation'])
+
+        if  data['affiliation'] not in companies_list:
+            print (f"dropping {data['e-mail']} as not in {companies_list}")
+
+    filtered_graph.remove_nodes_from(nodes_to_remove)
+
+    return filtered_graph
+
+
 def determine_file_name(name):
     counter = 0
     file_name = '{0}.graphML'.format(name)
@@ -1201,6 +1230,29 @@ if args.save_graphML:
     print("You should save the filtered network of individuals then ...")
     filtered_file_name = determine_file_name(os.path.basename(args.infile[0:-8] + '-filtered'))
     print("Saving filtered network to " + filtered_file_name )
+
+    if args.org_list_top_only:
+        print("\n You should also consider -ot {top5,top10,top20}  and filter everything that is not on top")
+
+        if args.org_list_top_only == "top5":
+            print("\t TOP 5 to be considered:")
+            print(top_5_org)
+            G = filterAllOrganizationNotInList(G, top_5_org)
+
+        elif args.org_list_top_only == "top10":
+            print("\t TOP 10 to be considered:")
+            print(top_10_org)
+            G = filterAllOrganizationNotInList(G, top_10_org)
+
+        elif args.org_list_top_only == "top20":
+            print("\t TOP 20 to be considered:")
+            print(top_20_org)
+            G = filterAllOrganizationNotInList(G, top_20_org)
+        else:
+            print("Unexpected argument for args.org_list_top_only")
+            sys.exit(1)
+
+
 
     nx.write_graphml_lxml(G, filtered_file_name)
     print(f"See {filtered_file_name}")
