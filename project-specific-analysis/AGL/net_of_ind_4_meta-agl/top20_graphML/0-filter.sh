@@ -1,0 +1,1 @@
+../../../../formatFilterAndViz-nofi-GraphML.py -p -oi gmail -ot top20 -a ../../../../test-configurations/alias.scraplog.config.ini -l -lt top20 -s ../agl_raw_logs_meta-agl_albacore_20250427_171634.txt.IN_albacore.txt.NetworkFile.graphML

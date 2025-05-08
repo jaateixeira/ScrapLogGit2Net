@@ -440,29 +440,28 @@ if args.affiliation_alias_in_config_file:
     print("\t",aliases,"\n")
 
 
-for node, data in G.nodes(data=True):
-    if (data['affiliation'] in aliases.keys()):
+    for node, data in G.nodes(data=True):
+        if (data['affiliation'] in aliases.keys()):
 
-        # Special case for AGL data
-        if data['affiliation']  == "jp":
-            if "adit" in data['e-mail']:
-                data['affiliation'] = "ADIT"
-                print (f"WARNING: Special affiliation {data['e-mail']} set to ADIT")
-            elif "panasonic"  in data['e-mail']:
-                data['affiliation'] = "Panasonic"
-                print(f"WARNING: Special affiliation {data['e-mail']} set to Panasonic")
+            # Special case for AGL data
+            if data['affiliation']  == "jp":
+                if "adit" in data['e-mail']:
+                    data['affiliation'] = "ADIT"
+                    print (f"WARNING: Special affiliation {data['e-mail']} set to ADIT")
+                elif "panasonic"  in data['e-mail']:
+                    data['affiliation'] = "Panasonic"
+                    print(f"WARNING: Special affiliation {data['e-mail']} set to Panasonic")
 
-            elif "fujitsu"  in data['e-mail']:
-                data['affiliation'] = "Fujitsu"
-                print(f"WARNING: Special affiliation {data['e-mail']} set to Panasonic")
-            else:
-                print (f"Error: Conflicts with {args.affiliation_alias_in_config_file} conf file")
-                print (f"{data['affiliation']}")
-                print (f"{data['e-mail']}")
-                sys.exit(1)
-
-        else: # DEFAULT us the alias
-            data['affiliation'] = aliases[data['affiliation']]
+                elif "fujitsu"  in data['e-mail']:
+                    data['affiliation'] = "Fujitsu"
+                    print(f"WARNING: Special affiliation {data['e-mail']} set to Panasonic")
+                else:
+                    print (f"Error: Conflicts with {args.affiliation_alias_in_config_file} conf file")
+                    print (f"{data['affiliation']}")
+                    print (f"{data['e-mail']}")
+                    sys.exit(1)
+            else: # DEFAULT us the alias
+                data['affiliation'] = aliases[data['affiliation']]
 
         #print (f"node {node} with data={data} set to be affiliated with {data['affiliation']}")
         #print (node)
