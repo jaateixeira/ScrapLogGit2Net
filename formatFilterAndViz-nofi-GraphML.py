@@ -367,6 +367,7 @@ if args.legend_extra_organizations:
 if args.save_graphML:
     print()
     print("Should save a new graphML network based on organizations to consider and organizations to filter passed a argument (i.e., -on, -oo, oi)")
+    print("Should also consider export only  organization on top if argument -ot {top5,top10,top20} ")
     print("Might be wise to save the smaller inter-individual network")
 
 print()
@@ -1134,7 +1135,7 @@ if args.plot and args.verbose:
         plt.figtext(0.1, 0.2,f"Affiliations resolved using GitHub API",  fontsize = 8)
         
     if  args.org_list_to_ignore:
-        print(f'\t org_list_to_ignore={args.org_list_to_ignore}', fontsize=8)
+        print(f'\t org_list_to_ignore={args.org_list_to_ignore}')
         plt.figtext(0.5, 0.8,f'org_list_to_ignore={args.org_list_to_ignore}', fontsize=8)
     
     if args.org_list_only:
@@ -1145,8 +1146,8 @@ if args.plot and args.verbose:
         print(f'\t org_list_and_neighbours_only={args.org_list_and_neighbours_only}')
         plt.figtext(0.0, 0.5,f'org_list_and_neighbours_only={args.org_list_and_neighbours_only}',  fontsize=8)
 
-    if args.top_org_list_only:
-        print(f'\t top mode={args.top_org_list_only}')
+    if args.org_list_top_only :
+        print(f'\t top mode={args.org_list_top_only}')
         plt.figtext(0.1, 0.10,f'top mode={args.top_org_list_only} - Should show only developers affiliated with {args.top_org_list_only}',  fontsize=8)
 
     if args.legend_type:
