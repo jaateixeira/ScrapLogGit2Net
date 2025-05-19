@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 
-# Scaps date, authors, affiliations and file changes from a Git Changelog 
+# Scraps date, authors, affiliations and file changes from a Git Changelog (i.e. git log)
 #
 # 
 
@@ -251,8 +251,10 @@ def getDateEmailAffiliation(line):
     "gets the ==Name;email;date=="
     #print ("	getting name, email, date, affilication from the line["+line+"]")
 
-    
-    name_pattern = re.compile('^\\=\\=(.+);(.+);(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
+    # Old tested way
+    # name_pattern = re.compile('^\\=\\=(.+);(.+);(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
+    # Corrected way
+    name_pattern = re.compile(r'^\=\=(.+);(.+);(.+)\ (\+|\-)\d\d\d\d\=\=$')
     match = name_pattern.findall(line)
     
     #print ("match=" + str(match))   
@@ -270,7 +272,11 @@ def getDateEmailAffiliation(line):
             print ("WARNING exceptional code commit header Exception 1 ")
             print(("LINE number "+str(stats['nlines'])+" ["+ line + "] double ;; <- name and email together on commit header"))
 
-            name_pattern = re.compile('^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
+            # Old way
+            # name_pattern = re.compile('^\\=\\=(.*)\ (.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
+            # Corrected way
+            name_pattern = re.compile(r'^\=\=(.*)\ (.+@.+);;(.+)\ (\+|\-)\d\d\d\d\=\=$')
+
             match = name_pattern.findall(line)
             print(("match=["+str(match)+"]"))
 
@@ -281,7 +287,10 @@ def getDateEmailAffiliation(line):
             print ("WARNING exceptional code commit header Exception 2 ")
             print(("LINE number "+str(stats['nlines'])+" ["+ line + "] no name, just an email"))
 
-            name_pattern = re.compile('^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
+            # Old way
+            # name_pattern = re.compile('^\\=\\=(.+@.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
+            # New way
+            name_pattern = re.compile(r'^\=\=(.+@.+);;(.+)\ (\+|\-)\d\d\d\d\=\=$')
             tmpmatch = name_pattern.findall(line)
             
             # Workarround by adding name from the email
@@ -295,8 +304,11 @@ def getDateEmailAffiliation(line):
         elif "==Launchpad" in line:
             print ("WARNING exceptional code commit header Exception 3 ")
             print(("LINE number "+str(stats['nlines'])+" ["+ line + "] Lauchpad bot"))
-            
-            name_pattern = re.compile('^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
+
+            #Old way
+            #name_pattern = re.compile('^\\=\\=(.+);;(.+)\\ (\\+|\\-)\d\d\d\d\\=\\=$')
+            #Corrected way
+            name_pattern = re.compile(r'^\=\=(.+);;(.+)\ (\+|\-)\d\d\d\d\=\=$')
             tmpmatch = name_pattern.findall(line)
 
             # Workarround by simpli addign it as a commiter 
@@ -338,8 +350,10 @@ def getDateEmailAffiliation(line):
 
 
     # Verify the email pattern 
-
-    email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
+    # Old way
+    #email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
+    # Corrected way
+    email_pattern = re.compile(r'([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
  
     if (email_pattern.search(email)== None):
         print(("WARNING commiter ["+email+"] have an invalidName"))
@@ -452,8 +466,11 @@ def filterChangeLogDataByDate ( startDate, endDate ):
         #time = date[11:19]
         #year = date[20:24]
 
-        # Get weekday month day time year  with regular expressions 
-        name_pattern = re.compile('(.+)\s(.+)\s(\d+)\s(.+)\s(\d+)')
+        # Get weekday month day time year  with regular expressions
+        # Old way
+        # name_pattern = re.compile('(.+)\s(.+)\s(\d+)\s(.+)\s(\d+)')
+        # New way
+        name_pattern = re.compile(r'(.+)\s(.+)\s(\d+)\s(.+)\s(\d+)')
         match = name_pattern.findall(date)
 
         #print ("date_ match=["+str(match)+"]")
