@@ -184,7 +184,7 @@ RAW_MODE = 0
 EMAIL_FILTERING_MODE = 0 
 
 
-def getAffiliationFromEmail(email):
+def getAffiliationFromEmail(email:str) -> str:
     "gets affiliation from an given email"
 
     #print ("getAffiliationFromEmail("+email+")")
