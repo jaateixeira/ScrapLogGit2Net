@@ -1,0 +1,1005 @@
+==Romain Forlot;romain.forlot@iot.bzh;Fri Dec 2 16:13:31 2016 +0000==
+meta-agl/recipes-connectivity/openssl/openssl_1.0.2h.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Fri Dec 2 16:06:07 2016 +0100==
+meta-agl/conf/distro/poky-agl.conf
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Fri Nov 25 16:59:09 2016 +0100==
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-multimedia.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Thu Nov 17 00:30:35 2016 +0100==
+scripts/README-mkefi-agl.md
+scripts/mkefi-agl.sh
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Fri Nov 4 21:27:40 2016 +0100==
+meta-agl/conf/distro/poky-agl-sysvinit.conf
+meta-agl/conf/distro/poky-agl.conf
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Fri Nov 4 15:16:36 2016 +0100==
+.gitreview
+templates/machine/raspberrypi2/50_bblayers.conf.inc
+templates/machine/raspberrypi3/50_bblayers.conf.inc
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Aug 10 20:55:25 2016 +0900==
+meta-agl/recipes-core/glibc/glibc/arm/local-arm-futex.diff
+meta-agl/recipes-core/glibc/glibc_2.22.bbappend
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Sun Aug 14 18:12:34 2016 +0000==
+meta-agl/recipes-core/dbus/dbus_%.bbappend
+
+==Jan-Simon Moeller;jsmoeller@linuxfoundation.org;Wed Aug 3 22:27:33 2016 +0200==
+README-AGL.md
+README.md
+
+==Phong Tran;tranmanphong@gmail.com;Thu Jul 21 23:18:33 2016 +0700==
+meta-ivi-common/recipes-test/freetype/freetype_%.bbappend
+
+==Manuel Bachmann;mbc@iot.bzh;Wed Jul 20 15:52:27 2016 +0000==
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-multimedia.bb
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio_%.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue Jul 19 23:49:53 2016 +0200==
+meta-agl/conf/distro/poky-agl-sysvinit.conf
+meta-agl/conf/distro/poky-agl.conf
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue Jul 19 11:07:23 2016 +0200==
+meta-agl-bsp/recipes-kernel/linux/linux-yocto/vbox-vmware-sata.cfg
+meta-agl-bsp/recipes-kernel/linux/linux-yocto_%.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue Jul 19 12:37:05 2016 +0200==
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension_1.9.1.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Wed Jun 8 13:41:49 2016 +0000==
+meta-agl/recipes-multimedia/pulseaudio/agl-audio-plugin_0.1.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-multimedia.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Mon Apr 18 12:42:12 2016 +0000==
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0008-install-files-for-a-module-development.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0010-volume-ramp-additions-to-the-low-level-infra.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0011-volume-ramp-adding-volume-ramping-to-sink-input.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0012-volume-ramp-add-volume-ramping-to-sink.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0013-add-internal-corking-state-for-sink-input.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0020-core-util-Add-pa_join.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0021-dynarray-Add-pa_dynarray_get_raw_array.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0022-device-port-Add-pa_device_port.active.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0030-volume-api-Add-libvolume-api.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0031-Add-module-main-volume-policy.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio/0039-main-volume-policy-adapt-to-pa6rev.patch
+meta-ivi-common/recipes-multimedia/pulseaudio/pulseaudio_6.0.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Wed Jul 13 00:24:02 2016 +0200==
+templates/machine/porter-nogfx/50_local.conf.inc
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Fri Jul 8 14:01:22 2016 +0000==
+meta-agl/recipes-core/packagegroups/nativesdk-packagegroup-sdk-host.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Mon Jul 11 03:51:33 2016 +0200==
+meta-agl/classes/useradd.bbclass
+meta-agl/classes/useradd_base.bbclass
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Sun Jul 10 23:58:49 2016 +0200==
+templates/machine/porter-nogfx/50_local.conf.inc
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Fri Jul 8 18:25:05 2016 +0000==
+scripts/.aglsetup_genconfig.bash
+templates/base/01_setup_EULAfunc.sh
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Jul 6 20:01:30 2016 +0900==
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension_1.9.1.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Tue Jul 5 16:34:38 2016 +0000==
+meta-agl/recipes-sota/libgsystem/libgsystem_git.bb
+meta-agl/recipes-sota/ostree/ostree_git.bb
+meta-agl/recipes-sota/rvi-sota-client/files/dbus-rs/0001-Cast-correctly-c_char-raw-pointers-for-ARM.patch
+meta-agl/recipes-sota/rvi-sota-client/rvi-sota-client/rvi-sota-client.service
+meta-agl/recipes-sota/rvi-sota-client/rvi-sota-client_git.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Tue Jun 28 21:27:38 2016 +0000==
+scripts/.aglsetup_genconfig.bash
+scripts/aglsetup.sh
+scripts/envsetup.sh
+templates/base/00_local.conf.agl.inc
+templates/base/01_setup_EULAfunc.sh
+templates/base/99_setup_EULAconf.sh
+templates/base/bblayers.conf.sample
+templates/base/conf-notes.txt
+templates/base/local.conf.sample
+templates/common/conf-notes.txt
+templates/dra7xx-evm/conf/bblayers.conf.sample
+templates/dra7xx-evm/conf/conf-notes.txt
+templates/dra7xx-evm/conf/local.conf.sample
+templates/dragonboard-410c/conf/bblayers.conf.sample
+templates/dragonboard-410c/conf/conf-notes.txt
+templates/dragonboard-410c/conf/local.conf.sample
+templates/feature/agl-devel/50_local.conf.inc
+templates/feature/agl-netboot/50_bblayers.conf.inc
+templates/feature/agl-netboot/50_local.conf.inc
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/intel-corei7-64/conf/conf-notes.txt
+templates/intel-corei7-64/conf/local.conf.sample
+templates/machine/dra7xx-evm/50_bblayers.conf.inc
+templates/machine/dra7xx-evm/50_local.conf.inc
+templates/machine/dragonboard-410c/50_bblayers.conf.inc
+templates/machine/dragonboard-410c/50_local.conf.inc
+templates/machine/dragonboard-410c/50_setup.sh
+templates/machine/intel-corei7-64/50_bblayers.conf.inc
+templates/machine/intel-corei7-64/50_local.conf.inc
+templates/machine/porter-nogfx/50_bblayers.conf.inc
+templates/machine/porter-nogfx/50_local.conf.inc
+templates/machine/porter/50_bblayers.conf.inc
+templates/machine/porter/50_local.conf.inc
+templates/machine/porter/50_setup.sh
+templates/machine/qemux86-64/50_local.conf.inc
+templates/machine/qemux86/50_local.conf.inc
+templates/machine/raspberrypi2/50_bblayers.conf.inc
+templates/machine/raspberrypi2/50_local.conf.inc
+templates/machine/raspberrypi3/50_bblayers.conf.inc
+templates/machine/raspberrypi3/50_local.conf.inc
+templates/machine/wandboard/50_bblayers.conf.inc
+templates/machine/wandboard/50_local.conf.inc
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/conf-notes.txt
+templates/qemux86-64/conf/local.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+templates/qemux86/conf/conf-notes.txt
+templates/qemux86/conf/local.conf.sample
+templates/raspberrypi2/conf/bblayers.conf.sample
+templates/raspberrypi2/conf/conf-notes.txt
+templates/raspberrypi2/conf/local.conf.sample
+templates/raspberrypi3/conf/bblayers.conf.sample
+templates/raspberrypi3/conf/conf-notes.txt
+templates/wandboard/conf/bblayers.conf.sample
+templates/wandboard/conf/conf-notes.txt
+templates/wandboard/conf/local.conf.sample
+
+==Stephane DESNEUX;stephane.desneux@iot.bzh;Fri Jun 24 10:15:26 2016 +0000==
+meta-agl/conf/distro/poky-agl.conf
+meta-app-framework/conf/layer.conf
+meta-app-framework/recipes-config/agl-users/agl-users_0.1.bb
+meta-app-framework/recipes-core/af-binder/af-binder_1.0.bb
+meta-app-framework/recipes-core/af-main/af-main/Hack-to-allow-the-debugging.patch
+meta-app-framework/recipes-core/af-main/af-main_1.0.bb
+meta-app-framework/recipes-core/packagegroups/packagegroup-agl-app-framework-examples.bb
+meta-app-framework/recipes-core/packagegroups/packagegroup-agl-app-framework.bb
+meta-app-framework/recipes-core/packagegroups/packagegroup-agl-core-security.bbappend
+meta-app-framework/recipes-core/packagegroups/packagegroup-agl-core.bbappend
+meta-app-framework/recipes-core/web-runtime/web-runtime/web-runtime
+meta-app-framework/recipes-core/web-runtime/web-runtime/web-runtime-webkit.qml
+meta-app-framework/recipes-core/web-runtime/web-runtime/web-runtime.qml
+meta-app-framework/recipes-core/web-runtime/web-runtime_0.1.bb
+meta-app-framework/recipes-example/afb-client/afb-client_1.0.bb
+meta-app-framework/recipes-example/afb-client/files/afb-client
+meta-app-framework/recipes-example/afm-client/afm-client_1.0.bb
+meta-app-framework/recipes-example/afm-client/files/afm-client
+meta-app-framework/recipes-example/afm-client/files/afm-client.service
+meta-app-framework/recipes-support/libcap/libcap/removing-capability-enforcement.patch
+meta-app-framework/recipes-support/libcap/libcap_%.bbappend
+meta-app-framework/recipes-support/libmicrohttpd/libmicrohttpd/allows-upgrade.patch
+meta-app-framework/recipes-support/libmicrohttpd/libmicrohttpd_0.9.48.bb
+meta-app-framework/recipes-support/libmicrohttpd/libmicrohttpd_0.9.48.bbappend
+meta-app-framework/recipes-support/libzip/libzip_1.1.1.bb
+meta-app-framework/recipes-support/xmlsec1/xmlsec1/Only-require-libxslt-in-.pc-files-when-necessary.patch
+meta-app-framework/recipes-support/xmlsec1/xmlsec1_1.%.bbappend
+templates/dra7xx-evm/conf/bblayers.conf.sample
+templates/dragonboard-410c/conf/bblayers.conf.sample
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+templates/raspberrypi2/conf/bblayers.conf.sample
+templates/raspberrypi3/conf/bblayers.conf.sample
+templates/wandboard/conf/bblayers.conf.sample
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Mon Jun 20 11:15:59 2016 +0200==
+meta-ivi-common/recipes-test/packagegroups/packagegroup-ivi-common-test.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Wed Jun 1 17:52:10 2016 +0000==
+meta-agl/conf/distro/poky-agl.conf
+meta-app-framework/conf/layer.conf
+meta-app-framework/recipes-config/agl-users/agl-users_0.1.bb
+meta-app-framework/recipes-core/af-binder/af-binder_1.0.bb
+meta-app-framework/recipes-core/af-main/af-main/Hack-to-allow-the-debugging.patch
+meta-app-framework/recipes-core/af-main/af-main_1.0.bb
+meta-app-framework/recipes-core/packagegroups/packagegroup-agl-app-framework-examples.bb
+meta-app-framework/recipes-core/packagegroups/packagegroup-agl-app-framework.bb
+meta-app-framework/recipes-core/packagegroups/packagegroup-agl-core-security.bbappend
+meta-app-framework/recipes-core/packagegroups/packagegroup-agl-core.bbappend
+meta-app-framework/recipes-core/web-runtime/web-runtime/web-runtime
+meta-app-framework/recipes-core/web-runtime/web-runtime/web-runtime-webkit.qml
+meta-app-framework/recipes-core/web-runtime/web-runtime/web-runtime.qml
+meta-app-framework/recipes-core/web-runtime/web-runtime_0.1.bb
+meta-app-framework/recipes-example/afb-client/afb-client_1.0.bb
+meta-app-framework/recipes-example/afb-client/files/afb-client
+meta-app-framework/recipes-example/afm-client/afm-client_1.0.bb
+meta-app-framework/recipes-example/afm-client/files/afm-client
+meta-app-framework/recipes-example/afm-client/files/afm-client.service
+meta-app-framework/recipes-support/libcap/libcap/removing-capability-enforcement.patch
+meta-app-framework/recipes-support/libcap/libcap_%.bbappend
+meta-app-framework/recipes-support/libmicrohttpd/libmicrohttpd/allows-upgrade.patch
+meta-app-framework/recipes-support/libmicrohttpd/libmicrohttpd_0.9.48.bb
+meta-app-framework/recipes-support/libmicrohttpd/libmicrohttpd_0.9.48.bbappend
+meta-app-framework/recipes-support/libzip/libzip_1.1.1.bb
+meta-app-framework/recipes-support/xmlsec1/xmlsec1/Only-require-libxslt-in-.pc-files-when-necessary.patch
+meta-app-framework/recipes-support/xmlsec1/xmlsec1_1.%.bbappend
+templates/dra7xx-evm/conf/bblayers.conf.sample
+templates/dragonboard-410c/conf/bblayers.conf.sample
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+templates/raspberrypi2/conf/bblayers.conf.sample
+templates/raspberrypi3/conf/bblayers.conf.sample
+templates/wandboard/conf/bblayers.conf.sample
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Fri Jun 17 14:35:16 2016 +0000==
+meta-ivi-common/recipes-test/freetype/files/0001-Makefile-dont-build-gfx-demos.patch
+meta-ivi-common/recipes-test/freetype/freetype_%.bbappend
+
+==Leon Anavi;leon.anavi@konsulko.com;Fri Jun 17 12:47:32 2016 +0000==
+meta-agl/recipes-sota/rvi-sota-client/rvi-sota-client_git.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Thu Jun 16 17:55:29 2016 +0000==
+meta-ivi-common/recipes-test/fsfuzzer/files/0001-fix_missing_header_sys_stat.patch
+meta-ivi-common/recipes-test/fsfuzzer/fsfuzzer_0.7.bb
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Tue May 10 12:08:10 2016 +0200==
+meta-ivi-common/recipes-test/linus-stress/linus-stress.bb
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Tue May 10 12:03:57 2016 +0200==
+meta-ivi-common/recipes-test/ipv6connect/ipv6connect.bb
+
+==Leon Anavi;leon.anavi@konsulko.com;Wed Jun 15 13:13:42 2016 +0000==
+meta-agl/recipes-sota/ostree/ostree_git.bb
+
+==Leon Anavi;leon.anavi@konsulko.com;Fri Jun 3 12:53:15 2016 +0000==
+templates/dra7xx-evm/conf/bblayers.conf.sample
+templates/dragonboard-410c/conf/bblayers.conf.sample
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+templates/raspberrypi2/conf/bblayers.conf.sample
+templates/raspberrypi3/conf/bblayers.conf.sample
+templates/wandboard/conf/bblayers.conf.sample
+
+==Leon Anavi;leon.anavi@konsulko.com;Fri Jun 3 12:49:05 2016 +0000==
+meta-agl/recipes-sota/libgsystem/libgsystem_git.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Tue Jun 14 17:04:44 2016 +0000==
+meta-netboot/recipes-core/initramfs-netboot/files/init.sh
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Tue Jun 14 16:08:36 2016 +0000==
+meta-ivi-common/recipes-test/fontconfig/fontconfig_%.bbappend
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Tue Jun 14 10:34:12 2016 +0000==
+meta-ivi-common/recipes-test/dung/dung_3.4.25-m2.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Tue Jun 14 09:20:32 2016 +0000==
+meta-ivi-common/recipes-test/aiostress/aiostress_0.22.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Wed Jun 8 15:31:21 2016 +0000==
+meta-netboot/recipes-kernel/linux/files/nbd.cfg
+meta-netboot/recipes-kernel/linux/files/ramdisk.cfg
+meta-netboot/recipes-kernel/linux/linux-yocto_%.bbappend
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Fri Jun 10 10:07:55 2016 +0000==
+meta-netboot/recipes-core/initramfs-netboot/files/init.sh
+
+==Manuel Bachmann;mbc@iot.bzh;Sun Jun 5 15:35:31 2016 +0000==
+meta-agl/conf/distro/poky-agl.conf
+
+==Manuel Bachmann;mbc@iot.bzh;Sat Jun 4 10:16:46 2016 +0000==
+templates/intel-corei7-64/conf/local.conf.sample
+templates/qemux86-64/conf/local.conf.sample
+templates/qemux86/conf/local.conf.sample
+templates/wandboard/conf/local.conf.sample
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Mon May 23 17:53:36 2016 +0200==
+meta-netboot/README
+meta-netboot/README.porter
+meta-netboot/classes/netboot.bbclass
+meta-netboot/conf/layer.conf
+meta-netboot/recipes-core/busybox/busybox_%.bbappend
+meta-netboot/recipes-core/busybox/files/enable_nbd.cfg
+meta-netboot/recipes-core/images/initramfs-netboot-image.bb
+meta-netboot/recipes-core/initramfs-netboot/files/init.sh
+meta-netboot/recipes-core/initramfs-netboot/initramfs-netboot_1.0.bb
+
+==Kotaro Hashimoto;Hashimoto.Kotaro@ds.MitsubishiElectric.co.jp;Wed May 25 14:02:54 2016 +0900==
+meta-agl/recipes-extended/ltp/ltp_%.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue May 17 12:20:23 2016 +0200==
+meta-ivi-common/recipes-test/packagegroups/packagegroup-ivi-common-test.bb
+
+==Phong Tran;tranmanphong@gmail.com;Wed May 18 21:42:09 2016 +0700==
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+
+==Philippe Coval;philippe.coval@osg.samsung.com;Tue May 17 18:18:25 2016 +0200==
+meta-agl-bsp/conf/layer.conf
+
+==Leon Anavi;leon.anavi@konsulko.com;Mon May 9 12:45:39 2016 +0000==
+meta-agl/recipes-sota/rvi-sota-client/rvi-sota-client_git.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Sun May 8 00:00:23 2016 +0200==
+meta-agl/conf/distro/poky-agl.conf
+
+==Leon Anavi;leon.anavi@konsulko.com;Wed May 4 12:35:03 2016 +0000==
+meta-agl/recipes-sota/rvi-sota-client/files/dbus-rs/0001-Cast-correctly-c_char-raw-pointers-for-ARM.patch
+meta-agl/recipes-sota/rvi-sota-client/rvi-sota-client/rvi-sota-client.service
+meta-agl/recipes-sota/rvi-sota-client/rvi-sota-client_git.bb
+templates/dra7xx-evm/conf/bblayers.conf.sample
+templates/dragonboard-410c/conf/bblayers.conf.sample
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+templates/raspberrypi2/conf/bblayers.conf.sample
+templates/raspberrypi3/conf/bblayers.conf.sample
+templates/wandboard/conf/bblayers.conf.sample
+
+==Andre Moreira Magalhaes (andrunko);andre.magalhaes@collabora.co.uk;Tue Apr 12 23:58:54 2016 -0300==
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension_1.9.1.bb
+
+==Andre Moreira Magalhaes (andrunko);andre.magalhaes@collabora.co.uk;Tue Apr 12 23:13:40 2016 -0300==
+meta-ivi-common/recipes-multimedia/audiomanager/audiomanager/0001-Fix-duplicated-command-line-arg-t.patch
+meta-ivi-common/recipes-multimedia/audiomanager/audiomanager/AudioManager.service
+meta-ivi-common/recipes-multimedia/audiomanager/audiomanager_7.3.bb
+
+==Andre Moreira Magalhaes (andrunko);andre.magalhaes@collabora.co.uk;Tue Apr 12 22:57:52 2016 -0300==
+meta-ivi-common/recipes-extended/dlt-daemon/dlt-daemon/0001-Fix-build-with-systemd-209.patch
+meta-ivi-common/recipes-extended/dlt-daemon/dlt-daemon/0002-Don-t-execute-processes-as-a-specific-user.patch
+meta-ivi-common/recipes-extended/dlt-daemon/dlt-daemon/0003-systemd-unit-type-should-be-in-lowercase-so-use-Type.patch
+meta-ivi-common/recipes-extended/dlt-daemon/dlt-daemon/0004-Modify-systemd-config-directory.patch
+meta-ivi-common/recipes-extended/dlt-daemon/dlt-daemon_2.11.1.bb
+
+==Kotaro Hashimoto;Hashimoto.Kotaro@ds.MitsubishiElectric.co.jp;Mon Apr 25 10:30:09 2016 +0900==
+scripts/envsetup.sh
+templates/dragonboard-410c/conf/bblayers.conf.sample
+templates/dragonboard-410c/conf/conf-notes.txt
+templates/dragonboard-410c/conf/local.conf.sample
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Thu Apr 14 18:14:46 2016 +0200==
+scripts/envsetup.sh
+templates/raspberrypi2/conf/bblayers.conf.sample
+templates/raspberrypi2/conf/conf-notes.txt
+templates/raspberrypi2/conf/local.conf.sample
+templates/raspberrypi3/conf/bblayers.conf.sample
+templates/raspberrypi3/conf/conf-notes.txt
+templates/raspberrypi3/conf/local.conf.sample
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Thu Mar 31 18:06:56 2016 +0200==
+meta-ivi-common/recipes-test/packagegroups/packagegroup-ivi-common-test.bb
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Thu Mar 31 18:05:08 2016 +0200==
+meta-ivi-common/recipes-test/linpack/linpack.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Tue Apr 26 09:35:39 2016 +0000==
+meta-ivi-common/recipes-test/wayland/wayland-fits_git.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Thu Apr 14 18:10:01 2016 +0200==
+meta-agl-bsp/conf/layer.conf
+meta-agl-bsp/meta-ti/.gitkeep
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Thu Apr 14 00:32:42 2016 +0200==
+meta-agl-bsp/recipes-bsp/u-boot/files/fix_builderror_gcc5.patch
+meta-agl-bsp/recipes-bsp/u-boot/u-boot-ti-staging_2015.07.bbappend
+meta-agl/conf/distro/poky-agl-sysvinit.conf
+meta-agl/conf/distro/poky-agl.conf
+scripts/envsetup.sh
+templates/common/conf-notes.txt
+templates/dra7xx-evm/conf/bblayers.conf.sample
+templates/dra7xx-evm/conf/conf-notes.txt
+templates/dra7xx-evm/conf/local.conf.sample
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/intel-corei7-64/conf/conf-notes.txt
+templates/intel-corei7-64/conf/local.conf.sample
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/conf-notes.txt
+templates/qemux86-64/conf/local.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+templates/qemux86/conf/conf-notes.txt
+templates/qemux86/conf/local.conf.sample
+templates/wandboard/conf/bblayers.conf.sample
+templates/wandboard/conf/conf-notes.txt
+templates/wandboard/conf/local.conf.sample
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Thu Apr 28 19:09:19 2016 +0200==
+scripts/envsetup.sh
+
+==Wataru Natsume;wnatsume@jp.adit-jv.com;Fri Apr 8 10:54:06 2016 +0900==
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension/0001-Send-process-ID-that-created-surface-to-client.patch
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension_1.5.0.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Mon Apr 18 18:08:14 2016 +0200==
+meta-ivi-common/recipes-test/packagegroups/packagegroup-ivi-common-test.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Mon Apr 18 12:13:41 2016 +0200==
+meta-ivi-common/recipes-test/packagegroups/packagegroup-ivi-common-test.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Mon Apr 18 12:01:16 2016 +0200==
+meta-ivi-common/recipes-test/packagegroups/packagegroup-ivi-common-test.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Mon Apr 18 12:00:38 2016 +0200==
+meta-ivi-common/recipes-test/trinity/trinity_git.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Fri Apr 15 11:48:35 2016 +0000==
+meta-agl/recipes-connectivity/connman/connman_%.bbappend
+meta-agl/recipes-connectivity/connman/files/0001-disable-when-booting-over-nfs.patch
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Wed Apr 13 15:58:12 2016 +0000==
+meta-agl/conf/distro/poky-agl.conf
+meta-agl/recipes-connectivity/connman-ncurses/connman-ncurses_git.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-connectivity.bb
+meta-agl/recipes-core/systemd/systemd_%.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Sun Apr 10 17:20:50 2016 +0200==
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+templates/wandboard/conf/bblayers.conf.sample
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Sun Apr 10 12:14:30 2016 +0200==
+meta-ivi-common/recipes-test/packagegroups/packagegroup-ivi-common-test.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue Apr 5 00:37:17 2016 +0200==
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+templates/wandboard/conf/bblayers.conf.sample
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Thu Mar 31 17:06:29 2016 +0200==
+meta-ivi-common/recipes-test/interbench/files/interbench.c.patch
+meta-ivi-common/recipes-test/interbench/interbench_0.31.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Sat Apr 9 04:01:37 2016 +0200==
+scripts/envsetup.sh
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Thu Mar 31 16:59:46 2016 +0200==
+meta-ivi-common/recipes-test/interbench/interbench_0.31.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Fri Apr 1 14:32:50 2016 +0200==
+meta-ivi-common/recipes-test/ffsb/ffsb_6.0-rc2.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Fri Apr 1 15:59:50 2016 +0200==
+meta-ivi-common/recipes-test/blobsallad/blobsallad/0001-Makefile.patch
+meta-ivi-common/recipes-test/blobsallad/blobsallad/0002-auto.patch
+meta-ivi-common/recipes-test/blobsallad/blobsallad/0003-printcleanup.patch
+meta-ivi-common/recipes-test/blobsallad/blobsallad/0004-bs_main.c.patch
+meta-ivi-common/recipes-test/blobsallad/blobsallad_2006-11-14-23-57.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue Mar 22 22:01:59 2016 +0100==
+meta-agl/recipes-core/images/agl-image-minimal-qa.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue Mar 22 22:05:33 2016 +0100==
+meta-ivi-common/recipes-test/packagegroups/packagegroup-ivi-common-test.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue Mar 22 22:57:36 2016 +0100==
+meta-ivi-common/recipes-test/netpipe/files/netpipe-makefile.patch
+meta-ivi-common/recipes-test/netpipe/netpipe_3.7.2.bb
+
+==Stephane Desneux;stephane.desneux@iot.bzh;Thu Mar 31 18:13:20 2016 +0200==
+meta-ivi-common/recipes-test/ebizzy/ebizzy_0.3.bb
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Thu Mar 31 14:18:33 2016 +0200==
+meta-ivi-common/recipes-test/himeno/himeno_2.0.bb
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Thu Mar 31 14:09:20 2016 +0200==
+meta-ivi-common/recipes-extended/p7zip/p7zip_9.20.1.bbappend
+
+==José Bollo;jose.bollo@iot.bzh;Wed Mar 23 14:33:26 2016 +0100==
+meta-agl-security/recipes-security/security-manager/README.md
+meta-agl-security/recipes-security/security-manager/security-manager/Removing-tizen-platform-config.patch
+meta-agl-security/recipes-security/security-manager/security-manager/removes-dependency-to-libslp-db-utils.patch
+meta-agl-security/recipes-security/security-manager/security-manager_git.bbappend
+
+==Manuel Bachmann;mbc@iot.bzh;Mon Mar 14 09:03:31 2016 +0000==
+meta-agl/recipes-graphics/wayland/wayland_1.9.0.bb
+meta-agl/recipes-graphics/wayland/weston/0001-make-error-portable.patch
+meta-agl/recipes-graphics/wayland/weston/make-lcms-explicitly-configurable.patch
+meta-agl/recipes-graphics/wayland/weston/make-libwebp-explicitly-configurable.patch
+meta-agl/recipes-graphics/wayland/weston/weston.desktop
+meta-agl/recipes-graphics/wayland/weston/weston.png
+meta-agl/recipes-graphics/wayland/weston_1.9.0.bb
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension/apply_weston-1.5.x.patch
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension_1.5.0.bb
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/0001-IVI-Shell-Backport-from-Weston-1.9.0-to-1.8.0.patch
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/0001-IVI-Shell-use-primary-screen-for-resolution.patch
+meta-ivi-common/recipes-graphics/wayland/weston_1.9.0.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Feb 10 19:20:25 2016 +0900==
+meta-agl/recipes-ivi/images/agl-image-ivi-qa.bb
+meta-agl/recipes-test/packagegroups/packagegroup-agl-test.bb
+meta-ivi-common/recipes-test/packagegroups/packagegroup-ivi-common-test.bb
+templates/intel-corei7-64/conf/conf-notes.txt
+templates/qemux86-64/conf/conf-notes.txt
+templates/qemux86/conf/conf-notes.txt
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Fri Feb 26 06:25:50 2016 +0100==
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension/wandboard_fix_build.patch
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension_1.5.0.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Fri Feb 19 22:17:01 2016 +0100==
+scripts/envsetup.sh
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Thu Jan 21 23:04:13 2016 +0100==
+scripts/envsetup.sh
+templates/wandboard/conf/bblayers.conf.sample
+templates/wandboard/conf/conf-notes.txt
+templates/wandboard/conf/local.conf.sample
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Mon Feb 8 14:24:41 2016 +0900==
+scripts/envsetup.sh
+
+==Manuel Bachmann;mbc@iot.bzh;Wed Feb 3 10:55:14 2016 +0000==
+meta-agl/recipes-connectivity/gupnp/gupnp-dlna_0.9.4.bb
+meta-agl/recipes-connectivity/ofono/ofono_%.bbappend
+meta-agl/recipes-connectivity/rygel/rygel_%.bbappend
+meta-agl/recipes-connectivity/rygel/rygel_0.26.1.bb
+meta-agl/recipes-devtools/libgee/libgee-0.8_0.16.1.bb
+meta-agl/recipes-multimedia/lightmediascanner/files/id3-plugin-support-out-of-tree-build.patch
+meta-agl/recipes-multimedia/lightmediascanner/lightmediascanner_0.5.1.bb
+meta-agl/recipes-multimedia/pulseaudio/pulseaudio_%.bbappend
+meta-agl/recipes-navi-lbs/gpsd/gpsd_%.bbappend
+meta-agl/recipes-support/libmediaart/libmediaart-2.0_1.9.0.bb
+meta-agl/recipes-support/libmediaart/libmediaart.inc
+meta-ivi-common/recipes-test/gtest/gtest/CMakeLists-gtest.pc.in-Add-pkg-config-support-to-gte.patch
+meta-ivi-common/recipes-test/gtest/gtest/cmake-Add-install-command-for-libraries-and-headers.patch
+meta-ivi-common/recipes-test/gtest/gtest_1.7.0.bb
+meta-ivi-common/recipes-test/wayland/wayland-fits_git.bb
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+
+==Manuel Bachmann;mbc@iot.bzh;Thu Jan 28 02:35:16 2016 +0000==
+meta-agl/recipes-core/systemd/systemd/wired.network
+meta-agl/recipes-core/systemd/systemd_%.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Tue Jan 19 19:58:58 2016 +0900==
+meta-agl-bsp/recipes-graphics/mesa/mesa_10.%.bbappend
+meta-agl-bsp/recipes-graphics/wayland/weston_%.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Tue Jan 19 18:25:09 2016 +0900==
+meta-agl-bsp/recipes-kernel/linux/linux-yocto_%.bbappend
+meta-agl-bsp/recipes-kernel/linux/linux-yocto_3.14%.bbappend
+meta-agl/conf/distro/poky-agl.conf
+
+==José Bollo;jose.bollo@iot.bzh;Wed Jan 20 16:58:29 2016 +0100==
+meta-agl/recipes-connectivity/rygel/rygel_%.bbappend
+meta-agl/recipes-core/dbus/dbus_%.bbappend
+meta-agl/recipes-core/systemd/systemd_%.bbappend
+meta-agl/recipes-graphics/wayland/weston_%.bbappend
+meta-agl/recipes-multimedia/lightmediascanner/lightmediascanner_%.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Tue Jan 19 15:30:10 2016 +0900==
+meta-agl/conf/distro/poky-agl.conf
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Tue Jan 19 13:55:51 2016 +0900==
+scripts/envsetup.sh
+templates/intel-corei7-64/conf/bblayers.conf.sample
+templates/intel-corei7-64/conf/conf-notes.txt
+templates/intel-corei7-64/conf/local.conf.sample
+templates/qemux86-64/conf/bblayers.conf.sample
+templates/qemux86-64/conf/conf-notes.txt
+templates/qemux86-64/conf/local.conf.sample
+templates/qemux86/conf/bblayers.conf.sample
+templates/qemux86/conf/conf-notes.txt
+templates/qemux86/conf/local.conf.sample
+
+==Manuel Bachmann;mbc@iot.bzh;Wed Jan 13 18:36:55 2016 +0000==
+meta-agl/recipes-graphics/wayland/weston/0001-Adapt-changes-made-in-libinput-src-evdev.c-for-touch.patch
+meta-agl/recipes-graphics/wayland/weston/0001-desktop-shell-add-option-to-avoid-creating-the-panel.patch
+meta-agl/recipes-graphics/wayland/weston_%.bbappend
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/0001-IVI-Shell-Backport-from-Weston-1.9.0-to-1.5.0.patch
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/0001-IVI-Shell-Backport-from-Weston-1.9.0-to-1.8.0.patch
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/background.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/fullscreen.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/home.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_clickdot.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_flower.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_simple-egl.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_simple-shm.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_smoke.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/panel.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/random.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/sidebyside.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/tiling.png
+meta-ivi-common/recipes-graphics/wayland/weston_1.5.0.bbappend
+meta-ivi-common/recipes-graphics/wayland/weston_1.8.0.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Jan 15 22:12:18 2016 +0900==
+meta-agl-bsp/recipes-graphics/mesa/mesa_10.%.bbappend
+meta-agl-bsp/recipes-graphics/wayland/weston_%.bbappend
+meta-agl-bsp/recipes-kernel/linux/linux-yocto/hid.cfg
+meta-agl-bsp/recipes-kernel/linux/linux-yocto_%.bbappend
+meta-agl/conf/bblayers.conf.sample
+meta-agl/recipes-core/systemd/systemd/e2fsck.conf
+meta-agl/recipes-core/systemd/systemd_%.bbappend
+scripts/envsetup.sh
+
+==Manuel Bachmann;mbc@iot.bzh;Tue Jan 12 18:37:34 2016 +0000==
+meta-agl-bsp/recipes-kernel/linux/linux-yocto/0001-fanotify-fix-notification-of-groups-with-inode-mount.patch
+meta-agl-bsp/recipes-kernel/linux/linux-yocto/fanotify.cfg
+meta-agl-bsp/recipes-kernel/linux/linux-yocto_%.bbappend
+
+==Manuel Bachmann;mbc@iot.bzh;Tue Jan 12 09:59:24 2016 +0000==
+meta-agl/recipes-multimedia/pulseaudio/pulseaudio_%.bbappend
+
+==Manuel Bachmann;mbc@iot.bzh;Tue Jan 12 09:38:38 2016 +0000==
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-connectivity.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Tue Jan 12 09:24:45 2016 +0000==
+meta-agl/recipes-automotive/hvacplugin/files/0001-Fix-boost-include-statement.patch
+meta-agl/recipes-automotive/hvacplugin/hvacplugin_0.1.bb
+
+==José Bollo;jose.bollo@iot.bzh;Tue Jan 12 10:11:39 2016 +0100==
+meta-agl/recipes-connectivity/rygel/rygel_%.bbappend
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Thu Jan 7 17:04:05 2016 +0100==
+meta-agl/recipes-connectivity/ofono/ofono_%.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Mon Jan 4 04:21:43 2016 +0100==
+meta-agl/recipes-automotive/hvacplugin/files/0001-Fix-boost-include-statement.patch
+meta-agl/recipes-automotive/hvacplugin/hvacplugin_0.1.bb
+
+==Yury Asheshov;yury.asheshov@k2l.de;Mon Dec 14 15:25:21 2015 +0100==
+meta-agl/recipes-automotive/hvacplugin/files/hvacplugin
+meta-agl/recipes-automotive/hvacplugin/hvacplugin_0.1.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-automotive.bb
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Dec 11 17:05:20 2015 +0900==
+meta-agl/recipes-core/psplash/files/psplash-start.service
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Dec 11 16:56:35 2015 +0900==
+meta-agl/recipes-graphics/wayland/weston/weston.service
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Dec 11 17:01:05 2015 +0900==
+meta-agl/recipes-graphics/wayland/weston_1.5.0.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Dec 9 13:44:05 2015 +0900==
+meta-agl/recipes-connectivity/rygel/files/rygel.service
+meta-agl/recipes-connectivity/rygel/rygel_%.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Dec 9 13:34:28 2015 +0900==
+meta-agl/recipes-multimedia/lightmediascanner/files/lightmediascanner.service
+meta-agl/recipes-multimedia/lightmediascanner/lightmediascanner_%.bbappend
+
+==José Bollo;jose.bollo@iot.bzh;Mon Nov 16 16:32:14 2015 +0100==
+meta-agl-security/recipes-security/security-manager/README.md
+meta-agl-security/recipes-security/security-manager/security-manager/Removing-tizen-platform-config.patch
+meta-agl-security/recipes-security/security-manager/security-manager/removes-dependency-to-libslp-db-utils.patch
+meta-agl-security/recipes-security/security-manager/security-manager_git.bbappend
+
+==Manuel Bachmann;mbc@iot.bzh;Wed Dec 9 11:47:46 2015 +0000==
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Wed Dec 9 11:06:56 2015 +0000==
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Dec 9 13:27:29 2015 +0900==
+meta-agl/conf/distro/poky-agl.conf
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Dec 9 13:32:30 2015 +0900==
+meta-agl/recipes-core/dbus/dbus/dbus.service
+meta-agl/recipes-core/dbus/dbus/dbus.socket
+meta-agl/recipes-core/dbus/dbus/dbus_env.conf
+meta-agl/recipes-core/dbus/dbus_%.bbappend
+
+==Manuel Bachmann;mbc@iot.bzh;Tue Dec 8 03:35:43 2015 +0000==
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/gps
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.inc
+
+==Risto Avila;risto.avila@theqtcompany.com;Tue Dec 8 17:02:45 2015 +0200==
+meta-agl/recipes-graphics/wayland/weston/0001-Adapt-changes-made-in-libinput-src-evdev.c-for-touch.patch
+meta-agl/recipes-graphics/wayland/weston_1.5.0.bbappend
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Sat Dec 5 13:12:23 2015 +0100==
+scripts/envsetup.sh
+
+==Manuel Bachmann;mbc@iot.bzh;Tue Dec 1 15:16:26 2015 +0000==
+meta-agl/recipes-connectivity/rtl-sdr/rtl-sdr_0.5.3.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-connectivity.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Fri Nov 13 12:52:21 2015 +0000==
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.inc
+
+==Manuel Bachmann;mbc@iot.bzh;Fri Nov 13 10:43:14 2015 +0000==
+meta-agl/recipes-navi-lbs/gpsd/gpsd_%.bbappend
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Mon Nov 16 21:44:40 2015 +0900==
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0001-Fix-build-issues-while-bitbake-without-meta-qt5-laye.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Nov 13 16:11:35 2015 +0900==
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0001-Improve-backward-compatibility-with-old-linaro-gcc.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0002-Fix-library-versioning.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0003-AmbSignalMapper-fix-can-interface-specification.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0004-cansocketbcm-Fix-reading-of-frames-in-case-of-RX_TIM.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0005-ambctl-remove-unnecessary-dependency-on-glib-introsp.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0006-cangen-Implement-basic-handling-of-RX_TIMEOUT.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0007-WORKAROUND-Allow-amb-qt-binding-to-work-in-case-of-m.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0008-Add-simple-Qt-QML-example.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/0009-Add-Pressure-property-to-BrakeOperation.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Fri Nov 13 08:47:16 2015 +0000==
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+
+==José Bollo;jose.bollo@iot.bzh;Mon Nov 2 12:05:27 2015 +0100==
+meta-agl-security/recipes-core/xmlsec1/xmlsec1_1.2.20.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Sat Nov 7 00:43:24 2015 +0100==
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+
+==Leon Anavi;leon.anavi@konsulko.com;Thu Nov 5 15:16:36 2015 +0200==
+meta-agl/recipes-connectivity/rygel/files/rygel.service
+meta-agl/recipes-connectivity/rygel/rygel_%.bbappend
+
+==Leon Anavi;leon.anavi@konsulko.com;Thu Nov 5 15:15:46 2015 +0200==
+meta-agl/recipes-multimedia/lightmediascanner/files/lightmediascanner.service
+meta-agl/recipes-multimedia/lightmediascanner/lightmediascanner_%.bbappend
+
+==Manuel Bachmann;mbc@iot.bzh;Thu Nov 5 10:17:00 2015 +0000==
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/0001-IVI-Shell-Backport-from-Weston-1.9.0-to-1.5.0.patch
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/0002-IVI-Shell-use-primary-screen-for-resolution.patch
+meta-ivi-common/recipes-graphics/wayland/weston_1.5.0.bbappend
+
+==Manuel Bachmann;mbc@iot.bzh;Thu Nov 5 12:33:29 2015 +0000==
+meta-agl/recipes-graphics/wayland/weston/0001-desktop-shell-add-option-to-avoid-creating-the-panel.patch
+meta-agl/recipes-graphics/wayland/weston/weston.ini
+meta-agl/recipes-graphics/wayland/weston_1.5.0.bbappend
+
+==Yannick Gicquel;yannick.gicquel@iot.bzh;Thu Nov 5 09:54:57 2015 +0100==
+meta-agl/recipes-core/systemd/systemd_%.bbappend
+
+==José Bollo;jose.bollo@iot.bzh;Wed Oct 14 13:38:07 2015 +0200==
+meta-agl-security/conf/layer.conf
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Wed Nov 4 17:25:05 2015 +0100==
+meta-agl/conf/local.conf.sample
+
+==Nedeljko Miljevic;Nedeljko.Miljevic@windriver.com;Mon Nov 2 10:24:38 2015 +0100==
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/amb_allow_sessionbus.patch
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker/ambd.service
+meta-ivi-common/recipes-automotive/automotive-message-broker/automotive-message-broker_git.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-automotive.bb
+
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue Oct 27 18:06:05 2015 +0000==
+==Jan-Simon Möller;jsmoeller@linuxfoundation.org;Tue Oct 27 19:04:48 2015 +0100==
+.gitreview
+
+==Manuel Bachmann;mbc@iot.bzh;Mon Oct 26 03:33:24 2015 +0000==
+meta-agl/recipes-connectivity/rygel/files/0001-Add-LightMediaScanner-plugin.patch
+meta-agl/recipes-connectivity/rygel/files/0002-lms-add-C-source-files.patch
+meta-agl/recipes-connectivity/rygel/rygel_%.bbappend
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-connectivity.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-multimedia.bb
+meta-agl/recipes-multimedia/lightmediascanner/files/id3-plugin-support-out-of-tree-build.patch
+meta-agl/recipes-multimedia/lightmediascanner/lightmediascanner_%.bbappend
+meta-agl/recipes-multimedia/lightmediascanner/lightmediascanner_0.5.1.bb
+
+==Walt Miner;wminer@linuxfoundation.org;Fri Oct 23 15:05:45 2015 +0000==
+==Walt Miner;wminer@linuxfoundation.org;Fri Oct 23 15:03:34 2015 +0000==
+==Walt Miner;wminer@linuxfoundation.org;Fri Oct 23 15:01:16 2015 +0000==
+==Kengo Ibe;kengo.ibe@linuxfoundation.org;Fri Oct 23 11:52:26 2015 +0900==
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-os-commonlibs.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Wed Oct 21 08:19:02 2015 +0000==
+meta-agl-bsp/recipes-kernel/linux/linux-yocto/uinput.cfg
+meta-agl-bsp/recipes-kernel/linux/linux-yocto_%.bbappend
+meta-ivi-common/recipes-test/wayland/wayland-fits_%.bbappend
+meta-ivi-common/recipes-test/wayland/wayland-fits_git.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Wed Oct 21 01:34:54 2015 +0000==
+meta-agl/recipes-connectivity/ofono/ofono_%.bbappend
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-connectivity.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Wed Oct 21 01:21:46 2015 +0000==
+meta-agl/conf/distro/poky-agl.conf
+meta-agl/recipes-multimedia/pulseaudio/pulseaudio_%.bbappend
+
+==Mikhail Durnev;Mikhail_Durnev@mentor.com;Tue Oct 20 20:17:34 2015 +1000==
+meta-ivi-common/recipes-test/gtest/gtest/CMakeLists-gtest.pc.in-Add-pkg-config-support-to-gte.patch
+meta-ivi-common/recipes-test/gtest/gtest/cmake-Add-install-command-for-libraries-and-headers.patch
+meta-ivi-common/recipes-test/gtest/gtest_1.7.0.bb
+
+==Manuel Bachmann;mbc@iot.bzh;Thu Oct 8 11:49:18 2015 +0000==
+meta-agl/conf/bblayers.conf.sample
+meta-agl/conf/distro/poky-agl.conf
+meta-agl/recipes-connectivity/gupnp/gupnp-dlna_0.9.4.bb
+meta-agl/recipes-connectivity/rygel/rygel_%.bbappend
+meta-agl/recipes-connectivity/rygel/rygel_0.26.1.bb
+meta-agl/recipes-devtools/libgee/libgee-0.8_0.16.1.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-connectivity.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-multimedia.bb
+meta-agl/recipes-support/libmediaart/libmediaart-2.0_1.9.0.bb
+meta-agl/recipes-support/libmediaart/libmediaart.inc
+
+==Jan-Simon Moeller;jsmoeller@linuxfoundation.org;Thu Oct 8 08:04:37 2015 +0000==
+==Jan-Simon Moeller;jsmoeller@linuxfoundation.org;Wed Oct 7 23:07:57 2015 +0000==
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Oct 7 21:31:56 2015 +0900==
+meta-agl/conf/conf-notes.txt
+meta-agl/recipes-ivi/images/agl-image-ivi-crosssdk.bb
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Thu Oct 1 21:31:57 2015 +0900==
+scripts/envsetup.sh
+
+==Manuel Bachmann;mbc@iot.bzh;Thu Oct 1 13:33:15 2015 +0000==
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-graphics.bb
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension/apply_weston-1.5.x.patch
+meta-ivi-common/recipes-graphics/wayland/wayland-ivi-extension_1.5.0.bb
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/weston.ini.ivi-shell
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Oct 2 14:02:06 2015 +0900==
+README.md
+meta-agl/recipes-ivi/images/agl-image-ivi.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-automotive.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-connectivity.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-graphics.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-kernel.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-multimedia.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-navi-lbs.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-os-commonlibs.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-security.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core-speech-services.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-core.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common.bb
+
+==Manuel Bachmann;manuel.bachmann@iot.bzh;Tue Sep 29 18:56:55 2015 +0000==
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell-config.bb
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/Backport-IVI-Shell-from-Weston-1.9.0-to-1.5.0.patch
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/background.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/fullscreen.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/home.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_clickdot.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_flower.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_simple-egl.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_simple-shm.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/icon_ivi_smoke.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/panel.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/random.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/sidebyside.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/data/tiling.png
+meta-ivi-common/recipes-graphics/wayland/weston-ivi-shell/weston.ini.ivi-shell
+meta-ivi-common/recipes-graphics/wayland/weston_1.5.0.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Sep 25 20:24:42 2015 +0900==
+meta-agl/recipes-core/psplash/files/psplash-quit.service
+meta-agl/recipes-core/psplash/files/psplash-start.service
+meta-agl/recipes-core/psplash/psplash_git.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Sep 25 20:16:38 2015 +0900==
+meta-agl/conf/distro/poky-agl.conf
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-graphics.bb
+meta-agl/recipes-graphics/wayland/weston/weston.ini
+meta-agl/recipes-graphics/wayland/weston/weston.service
+meta-agl/recipes-graphics/wayland/weston_1.5.0.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Sep 25 20:07:12 2015 +0900==
+meta-agl/conf/distro/poky-agl-sysvinit.conf
+meta-agl/conf/distro/poky-agl.conf
+
+==Jan-Simon Moeller;jsmoeller@linuxfoundation.org;Thu Sep 24 16:55:20 2015 +0000==
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Mon Sep 7 14:00:12 2015 +0900==
+README.md
+
+==Manuel Bachmann;manuel.bachmann@iot.bzh;Mon Sep 21 11:53:04 2015 +0200==
+meta-agl-bsp/recipes-graphics/mesa/mesa_10.%.bbappend
+meta-agl-bsp/recipes-graphics/wayland/weston_%.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Mon Aug 31 18:50:24 2015 +0900==
+meta-agl/conf/distro/poky-agl.conf
+meta-agl/conf/local.conf.sample
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-multimedia.bb
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Mon Aug 31 14:12:26 2015 +0900==
+meta-agl/conf/conf-notes.txt
+meta-agl/conf/distro/poky-agl.conf
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Thu Aug 27 18:42:22 2015 +0900==
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0-libav/0001-Disable-yasm-for-libav-when-disable-yasm.patch
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0-libav_1.2.3.bb
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.0.0.bb
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_%.bbappend
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_1.2.3.bb
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_1.2.3.bb
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_1.2.3.bb
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_1.2.3.bb
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0/0001-Fix-crash-with-gst-inspect.patch
+meta-ivi-common/recipes-multimedia/gstreamer/gstreamer1.0_1.2.3.bb
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Tue Aug 18 00:09:46 2015 +0900==
+README.md
+meta-agl/conf/bblayers.conf.sample
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-graphics.bb
+meta-agl/recipes-ivi/images/agl-image-ivi.bb
+meta-ivi-common/classes/.gitkeep
+meta-ivi-common/conf/layer.conf
+meta-ivi-common/recipes-automotive/.gitkeep
+meta-ivi-common/recipes-connectivity/.gitkeep
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-automotive.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-connectivity.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-graphics.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-kernel.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-multimedia.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-navi-lbs.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-os-commonlibs.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-security.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common-speech-services.bb
+meta-ivi-common/recipes-core/packagegroups/packagegroup-ivi-common.bb
+meta-ivi-common/recipes-devtools/.gitkeep
+meta-ivi-common/recipes-extended/.gitkeep
+meta-ivi-common/recipes-graphics/.gitkeep
+meta-ivi-common/recipes-multimedia/.gitkeep
+meta-ivi-common/recipes-nvi-lbs/.gitkeep
+meta-ivi-common/recipes-support/.gitkeep
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Aug 14 19:28:27 2015 +0900==
+README.md
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Sat Aug 8 05:57:55 2015 +0900==
+README.md
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Fri Aug 7 03:56:21 2015 +0900==
+README.md
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Thu Jul 23 20:03:51 2015 +0900==
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-graphics.bb
+meta-agl/recipes-ivi/images/agl-image-ivi.bb
+meta-agl/recipes-ivi/images/agl-image-ivi.inc
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Thu Jul 23 18:30:13 2015 +0900==
+README.md
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Jul 22 11:03:26 2015 +0900==
+README.md
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Jul 22 10:54:05 2015 +0900==
+README.md
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Jul 22 10:53:24 2015 +0900==
+meta-agl-bsp/conf/layer.conf
+meta-agl-bsp/recipes-graphics/mesa/mesa_10.%.bbappend
+meta-agl-bsp/recipes-graphics/wayland/weston_1.5.0.bbappend
+
+==Tadao Tanikawa;tanikawa.tadao@jp.panasonic.com;Wed Jul 22 10:52:27 2015 +0900==
+meta-agl/classes/.gitkeep
+meta-agl/conf/bblayers.conf.sample
+meta-agl/conf/layer.conf
+meta-agl/conf/local.conf.sample
+meta-agl/recipes-automotive/.gitkeep
+meta-agl/recipes-bsp/.gitkeep
+meta-agl/recipes-connectivity/.gitkeep
+meta-agl/recipes-core/images/agl-image-minimal.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-automotive.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-connectivity.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-graphics.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-kernel.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-multimedia.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-navi-lbs.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-os-commonlibs.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-security.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core-speech-services.bb
+meta-agl/recipes-core/packagegroups/packagegroup-agl-core.bb
+meta-agl/recipes-core/packagegroups/packagegroup-core-boot-agl.bb
+meta-agl/recipes-core/psplash/files/psplash-colors.h
+meta-agl/recipes-core/psplash/files/psplash-poky-img.h
+meta-agl/recipes-core/psplash/psplash_git.bbappend
+meta-agl/recipes-devtools/.gitkeep
+meta-agl/recipes-extended/.gitkeep
+meta-agl/recipes-graphics/images/agl-image-weston.bb
+meta-agl/recipes-ivi/images/agl-image-ivi.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-automotive.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-connectivity.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-graphics.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-kernel.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-multimedia.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-navi-lbs.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-os-commonlibs.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-security.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi-speech-services.bb
+meta-agl/recipes-ivi/packagegroups/packagegroup-agl-ivi.bb
+meta-agl/recipes-multimedia/.gitkeep
+meta-agl/recipes-navi-lbs/.gitkeep
+meta-agl/recipes-support/.gitkeep
+
+==Jan-Simon Moeller;jsmoeller@linuxfoundation.org;Thu Jul 9 15:11:18 2015 +0000==

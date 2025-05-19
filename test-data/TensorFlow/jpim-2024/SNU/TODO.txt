@@ -1,0 +1,8 @@
+Node arguments should be split from label arguments
+
+extra-nodes  --> Addes them both to nodes and labels . Eg. no in top 10
+
+focal-node --> Addes them both to nodes and marks it differently
+
+transformation needs testing - can-t trust values . or is multi-edged? 
+

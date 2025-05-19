@@ -1,0 +1,35 @@
+gmails !! deanonimize or ignore 
+
+jp  ? jp.adit-jv.com  
+
+ADIT is a German/Japanese joint venture founded by two leading worldwide corporations, Robert Bosch Car Multimedia GmbH and DENSO Corporation.
+
+ishii.hiroyuki002@jp.panasonic.com
+
+
+
+iot ? 
+
+
+https://iot.bzh/  - French 
+
+redpesk® is the result of more than 10 years of work initiated at the time of the open source OS Tizen project developed at Intel Vannes (Brittany, France) for Samsung connected TVs and continued with another open source project : Automotive Grade Linux OS from the Linux Foundation.  
+
+Maemo, MeeGo, Tizen, AGL
+
+
+BayLibre is a company specialized in making embedded Linux
+
+
+cn ? 
+
+Associations 
+jp.panasonic.com should be Panasonic
+jp.adit-jv.com  should be ADIT
+cn.fujitsu.com should be Fujitsu.com
+Hashimoto.Kotaro@ds.MitsubishiElectric.co.jp -> ds should be Mitsubishi
+philippe.coval@osg.samsung.com -> osg should be samsung 
+wenlong_zheng_za@mail.toyota.co.jp --> mail should be toyota 
+
+
+

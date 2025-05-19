@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was created by scraplog.py script for OSS SNA research purposes --> 
+<!-- For more information contact jose.teixeira@utu.fi and check www.jteixeira.eu for more information on OSS SNA research -->
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<key id="d0" for="node" attr.name="e-mail" attr.type="string"> 
+	<default>DEFAULTe-mail</default></key>
+<key id="d1" for="node" attr.name="color" attr.type="string"> 
+	<default>DEFAULTcolor</default></key>
+<key id="d2" for="node" attr.name="affiliation" attr.type="string"> 
+	<default>DEFAULTaffiliation</default></key>
+<graph id="G" edgedefault="undirected">
+	<node id="0">
+	<data key="d0">olupton@nvidia.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">nvidia</data>
+	</node>
+	<node id="1">
+	<data key="d0">lawrencews@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<edge id="e0" source="0" target="1"/>
+</graph></graphml>

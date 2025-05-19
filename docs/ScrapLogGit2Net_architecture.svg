@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="600"
+   version="1.1"
+   width="800"
+   id="svg68"
+   sodipodi:docname="ScrapLogGit2Net_architecture.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview70"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="1.14"
+     inkscape:cx="419.29825"
+     inkscape:cy="299.5614"
+     inkscape:window-width="1850"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg68" />
+  <defs
+     id="defs2">
+    <rect
+       x="55.307703"
+       y="415.98136"
+       width="715.76549"
+       height="158.27166"
+       id="rect5846" />
+  </defs>
+  <rect
+     fill="#d3d3d3"
+     height="31.371887"
+     width="108.89333"
+     x="325.86374"
+     y="50"
+     id="rect4"
+     style="stroke-width:0.826582" />
+  <text
+     fill="#000000"
+     x="279.09045"
+     y="82.585228"
+     id="text6"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">ScrapLogGit2Net</text>
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="100"
+     y="144.11566"
+     id="rect8"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="90.864914"
+     y="195.52055"
+     id="text10"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">argparse</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="145.17274"
+     y1="81.371887"
+     y2="144.11566"
+     id="line12"
+     style="stroke-width:0.752902" />
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="235.51823"
+     y="144.11566"
+     id="rect14"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="203.80025"
+     y="195.52055"
+     id="text16"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">networkx</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="280.69098"
+     y1="81.371887"
+     y2="144.11566"
+     id="line18"
+     style="stroke-width:0.752902" />
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="371.03647"
+     y="144.11566"
+     id="rect20"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="316.73557"
+     y="195.52055"
+     id="text22"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">numpy</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="416.20923"
+     y1="81.371887"
+     y2="144.11566"
+     id="line24"
+     style="stroke-width:0.752902" />
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="506.55472"
+     y="144.11566"
+     id="rect26"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="429.6709"
+     y="195.52055"
+     id="text28"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">itertools</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="551.72748"
+     y1="81.371887"
+     y2="144.11566"
+     id="line30"
+     style="stroke-width:0.752902" />
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="642.07294"
+     y="144.11566"
+     id="rect32"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="542.6062"
+     y="195.52055"
+     id="text34"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">colorama</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="687.24573"
+     y1="81.371887"
+     y2="144.11566"
+     id="line36"
+     style="stroke-width:0.752902" />
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="100"
+     y="238.23132"
+     id="rect38"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="90.864914"
+     y="308.45587"
+     id="text40"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">matplotlib</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="145.17274"
+     y1="81.371887"
+     y2="238.23132"
+     id="line42"
+     style="stroke-width:0.752902" />
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="235.51823"
+     y="238.23132"
+     id="rect44"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="203.80025"
+     y="308.45587"
+     id="text46"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">logguru</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="280.69098"
+     y1="81.371887"
+     y2="238.23132"
+     id="line48"
+     style="stroke-width:0.752902" />
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="371.03647"
+     y="238.23132"
+     id="rect50"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="316.73557"
+     y="308.45587"
+     id="text52"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">rich</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="416.20923"
+     y1="81.371887"
+     y2="238.23132"
+     id="line54"
+     style="stroke-width:0.752902" />
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="506.55472"
+     y="238.23132"
+     id="rect56"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="429.6709"
+     y="308.45587"
+     id="text58"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">tkinter</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="551.72748"
+     y1="81.371887"
+     y2="238.23132"
+     id="line60"
+     style="stroke-width:0.752902" />
+  <rect
+     fill="#add8e6"
+     height="31.371887"
+     width="90.34549"
+     x="642.07294"
+     y="238.23132"
+     id="rect62"
+     style="stroke-width:0.752902" />
+  <text
+     fill="#000000"
+     x="542.6062"
+     y="308.45587"
+     id="text64"
+     transform="scale(1.1999632,0.83335889)"
+     style="font-size:9.03483px;stroke-width:0.752902">json</text>
+  <line
+     stroke="#000000"
+     x1="371.03647"
+     x2="687.24573"
+     y1="81.371887"
+     y2="238.23132"
+     id="line66"
+     style="stroke-width:0.752902" />
+  <text
+     xml:space="preserve"
+     id="text5844"
+     style="font-size:11.3325px;font-family:'TeX Gyre Heros';-inkscape-font-specification:'TeX Gyre Heros';text-align:center;white-space:pre;shape-inside:url(#rect5846);fill:#000000;stroke:#000000"
+     x="-790.27075"
+     y="0"
+     transform="matrix(1.2332639,0,0,1.6163293,71.181424,-360.76532)"><tspan
+       x="55.308594"
+       y="426.40094"
+       id="tspan26194"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26192">argparse: A module for parsing command-line arguments.
+</tspan></tspan><tspan
+       x="55.308594"
+       y="440.68579"
+       id="tspan26198"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26196">networkx: A library for creating, manipulating, and studying complex networks.
+</tspan></tspan><tspan
+       x="55.308594"
+       y="454.97064"
+       id="tspan26202"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26200">numpy: A library for numerical computations.
+</tspan></tspan><tspan
+       x="55.308594"
+       y="469.25549"
+       id="tspan26206"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26204">itertools: A module providing various functions that create iterators for efficient looping.
+</tspan></tspan><tspan
+       x="55.308594"
+       y="483.54034"
+       id="tspan26210"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26208">colorama: A library for producing colored terminal text.
+</tspan></tspan><tspan
+       x="55.308594"
+       y="497.82519"
+       id="tspan26214"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26212">matplotlib: A plotting library for creating static, animated, and interactive visualizations.
+</tspan></tspan><tspan
+       x="55.308594"
+       y="512.11004"
+       id="tspan26218"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26216">logguru: A logging library.
+</tspan></tspan><tspan
+       x="55.308594"
+       y="526.39489"
+       id="tspan26222"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26220">rich: A library for rich text and beautiful formatting in the terminal.
+</tspan></tspan><tspan
+       x="55.308594"
+       y="540.67974"
+       id="tspan26226"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26224">tkinter: A GUI toolkit for Python.
+</tspan></tspan><tspan
+       x="55.308594"
+       y="554.9646"
+       id="tspan26230"><tspan
+         style="font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;text-anchor:start"
+         id="tspan26228">json: A module for parsing JSON (JavaScript Object Notation).</tspan></tspan></text>
+</svg>

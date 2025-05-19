@@ -1,0 +1,505 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="node" attr.name="affiliation" attr.type="string"/>
+<key id="d1" for="node" attr.name="color" attr.type="string"/>
+<key id="d0" for="node" attr.name="e-mail" attr.type="string"/>
+<graph edgedefault="undirected"><node id="98">
+  <data key="d0">unknown-by-GitHub</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">microsoft</data>
+</node>
+<node id="133">
+  <data key="d0">tomharris@harrisnj.net</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">harrisnj</data>
+</node>
+<node id="379">
+  <data key="d0">unknown-by-GitHub</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">microsoft</data>
+</node>
+<node id="430">
+  <data key="d0">mmalina@redhat.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">redhat</data>
+</node>
+<node id="442">
+  <data key="d0">unknown-by-GitHub</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">microsoft</data>
+</node>
+<node id="453">
+  <data key="d0">unknown-by-GitHub</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">microsoft</data>
+</node>
+<node id="457">
+  <data key="d0">unknown-by-GitHub</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">NixOS</data>
+</node>
+<node id="673">
+  <data key="d0">Mick.Vleeshouwer@microsoft.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">microsoft</data>
+</node>
+<node id="697">
+  <data key="d0">tom@harrisnj.net</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">harrisnj</data>
+</node>
+<node id="715">
+  <data key="d0">n.muendler@tum.de</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">tum</data>
+</node>
+<node id="821">
+  <data key="d0">unknown-by-GitHub</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">NixOS</data>
+</node>
+<node id="887">
+  <data key="d0">unknown-by-GitHub</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">NixOS</data>
+</node>
+<node id="1001">
+  <data key="d0">tharris@harrisnj.net</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">harrisnj</data>
+</node>
+<node id="1002">
+  <data key="d0">Josh.Bendavid@cern.ch</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">cern</data>
+</node>
+<node id="1118">
+  <data key="d0">stephen@redhat.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">redhat</data>
+</node>
+<node id="1145">
+  <data key="d0">ahayworth@github.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">github</data>
+</node>
+<node id="1172">
+  <data key="d0">mjg59@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="1321">
+  <data key="d0">jesse@github.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">github</data>
+</node>
+<node id="1341">
+  <data key="d0">cheburge@cisco.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">cisco</data>
+</node>
+<node id="1437">
+  <data key="d0">giuseppe.lopresti@cern.ch</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">cern</data>
+</node>
+<node id="1463">
+  <data key="d0">david.straub@tum.de</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">tum</data>
+</node>
+<node id="1493">
+  <data key="d0">bweeks@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="1566">
+  <data key="d0">fcastelli@suse.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">suse</data>
+</node>
+<node id="1620">
+  <data key="d0">itewk@redhat.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">redhat</data>
+</node>
+<node id="1749">
+  <data key="d0">therve@redhat.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">redhat</data>
+</node>
+<node id="1759">
+  <data key="d0">fibrady@cisco.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">cisco</data>
+</node>
+<node id="1816">
+  <data key="d0">jmadigan@redhat.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">redhat</data>
+</node>
+<node id="1979">
+  <data key="d0">nacho.barrientos@cern.ch</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">cern</data>
+</node>
+<node id="1982">
+  <data key="d0">agoode@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="1988">
+  <data key="d0">pbonzini@redhat.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">redhat</data>
+</node>
+<node id="2088">
+  <data key="d0">ainbal@cisco.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">cisco</data>
+</node>
+<node id="2168">
+  <data key="d0">lmb@suse.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">suse</data>
+</node>
+<node id="2325">
+  <data key="d0">idoflatow@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="2655">
+  <data key="d0">eliotw@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="2766">
+  <data key="d0">igorbernstein@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="2832">
+  <data key="d0">jpaupore@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="3067">
+  <data key="d0">jarod@redhat.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">redhat</data>
+</node>
+<node id="3111">
+  <data key="d0">tgibson@microsoft.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">microsoft</data>
+</node>
+<node id="3168">
+  <data key="d0">majduk@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="3191">
+  <data key="d0">timrogers@github.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">github</data>
+</node>
+<node id="3307">
+  <data key="d0">michael.mraka@redhat.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">redhat</data>
+</node>
+<node id="3331">
+  <data key="d0">de.irrgang@tum.de</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">tum</data>
+</node>
+<node id="3411">
+  <data key="d0">jpettitt@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="3502">
+  <data key="d0">adrian@suse.de</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">suse</data>
+</node>
+<node id="3658">
+  <data key="d0">howardjohn@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="3663">
+  <data key="d0">mjhamrick@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="3679">
+  <data key="d0">deniseyu@github.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">github</data>
+</node>
+<node id="3772">
+  <data key="d0">marcegli@google.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">google</data>
+</node>
+<node id="3850">
+  <data key="d0">nma83@github.com</data>
+  <data key="d1">turquoise</data>
+  <data key="d2">github</data>
+</node>
+<edge source="98" target="133"/>
+<edge source="98" target="379"/>
+<edge source="98" target="430"/>
+<edge source="98" target="442"/>
+<edge source="98" target="453"/>
+<edge source="98" target="457"/>
+<edge source="98" target="673"/>
+<edge source="98" target="697"/>
+<edge source="98" target="715"/>
+<edge source="98" target="821"/>
+<edge source="98" target="887"/>
+<edge source="98" target="1001"/>
+<edge source="98" target="1002"/>
+<edge source="98" target="1118"/>
+<edge source="98" target="1145"/>
+<edge source="98" target="1172"/>
+<edge source="98" target="1321"/>
+<edge source="98" target="1341"/>
+<edge source="98" target="1437"/>
+<edge source="98" target="1463"/>
+<edge source="98" target="1493"/>
+<edge source="98" target="1566"/>
+<edge source="133" target="379"/>
+<edge source="133" target="430"/>
+<edge source="133" target="442"/>
+<edge source="133" target="453"/>
+<edge source="133" target="457"/>
+<edge source="133" target="673"/>
+<edge source="133" target="697"/>
+<edge source="133" target="715"/>
+<edge source="133" target="821"/>
+<edge source="133" target="887"/>
+<edge source="133" target="1001"/>
+<edge source="133" target="1002"/>
+<edge source="133" target="1118"/>
+<edge source="133" target="1145"/>
+<edge source="133" target="1172"/>
+<edge source="133" target="1321"/>
+<edge source="133" target="1341"/>
+<edge source="133" target="1437"/>
+<edge source="133" target="1463"/>
+<edge source="133" target="1493"/>
+<edge source="133" target="1566"/>
+<edge source="379" target="430"/>
+<edge source="379" target="442"/>
+<edge source="379" target="453"/>
+<edge source="379" target="457"/>
+<edge source="379" target="673"/>
+<edge source="379" target="697"/>
+<edge source="379" target="715"/>
+<edge source="379" target="821"/>
+<edge source="379" target="887"/>
+<edge source="379" target="1001"/>
+<edge source="379" target="1002"/>
+<edge source="379" target="1118"/>
+<edge source="379" target="1145"/>
+<edge source="379" target="1172"/>
+<edge source="379" target="1321"/>
+<edge source="379" target="1341"/>
+<edge source="379" target="1437"/>
+<edge source="379" target="1463"/>
+<edge source="379" target="1493"/>
+<edge source="379" target="1566"/>
+<edge source="430" target="442"/>
+<edge source="430" target="453"/>
+<edge source="430" target="457"/>
+<edge source="430" target="673"/>
+<edge source="430" target="697"/>
+<edge source="430" target="715"/>
+<edge source="430" target="821"/>
+<edge source="430" target="887"/>
+<edge source="430" target="1001"/>
+<edge source="430" target="1002"/>
+<edge source="430" target="1118"/>
+<edge source="430" target="1145"/>
+<edge source="430" target="1172"/>
+<edge source="430" target="1321"/>
+<edge source="430" target="1341"/>
+<edge source="430" target="1437"/>
+<edge source="430" target="1463"/>
+<edge source="430" target="1493"/>
+<edge source="430" target="1566"/>
+<edge source="442" target="453"/>
+<edge source="442" target="457"/>
+<edge source="442" target="673"/>
+<edge source="442" target="697"/>
+<edge source="442" target="715"/>
+<edge source="442" target="821"/>
+<edge source="442" target="887"/>
+<edge source="442" target="1001"/>
+<edge source="442" target="1002"/>
+<edge source="442" target="1118"/>
+<edge source="442" target="1145"/>
+<edge source="442" target="1172"/>
+<edge source="442" target="1321"/>
+<edge source="442" target="1341"/>
+<edge source="442" target="1437"/>
+<edge source="442" target="1463"/>
+<edge source="442" target="1493"/>
+<edge source="442" target="1566"/>
+<edge source="453" target="457"/>
+<edge source="453" target="673"/>
+<edge source="453" target="697"/>
+<edge source="453" target="715"/>
+<edge source="453" target="821"/>
+<edge source="453" target="887"/>
+<edge source="453" target="1001"/>
+<edge source="453" target="1002"/>
+<edge source="453" target="1118"/>
+<edge source="453" target="1145"/>
+<edge source="453" target="1172"/>
+<edge source="453" target="1321"/>
+<edge source="453" target="1341"/>
+<edge source="453" target="1437"/>
+<edge source="453" target="1463"/>
+<edge source="453" target="1493"/>
+<edge source="453" target="1566"/>
+<edge source="457" target="673"/>
+<edge source="457" target="697"/>
+<edge source="457" target="715"/>
+<edge source="457" target="821"/>
+<edge source="457" target="887"/>
+<edge source="457" target="1001"/>
+<edge source="457" target="1002"/>
+<edge source="457" target="1118"/>
+<edge source="457" target="1145"/>
+<edge source="457" target="1172"/>
+<edge source="457" target="1321"/>
+<edge source="457" target="1341"/>
+<edge source="457" target="1437"/>
+<edge source="457" target="1463"/>
+<edge source="457" target="1493"/>
+<edge source="457" target="1566"/>
+<edge source="673" target="697"/>
+<edge source="673" target="715"/>
+<edge source="673" target="821"/>
+<edge source="673" target="887"/>
+<edge source="673" target="1001"/>
+<edge source="673" target="1002"/>
+<edge source="673" target="1118"/>
+<edge source="673" target="1145"/>
+<edge source="673" target="1172"/>
+<edge source="673" target="1321"/>
+<edge source="673" target="1341"/>
+<edge source="673" target="1437"/>
+<edge source="673" target="1463"/>
+<edge source="673" target="1493"/>
+<edge source="673" target="1566"/>
+<edge source="697" target="715"/>
+<edge source="697" target="821"/>
+<edge source="697" target="887"/>
+<edge source="697" target="1001"/>
+<edge source="697" target="1002"/>
+<edge source="697" target="1118"/>
+<edge source="697" target="1145"/>
+<edge source="697" target="1172"/>
+<edge source="697" target="1321"/>
+<edge source="697" target="1341"/>
+<edge source="697" target="1437"/>
+<edge source="697" target="1463"/>
+<edge source="697" target="1493"/>
+<edge source="697" target="1566"/>
+<edge source="715" target="821"/>
+<edge source="715" target="887"/>
+<edge source="715" target="1001"/>
+<edge source="715" target="1002"/>
+<edge source="715" target="1118"/>
+<edge source="715" target="1145"/>
+<edge source="715" target="1172"/>
+<edge source="715" target="1321"/>
+<edge source="715" target="1341"/>
+<edge source="715" target="1437"/>
+<edge source="715" target="1463"/>
+<edge source="715" target="1493"/>
+<edge source="715" target="1566"/>
+<edge source="821" target="887"/>
+<edge source="821" target="1001"/>
+<edge source="821" target="1002"/>
+<edge source="821" target="1118"/>
+<edge source="821" target="1145"/>
+<edge source="821" target="1172"/>
+<edge source="821" target="1321"/>
+<edge source="821" target="1341"/>
+<edge source="821" target="1437"/>
+<edge source="821" target="1463"/>
+<edge source="821" target="1493"/>
+<edge source="821" target="1566"/>
+<edge source="821" target="1979"/>
+<edge source="887" target="1001"/>
+<edge source="887" target="1002"/>
+<edge source="887" target="1118"/>
+<edge source="887" target="1145"/>
+<edge source="887" target="1172"/>
+<edge source="887" target="1321"/>
+<edge source="887" target="1341"/>
+<edge source="887" target="1437"/>
+<edge source="887" target="1463"/>
+<edge source="887" target="1493"/>
+<edge source="887" target="1566"/>
+<edge source="1001" target="1002"/>
+<edge source="1001" target="1118"/>
+<edge source="1001" target="1145"/>
+<edge source="1001" target="1172"/>
+<edge source="1001" target="1321"/>
+<edge source="1001" target="1341"/>
+<edge source="1001" target="1437"/>
+<edge source="1001" target="1463"/>
+<edge source="1001" target="1493"/>
+<edge source="1001" target="1566"/>
+<edge source="1002" target="1118"/>
+<edge source="1002" target="1145"/>
+<edge source="1002" target="1172"/>
+<edge source="1002" target="1321"/>
+<edge source="1002" target="1341"/>
+<edge source="1002" target="1437"/>
+<edge source="1002" target="1463"/>
+<edge source="1002" target="1493"/>
+<edge source="1002" target="1566"/>
+<edge source="1118" target="1145"/>
+<edge source="1118" target="1172"/>
+<edge source="1118" target="1321"/>
+<edge source="1118" target="1341"/>
+<edge source="1118" target="1437"/>
+<edge source="1118" target="1463"/>
+<edge source="1118" target="1493"/>
+<edge source="1118" target="1566"/>
+<edge source="1145" target="1172"/>
+<edge source="1145" target="1321"/>
+<edge source="1145" target="1341"/>
+<edge source="1145" target="1437"/>
+<edge source="1145" target="1463"/>
+<edge source="1145" target="1493"/>
+<edge source="1145" target="1566"/>
+<edge source="1172" target="1321"/>
+<edge source="1172" target="1341"/>
+<edge source="1172" target="1437"/>
+<edge source="1172" target="1463"/>
+<edge source="1172" target="1493"/>
+<edge source="1172" target="1566"/>
+<edge source="1321" target="1341"/>
+<edge source="1321" target="1437"/>
+<edge source="1321" target="1463"/>
+<edge source="1321" target="1493"/>
+<edge source="1321" target="1566"/>
+<edge source="1321" target="3772"/>
+<edge source="1341" target="1437"/>
+<edge source="1341" target="1463"/>
+<edge source="1341" target="1493"/>
+<edge source="1341" target="1566"/>
+<edge source="1437" target="1463"/>
+<edge source="1437" target="1493"/>
+<edge source="1437" target="1566"/>
+<edge source="1463" target="1493"/>
+<edge source="1463" target="1566"/>
+<edge source="1493" target="1566"/>
+</graph></graphml>
