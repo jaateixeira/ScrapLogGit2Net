@@ -1,1 +1,0 @@
-../../../formatFilterAndViz-nofi-GraphML.py -p -oi gmail -ot top20 -a ../../../test-configurations/alias.scraplog.config.ini -l -lt top20 -s ../net_of_ind_4_meta-agl/agl_raw_logs_meta-agl_salmon_20250427_171908.txt.IN_salmon.txt.NetworkFile.graphML
