@@ -3,6 +3,12 @@ from rich.console import Console
 from rich.table import Table
 from pathlib import Path
 from datetime import datetime
+
+import sys 
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from scraplog import getDateEmailAffiliation, getAffiliationFromEmail, findFilesOnBlock
 
 console = Console()

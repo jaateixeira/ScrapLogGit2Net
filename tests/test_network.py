@@ -1,6 +1,13 @@
 import pytest
 from rich.console import Console
 from rich.panel import Panel
+
+from pathlib import Path
+import sys 
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+
 from scraplog import agregateByFileItsContributors, getContributorsConnectionsTuplesWSF
 
 console = Console()
