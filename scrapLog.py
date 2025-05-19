@@ -191,8 +191,11 @@ def getAffiliationFromEmail(email):
     if(globals()['DEBUG_MODE']):
         print()
         print("\tgetAffiliationFromEmail(" + email + ")")
-    
-    affiliation_pattern= re.compile('@(\w[\w\-]+)')
+
+    # Old way
+    # affiliation_pattern= re.compile('@(\w[\w\-]+)')
+    # New way
+    affiliation_pattern = re.compile(r'@(\w[\w\-]+)')
     match = affiliation_pattern.findall(email)
 
 
