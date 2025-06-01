@@ -4,7 +4,7 @@
 # Considering only top10
 
 VIZ=''../../../formatFilterAndViz-nofo-GraphML.py''
-VIZ_ARG=''
+VIZ_ARG='-sl'
 
 KOHA_NET_GraphML_PATH="../JASIST-2024-wp-networks-graphML"
 
@@ -12,4 +12,23 @@ echo TRANSFORMER=$TRANSFORMER
 echo FILTER_ARG=$FILTER_ARG
 echo KOHA_NET_GraphML_PATH=$KOHA_NET_GraphML_PATH
 
-../../../formatFilterAndViz-nofo-GraphML.py -s -l ../JASIST-2024-wp-inter-org-networks-graphML/Koha-git-log-31-may-2016-31-may2017.NetworkFile-transformed-to-nofo.graphML
+cho Loop through files in the developer networks directory
+for file in "$KOHA_NET_GraphML_PATH"/*; do
+  if [ -f "$file" ]; then
+    echo "$file"
+
+    if [[ $file == *.graphML ]]       #  this is the snag
+              then
+                    echo "Getting top10 for"  $file ":"
+                    CMD="$FILTER $FILTER_ARG $file"
+
+                    echo CMD = $CMD
+
+                    eval $CMD
+
+              fi
+
+  fi
+done
+
+
