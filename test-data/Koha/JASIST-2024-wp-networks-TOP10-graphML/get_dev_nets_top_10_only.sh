@@ -1,7 +1,7 @@
 #!/bin/bash
 
-FILTER=''.../../../formatFilterAndViz-nofi-GraphML.py''
-FILTER_ARG='-ot=top10 lt=top10 -s'
+FILTER=''../../../formatFilterAndViz-nofi-GraphML.py''
+FILTER_ARG='-ot=top10 --save_graphML '
 
 KOHA_NET_GraphML_PATH="../JASIST-2024-wp-networks-graphML"
 
@@ -28,8 +28,13 @@ for file in "$KOHA_NET_GraphML_PATH"/*; do
 
     if [[ $file == *.graphML ]]       #  this is the snag
               then
-                    echo "Getting top10 for  $file ":"
-                    eval "$FILTER $file
+                    echo "Getting top10 for"  $file ":"
+                    CMD="$FILTER $FILTER_ARG $file"
+
+                    echo CMD = $CMD
+                    exit
+                    eval $CMD
+
               fi
 
   fi
