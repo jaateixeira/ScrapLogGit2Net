@@ -32,7 +32,7 @@ for file in "$KOHA_NET_GraphML_PATH"/*; do
                     CMD="$FILTER $FILTER_ARG $file"
 
                     echo CMD = $CMD
-                    exit
+
                     eval $CMD
 
               fi
