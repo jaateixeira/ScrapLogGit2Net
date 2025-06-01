@@ -3,7 +3,7 @@
 TRANSFORMER=''../../../transform-nofi-2-nofo-GraphML.py''
 TRANSFORMER_ARG=''
 
-KOHA_NET_GraphML_PATH="../JASIST-2024-wp-networks-graphML"
+KOHA_NET_GraphML_PATH="../JASIST-2024-wp-networks-TOP10-graphML"
 
 echo TRANSFORMER=$TRANSFORMER
 echo TRANSFORMER_ARG=$TRANSFORMER_ARG
@@ -31,7 +31,7 @@ for file in "$KOHA_NET_GraphML_PATH"/*; do
     if [[ $file == *.graphML ]]       #  this is the snag
               then
                     echo "Calling transformer" $file ":"
-                    eval  TRANSFORMER  $file
+                    eval  $TRANSFORMER  $file
               fi
 
   fi

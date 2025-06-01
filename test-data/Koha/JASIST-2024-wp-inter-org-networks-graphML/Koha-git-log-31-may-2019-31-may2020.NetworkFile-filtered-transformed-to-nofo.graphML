@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="edge" attr.name="weight" attr.type="long" />
+  <graph edgedefault="undirected">
+    <node id="bywatersolutions" />
+    <node id="devinim" />
+    <node id="theke" />
+    <node id="ptfs-europe" />
+    <node id="helsinki" />
+    <node id="gmail" />
+    <node id="biblibre" />
+    <node id="bsz-bw" />
+    <node id="catalyst" />
+    <node id="inlibro" />
+    <edge source="bywatersolutions" target="devinim">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="bywatersolutions" target="theke">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="bywatersolutions" target="ptfs-europe">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="bywatersolutions" target="helsinki">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="bywatersolutions" target="gmail">
+      <data key="d0">34</data>
+    </edge>
+    <edge source="bywatersolutions" target="biblibre">
+      <data key="d0">20</data>
+    </edge>
+    <edge source="bywatersolutions" target="bsz-bw">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="bywatersolutions" target="catalyst">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="bywatersolutions" target="inlibro">
+      <data key="d0">20</data>
+    </edge>
+    <edge source="devinim" target="theke">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="devinim" target="ptfs-europe">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="devinim" target="helsinki">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="devinim" target="gmail">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="devinim" target="biblibre">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="devinim" target="catalyst">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="devinim" target="bsz-bw">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="devinim" target="inlibro">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="theke" target="ptfs-europe">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="theke" target="helsinki">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="theke" target="gmail">
+      <data key="d0">17</data>
+    </edge>
+    <edge source="theke" target="biblibre">
+      <data key="d0">11</data>
+    </edge>
+    <edge source="theke" target="catalyst">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="theke" target="bsz-bw">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="theke" target="inlibro">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="ptfs-europe" target="helsinki">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="ptfs-europe" target="gmail">
+      <data key="d0">16</data>
+    </edge>
+    <edge source="ptfs-europe" target="biblibre">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="ptfs-europe" target="bsz-bw">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="ptfs-europe" target="catalyst">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="ptfs-europe" target="inlibro">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="helsinki" target="gmail">
+      <data key="d0">16</data>
+    </edge>
+    <edge source="helsinki" target="biblibre">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="helsinki" target="catalyst">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="helsinki" target="bsz-bw">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="helsinki" target="inlibro">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="gmail" target="biblibre">
+      <data key="d0">29</data>
+    </edge>
+    <edge source="gmail" target="bsz-bw">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="gmail" target="inlibro">
+      <data key="d0">11</data>
+    </edge>
+    <edge source="gmail" target="catalyst">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="biblibre" target="inlibro">
+      <data key="d0">11</data>
+    </edge>
+    <edge source="biblibre" target="bsz-bw">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="biblibre" target="catalyst">
+      <data key="d0">10</data>
+    </edge>
+    <edge source="bsz-bw" target="catalyst">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bsz-bw" target="inlibro">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="catalyst" target="inlibro">
+      <data key="d0">1</data>
+    </edge>
+  </graph>
+</graphml>

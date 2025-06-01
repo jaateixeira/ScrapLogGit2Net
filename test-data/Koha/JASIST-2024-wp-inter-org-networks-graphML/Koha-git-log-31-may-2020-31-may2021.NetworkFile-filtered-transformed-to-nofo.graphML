@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="edge" attr.name="weight" attr.type="long" />
+  <graph edgedefault="undirected">
+    <node id="biblibre" />
+    <node id="ptfs-europe" />
+    <node id="bywatersolutions" />
+    <node id="theke" />
+    <node id="gmail" />
+    <node id="email2024-05-24" />
+    <node id="bulac" />
+    <node id="inlibro" />
+    <node id="ub" />
+    <node id="catalyst" />
+    <edge source="biblibre" target="ptfs-europe">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="biblibre" target="bywatersolutions">
+      <data key="d0">20</data>
+    </edge>
+    <edge source="biblibre" target="theke">
+      <data key="d0">11</data>
+    </edge>
+    <edge source="biblibre" target="gmail">
+      <data key="d0">28</data>
+    </edge>
+    <edge source="biblibre" target="bulac">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="biblibre" target="inlibro">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="biblibre" target="ub">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="biblibre" target="catalyst">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="biblibre" target="email2024-05-24">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="bywatersolutions">
+      <data key="d0">10</data>
+    </edge>
+    <edge source="ptfs-europe" target="theke">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="ptfs-europe" target="gmail">
+      <data key="d0">22</data>
+    </edge>
+    <edge source="ptfs-europe" target="email2024-05-24">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="bulac">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="ptfs-europe" target="inlibro">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="ub">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="ptfs-europe" target="catalyst">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="bywatersolutions" target="theke">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="bywatersolutions" target="bulac">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="bywatersolutions" target="gmail">
+      <data key="d0">38</data>
+    </edge>
+    <edge source="bywatersolutions" target="catalyst">
+      <data key="d0">13</data>
+    </edge>
+    <edge source="bywatersolutions" target="inlibro">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="bywatersolutions" target="ub">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="theke" target="gmail">
+      <data key="d0">19</data>
+    </edge>
+    <edge source="theke" target="bulac">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="catalyst">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="theke" target="inlibro">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="theke" target="ub">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="gmail" target="email2024-05-24">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="gmail" target="catalyst">
+      <data key="d0">19</data>
+    </edge>
+    <edge source="gmail" target="bulac">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="gmail" target="inlibro">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="gmail" target="ub">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="bulac" target="catalyst">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bulac" target="inlibro">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bulac" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="inlibro" target="catalyst">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="inlibro" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ub" target="catalyst">
+      <data key="d0">5</data>
+    </edge>
+  </graph>
+</graphml>

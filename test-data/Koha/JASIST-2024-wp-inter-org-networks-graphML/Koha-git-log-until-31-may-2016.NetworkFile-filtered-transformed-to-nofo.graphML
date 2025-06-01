@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="edge" attr.name="weight" attr.type="long" />
+  <graph edgedefault="undirected">
+    <node id="hotmail" />
+    <node id="biblibre" />
+    <node id="bywatersolutions" />
+    <node id="catalyst" />
+    <node id="gmail" />
+    <node id="inlibro" />
+    <node id="ptfs-europe" />
+    <node id="liblime" />
+    <node id="koha" />
+    <node id="arwen" />
+    <edge source="hotmail" target="biblibre">
+      <data key="d0">63</data>
+    </edge>
+    <edge source="hotmail" target="bywatersolutions">
+      <data key="d0">46</data>
+    </edge>
+    <edge source="hotmail" target="catalyst">
+      <data key="d0">51</data>
+    </edge>
+    <edge source="hotmail" target="gmail">
+      <data key="d0">102</data>
+    </edge>
+    <edge source="hotmail" target="inlibro">
+      <data key="d0">19</data>
+    </edge>
+    <edge source="hotmail" target="ptfs-europe">
+      <data key="d0">14</data>
+    </edge>
+    <edge source="hotmail" target="liblime">
+      <data key="d0">56</data>
+    </edge>
+    <edge source="hotmail" target="koha">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="hotmail" target="arwen">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="biblibre" target="catalyst">
+      <data key="d0">278</data>
+    </edge>
+    <edge source="biblibre" target="bywatersolutions">
+      <data key="d0">284</data>
+    </edge>
+    <edge source="biblibre" target="gmail">
+      <data key="d0">616</data>
+    </edge>
+    <edge source="biblibre" target="inlibro">
+      <data key="d0">126</data>
+    </edge>
+    <edge source="biblibre" target="ptfs-europe">
+      <data key="d0">73</data>
+    </edge>
+    <edge source="biblibre" target="liblime">
+      <data key="d0">310</data>
+    </edge>
+    <edge source="biblibre" target="arwen">
+      <data key="d0">50</data>
+    </edge>
+    <edge source="biblibre" target="koha">
+      <data key="d0">36</data>
+    </edge>
+    <edge source="bywatersolutions" target="catalyst">
+      <data key="d0">202</data>
+    </edge>
+    <edge source="bywatersolutions" target="gmail">
+      <data key="d0">413</data>
+    </edge>
+    <edge source="bywatersolutions" target="inlibro">
+      <data key="d0">78</data>
+    </edge>
+    <edge source="bywatersolutions" target="ptfs-europe">
+      <data key="d0">53</data>
+    </edge>
+    <edge source="bywatersolutions" target="liblime">
+      <data key="d0">225</data>
+    </edge>
+    <edge source="bywatersolutions" target="arwen">
+      <data key="d0">20</data>
+    </edge>
+    <edge source="bywatersolutions" target="koha">
+      <data key="d0">11</data>
+    </edge>
+    <edge source="catalyst" target="gmail">
+      <data key="d0">419</data>
+    </edge>
+    <edge source="catalyst" target="inlibro">
+      <data key="d0">82</data>
+    </edge>
+    <edge source="catalyst" target="ptfs-europe">
+      <data key="d0">48</data>
+    </edge>
+    <edge source="catalyst" target="liblime">
+      <data key="d0">221</data>
+    </edge>
+    <edge source="catalyst" target="arwen">
+      <data key="d0">38</data>
+    </edge>
+    <edge source="catalyst" target="koha">
+      <data key="d0">14</data>
+    </edge>
+    <edge source="gmail" target="inlibro">
+      <data key="d0">157</data>
+    </edge>
+    <edge source="gmail" target="ptfs-europe">
+      <data key="d0">108</data>
+    </edge>
+    <edge source="gmail" target="liblime">
+      <data key="d0">480</data>
+    </edge>
+    <edge source="gmail" target="arwen">
+      <data key="d0">54</data>
+    </edge>
+    <edge source="gmail" target="koha">
+      <data key="d0">22</data>
+    </edge>
+    <edge source="inlibro" target="ptfs-europe">
+      <data key="d0">19</data>
+    </edge>
+    <edge source="inlibro" target="liblime">
+      <data key="d0">66</data>
+    </edge>
+    <edge source="inlibro" target="arwen">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="liblime">
+      <data key="d0">52</data>
+    </edge>
+    <edge source="ptfs-europe" target="arwen">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="ptfs-europe" target="koha">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="liblime" target="arwen">
+      <data key="d0">63</data>
+    </edge>
+    <edge source="liblime" target="koha">
+      <data key="d0">23</data>
+    </edge>
+  </graph>
+</graphml>

@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="edge" attr.name="weight" attr.type="long" />
+  <graph edgedefault="undirected">
+    <node id="biblibre" />
+    <node id="bywatersolutions" />
+    <node id="inlibro" />
+    <node id="theke" />
+    <node id="ptfs-europe" />
+    <node id="koha-suomi" />
+    <node id="catalyst" />
+    <node id="gmail" />
+    <node id="ub" />
+    <node id="lmscloud" />
+    <edge source="biblibre" target="bywatersolutions">
+      <data key="d0">20</data>
+    </edge>
+    <edge source="biblibre" target="inlibro">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="biblibre" target="theke">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="biblibre" target="ptfs-europe">
+      <data key="d0">16</data>
+    </edge>
+    <edge source="biblibre" target="koha-suomi">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="biblibre" target="catalyst">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="biblibre" target="gmail">
+      <data key="d0">14</data>
+    </edge>
+    <edge source="biblibre" target="ub">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="biblibre" target="lmscloud">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="ptfs-europe">
+      <data key="d0">16</data>
+    </edge>
+    <edge source="bywatersolutions" target="gmail">
+      <data key="d0">26</data>
+    </edge>
+    <edge source="bywatersolutions" target="inlibro">
+      <data key="d0">23</data>
+    </edge>
+    <edge source="bywatersolutions" target="koha-suomi">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="bywatersolutions" target="theke">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="bywatersolutions" target="catalyst">
+      <data key="d0">16</data>
+    </edge>
+    <edge source="bywatersolutions" target="ub">
+      <data key="d0">10</data>
+    </edge>
+    <edge source="bywatersolutions" target="lmscloud">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="inlibro" target="ptfs-europe">
+      <data key="d0">22</data>
+    </edge>
+    <edge source="inlibro" target="gmail">
+      <data key="d0">13</data>
+    </edge>
+    <edge source="inlibro" target="theke">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="inlibro" target="lmscloud">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="inlibro" target="koha-suomi">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="inlibro" target="catalyst">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="inlibro" target="ub">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="theke" target="ptfs-europe">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="theke" target="gmail">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="theke" target="koha-suomi">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="catalyst">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="ub">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="lmscloud">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="gmail">
+      <data key="d0">22</data>
+    </edge>
+    <edge source="ptfs-europe" target="koha-suomi">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="ptfs-europe" target="catalyst">
+      <data key="d0">13</data>
+    </edge>
+    <edge source="ptfs-europe" target="lmscloud">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="ptfs-europe" target="ub">
+      <data key="d0">10</data>
+    </edge>
+    <edge source="koha-suomi" target="gmail">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="koha-suomi" target="catalyst">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="koha-suomi" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="catalyst" target="gmail">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="catalyst" target="ub">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="gmail" target="ub">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="gmail" target="lmscloud">
+      <data key="d0">1</data>
+    </edge>
+  </graph>
+</graphml>

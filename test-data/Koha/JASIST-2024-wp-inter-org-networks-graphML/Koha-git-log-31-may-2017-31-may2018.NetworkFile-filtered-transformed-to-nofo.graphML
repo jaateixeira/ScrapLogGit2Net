@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="edge" attr.name="weight" attr.type="long" />
+  <graph edgedefault="undirected">
+    <node id="bywatersolutions" />
+    <node id="hotmail" />
+    <node id="jns" />
+    <node id="biblibre" />
+    <node id="inlibro" />
+    <node id="gmail" />
+    <node id="ptfs-europe" />
+    <node id="ub" />
+    <node id="web" />
+    <node id="catalyst" />
+    <edge source="bywatersolutions" target="hotmail">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="bywatersolutions" target="jns">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="biblibre">
+      <data key="d0">20</data>
+    </edge>
+    <edge source="bywatersolutions" target="inlibro">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="bywatersolutions" target="gmail">
+      <data key="d0">23</data>
+    </edge>
+    <edge source="bywatersolutions" target="ptfs-europe">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="bywatersolutions" target="ub">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="web">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="bywatersolutions" target="catalyst">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="hotmail" target="jns">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="hotmail" target="biblibre">
+      <data key="d0">17</data>
+    </edge>
+    <edge source="hotmail" target="inlibro">
+      <data key="d0">10</data>
+    </edge>
+    <edge source="hotmail" target="gmail">
+      <data key="d0">19</data>
+    </edge>
+    <edge source="hotmail" target="web">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="hotmail" target="ptfs-europe">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="hotmail" target="catalyst">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="hotmail" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="jns" target="biblibre">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="jns" target="inlibro">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="jns" target="gmail">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="jns" target="catalyst">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="jns" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="jns" target="ptfs-europe">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="inlibro">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="biblibre" target="gmail">
+      <data key="d0">24</data>
+    </edge>
+    <edge source="biblibre" target="ub">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="biblibre" target="web">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="biblibre" target="ptfs-europe">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="biblibre" target="catalyst">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="inlibro" target="gmail">
+      <data key="d0">11</data>
+    </edge>
+    <edge source="inlibro" target="ptfs-europe">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="inlibro" target="web">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="inlibro" target="catalyst">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="inlibro" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gmail" target="web">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="gmail" target="ptfs-europe">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="gmail" target="catalyst">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="gmail" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="web">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="catalyst">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="ub" target="catalyst">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="catalyst">
+      <data key="d0">3</data>
+    </edge>
+  </graph>
+</graphml>
