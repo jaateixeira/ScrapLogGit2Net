@@ -31,7 +31,7 @@ for file in "$KOHA_NET_GraphML_PATH"/*; do
     if [[ $file == *.graphML ]]       #  this is the snag
               then
                     echo "Calling transformer" $file ":"
-                    echo
+                    eval $TRANSFORMER  $file;
               fi
 
   fi

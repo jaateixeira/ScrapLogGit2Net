@@ -1,0 +1,1314 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="edge" attr.name="weight" attr.type="long" />
+  <graph edgedefault="undirected">
+    <node id="ptfs-europe" />
+    <node id="bugs" />
+    <node id="biblibre" />
+    <node id="bywatersolutions" />
+    <node id="theke" />
+    <node id="gmail" />
+    <node id="email2024-05-24" />
+    <node id="tuxayo" />
+    <node id="bulac" />
+    <node id="hypernova" />
+    <node id="web" />
+    <node id="prosentient" />
+    <node id="kohaaloha" />
+    <node id="rijksmuseum" />
+    <node id="hotmail" />
+    <node id="koha-suomi" />
+    <node id="outlook" />
+    <node id="helsinki" />
+    <node id="myacpl" />
+    <node id="catalyst" />
+    <node id="gamil" />
+    <node id="parliament" />
+    <node id="rot13" />
+    <node id="inlibro" />
+    <node id="dataly" />
+    <node id="cass" />
+    <node id="latahlibrary" />
+    <node id="ub" />
+    <node id="davidnind" />
+    <node id="jns" />
+    <node id="koha-ptfs" />
+    <node id="voipsupport" />
+    <node id="bsz-bw" />
+    <node id="libriotech" />
+    <node id="chetcolibrary" />
+    <node id="tamil" />
+    <node id="devinim" />
+    <node id="wegc" />
+    <node id="flo" />
+    <node id="dgiinc" />
+    <node id="joensuu" />
+    <node id="example" />
+    <node id="inLibro" />
+    <node id="hofstetter" />
+    <node id="kreablo" />
+    <node id="abunchofthings" />
+    <node id="regulusweb" />
+    <node id="centrum" />
+    <edge source="ptfs-europe" target="bugs">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="ptfs-europe" target="biblibre">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="ptfs-europe" target="bywatersolutions">
+      <data key="d0">10</data>
+    </edge>
+    <edge source="ptfs-europe" target="theke">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="ptfs-europe" target="gmail">
+      <data key="d0">22</data>
+    </edge>
+    <edge source="ptfs-europe" target="email2024-05-24">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="tuxayo">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="ptfs-europe" target="bulac">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="ptfs-europe" target="hypernova">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="ptfs-europe" target="web">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="prosentient">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="kohaaloha">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="rijksmuseum">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="hotmail">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="koha-suomi">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="outlook">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="helsinki">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="ptfs-europe" target="gamil">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="myacpl">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="inlibro">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="ub">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="ptfs-europe" target="davidnind">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="cass">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="catalyst">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="ptfs-europe" target="koha-ptfs">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="bsz-bw">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="libriotech">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="parliament">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="tamil">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="devinim">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ptfs-europe" target="latahlibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="flo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="regulusweb">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="hofstetter">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="kreablo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="chetcolibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="example">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ptfs-europe" target="dgiinc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="biblibre">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="bugs" target="bywatersolutions">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bugs" target="theke">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bugs" target="gmail">
+      <data key="d0">15</data>
+    </edge>
+    <edge source="bugs" target="email2024-05-24">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bugs" target="tuxayo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="bulac">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bugs" target="hypernova">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bugs" target="web">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="prosentient">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="kohaaloha">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="rijksmuseum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="hotmail">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bugs" target="koha-suomi">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bugs" target="outlook">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="helsinki">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bugs" target="myacpl">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="catalyst">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bugs" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="parliament">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="rot13">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="inlibro">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="bugs" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="cass">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="latahlibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="ub">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bugs" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="koha-ptfs">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="voipsupport">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="bsz-bw">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="chetcolibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="tamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="devinim">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="wegc">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bugs" target="flo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="dgiinc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="joensuu">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="example">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="inLibro">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="hofstetter">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="kreablo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bugs" target="abunchofthings">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="bywatersolutions">
+      <data key="d0">20</data>
+    </edge>
+    <edge source="biblibre" target="theke">
+      <data key="d0">11</data>
+    </edge>
+    <edge source="biblibre" target="hotmail">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="biblibre" target="myacpl">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="biblibre" target="helsinki">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="biblibre" target="web">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="biblibre" target="gmail">
+      <data key="d0">28</data>
+    </edge>
+    <edge source="biblibre" target="prosentient">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="biblibre" target="rijksmuseum">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="biblibre" target="bulac">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="biblibre" target="inlibro">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="biblibre" target="ub">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="biblibre" target="davidnind">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="biblibre" target="outlook">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="biblibre" target="jns">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="biblibre" target="dataly">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="biblibre" target="gamil">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="biblibre" target="cass">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="biblibre" target="catalyst">
+      <data key="d0">12</data>
+    </edge>
+    <edge source="biblibre" target="koha-ptfs">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="biblibre" target="bsz-bw">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="libriotech">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="biblibre" target="tamil">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="biblibre" target="hypernova">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="biblibre" target="devinim">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="biblibre" target="regulusweb">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="tuxayo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="email2024-05-24">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="biblibre" target="kohaaloha">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="koha-suomi">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="biblibre" target="rot13">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="chetcolibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="centrum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="joensuu">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="inLibro">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="flo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="biblibre" target="wegc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bywatersolutions" target="theke">
+      <data key="d0">8</data>
+    </edge>
+    <edge source="bywatersolutions" target="hypernova">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="bulac">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="bywatersolutions" target="web">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="prosentient">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="bywatersolutions" target="kohaaloha">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="rijksmuseum">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="hotmail">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="bywatersolutions" target="koha-suomi">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="outlook">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="helsinki">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="bywatersolutions" target="myacpl">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="gmail">
+      <data key="d0">38</data>
+    </edge>
+    <edge source="bywatersolutions" target="catalyst">
+      <data key="d0">13</data>
+    </edge>
+    <edge source="bywatersolutions" target="gamil">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="parliament">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="inlibro">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="bywatersolutions" target="dataly">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="cass">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="bywatersolutions" target="koha-ptfs">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="bywatersolutions" target="tuxayo">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="bywatersolutions" target="bsz-bw">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="libriotech">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="chetcolibrary">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="bywatersolutions" target="latahlibrary">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="davidnind">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bywatersolutions" target="jns">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="bywatersolutions" target="ub">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="bywatersolutions" target="tamil">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="flo">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="bywatersolutions" target="centrum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bywatersolutions" target="devinim">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="wegc">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="dgiinc">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="bywatersolutions" target="joensuu">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="example">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bywatersolutions" target="hofstetter">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bywatersolutions" target="kreablo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bywatersolutions" target="abunchofthings">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bywatersolutions" target="rot13">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="theke" target="hotmail">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="gmail">
+      <data key="d0">19</data>
+    </edge>
+    <edge source="theke" target="myacpl">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="hypernova">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="theke" target="bulac">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="web">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="prosentient">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="kohaaloha">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="rijksmuseum">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="koha-suomi">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="outlook">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="helsinki">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="theke" target="catalyst">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="theke" target="gamil">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="inlibro">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="theke" target="ub">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="theke" target="davidnind">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="jns">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="dataly">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="cass">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="tamil">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="theke" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="theke" target="parliament">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="theke" target="wegc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="theke" target="tuxayo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="theke" target="koha-ptfs">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="theke" target="latahlibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gmail" target="email2024-05-24">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="gmail" target="myacpl">
+      <data key="d0">14</data>
+    </edge>
+    <edge source="gmail" target="catalyst">
+      <data key="d0">19</data>
+    </edge>
+    <edge source="gmail" target="gamil">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="gmail" target="prosentient">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="gmail" target="web">
+      <data key="d0">11</data>
+    </edge>
+    <edge source="gmail" target="bulac">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="gmail" target="helsinki">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="gmail" target="hotmail">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="gmail" target="rijksmuseum">
+      <data key="d0">10</data>
+    </edge>
+    <edge source="gmail" target="inlibro">
+      <data key="d0">7</data>
+    </edge>
+    <edge source="gmail" target="tuxayo">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="gmail" target="koha-ptfs">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="gmail" target="hypernova">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="gmail" target="koha-suomi">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gmail" target="outlook">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="gmail" target="ub">
+      <data key="d0">9</data>
+    </edge>
+    <edge source="gmail" target="davidnind">
+      <data key="d0">6</data>
+    </edge>
+    <edge source="gmail" target="jns">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="gmail" target="dataly">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="gmail" target="tamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gmail" target="kreablo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gmail" target="cass">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gmail" target="latahlibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gmail" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gmail" target="wegc">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="tuxayo" target="bulac">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="tuxayo" target="hotmail">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="tuxayo" target="web">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="tuxayo" target="rijksmuseum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="tuxayo" target="myacpl">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="tuxayo" target="hypernova">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="tuxayo" target="catalyst">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="tuxayo" target="prosentient">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="tuxayo" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="catalyst">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="bulac" target="myacpl">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bulac" target="inlibro">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bulac" target="web">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="bulac" target="hotmail">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="hypernova">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="prosentient">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="kohaaloha">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="rijksmuseum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="helsinki">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="koha-ptfs">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="bsz-bw">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="koha-suomi">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="outlook">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bulac" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="hotmail">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="myacpl">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="hypernova" target="web">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="hypernova" target="prosentient">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="kohaaloha">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="rijksmuseum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="koha-suomi">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="outlook">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="helsinki">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="catalyst">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="hypernova" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="tamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hypernova" target="wegc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="hotmail">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="myacpl">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="prosentient">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="kohaaloha">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="rijksmuseum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="catalyst">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="web" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="helsinki">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="inlibro">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="web" target="ub">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="web" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="outlook">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="cass">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="koha-ptfs">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="bsz-bw">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="koha-suomi">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="latahlibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="parliament">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="devinim">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="flo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="centrum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="wegc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="chetcolibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="web" target="dgiinc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="prosentient" target="hotmail">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="prosentient" target="myacpl">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="prosentient" target="kohaaloha">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="prosentient" target="rijksmuseum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="prosentient" target="catalyst">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="prosentient" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="prosentient" target="helsinki">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="prosentient" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="prosentient" target="koha-suomi">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="kohaaloha" target="hotmail">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="kohaaloha" target="rijksmuseum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="kohaaloha" target="helsinki">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="hotmail">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="myacpl">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="helsinki">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="rijksmuseum" target="inlibro">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="rijksmuseum" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="ub">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="rijksmuseum" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="outlook">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="cass">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="catalyst">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="rijksmuseum" target="chetcolibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="rijksmuseum" target="tamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="myacpl">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="helsinki">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="hotmail" target="inlibro">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="outlook">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="cass">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="catalyst">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="hotmail" target="latahlibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="tamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="hotmail" target="parliament">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-suomi" target="myacpl">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-suomi" target="outlook">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-suomi" target="helsinki">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-suomi" target="catalyst">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-suomi" target="latahlibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-suomi" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-suomi" target="koha-ptfs">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-suomi" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="myacpl">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="helsinki">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="inlibro">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="cass">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="outlook" target="catalyst">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="outlook" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="helsinki" target="myacpl">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="helsinki" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="helsinki" target="cass">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="helsinki" target="catalyst">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="helsinki" target="ub">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="helsinki" target="tamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="helsinki" target="inlibro">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="helsinki" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="helsinki" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="helsinki" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="catalyst">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="myacpl" target="gamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="parliament">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="cass">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="latahlibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="inlibro">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="myacpl" target="ub">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="myacpl" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="koha-ptfs">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="bsz-bw">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="chetcolibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="devinim">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="wegc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="flo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="centrum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="joensuu">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="example">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="myacpl" target="dgiinc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="catalyst" target="gamil">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="catalyst" target="parliament">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="catalyst" target="cass">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="catalyst" target="latahlibrary">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="catalyst" target="koha-ptfs">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="catalyst" target="bsz-bw">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="catalyst" target="libriotech">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="catalyst" target="chetcolibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="catalyst" target="inlibro">
+      <data key="d0">4</data>
+    </edge>
+    <edge source="catalyst" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="catalyst" target="ub">
+      <data key="d0">5</data>
+    </edge>
+    <edge source="catalyst" target="dataly">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="catalyst" target="devinim">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="catalyst" target="davidnind">
+      <data key="d0">3</data>
+    </edge>
+    <edge source="catalyst" target="wegc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="catalyst" target="flo">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="catalyst" target="centrum">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="catalyst" target="joensuu">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="catalyst" target="hofstetter">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gamil" target="cass">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gamil" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="gamil" target="ub">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="gamil" target="hofstetter">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="parliament" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="inlibro" target="dataly">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="inlibro" target="chetcolibrary">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="inlibro" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="inlibro" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="inlibro" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="inlibro" target="dgiinc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="dataly" target="ub">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="dataly" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="dataly" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="latahlibrary" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="latahlibrary" target="koha-ptfs">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ub" target="davidnind">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ub" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ub" target="hofstetter">
+      <data key="d0">2</data>
+    </edge>
+    <edge source="ub" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="ub" target="tamil">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="davidnind" target="jns">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="davidnind" target="koha-ptfs">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="davidnind" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="davidnind" target="chetcolibrary">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="davidnind" target="dgiinc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-ptfs" target="bsz-bw">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="koha-ptfs" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="bsz-bw" target="libriotech">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="chetcolibrary" target="dgiinc">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="chetcolibrary" target="example">
+      <data key="d0">1</data>
+    </edge>
+    <edge source="dgiinc" target="example">
+      <data key="d0">1</data>
+    </edge>
+  </graph>
+</graphml>
