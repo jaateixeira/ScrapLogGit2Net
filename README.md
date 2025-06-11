@@ -14,15 +14,18 @@ A toolset for mining and visualizing [Git](https://git-scm.com/) repositories wi
 
 [![CLI Tool](https://img.shields.io/badge/interface-CLI-black?style=flat-square&logo=gnu-bash)]()  
 [![MSR](https://img.shields.io/badge/field-Mining%20Software%20Repositories-8A2BE2?style=flat-square)]()  
-[![Git Logs](https://img.shields.io/badge/analyzes-git%20logs-orange?style=flat-square&logo=git)]()  
+
+
+[![Git Logs](https://img.shields.io/badge/analyzes-git%20logs-orange?style=flat-square&logo=git)]()
 [![Git Analysis](https://img.shields.io/badge/analyzes-git%20history-orange?style=flat-square&logo=git)]()  
 [![NetworkX](https://img.shields.io/badge/uses-NetworkX-red?style=flat-square&logo=networkx)]()
 ![MatplotLib](https://img.shields.io/badge/uses-Matplotlib-8A2BE2?style=flat-square&logo=image%2Fpng&logoColor=white)  
 ![Developer Networks](https://img.shields.io/badge/maps-Developer%20Networks-4CAF50?style=flat-square)
 ![Interorg Networks](https://img.shields.io/badge/maps-Interorganizational%20Networks-6a0dad?style=flat-square&logo=people-arrows)  
 ![Sociograms](https://img.shields.io/badge/visualizes-Sociograms-FF6B6B?style=flat-square&logo=graphql)
-![Sociograms](https://img.shields.io/badge/visualizes-Sociograms-FF6B6B?style=flat-square&logo=graphql)
-![Social Networks](https://img.shields.io/badge/generates-Social%20Networks-9C27B0?style=flat-square)
+![Software Ecosystems](https://img.shields.io/badge/visualizes-SoftwareEcosystems-FF6B6B?style=flat-square&logo=graphql)
+![Business Ecosystems](https://img.shields.io/badge/visualizes-BusinessEcosystems-FF6B6B?style=flat-square&logo=graphql)
+![Social Networks](https://img.shields.io/badge/generates-Social%20Networks-9C27B0?style=flat-square)  
 [![Social Metrics](https://img.shields.io/badge/generates-Social%20Metrics-00BFFF?style=flat-square)]()
 [![Code Metrics](https://img.shields.io/badge/generates-Code%20Metrics-ff69b4?style=flat-square)]()  
 
