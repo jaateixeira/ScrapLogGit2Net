@@ -23,9 +23,9 @@ A toolset for mining and visualizing [Git](https://git-scm.com/) repositories wi
 ![Developer Networks](https://img.shields.io/badge/maps-Developer%20Networks-4CAF50?style=flat-square)
 ![Interorg Networks](https://img.shields.io/badge/maps-Interorganizational%20Networks-6a0dad?style=flat-square&logo=people-arrows)  
 ![Sociograms](https://img.shields.io/badge/visualizes-Sociograms-FF6B6B?style=flat-square&logo=graphql)
-![Software Ecosystems](https://img.shields.io/badge/visualizes-SoftwareEcosystems-FF6B6B?style=flat-square&logo=graphql)
-![Business Ecosystems](https://img.shields.io/badge/visualizes-BusinessEcosystems-FF6B6B?style=flat-square&logo=graphql)
-![Social Networks](https://img.shields.io/badge/generates-Social%20Networks-9C27B0?style=flat-square)  
+![Software Ecosystems](https://img.shields.io/badge/visualizes-Software%20Ecosystems-FF6B6B?style=flat-square&logo=graphql)
+![Business Ecosystems](https://img.shields.io/badge/visualizes-Business%20Ecosystems-FF6B6B?style=flat-square&logo=graphql)  
+![Social Networks](https://img.shields.io/badge/generates-Social%20Networks-9C27B0?style=flat-square)
 [![Social Metrics](https://img.shields.io/badge/generates-Social%20Metrics-00BFFF?style=flat-square)]()
 [![Code Metrics](https://img.shields.io/badge/generates-Code%20Metrics-ff69b4?style=flat-square)]()  
 
