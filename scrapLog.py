@@ -406,7 +406,10 @@ def scrapBlock( block):
         print ("ERROR: block / changelog to scrap is empty")
         return False 
 
-    firstLine = block[0] 
+    firstLine = block[0]
+
+    ## This first block should be an email !!
+    ##TODO
 
     # check if the block starts with a date 
     if not firstLine[0:2] == '==':
@@ -414,6 +417,8 @@ def scrapBlock( block):
         return False 
 
     daEmAf= getDateEmailAffiliation(block[0])
+
+
     
     #print ("")
     #print (daEmAf)
@@ -675,6 +680,8 @@ def agregateByFileItsContributors():
         # if(globals()['DEBUG_MODE']):
         print ("")
         print ("\t agreegating change by ",email, "on ", change[0][0])
+
+
 
         for file in files:
                 if(globals()['DEBUG_MODE']):
