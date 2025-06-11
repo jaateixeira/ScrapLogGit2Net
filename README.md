@@ -30,17 +30,12 @@ A toolset for mining and visualizing [Git](https://git-scm.com/) repositories wi
 [![Code Metrics](https://img.shields.io/badge/generates-Code%20Metrics-ff69b4?style=flat-square)]()  
 
 [![Network Transforms](https://img.shields.io/badge/transforms-Network%20Levels-FF8C00?style=flat-square&logo=node-js)]()  
-[![Network Filters](https://img.shields.io/badge/filters-Subnetworks-40E0D0?style=flat-square&logo=filter)]()  
-[![Network Compare](https://img.shields.io/badge/compares-Network%20Evolution-9370DB?style=flat-square&logo=git-compare)]()  
+[![Network Filters](https://img.shields.io/badge/filters-Subnetworks-40E0D0?style=flat-square&logo=filter)]()
+[![Network Compare](https://img.shields.io/badge/compares-Network%20Evolution-9370DB?style=flat-square&logo=git-compare)]()
 
 [![unittest](https://img.shields.io/badge/testing-unittest-blue?style=flat-square&logo=python)]()
 [![pytest](https://img.shields.io/badge/testing-pytest-green?style=flat-square&logo=pytest)]()  
 
-
-
-A tool for mining Git logs, analyzing collaboration networks, and visualizing developer interactions.  
-
-A tool for scraping and analyzing Git logs.
 
 The toolset was first developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) during his doctoral studies with some guidance from Software Engineering scholars with expertise in the mining of software repositories. The tool merits by considering both individuals and organizations. The tool maps developers to organizations by the commit email address and external [APIs](https://en.wikipedia.org/wiki/API) such as the [REST](https://docs.github.com/en/rest?apiVersion=2022-11-28) and [GraphQL](https://docs.github.com/en/graphql) ones provided by [GitHub](https://github.com/).
 
