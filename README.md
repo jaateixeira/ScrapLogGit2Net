@@ -29,7 +29,7 @@ A toolset for mining and visualizing [Git](https://git-scm.com/) repositories wi
 [![Social Metrics](https://img.shields.io/badge/generates-Social%20Metrics-00BFFF?style=flat-square)]()
 [![Code Metrics](https://img.shields.io/badge/generates-Code%20Metrics-ff69b4?style=flat-square)]()  
 
-[![Network Transforms](https://img.shields.io/badge/transforms-Network%20Topology-FF8C00?style=flat-square&logo=node-js)]()  
+[![Network Transforms](https://img.shields.io/badge/transforms-Network%20Levels-FF8C00?style=flat-square&logo=node-js)]()  
 [![Network Filters](https://img.shields.io/badge/filters-Subnetworks-40E0D0?style=flat-square&logo=filter)]()  
 [![Network Compare](https://img.shields.io/badge/compares-Network%20Evolution-9370DB?style=flat-square&logo=git-compare)]()  
 
