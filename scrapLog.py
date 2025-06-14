@@ -35,9 +35,9 @@ import pickle
 # For coloring nodes
 from colorama import Fore, Style
 
-
-
 import exportLogData
+
+from utils import validators
 
 # Depecrated as networkx implements same meazures
 # Here only to document and preserve history
@@ -350,6 +350,11 @@ def getDateEmailAffiliation(line):
     "get the email"
     email=match[0][1]
     #print("email=["+email+"]")    
+
+
+    if not validators.validate_git_email(email):
+        print(f'ERROR: Invalid email{email}')
+        sys.exit()
 
 
     # Verify the email pattern 
