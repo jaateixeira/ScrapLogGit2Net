@@ -2,6 +2,41 @@
 
 A toolset for mining and visualizing [Git](https://git-scm.com/) repositories with [Social Network Analysis](https://en.wikipedia.org/wiki/Social_network_analysis). ScrapLogGit2Net allows its users to scrape, model, and visualize social networks based on common source-code file edits for any given Git repository.
 
+
+# ScrapLogGit2Net
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
+![GitHub Contributors](https://img.shields.io/github/contributors/jaateixeira/ScrapLogGit2Net?style=flat-square&color=green)
+[![GitHub last commit](https://img.shields.io/github/last-commit/jaateixeira/ScrapLogGit2Net?style=flat-square)](https://github.com/jaateixeira/ScrapLogGit2Net/commits/main)
+[![GitHub issues](https://img.shields.io/github/issues-raw/jaateixeira/ScrapLogGit2Net?style=flat-square)](https://github.com/jaateixeira/ScrapLogGit2Net/issues)
+[![Python](https://img.shields.io/badge/python-3.8+-blue?style=flat-square)](https://www.python.org/)
+[![GitHub Repo stars](https://img.shields.io/github/stars/jaateixeira/ScrapLogGit2Net?style=social)](https://github.com/jaateixeira/ScrapLogGit2Net/stargazers)
+
+[![CLI Tool](https://img.shields.io/badge/interface-CLI-black?style=flat-square&logo=gnu-bash)]()  
+[![MSR](https://img.shields.io/badge/field-Mining%20Software%20Repositories-8A2BE2?style=flat-square)]()  
+
+
+[![Git Logs](https://img.shields.io/badge/analyzes-git%20logs-orange?style=flat-square&logo=git)]()
+[![Git Analysis](https://img.shields.io/badge/analyzes-git%20history-orange?style=flat-square&logo=git)]()  
+[![NetworkX](https://img.shields.io/badge/uses-NetworkX-red?style=flat-square&logo=networkx)]()
+![MatplotLib](https://img.shields.io/badge/uses-Matplotlib-8A2BE2?style=flat-square&logo=image%2Fpng&logoColor=white)  
+![Developer Networks](https://img.shields.io/badge/maps-Developer%20Networks-4CAF50?style=flat-square)
+![Interorg Networks](https://img.shields.io/badge/maps-Interorganizational%20Networks-6a0dad?style=flat-square&logo=people-arrows)  
+![Sociograms](https://img.shields.io/badge/visualizes-Sociograms-FF6B6B?style=flat-square&logo=graphql)
+![Software Ecosystems](https://img.shields.io/badge/visualizes-Software%20Ecosystems-FF6B6B?style=flat-square&logo=graphql)
+![Business Ecosystems](https://img.shields.io/badge/visualizes-Business%20Ecosystems-FF6B6B?style=flat-square&logo=graphql)  
+![Social Networks](https://img.shields.io/badge/generates-Social%20Networks-9C27B0?style=flat-square)
+[![Social Metrics](https://img.shields.io/badge/generates-Social%20Metrics-00BFFF?style=flat-square)]()
+[![Code Metrics](https://img.shields.io/badge/generates-Code%20Metrics-ff69b4?style=flat-square)]()  
+
+[![Network Transforms](https://img.shields.io/badge/transforms-Network%20Levels-FF8C00?style=flat-square&logo=node-js)]()
+[![Network Filters](https://img.shields.io/badge/filters-Subnetworks-40E0D0?style=flat-square&logo=filter)]()
+[![Network Compare](https://img.shields.io/badge/compares-Network%20Evolution-9370DB?style=flat-square&logo=git-compare)]()
+
+[![unittest](https://img.shields.io/badge/testing-unittest-blue?style=flat-square&logo=python)]()
+[![pytest](https://img.shields.io/badge/testing-pytest-green?style=flat-square&logo=pytest)]()  
+
+
 The toolset was first developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) during his doctoral studies with some guidance from Software Engineering scholars with expertise in the mining of software repositories. The tool merits by considering both individuals and organizations. The tool maps developers to organizations by the commit email address and external [APIs](https://en.wikipedia.org/wiki/API) such as the [REST](https://docs.github.com/en/rest?apiVersion=2022-11-28) and [GraphQL](https://docs.github.com/en/graphql) ones provided by [GitHub](https://github.com/).
 
 Newer features allow you to:
