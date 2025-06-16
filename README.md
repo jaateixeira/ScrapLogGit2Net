@@ -46,12 +46,6 @@ Newer features allow you to:
 - Visualize collaborations dynamically using [NetworkX, a Python package](https://networkx.org/documentation/latest/) and [Matplotlib: Visualization with Python](https://matplotlib.org/).
 
 The code was also recently (i.e., Spring 2024) made compliant with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) data structures and the [Python 3.10 version](https://networkx.org/documentation/latest/) runtime, which simplified the original codebase.
-<p align="center">
-  <img src="http://users.abo.fi/jteixeir/OpenStackSNA/Figures/How%20we%20model%20the%20network.svg" alt="How we model the network" style="border: 1px solid #000011; width:700px;" />
-  <br>
-  <em>Ilustration on how ScrapLogGit2Net models the network from Git commit logs.</em>
-</p>
-
 For more information, see the publication and related website:
 
 - Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. Available open-access at [https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2](https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2).
@@ -96,6 +90,14 @@ Note that:
 - Some manual developer email aggregation might be required as the same developers can use multiple emails.
 - Software bots can also commit code, undermining your analysis of peer-to-peer collaboration.
 - Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected. For example, when analyzing projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination and/or information sharing. 
+
+<p align="center">
+  <img src="http://users.abo.fi/jteixeir/OpenStackSNA/Figures/How%20we%20model%20the%20network.svg" alt="How we model the network" style="border: 1px solid #000011; width:700px;" />
+  <br>
+  <em>Ilustration on how ScrapLogGit2Net models the network from Git commit logs.</em>
+</p>
+
+
 
 # How to use **scrapLog.py**
 You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
