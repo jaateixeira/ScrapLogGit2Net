@@ -47,6 +47,15 @@ Newer features allow you to:
 
 The code was also recently (i.e., Spring 2024) made compliant with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) data structures and the [Python 3.10 version](https://networkx.org/documentation/latest/) runtime, which simplified the original codebase.
 
+
+
+<p align="center">
+  <img src="http://users.abo.fi/jteixeir/OpenStackSNA/Figures/How%20we%20model%20the%20network.svg" alt="How we model the network" width="700"/>
+  <br>
+  <em>Ilustration on how ScrapLogGit2Net models the network from Git commit logs.</em>
+</p>
+
+
 For more information, see the publication and related website:
 
 - Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. Available open-access at [https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2](https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2).
