@@ -1,6 +1,41 @@
 # ScrapLogGit2Net
 
-A toolset for mining and visualizing [Git](https://git-scm.com/) repositories with [Social Network Analysis](https://en.wikipedia.org/wiki/Social_network_analysis). ScrapLogGit2Net allows its users to scrape, model, and visualize social networks based on common source-code file edits for any given Git repository.
+A toolset for mining and visualizing [Git](https://git-scm.com/) repositories with [Social Network Analysis](https://en.wikipedia.org/wiki/Social_network_analysis). ScrapLogGit2Net allows its users to scrape, model, and visualize social networks based on source-code file co-edits for any given Git repository.
+
+
+# ScrapLogGit2Net
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
+![GitHub Contributors](https://img.shields.io/github/contributors/jaateixeira/ScrapLogGit2Net?style=flat-square&color=green)
+[![GitHub last commit](https://img.shields.io/github/last-commit/jaateixeira/ScrapLogGit2Net?style=flat-square)](https://github.com/jaateixeira/ScrapLogGit2Net/commits/main)
+[![GitHub issues](https://img.shields.io/github/issues-raw/jaateixeira/ScrapLogGit2Net?style=flat-square)](https://github.com/jaateixeira/ScrapLogGit2Net/issues)
+[![Python](https://img.shields.io/badge/python-3.8+-blue?style=flat-square)](https://www.python.org/)
+[![GitHub Repo stars](https://img.shields.io/github/stars/jaateixeira/ScrapLogGit2Net?style=social)](https://github.com/jaateixeira/ScrapLogGit2Net/stargazers)
+
+[![CLI Tool](https://img.shields.io/badge/interface-CLI-black?style=flat-square&logo=gnu-bash)]()  
+[![MSR](https://img.shields.io/badge/field-Mining%20Software%20Repositories-8A2BE2?style=flat-square)]()  
+
+
+[![Git Logs](https://img.shields.io/badge/analyzes-git%20logs-orange?style=flat-square&logo=git)]()
+[![Git Analysis](https://img.shields.io/badge/analyzes-git%20history-orange?style=flat-square&logo=git)]()  
+[![NetworkX](https://img.shields.io/badge/uses-NetworkX-red?style=flat-square&logo=networkx)]()
+![MatplotLib](https://img.shields.io/badge/uses-Matplotlib-8A2BE2?style=flat-square&logo=image%2Fpng&logoColor=white)  
+![Developer Networks](https://img.shields.io/badge/maps-Developer%20Networks-4CAF50?style=flat-square)
+![Interorg Networks](https://img.shields.io/badge/maps-Interorganizational%20Networks-6a0dad?style=flat-square&logo=people-arrows)  
+![Sociograms](https://img.shields.io/badge/visualizes-Sociograms-FF6B6B?style=flat-square&logo=graphql)
+![Software Ecosystems](https://img.shields.io/badge/visualizes-Software%20Ecosystems-FF6B6B?style=flat-square&logo=graphql)
+![Business Ecosystems](https://img.shields.io/badge/visualizes-Business%20Ecosystems-FF6B6B?style=flat-square&logo=graphql)  
+![Social Networks](https://img.shields.io/badge/generates-Social%20Networks-9C27B0?style=flat-square)
+[![Social Metrics](https://img.shields.io/badge/generates-Social%20Metrics-00BFFF?style=flat-square)]()
+[![Code Metrics](https://img.shields.io/badge/generates-Code%20Metrics-ff69b4?style=flat-square)]()  
+
+[![Network Transforms](https://img.shields.io/badge/transforms-Network%20Levels-FF8C00?style=flat-square&logo=node-js)]()
+[![Network Filters](https://img.shields.io/badge/filters-Subnetworks-40E0D0?style=flat-square&logo=filter)]()
+[![Network Compare](https://img.shields.io/badge/compares-Network%20Evolution-9370DB?style=flat-square&logo=git-compare)]()
+
+[![unittest](https://img.shields.io/badge/testing-unittest-blue?style=flat-square&logo=python)]()
+[![pytest](https://img.shields.io/badge/testing-pytest-green?style=flat-square&logo=pytest)]()  
+
 
 The toolset was first developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) during his doctoral studies with some guidance from Software Engineering scholars with expertise in the mining of software repositories. The tool merits by considering both individuals and organizations. The tool maps developers to organizations by the commit email address and external [APIs](https://en.wikipedia.org/wiki/API) such as the [REST](https://docs.github.com/en/rest?apiVersion=2022-11-28) and [GraphQL](https://docs.github.com/en/graphql) ones provided by [GitHub](https://github.com/).
 
@@ -11,12 +46,11 @@ Newer features allow you to:
 - Visualize collaborations dynamically using [NetworkX, a Python package](https://networkx.org/documentation/latest/) and [Matplotlib: Visualization with Python](https://matplotlib.org/).
 
 The code was also recently (i.e., Spring 2024) made compliant with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) data structures and the [Python 3.10 version](https://networkx.org/documentation/latest/) runtime, which simplified the original codebase.
-
 For more information, see the publication and related website:
 
 - Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. Available open-access at [https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2](https://jisajournal.springeropen.com/articles/10.1186/s13174-015-0028-2).
-- Website [http://users.abo.fi/jteixeir/OpenStackSNA/](http://users.abo.fi/jteixeir/OpenStackSNA/) with the obtained social networks and visualizations included [in publications by the author on the OpenStack software ecosystem](http://users.abo.fi/jteixeir/#pub).
-- Website [http://users.abo.fi/jteixeir/TensorFlowSNA/](http://users.abo.fi/jteixeir/TensorFlowSNA/) with the obtained social networks and visualizations for the TensorFlow open and cooperative project (publication forthcoming).
+- Website [http://users.abo.fi/jteixeir/OpenStackSNA/](http://users.abo.fi/jteixeir/OpenStackSNA/) with the obtained social networks and visualizations included [in publications by the author on the OpenStack software ecosystem](http://www.jteixeira.eu/#pub).
+- Website [http://users.abo.fi/jteixeir/TensorFlowSNA/](http://users.abo.fi/jteixeir/TensorFlowSNA/) with the obtained social networks and visualizations for the TensorFlow open and cooperative project. See [https://aisel.aisnet.org/ecis2025/gov_platform/gov_platform/1/](https://aisel.aisnet.org/ecis2025/gov_platform/gov_platform/1/) for most recent publication. 
 
 # Problem statement
 Hard to figure out who works with whom in complex software projects.
@@ -56,6 +90,14 @@ Note that:
 - Some manual developer email aggregation might be required as the same developers can use multiple emails.
 - Software bots can also commit code, undermining your analysis of peer-to-peer collaboration.
 - Co-editing some files might not be an indicator of collaboration. It's like some scholars co-authoring articles where little or no cooperation existed as expected. For example, when analyzing projects in the C programming language, the co-editing of a Makefile might not be an indicator of collaboration, but instead an indicator of coordination and/or information sharing. 
+
+<p align="center">
+  <img src="http://users.abo.fi/jteixeir/OpenStackSNA/Figures/How%20we%20model%20the%20network.svg" alt="How we model the network" style="border: 1px solid #000011; width:700px;" />
+  <br>
+  <em>Ilustration on how ScrapLogGit2Net models the network from Git commit logs.</em>
+</p>
+
+
 
 # How to use **scrapLog.py**
 You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.

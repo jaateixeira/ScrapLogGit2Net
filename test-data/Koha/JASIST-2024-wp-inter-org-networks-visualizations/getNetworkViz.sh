@@ -4,7 +4,7 @@
 # Considering only top10
 
 VIZ=''../../../formatFilterAndViz-nofo-GraphML.py''
-VIZ_ARG='-sl'
+VIZ_ARG='-l'
 
 KOHA_NET_GraphML_PATH="../JASIST-2024-wp-inter-org-networks-graphML/"
 

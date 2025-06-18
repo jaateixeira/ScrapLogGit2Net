@@ -35,9 +35,9 @@ import pickle
 # For coloring nodes
 from colorama import Fore, Style
 
-
-
 import exportLogData
+
+from utils import validators
 
 # Depecrated as networkx implements same meazures
 # Here only to document and preserve history
@@ -352,6 +352,11 @@ def getDateEmailAffiliation(line):
     #print("email=["+email+"]")    
 
 
+    if not validators.validate_git_email(email):
+        print(f'ERROR: Invalid email{email}')
+        sys.exit()
+
+
     # Verify the email pattern 
     # Old way
     #email_pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
@@ -406,7 +411,10 @@ def scrapBlock( block):
         print ("ERROR: block / changelog to scrap is empty")
         return False 
 
-    firstLine = block[0] 
+    firstLine = block[0]
+
+    ## This first block should be an email !!
+    ##TODO
 
     # check if the block starts with a date 
     if not firstLine[0:2] == '==':
@@ -414,6 +422,8 @@ def scrapBlock( block):
         return False 
 
     daEmAf= getDateEmailAffiliation(block[0])
+
+
     
     #print ("")
     #print (daEmAf)
@@ -675,6 +685,8 @@ def agregateByFileItsContributors():
         # if(globals()['DEBUG_MODE']):
         print ("")
         print ("\t agreegating change by ",email, "on ", change[0][0])
+
+
 
         for file in files:
                 if(globals()['DEBUG_MODE']):
