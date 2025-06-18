@@ -149,30 +149,44 @@ def console_messages() -> None:
     markdown_text = Markdown("# This is a heading\n\n- This is a list item\n- Another item")
     console.print(markdown_text)
 
+    console.print("\n [blue] Play with color and fonts \n")
+
     # An example of a styled message
     console.print("[bold blue]Welcome to [blink]Rich[/blink]![/bold blue]")
     console.print("[bold green]Success:[/bold green] Your operation completed successfully.")
     console.print("[bold red]Error:[/bold red] Something went wrong. Please try again.")
 
     sleep(3)
-    # Other examples
 
+    console.print("\n [blue] Play with underlines and backgrounds \n")
+
+    # Other examples
     console.print([1, 2, 3])
     console.print("[blue underline]Looks like a link")
-    console.print(locals())
+
     console.print("FOO", style="white on blue")
 
-    console.print(inspect("test-string", methods=True))
+    sleep(3)
+    console.print("\n [blue]   console.print(locals()) \n")
+
+    console.print(locals())
+    sleep(3)
+    console.print("\n [blue]   console.print(inspect(None, methods=True)) \n")
+    console.print(inspect(None, methods=True))
 
     # Logging with time console.log("Hello, World!")
 
     sleep(3)
 
+    console.print("\n [blue]   Use JSON format \n")
     # json and low level examples
     console.print_json('[false, true, null, "foo"]')
     console.log(JSON('["foo", "bar"]'))
     console.out("Locals", locals())
 
+
+    sleep(3)
+    console.print("\n [blue]   You can also add a rule \n")
     # The rule
     console.rule("[bold red]Chapter 2")
 
@@ -222,7 +236,7 @@ def status_messages():
     # Create the status spinner and progress bar
     with console.status("[bold green]Processing... Counting to 100", spinner="dots") as status:
         # Loop from 1 to 100
-        for i in range(1, -101):
+        for i in range(1, 200):
             sleep(0.03)  # Simulate work being done
 
     console.print("[green]Counting completed!")
@@ -307,7 +321,7 @@ def progress_bars_demo():
 
         # Loop until both tasks are complete
         while not progress.finished:
-            sleep(0.05)  # Simulate work being done
+            sleep(0.02)  # Simulate work being done
             progress.update(task1, advance=1)  # Update the first progress bar
             # progress.console.print(f"Working on")
             progress.update(task2, advance=0.5)  # Update the second progress bar more slowly
@@ -318,14 +332,14 @@ def progress_bars_demo():
 if __name__ == '__main__':
     console.print("[bold blue] Welcome to [blink] ScrapLogGit2Net unified stdout and logger [/blink]![/bold blue] Let's go .. ")
 
-    console.print("[bold blue] \n Showing how to log messages")
+    console.print("[bold blue] \n You can log messages to terminal or separate log file")
     log_messages()
-    console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+    console.print("[bold green]Success:[/bold green] You saw how to log  😀\n")
     sleep(3)
 
-    console.print("[bold blue] \n Showing how  output to console/terminal")
+    console.print("[bold blue] \n How  about output to console/terminal")
     console_messages()
-    console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+    console.print("[bold green]Success:[/bold green] Your saw many way to output. 😀\n")
     sleep(3)
 
     console.print("[bold blue] \n Displaying advanced text")
@@ -352,4 +366,3 @@ if __name__ == '__main__':
     console.print("[bold blue] \n Showing progress bars")
     progress_bars_demo()
     console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
-    
