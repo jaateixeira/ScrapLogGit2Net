@@ -1,57 +1,79 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
-import time
+# TODO Implement function for the unused import statements
+# TODO Fix status spinner
+
+import sys
+
+# To set some time delays
 from time import sleep
 
+# loguru is a standard python logger that can be integrated with rich
 from loguru import logger
+
+# Rich has an inspect() function which can generate a report on any Python object.
+# It is a fantastic debug aid
+from rich import inspect
+
 # Python data structures can be automatically pretty printed with syntax highlighting.
 from rich import pretty
-from rich import print
 
-# You can then print strings or objects to the terminal in the usual way.
-# Rich will do some basic syntax highlighting and format data structures to make them easier to read.
+
+# Wth rprint, Rich will do some basic syntax highlighting and format data structures to make them easier to read.
 from rich import print as rprint
+
+# For complete control over terminal formatting, Rich offers a Console class.
+# Most applications will require a single Console instance, so you may want to create one at
+# the module level or as an attribute of your top-level object.
+from rich.console import Console
+
+
+# TODO Document this import
+from rich import traceback
+
+
+# Rich supplies a logging handler which will format and colorize text written by Python’s logging module.
+from rich.logging import RichHandler
+
+
+# JSON gets easier to understand
+from rich.json import JSON
+
 # Strings may contain Console Markup which can be used to insert color and styles in to the output.
 from rich.markdown import Markdown
-from rich import inspect
-from rich.color import Color
-# JSON gets easier to understand
-from rich import print_json
-from rich.json import JSON
+
+# Rich can display continuously updated information regarding the progress of long running tasks  file copies etc.
+# The information displayed is configurable, the default will display a description of the ‘task’, a progress bar,
+# percentage complete, and estimated time remaining.
+from rich.progress import Progress
+
 # Rich has a Text class you can use to mark up strings with color and style attributes.
 from rich.text import Text
 
-# For configuring
-from rich.traceback import install
-from rich.traceback import Traceback
+# Rich’s Table class offers a variety of ways to render tabular data to the terminal.
+from rich.table import Table
 
-# Rich can display continuously updated information regarding the progress of long running tasks / file copies etc. The information displayed is configurable, the default will display a description of the ‘task’, a progress bar, percentage complete, and estimated time remaining.
-from rich.progress import Progress, TaskID
-
+# Rich provides the Live  class to to animate parts of the terminal
+# It's handy to annimate tables that grow row by row
+from rich.live import Live
 
 
 # Install the Rich Traceback handler with custom options
-install(
+traceback.install(
     show_locals=True,  # Show local variables in the traceback
     locals_max_length=10, locals_max_string=80, locals_hide_dunder=True, locals_hide_sunder=False,
     indent_guides=True,
     suppress=[__name__],
     # suppress=[your_module],  # Suppress tracebacks from specific modules
-    #max_frames=3,  # Limit the number of frames shown
+    # max_frames=3,  # Limit the number of frames shown
     max_frames=5,  # Limit the number of frames shown
-    #width=50,  # Set the width of the traceback display
+    # width=50,  # Set the width of the traceback display
     width=100,  # Set the width of the traceback display
     extra_lines=3,  # Show extra lines of code around the error
     theme="solarized-dark",  # Use a different color theme
     word_wrap=True,  # Enable word wrapping for long lines
 )
-
-
-
-
-
 
 # Strings may contain Console Markup which can be used to insert color and styles in to the output.
 
@@ -59,15 +81,9 @@ pretty.install()
 
 # Rich has an inspect() function which can generate a report on any Python object. It is a fantastic debug aid
 
-# For complete control over terminal formatting, Rich offers a Console class.
-# Most applications will require a single Console instance, so you may want to create one at the module level or as an attribute of your top-level object.
-from rich.console import Console
 
 # Initialize the console
 console = Console()
-
-# Rich supplies a logging handler which will format and colorize text written by Python’s logging module.
-from rich.logging import RichHandler
 
 # Add RichHandler to the loguru logger
 logger.remove()  # Remove the default logger
@@ -78,22 +94,24 @@ logger.add(
     # level="INFO",  # Set the desired logging level
 )
 
-# Rich’s Table class offers a variety of ways to render tabular data to the terminal.
 
 # Rich provides the Live  class to to animate parts of the terminal
 # It's handy to annimate tables that grow row by row
+from rich.live import Live
 
 # Rich provides the Align class to align rendable objects
+from rich.align import Align
 
-# Rich can display continuously updated information regarding the progress of long running tasks / file copies etc. The information displayed is configurable, the default will display a description of the ‘task’, a progress bar, percentage complete, and estimated time remaining.
+# Rich can display continuously updated information regarding the progress of long running tasks  / file copies etc.
+# The information displayed is configurable, the default will display a description of the ‘task’, a progress bar, percentage complete, and estimated time remaining.
+from rich.progress import Progress, TaskID
 
-# Rich has a Text class you can use to mark up strings with color and style attributes.
 
 # For configuring
-from rich.traceback import install
+from rich import traceback
 
 # Install the Rich Traceback handler with custom options
-install(
+traceback.install(
     show_locals=True,  # Show local variables in the traceback
     locals_max_length=10, locals_max_string=80, locals_hide_dunder=True, locals_hide_sunder=False,
     indent_guides=True,
@@ -136,6 +154,7 @@ def console_messages() -> None:
     console.print("[bold green]Success:[/bold green] Your operation completed successfully.")
     console.print("[bold red]Error:[/bold red] Something went wrong. Please try again.")
 
+    sleep(3)
     # Other examples
 
     console.print([1, 2, 3])
@@ -146,6 +165,8 @@ def console_messages() -> None:
     console.print(inspect("test-string", methods=True))
 
     # Logging with time console.log("Hello, World!")
+
+    sleep(3)
 
     # json and low level examples
     console.print_json('[false, true, null, "foo"]')
@@ -192,7 +213,7 @@ def demonstrate_traceback_exceptions():
             # Print the exception traceback using Rich
             console.print(f"[bold yellow]{exc_name} occurred:[/bold yellow]", style="bold red")
             # Print formatted traceback using Rich
-            console.print(Traceback(), style="bold red")
+            console.print(traceback.Traceback(), style="bold red")
             console.print("-" * 40)  # Separator for clarity
 
 
@@ -201,7 +222,7 @@ def status_messages():
     # Create the status spinner and progress bar
     with console.status("[bold green]Processing... Counting to 100", spinner="dots") as status:
         # Loop from 1 to 100
-        for i in range(1, 101):
+        for i in range(1, -101):
             sleep(0.03)  # Simulate work being done
 
     console.print("[green]Counting completed!")
@@ -228,6 +249,7 @@ def display_advanced_text():
 
     # Print the advanced text
     console.print(combined_text)
+
 
 
 def display_emojis():
@@ -294,13 +316,40 @@ def progress_bars_demo():
 
 
 if __name__ == '__main__':
-    print("Examples on how to use the unified functions and logger:")
+    console.print("[bold blue] Welcome to [blink] ScrapLogGit2Net unified stdout and logger [/blink]![/bold blue] Let's go .. ")
 
+    console.print("[bold blue] \n Showing how to log messages")
     log_messages()
-    console_messages()
-    display_advanced_text()
-    display_emojis()
-    demonstrate_traceback_exceptions()
-    status_messages()
-    progress_bars_demo()
+    console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+    sleep(3)
 
+    console.print("[bold blue] \n Showing how  output to console/terminal")
+    console_messages()
+    console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+    sleep(3)
+
+    console.print("[bold blue] \n Displaying advanced text")
+    display_advanced_text()
+    console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+    sleep(3)
+
+    console.print("[bold blue] \n Displaying emojis")
+    display_emojis()
+    console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+    sleep(3)
+
+    demonstrate_traceback_exceptions()
+    console.print("[bold blue] \n Displaying traceback exceptions")
+    display_emojis()
+    console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+    sleep(3)
+
+    console.print("[bold blue] \n Displaying a status message with spinner")
+    status_messages()
+    console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+    sleep(3)
+
+    console.print("[bold blue] \n Showing progress bars")
+    progress_bars_demo()
+    console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+    
