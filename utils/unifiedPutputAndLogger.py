@@ -27,6 +27,9 @@ from rich.text import Text
 from rich.traceback import install
 from rich.traceback import Traceback
 
+# Rich can display continuously updated information regarding the progress of long running tasks / file copies etc. The information displayed is configurable, the default will display a description of the ‘task’, a progress bar, percentage complete, and estimated time remaining.
+from rich.progress import Progress, TaskID
+
 
 
 # Install the Rich Traceback handler with custom options
