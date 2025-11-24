@@ -30,3 +30,5 @@ sudo apt-get install texlive-latex-recommended texlive-extra-utils texlive-latex
 pip3 install pdfCropMargins --user --upgrade --only-binary pymupdf
 sudo apt install python3-pytest
 sudo apt-get install python3-email-validator
+pip3 install email_validator
+pip3 install python_dateutil
