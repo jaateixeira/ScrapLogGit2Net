@@ -1,3 +1,5 @@
+The visualizers should validate that all nodes have an email and affiliation
+
 Make datamodel immutable
 test validator testcases 
 Test datamodel test-cases
