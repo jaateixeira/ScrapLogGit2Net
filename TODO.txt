@@ -1,5 +1,7 @@
 The visualizers should validate that all nodes have an email and affiliation
 
+The dict of colors should be passed as argument, even without it is shoudld run
+
 Make datamodel immutable
 test validator testcases 
 Test datamodel test-cases
