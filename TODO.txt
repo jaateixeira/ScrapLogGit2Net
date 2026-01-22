@@ -218,3 +218,4 @@ Jose Teixeira
 GNU General Public License v3.0
 
 python3 -m unittest test_email_affiliation.py
+./formatAndReport-nofi-GraphML.py
