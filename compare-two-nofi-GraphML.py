@@ -13,6 +13,11 @@ from rich.progress import Progress
 from networkx import Graph
 from typing import Any
 
+
+
+print("Deprecated")
+print("check vc2sng: https://github.com/jaateixeira/vc2sng")
+
 def load_graph_with_progress(filepath: str) -> Graph:
     """
     Load a GraphML file into a NetworkX graph with a progress bar.
