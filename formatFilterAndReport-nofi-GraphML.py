@@ -3,6 +3,34 @@
 """
 formatAndReportGraphML - Reporter for GraphML files
 
+
+TODO: Pytest for
+Invalid path
+Not and graphML files
+No notes
+No edges
+No nodes with affiliation
+2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML
+2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML-transformed-to-nofo.graphML
+2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML
+5-pentagon-with-star-transformed-to-nofo.graphML
+5-pentagon-with-star.graphML
+./formatFilterAndReport-nofi-GraphML.py -oi oodi  test-data/5-pentagon-with-star.graphML
+./formatFilterAndReport-nofi-GraphML.py -oi oodi ,not-exist  test-data/5-pentagon-with-star.graphML
+./formatFilterAndReport-nofi-GraphML.py -oo oodi.fi, rijksmuseum  test-data/5-pentagon-with-star.graphML
+./formatFilterAndReport-nofi-GraphML.py -oo oodi.fi, not_exist  test-data/5-pentagon-with-star.graphML
+
+Ignore all
+./formatFilterAndReport-nofi-GraphML.py --org_list_to_ignore=bywatersolutions,oodi,rijksmuseum test-data/5-pentagon-with-star.graphML
+
+Consider none
+./formatFilterAndReport-nofi-GraphML.py - --org_list_only test-data/5-pentagon-with-star.graphML
+
+NetworkX random graph of 10 nodes
+NetworkX random graph of 100 nodes
+NetworkX random graph of 1000 nodes
+
+
 TODO: Should report on TOP 20 companies with more nodes
 TODO: Should report on TOP 20 companies with more edges
 TODO: Should report on % of edges by companies on top 20 with more nodes
