@@ -4,40 +4,51 @@
 print("Welcome to formatAndReportGraphML")
 print("Reporter of GraphML is only now being implemented")
 print("")
-print("TODO: Should report on companies with more developers")
+print("TODO: Should report on TOP 20 companies with more nodes ")
+print("TODO: Should report on TOP 20 companies with more edges ")
+print("TODO: Should report on % of edges by companies on top 20 with more nodes")
+print("TODO: Should report on % of edges by companies on top 20 with more nodes")
 print("TODO: Should report on centrality of developers and organizations")
 print("TODO: Should export in XML, html, latex, MD, CSV and txt files")
 print("")
 
 
 
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 import networkx as nx
-import sys
 import argparse
-import os 
-global out_file_name
-import numpy as np
-import turtle, math, random, time
-
+import os
 "For writing exel files"
 import xlwt
+
+
+global out_file_name
+
+
 
 global prefix_for_report_filename
 
 
-"This is for filtering results for certain firms - only those" 
-top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
+"This is for filtering results for certain firms - only those"
+# Deprecated with arguments --org_list_only
+# top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
 #top_firms_that_matter = ['microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
 
-"This is for filtering resultsf for certain firm - not those " 
+"This is for filtering result of for certain firm - not those "
+# Deprecated with arguments --org_list_to_ignore
 #top_firms_that_do_not_matter = ['users','tensorflow','google']
-top_firms_that_do_not_matter = ['users','tensorflow','gmail']
+# top_firms_that_do_not_matter = ['users','tensorflow','gmail']
 
 
 print("")
 print("\tParsing command line arguments")
+
+
+## Setting the arguments ##
+
+# Define a custom argument type for a list of strings
+def list_of_strings(arg):
+    return arg.split(',')
+
 
 "This parses the arguments" 
 parser = argparse.ArgumentParser()
@@ -45,11 +56,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument("file", type=str, help="the network file")
 parser.add_argument("-v", "--verbose", action="store_true",
                     help="increase output verbosity")
-parser.add_argument("-t", "--top-firms-only", action="store_true",
-                    help="only top_firms_that_matter")
 
-parser.add_argument("-f", "--filter-by-org", action="store_true",
-                    help="top_firms_that_do_not_matter")
+parser.add_argument("-oi", "--org_list_to_ignore", type=list_of_strings,
+                    help="Filter out developers affiliated with organizations in a given list. Example: -oi microsoft,meta,amazon.")
+
+parser.add_argument("-oo", "--org_list_only", type=list_of_strings ,
+                    help="Consider only developers affiliated with organizations in a given list. Example: -oo google,microsoft.")
+
+
 args = parser.parse_args()
 
 
@@ -235,7 +249,6 @@ if args.verbose:
     print("Printing list of the most connected firms") 
     print("n =", len(top_10_connected_ind))
     print()
-    print
     print("top_10_connected_ind=",top_10_connected_ind)
     print("ids_of_top_10_connected_ind=",ids_of_top_10_connected_ind)
 
