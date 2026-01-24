@@ -103,25 +103,6 @@ echo "🙂"
         echo -e "${BLUE}Path: ${CYAN}$file${NC}"
 
 
-        # Ask for confirmation if output file already exists
-        if [[ -f "$output_file" ]]; then
-            echo -e "${YELLOW}⚠ Output file already exists${NC}"
-            printf "%s" "${BLUE}Overwrite? (y/n/skip): ${NC}"
-            read -r response
-
-            if [[ ! "$response" =~ ^[Yy]([Ee][Ss])?$ ]]; then
-                if [[ "$response" =~ ^[Ss]([Kk][Ii][Pp])?$ ]]; then
-                    echo -e "${YELLOW}⚠ Skipping this file${NC}"
-                    echo ""
-                    continue
-                else
-                    echo -e "${YELLOW}⚠ File skipped${NC}"
-                    echo ""
-                    continue
-                fi
-            fi
-        fi
-
         # Run the scrapLog.py script with -r flag
         echo -e "${BLUE}Running command:${NC}"
         echo -e "${YELLOW}python \"$SCRAPLOG_SCRIPT\" -r \"$file\"${NC}"
@@ -130,12 +111,7 @@ echo "🙂"
         # Execute the command
         echo -e "${CYAN}Processing...${NC}"
 
-        # Check python version and run
-        if command -v python3 &> /dev/null; then
-            python_command="python3"
-        else
-            python_command="python"
-        fi
+        python_command="python3"
 
         # Capture output and error
         if $python_command "$SCRAPLOG_SCRIPT" -r "$file" 2>&1; then
@@ -151,6 +127,12 @@ echo "🙂"
         echo ""
         echo -e "${CYAN}────────────────────────────────────────────────${NC}"
         echo ""
+
+
+        echo -e "verifying ScrapLogGit2Net output "
+        verify_and_visualize_graphml "$file"
+
+
     done
 
     # Summary
@@ -180,6 +162,10 @@ echo "🙂"
         echo -e "${YELLOW}⚠ Processing completed with $fail_count failure(s)${NC}"
         exit 1
     fi
+
+
+
+
 
 
 
