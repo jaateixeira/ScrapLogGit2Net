@@ -36,7 +36,7 @@ echo -e "${CYAN}Checking $DIR_4_RAW_GIT_LOGS${NC}"
 
         # Ask user if they want to create it
         echo -e "${BLUE}Do you want to create this directory? (y/n): ${NC}"
-        read -r response
+        read -r  -r response
 
         if [[ "$response" =~ ^[Yy]([Ee][Ss])?$ ]]; then
             echo -e "${CYAN}Creating directory: $DIR_4_RAW_GIT_LOGS${NC}"
@@ -94,7 +94,7 @@ echo -e "${CYAN}═════════════════════�
 
 # Ask user if they want to extract yearly logs
 echo -e "${BLUE}Do you want to extract yearly networks? (y/n): ${NC}"
-read extract_yearly_response
+read -r  extract_yearly_response
 
 if [[ "$extract_yearly_response" =~ ^[Yy]([Ee][Ss])?$ ]]; then
     # Create yearly logs directory
@@ -146,7 +146,7 @@ fi
 
     # Ask for confirmation
     echo  -e "${YELLOW}This will create ${total_years} yearly files. Continue? (y/n): ${NC}"
-    read confirmation
+    read -r  confirmation
 
     if [[ ! "$confirmation" =~ ^[Yy]([Ee][Ss])?$ ]]; then
         echo -e "${YELLOW}Yearly extraction cancelled${NC}"
@@ -181,8 +181,8 @@ fi
         # Check if file already exists
         if [[ -f "$output_file" ]]; then
             echo -e "${YELLOW}  ⚠ File already exists${NC}"
-            printf "%s" "${YELLOW}  Overwrite? (y/n/skip): ${NC}"
-            read response
+            echo -e  "${YELLOW}  Overwrite? (y/n/skip): ${NC}"
+            read -r  response
 
             if [[ "$response" =~ ^[Nn][Oo]?$ ]]; then
                 echo -e "${YELLOW}  Skipping $year (file kept)${NC}"
@@ -233,7 +233,7 @@ fi
     # List generated files
     echo -e "${BLUE}Generated files in ${YELLOW}$yearly_dir/${NC}:"
     if ls -la "$yearly_dir/"*.IN.TXT 2>/dev/null | grep -q .; then
-        ls -lh "$yearly_dir/"*.IN.TXT 2>/dev/null | while read -r line; do
+        ls -lh "$yearly_dir/"*.IN.TXT 2>/dev/null | while read -r  -r line; do
             echo -e "${YELLOW}  $line${NC}"
         done
     else
@@ -245,8 +245,8 @@ fi
     echo ""
 
     # Offer to create a summary file
-    printf "%s" "${BLUE}Create summary of yearly files? (y/n): ${NC}"
-    read create_summary
+    echo -e "${BLUE}Create summary of yearly files? (y/n): ${NC}"
+    read -r  create_summary
 
     if [[ "$create_summary" =~ ^[Yy]([Ee][Ss])?$ ]]; then
         summary_file="${DIR_4_RAW_GIT_LOGS}/yearly_summary_$(date +%Y%m%d).txt"
@@ -272,9 +272,6 @@ fi
 
         echo -e "${GREEN}✓ Summary created: $summary_file${NC}"
     fi
-else
-    echo -e "${YELLOW}Yearly extraction skipped by user${NC}"
-fi
 
 echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
 echo -e "${GREEN}✅ All operations completed successfully${NC}"
