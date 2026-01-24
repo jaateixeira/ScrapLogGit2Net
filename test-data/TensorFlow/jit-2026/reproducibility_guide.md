@@ -14,3 +14,6 @@ Then you need to get the logs with
 git log --pretty=format:"==%an;%ae;%ad==" --name-only 
 ```
 
+On 24 Jan, we ran our last analysis 
+Output will be saved to: ../raw-inputs/tensorflow_2026-01-24_all.IN.TXT
+
