@@ -1,0 +1,1 @@
+logs from scraplog should be created as well as the .graphml files
