@@ -169,7 +169,7 @@ check_dir_writable() {
 
 select_files_for_processing() {
     local search_dir="$1"
-    local max_files=10
+    local max_files=20
 
 
     echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
@@ -453,7 +453,7 @@ print_selected_files() {
 
     # Print summary
     echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
-    echo -e "${MAGENTA}Summary:${NC}"
+    echo -e "${MAGENTA}Summary of files to be processed:${NC}"
 
     # Convert total bytes to human readable
     local total_size_human=""
