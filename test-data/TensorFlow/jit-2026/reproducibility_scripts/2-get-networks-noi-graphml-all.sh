@@ -46,6 +46,7 @@ select_files_for_processing "$DIR_4_RAW_GIT_LOGS"
 
 echo "${selected_files[@]}"
 
+print_selected_files "${selected_files[@]}"
 
 
 exit

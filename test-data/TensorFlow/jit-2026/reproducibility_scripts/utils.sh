@@ -363,6 +363,118 @@ parse_selection() {
 
 
 
+print_selected_files() {
+    local selected_files=("$@")  # Get all arguments as an array
+
+    # Color definitions
+    local RED='\033[0;31m'
+    local GREEN='\033[0;32m'
+    local YELLOW='\033[1;33m'
+    local BLUE='\033[0;34m'
+    local MAGENTA='\033[0;35m'
+    local CYAN='\033[0;36m'
+    local NC='\033[0m' # No Color
+
+    # Check if array is empty
+    if [[ ${#selected_files[@]} -eq 0 ]]; then
+        echo -e "${YELLOW}⚠ No files selected${NC}"
+        return 1
+    fi
+
+    echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
+    echo -e "${CYAN}        Selected Files for Processing${NC}"
+    echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
+    echo -e "${BLUE}Total files: ${GREEN}${#selected_files[@]}${NC}"
+    echo ""
+
+    local total_size_bytes=0
+    local total_lines=0
+
+    # Loop through files with index
+    for i in "${!selected_files[@]}"; do
+        local file="${selected_files[$i]}"
+        local file_num=$((i+1))
+
+        # Get file info
+        local file_name=$(basename "$file")
+        local file_dir=$(dirname "$file")
+
+        # Get file size in human readable format and bytes
+        local file_size_human=""
+        local file_size_bytes=0
+
+        if [[ -f "$file" ]]; then
+            # Human readable size (KB, MB, GB)
+            file_size_human=$(du -h "$file" 2>/dev/null | cut -f1)
+
+            # Size in bytes (for total calculation)
+            file_size_bytes=$(stat -c%s "$file" 2>/dev/null || wc -c < "$file" 2>/dev/null || echo 0)
+
+            # Line count
+            local line_count=$(wc -l < "$file" 2>/dev/null || echo "0")
+            total_lines=$((total_lines + line_count))
+        else
+            file_size_human="(file not found)"
+            file_size_bytes=0
+        fi
+
+        # Add to total size
+        total_size_bytes=$((total_size_bytes + file_size_bytes))
+
+        # Convert bytes to human readable for display
+        local size_display="$file_size_human"
+        if [[ $file_size_bytes -gt 0 ]]; then
+            size_display="$file_size_human (${file_size_bytes} bytes)"
+        fi
+
+        # Print file info with formatting
+        echo -e "${MAGENTA}File #${file_num}:${NC}"
+        echo -e "  ${BLUE}Name:${NC}     ${YELLOW}$file_name${NC}"
+        echo -e "  ${BLUE}Path:${NC}     ${CYAN}$file_dir/${NC}"
+        echo -e "  ${BLUE}Size:${NC}     ${GREEN}$size_display${NC}"
+
+        # Show additional info if file exists
+        if [[ -f "$file" ]]; then
+            local mod_time=$(date -r "$file" "+%Y-%m-%d %H:%M:%S" 2>/dev/null || echo "unknown")
+            echo -e "  ${BLUE}Modified:${NC} ${YELLOW}$mod_time${NC}"
+            echo -e "  ${BLUE}Lines:${NC}    ${GREEN}$line_count${NC}"
+
+            # Show first commit as preview
+            local first_line=$(head -1 "$file" 2>/dev/null | cut -c1-60)
+            if [[ -n "$first_line" ]]; then
+                echo -e "  ${BLUE}Preview:${NC}  ${YELLOW}$first_line...${NC}"
+            fi
+        else
+            echo -e "  ${RED}⚠ File not found${NC}"
+        fi
+
+        echo ""
+    done
+
+    # Print summary
+    echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
+    echo -e "${MAGENTA}Summary:${NC}"
+
+    # Convert total bytes to human readable
+    local total_size_human=""
+    if [[ $total_size_bytes -lt 1024 ]]; then
+        total_size_human="${total_size_bytes} bytes"
+    elif [[ $total_size_bytes -lt 1048576 ]]; then
+        total_size_human="$((total_size_bytes / 1024)) KB"
+    elif [[ $total_size_bytes -lt 1073741824 ]]; then
+        total_size_human="$((total_size_bytes / 1048576)) MB"
+    else
+        total_size_human="$((total_size_bytes / 1073741824)) GB"
+    fi
+
+    echo -e "  ${BLUE}Total files:${NC}    ${GREEN}${#selected_files[@]}${NC}"
+    echo -e "  ${BLUE}Total size:${NC}     ${GREEN}$total_size_human${NC}"
+    echo -e "  ${BLUE}Total lines:${NC}    ${GREEN}$total_lines${NC}"
+    echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
+}
+
+
+
 
 # Example usage after sourcing utils.sh:
 # source config.cfg
