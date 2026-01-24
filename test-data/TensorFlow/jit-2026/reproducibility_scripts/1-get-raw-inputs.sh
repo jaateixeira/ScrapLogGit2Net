@@ -62,7 +62,7 @@ repo_path="$REPOSITORY_TO_MINE_PATH"
 
 today=$(date +"%Y-%m-%d")
 
-output_file="${DIR_4_RAW_GIT_LOGS}${PROJECT_TO_MINE}_${today}_all.IN.TXT"
+output_file="${DIR_4_RAW_GIT_LOGS}/${PROJECT_TO_MINE}_${today}_all.IN.TXT"
 
 
     echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
