@@ -16,14 +16,55 @@ fi
 source config.cfg
 
 
+source config.cfg
+source utils.sh
 
-echo INPUT=$INPUT
-echo FILTERED_FILE=$FILTERED_FILE
-echo TOP10_ORG=$TOP10_ORG
-echo FOCAL_ORG=$FOCAL_ORG
-echo FFV_NO_FI_GRAPHML_SCRIPT=$FFV_NO_FI_GRAPHML_SCRIPT
-echo TRANSFORM_GRAPHML_SCRIPT=$TRANSFORM_GRAPHML_SCRIPT
-echo COMPANIES_TO_IGNORE=$COMPANIES_TO_IGNORE
+
+test_config
+
+
+DIR_4_RAW_GIT_LOGS="../raw-inputs"
+
+
+echo -e "${CYAN}Checking if directory with raw inputs exist"
+echo -e "${CYAN}Checking $DIR_4_RAW_GIT_LOGS${NC}"
+
+    # Check if directory exists
+    if [[ ! -d "$DIR_4_RAW_GIT_LOGS" ]]; then
+        echo -e "${YELLOW}Directory '$DIR_4_RAW_GIT_LOGS' does not exist.${NC}"
+        exit 1
+    fi
+
+
+
+
+
+echo "hello"
+
+select_files_for_processing "$DIR_4_RAW_GIT_LOGS"
+
+
+echo "${selected_files[@]}"
+
+
+
+exit
+
+# Process the selected files
+if [[ $? -eq 0 ]]; then
+    echo "Processing selected files..."
+    # $selected contains the file paths
+    read -ra files_to_process <<< "$selected"
+
+    for file in "${files_to_process[@]}"; do
+        echo "Processing: $file"
+        # python "$SCRAPLOG_SCRIPT" -i "$file" -o "output.xml"
+    done
+fi
+
+
+exit
+
 
 
 echo "size of input:"

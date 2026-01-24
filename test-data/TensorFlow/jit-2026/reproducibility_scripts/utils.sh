@@ -167,6 +167,202 @@ check_dir_writable() {
 }
 
 
+select_files_for_processing() {
+    local search_dir="$1"
+    local max_files=10
+
+
+    echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
+    echo -e "${CYAN}        Select Files for Network Processing${NC}"
+    echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
+
+    # Check if directory exists
+    if [[ ! -d "$search_dir" ]]; then
+        echo -e "${RED}✗ ERROR: Directory '$search_dir' does not exist${NC}"
+        return 1
+    fi
+
+    echo -e "${BLUE}Searching in: ${YELLOW}$search_dir${NC}"
+
+    # Find files ending with .IN.TXT (case insensitive)
+    local files=()
+    while IFS= read -r -d '' file; do
+        files+=("$file")
+        if [[ ${#files[@]} -ge $max_files ]]; then
+            break
+        fi
+    done < <(find "$search_dir" -maxdepth 2 -type f -iname "*.IN.TXT" -print0 2>/dev/null)
+
+    # Check if any files were found
+    if [[ ${#files[@]} -eq 0 ]]; then
+        echo -e "${YELLOW}⚠ No files ending with '.IN.TXT' found in $search_dir${NC}"
+        return 1
+    fi
+
+    echo -e "${GREEN}✓ Found ${#files[@]} file(s)${NC}"
+    echo ""
+
+    # Display files with numbers
+    echo -e "${MAGENTA}Available files:${NC}"
+    local i=1
+    for file in "${files[@]}"; do
+        local file_name=$(basename "$file")
+        local file_dir=$(dirname "$file")
+        local file_size=$(du -h "$file" 2>/dev/null | cut -f1 || echo "unknown")
+        local line_count=$(wc -l < "$file" 2>/dev/null || echo "0")
+        local mod_date=$(date -r "$file" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "unknown")
+
+        echo -e "${BLUE}[$i] ${YELLOW}$file_name${NC}"
+        echo -e "    Directory: ${YELLOW}$file_dir${NC}"
+        echo -e "    Size: ${GREEN}$file_size${NC} | Lines: ${GREEN}$line_count${NC} | Modified: ${GREEN}$mod_date${NC}"
+
+        # Show first line as preview
+        local first_line=$(head -1 "$file" 2>/dev/null | cut -c1-80)
+        if [[ -n "$first_line" ]]; then
+            echo -e "    Preview: ${YELLOW}$first_line...${NC}"
+        fi
+        echo ""
+        ((i++))
+    done
+
+    # Ask user for selection
+    echo -e "${MAGENTA}Select files to process with ScrapLogGit2Net:${NC}"
+    echo -e "${BLUE}Options:${NC}"
+    echo -e "  ${GREEN}all${NC}      - Process all files"
+    echo -e "  ${GREEN}1,3,5${NC}    - Process specific files (comma-separated)"
+    echo -e "  ${GREEN}1-3${NC}      - Process a range"
+    echo -e "  ${GREEN}none${NC}     - Skip processing"
+    echo -e "  ${GREEN}quit${NC}     - Exit function"
+    echo ""
+
+    while true; do
+        echo -e "${BLUE}Enter your selection: ${NC}"
+        read -r selection
+
+        # Convert to lowercase
+        selection_lower=$(echo "$selection" | tr '[:upper:]' '[:lower:]')
+
+        case "$selection_lower" in
+            "all")
+                selected_files=("${files[@]}")
+                echo -e "${GREEN}✓ Selected all ${#files[@]} files${NC}"
+                break
+                ;;
+            "none")
+                echo -e "${YELLOW}⚠ No files selected${NC}"
+                selected_files=()
+                return 0
+                ;;
+            "quit")
+                echo -e "${YELLOW}Exiting selection${NC}"
+                return 1
+                ;;
+            *)
+                # Validate the selection
+                if validate_selection "$selection" "${#files[@]}"; then
+                    mapfile -t selected_indices < <(parse_selection "$selection")
+                    selected_files=()
+
+                    for idx in "${selected_indices[@]}"; do
+                        selected_files+=("${files[$((idx-1))]}")
+                    done
+
+                    echo -e "${GREEN}✓ Selected ${#selected_files[@]} file(s)${NC}"
+                    break
+                else
+                    echo -e "${RED}✗ Invalid selection. Please try again.${NC}"
+                fi
+                ;;
+        esac
+    done
+
+    # Show confirmation
+    echo ""
+    echo -e "${MAGENTA}Selected files:${NC}"
+    for i in "${!selected_files[@]}"; do
+        echo -e "  ${GREEN}$((i+1))${NC}. ${YELLOW}$(basename "${selected_files[$i]}")${NC}"
+        echo -e "      Path: ${BLUE}${selected_files[$i]}${NC}"
+    done
+
+    echo ""
+    echo -e  "${BLUE}Confirm processing these files? (y/n): ${NC}"
+    read -r confirm
+
+    if [[ "$confirm" =~ ^[Yy]([Ee][Ss])?$ ]]; then
+        echo -e "${GREEN}✓ Proceeding with processing${NC}"
+        # Return the selected files as an array
+        echo "${selected_files[@]}"
+        return 0
+    else
+        echo -e "${YELLOW}⚠ Selection cancelled${NC}"
+        return 1
+    fi
+}
+
+# Helper function to validate selection
+validate_selection() {
+    local selection="$1"
+    local max_num="$2"
+
+    # Remove spaces
+    selection=$(echo "$selection" | tr -d ' ')
+
+    # Check if it's empty
+    [[ -z "$selection" ]] && return 1
+
+    # Check for range format (e.g., 1-3)
+    if [[ "$selection" =~ ^[0-9]+-[0-9]+$ ]]; then
+        local start=${selection%-*}
+        local end=${selection#*-}
+        if [[ $start -le 0 || $end -gt $max_num || $start -gt $end ]]; then
+            return 1
+        fi
+        return 0
+    fi
+
+    # Check for comma-separated list
+    if [[ "$selection" =~ ^[0-9]+(,[0-9]+)*$ ]]; then
+        IFS=',' read -ra nums <<< "$selection"
+        for num in "${nums[@]}"; do
+            if [[ $num -le 0 || $num -gt $max_num ]]; then
+                return 1
+            fi
+        done
+        return 0
+    fi
+
+    # Check for single number
+    if [[ "$selection" =~ ^[0-9]+$ ]]; then
+        if [[ $selection -ge 1 && $selection -le $max_num ]]; then
+            return 0
+        fi
+    fi
+
+    return 1
+}
+
+# Helper function to parse selection into indices
+parse_selection() {
+    local selection="$1"
+
+    # Remove spaces
+    selection=$(echo "$selection" | tr -d ' ')
+
+    # Handle range
+    if [[ "$selection" =~ ^[0-9]+-[0-9]+$ ]]; then
+        local start=${selection%-*}
+        local end=${selection#*-}
+        seq "$start" "$end"
+        return
+    fi
+
+    # Handle comma-separated or single number
+    echo "$selection" | tr ',' '\n'
+}
+
+
+
+
 
 # Example usage after sourcing utils.sh:
 # source config.cfg

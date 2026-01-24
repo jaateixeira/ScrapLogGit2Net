@@ -23,7 +23,6 @@ fi
 source config.cfg
 source utils.sh
 
-REPOSITORY_TO_MINE_PATH="./tensorflow"
 
 test_config
 is_valid_git_repository_clone
