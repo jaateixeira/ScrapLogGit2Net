@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+source config.cfg
+
 # Color definitions
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -164,6 +167,49 @@ check_dir_writable() {
 
     echo -e "${GREEN}Success: Directory '$dir_path' exists and is writable${NC}"
     return 0
+}
+
+
+
+copy_with_confirmation() {
+    local source="$1"
+    local destination="$2"
+
+    echo -e "${BLUE}copying with confirmation  $source to $destination ${NC}"
+
+    # Check if source file exists
+    if [ ! -f "$source" ]; then
+        echo "${RED}Error: Source file '$source' does not exist.${NC}"
+        return 1
+    fi
+
+    # Check if destination directory exists; if not, ask to create it
+    if [ ! -d "$destination" ]; then
+        read -p "Destination directory '$destination' does not exist. Do you want to create it? (y/n) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            mkdir -p "$destination"
+            echo "Directory '$destination' created."
+        else
+            echo "Copy operation cancelled: destination directory does not exist."
+            return 1
+        fi
+    fi
+
+    # Ask for confirmation to copy
+    read -p "Do you want to copy '$source' to '$destination'? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        cp "$source" "$destination"
+        echo "File copied successfully."
+    else
+        echo "Copy operation cancelled."
+    fi
+
+  echo -e "${GREEN}✓ $source copied to $destination ${NC}"
+  echo -e "${GREEN}✓ You might want to add to Git repository:{$NC}"
+  echo -e "git add  $destination"
+
 }
 
 
@@ -473,6 +519,215 @@ print_selected_files() {
     echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
 }
 
+
+
+verify_and_visualize_graphml() {
+    local input_file="$1"  # The original .IN.TXT file path
+
+    echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
+    echo -e "${CYAN}        Verify & Visualize GraphML Output${NC}"
+    echo -e "${CYAN}════════════════════════════════════════════════════${NC}"
+
+    # Check if input file was provided
+    if [[ -z "$input_file" ]]; then
+        echo -e "${RED}✗ ERROR: No input file provided${NC}"
+        return 1
+    fi
+
+    local input_name=$(basename "$input_file")
+    echo -e "${BLUE}Input file: ${YELLOW}$input_name${NC}"
+
+    # Generate expected GraphML filename
+    #
+    local base_name="${input_file}"
+
+
+    # Alternative:  scrapLog.py creates files in output directory
+    local graphml_file="./${input_name%.TXT}.NetworkFile.graphML"
+
+
+
+    echo -e "${BLUE}Expected GraphML: ${YELLOW}$(basename "$graphml_file")${NC}"
+    echo -e "${BLUE}Full path: ${CYAN}$graphml_file${NC}"
+    echo ""
+
+    # Step 1: Check if GraphML file exists
+    echo -e "${MAGENTA}Step 1: Checking if GraphML file exists...${NC}"
+
+    if [[ ! -f "$graphml_file" ]]; then
+        echo -e "${RED}✗ GraphML file not found: $graphml_file${NC}"
+
+        # Look for similar files
+        echo -e "${YELLOW} exit with as file to be produced by ScrapLog was not found ${NC}"
+        return 1
+    else
+        echo -e "${GREEN}✓ GraphML file found${NC}"
+    fi
+
+    # Step 2: Check if it's a valid GraphML file
+    echo ""
+    echo -e "${MAGENTA}Step 2: Validating GraphML file...${NC}"
+
+    local file_size=$(du -h "$graphml_file" 2>/dev/null | cut -f1 || echo "unknown")
+    local line_count=$(wc -l < "$graphml_file" 2>/dev/null || echo "0")
+
+    echo -e "${BLUE}Size: ${YELLOW}$file_size${NC}, ${BLUE}Lines: ${YELLOW}$line_count${NC}"
+
+    # Check for GraphML signature
+    if head -5 "$graphml_file" 2>/dev/null | grep -iq "<graphml"; then
+        echo -e "${GREEN}✓ Valid GraphML file (contains <graphml> tag)${NC}"
+
+        # Count nodes and edges if possible
+        local node_count=$(grep -c "<node " "$graphml_file" 2>/dev/null || echo "0")
+        local edge_count=$(grep -c "<edge " "$graphml_file" 2>/dev/null || echo "0")
+
+        echo -e "${BLUE}Nodes: ${GREEN}$node_count${NC}, ${BLUE}Edges: ${GREEN}$edge_count${NC}"
+
+        # Check if file has content
+        if [[ $node_count -eq 0 ]]; then
+            echo -e "${YELLOW}⚠ Warning: Graph has 0 nodes (might be empty)${NC}"
+        fi
+    else
+        echo -e "${RED}✗ Not a valid GraphML file (missing <graphml> tag)${NC}"
+
+        # Show first few lines for debugging
+        echo -e "${YELLOW}First 3 lines:${NC}"
+        head -3 "$graphml_file" 2>/dev/null | while IFS= read -r line; do
+            echo -e "${YELLOW}  $line${NC}"
+        done
+        return 1
+    fi
+
+    # Step 3: Ask about visualization
+    echo ""
+    echo -e "${MAGENTA}Step 3: Visualization Options${NC}"
+
+    # Check if visualization script exists
+    if [[ ! -f "$FFV_NO_FI_GRAPHML_SCRIPT" ]]; then
+        echo -e "${RED}✗ Visualization script not found: $FFV_NO_FI_GRAPHML_SCRIPT${NC}"
+        return 1
+    fi
+
+    echo -e "${GREEN}✓ Visualization script available${NC}"
+    echo -e "${BLUE}Script: ${YELLOW}$FFV_NO_FI_GRAPHML_SCRIPT${NC}"
+    echo ""
+
+    echo -e "${BLUE}Visualization options:${NC}"
+    echo -e "  ${GREEN}[1]${NC} Basic visualization"
+    echo -e "  ${GREEN}[2]${NC} With legend (--legend)"
+    echo -e "  ${GREEN}[3]${NC} With plot (--plot)"
+    echo -e "  ${GREEN}[4]${NC} With legend and plot (--legend --plot)"
+    echo -e "  ${GREEN}[s]${NC} Skip visualization"
+    echo -e "  ${GREEN}[q]${NC} Quit"
+    echo ""
+
+    while true; do
+        echo -e  "${BLUE}Select option (1-4, s, q): ${NC}"
+        read -r option
+
+        case "$option" in
+            1)
+                viz_command="python3 \"$FFV_NO_FI_GRAPHML_SCRIPT\" \"$graphml_file\""
+                break
+                ;;
+            2)
+                viz_command="python3 \"$FFV_NO_FI_GRAPHML_SCRIPT\" --legend \"$graphml_file\""
+                break
+                ;;
+            3)
+                viz_command="python3 \"$FFV_NO_FI_GRAPHML_SCRIPT\" --plot \"$graphml_file\""
+                break
+                ;;
+            4)
+                viz_command="python3 \"$FFV_NO_FI_GRAPHML_SCRIPT\" --legend --plot \"$graphml_file\""
+                break
+                ;;
+            s|S)
+                echo -e "${YELLOW}⚠ Skipping visualization${NC}"
+                copy_with_confirmation "$graphml_file" "$DIR_4_MINED_NETWORKS_NOFI_GRAPHML"
+                return 0
+                ;;
+            q|Q)
+                echo -e "${YELLOW}⚠ Exiting${NC}"
+                return 0
+                ;;
+            *)
+                echo -e "${RED}✗ Invalid option. Please try again.${NC}"
+                ;;
+        esac
+    done
+
+    echo ""
+    echo -e "${MAGENTA}Step 4: Running Visualization${NC}"
+    echo -e "${BLUE}Command:${NC}"
+    echo -e "${YELLOW}$viz_command${NC}"
+    echo ""
+
+    echo -e "${BLUE}Run visualization? (y/n): ${NC}"
+    read -r confirm
+
+    if [[ ! "$confirm" =~ ^[Yy]([Ee][Ss])?$ ]]; then
+        echo -e "${YELLOW}⚠ Visualization cancelled${NC}"
+        return 0
+    fi
+
+    echo -e "${CYAN}Starting visualization...${NC}"
+
+    # Run the visualization command
+    if eval "$viz_command"; then
+        echo -e "${GREEN}✓ Visualization completed successfully${NC}"
+
+    else
+        local exit_code=$?
+        echo -e "${RED}✗ Visualization failed with exit code: $exit_code${NC}"
+        return $exit_code
+    fi
+
+
+      echo -e "${GREEN}✓ processed, visualized, time to copy  to final destination as in config.cfg${NC}"
+
+  copy_with_confirmation "$graphml_file" "$DIR_4_MINED_NETWORKS_NOFI_GRAPHML"
+
+
+}
+
+# Simplified version
+quick_verify_and_viz() {
+    local input_file="$1"
+
+    # Generate GraphML filename
+    local graphml_file="${input_file%.IN.TXT}NetworkFile.graphML"
+
+    echo "Verifying: $(basename "$graphml_file")"
+
+    # Check if file exists and is GraphML
+    if [[ -f "$graphml_file" ]] && head -1 "$graphml_file" | grep -q "graphml"; then
+        echo "✓ Valid GraphML file found"
+
+        # Ask about visualization
+        read -p "Visualize with --legend --plot? (y/n): " response
+        if [[ "$response" =~ ^[Yy] ]]; then
+            python "$FFV_NO_FI_GRAPHML_SCRIPT" --legend --plot "$graphml_file"
+        fi
+    else
+        echo "✗ GraphML file not found or invalid"
+        return 1
+    fi
+}
+
+# Function to process all selected files
+verify_and_visualize_all() {
+    local selected_files=("$@")
+
+    echo "Verifying and visualizing ${#selected_files[@]} files..."
+
+    for file in "${selected_files[@]}"; do
+        echo ""
+        echo "=== Processing: $(basename "$file") ==="
+        verify_and_visualize_graphml "$file"
+        echo ""
+    done
+}
 
 
 
