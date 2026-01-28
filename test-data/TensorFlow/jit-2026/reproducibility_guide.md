@@ -53,5 +53,20 @@ The contents of config.ini look something like
 ghp_WvDYaPiQvzzsdftQvPBGuyNGxomuI3EDH2IrPsdf
 ```
 
+See https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens 
+for more information 
+
+https://docs.github.com/en/rest/orgs/personal-access-tokens?apiVersion=2022-11-28 
+
+The fastes way to test access to the GitHub REST API using the token is by 
+running the following script 
+```
+curl -L \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer <YOUR-TOKEN>" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/orgs/ORG/personal-access-token-requests
+```
+
 
 
