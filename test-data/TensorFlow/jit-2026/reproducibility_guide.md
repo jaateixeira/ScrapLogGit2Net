@@ -25,7 +25,33 @@ Output will be saved to: ../raw-inputs/tensorflow_2026-01-24_all.IN.TXT
 
 But then it should be done year by year 
 ```
-git log --since='Apr 1 2021' --until='Apr 4 2021' --pretty=format:"==%an;%ae;%ad==" --name-only
+git log --since='Jan 1 2021' --until='Dec 12 2021' --pretty=format:"==%an;%ae;%ad==" --name-only
 ```
 
-We did it using[1-get-raw-inputs-yearly.sh](1-get-raw-inputs-yearly.sh)
+We did it using [1-get-raw-inputs-yearly.sh](1-get-raw-inputs-yearly.sh)
+
+
+We got the networks files 
+networks-nofi-graphML/tensorflow_YEAR_network.IN.NetworkFile.graphML
+The last being 
+networks-nofi-graphML/tensorflow_2025_network.IN.NetworkFile.graphML
+
+Those networks were then visualized to insure accuracy 
+
+Many developer affiliations remain unkown in the networks (aka NetworkFile.graphML) files
+ allowing the association of pseudo email addresses in the format [8 digit number]+[username]@users.noreply.github.com that are still associated with their GitHub profile. For example, a git commit from Ruslan Inovic rroinov@gmail.com might appear as 608192+rosmanov@users.noreply.github.com. See GitHub documentation on the issue at GitHub Docs. Once again using the GitHub GraphQL API (see https://docs.github.com/en/graphql) or the GitHub REST API (see https://docs.github.com/en/rest) wo
+
+So the next steep was the to deanonymize  GitHub noreply emails in gramphML files created with ScrapLogGit2Net
+ScraplogGit2Net was implemented for it provides  deanonymize_github_users.py
+
+For running this step a GitHub account and a GITHUB_TOKEN is necessary 
+It can not be provided, but we invited reproducer to create or use github account
+and set the config.ini file with their GUT_HUB_TOJKEN 
+
+The contents of config.ini look something like 
+```
+ghp_WvDYaPiQvzzsdftQvPBGuyNGxomuI3EDH2IrPsdf
+```
+
+
+
