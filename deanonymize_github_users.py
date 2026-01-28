@@ -59,7 +59,7 @@ requests_cache.install_cache('github_cache', expire_after=3600)
 already_known_user_affiliations: Dict[str, Tuple[str, str]] = {}
 
 
-def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
+def load_configuration(config_path: Optional[str] = None) -> Dict[str, Any]:
     """
     Load configuration from file or environment variables.
 
@@ -79,17 +79,18 @@ def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
 
     # Try environment variables first (recommended for production)
     github_token = os.getenv('GITHUB_TOKEN')
-    current_project = os.getenv('CURRENT_PROJECT')
+
+
+    logger.debug(f'{github_token=}')
+
+
 
     if github_token:
         config_values['token'] = github_token
-        console.print("[green]✓ Using GITHUB_TOKEN from environment variables[/green]")
-    if current_project:
-        config_values['current_project'] = current_project
-        console.print("[green]✓ Using CURRENT_PROJECT from environment variables[/green]")
+        logger.info("✓ Using GITHUB_TOKEN from environment variables")
 
     # If we have both from env, return early
-    if 'token' in config_values and 'current_project' in config_values:
+    if 'token' in config_values:
         return config_values
 
     # Try config file if not fully configured from env
@@ -105,7 +106,7 @@ def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
         config_file_path = Path(config_file)
         if config_file_path.exists():
             try:
-                console.print(f"Reading configuration from: {config_file_path}")
+                logger.info(f"Reading configuration from: {config_file_path.absolute()}")
                 config_parser.read(config_file_path)
 
                 # Get values with fallbacks
@@ -113,40 +114,212 @@ def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
                     token_from_file = config_parser.get('github', 'token', fallback=None)
                     if token_from_file:
                         config_values['token'] = token_from_file
-                        console.print(f"[green]✓ Using GITHUB_TOKEN from {config_file_path}[/green]")
+                        logger.info(f"✓ Using GITHUB_TOKEN from {config_file_path}")
 
-                if 'current_project' not in config_values:
-                    project_from_file = config_parser.get('github', 'current_project', fallback=None)
-                    if project_from_file:
-                        config_values['current_project'] = project_from_file
-                        console.print(f"[green]✓ Using CURRENT_PROJECT from {config_file_path}[/green]")
 
                 # Break if we found all required values
-                if 'token' in config_values and 'current_project' in config_values:
+                if 'token' in config_values:
                     break
 
             except (configparser.Error, OSError) as e:
-                console.print(f"[yellow]Warning: Could not read {config_file_path}: {e}[/yellow]")
+                logger.warning(f"Could not read {config_file_path}: {e}")
                 continue
 
     # Validate we have all required configuration
-    if 'token' not in config_values:
-        raise ValueError(
-            "GitHub token not found. Please set it via:\n"
-            "1. Environment variable: GITHUB_TOKEN\n"
-            "2. Config file: [github] section with 'token' key\n"
-            "3. Command line: --config path/to/config.ini"
-        )
+    required_keys = ['token']
+    missing_keys = [key for key in required_keys if key not in config_values]
 
-    if 'current_project' not in config_values:
-        raise ValueError(
-            "Current project not found. Please set it via:\n"
-            "1. Environment variable: CURRENT_PROJECT\n"
-            "2. Config file: [github] section with 'current_project' key\n"
-            "3. Command line: --config path/to/config.ini"
-        )
+    if missing_keys:
+        error_message = f"Missing configuration: {', '.join(missing_keys)}.\n"
+        error_message += "Please set them via:\n"
+        error_message += "1. Environment variables: GITHUB_TOKEN\n"
+        error_message += "2. Config file: [github] section with 'token' keys\n"
+        error_message += "3. Command line: --config path/to/config.ini"
+        raise ValueError(error_message)
 
     return config_values
+
+
+def test_github_api_access(github_token: str) -> bool:
+    """
+    Test GitHub API access and authentication.
+
+    Args:
+        github_token: GitHub API token
+
+    Returns:
+        True if API access is successful, False otherwise
+    """
+    logger.info("Testing GitHub API access...")
+
+    # Prepare authentication headers
+    headers = {
+        'Authorization': f'token {github_token}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+
+    try:
+        # Test with a simple API call to get authenticated user
+        response = requests.get('https://api.github.com/user', headers=headers)
+
+        if response.status_code == 200:
+            user_data = response.json()
+            logger.success(f"✓ GitHub API access successful!")
+            logger.info(f"  Authenticated as: {user_data.get('login', 'Unknown')}")
+            logger.info(f"  Rate limit remaining: {response.headers.get('X-RateLimit-Remaining', 'Unknown')}")
+            return True
+
+        elif response.status_code == 401:
+            logger.error("✗ GitHub API authentication failed: Invalid token")
+            logger.error("  Please check your GITHUB_TOKEN is valid and has the correct permissions")
+            return False
+
+        elif response.status_code == 403:
+            error_data = response.json()
+            if "rate limit" in error_data.get('message', '').lower():
+                logger.warning("⚠ GitHub API rate limit exceeded")
+                logger.info(f"  Reset time: {response.headers.get('X-RateLimit-Reset', 'Unknown')}")
+                # We can still proceed, but API calls will be limited
+                return True
+            else:
+                logger.error(f"✗ GitHub API access denied: {error_data.get('message', 'Unknown error')}")
+                return False
+
+        else:
+            logger.error(f"✗ GitHub API access failed with status code: {response.status_code}")
+            logger.error(f"  Response: {response.text[:200]}")
+            return False
+
+    except requests.exceptions.ConnectionError:
+        logger.error("✗ Failed to connect to GitHub API. Please check your internet connection.")
+        return False
+
+    except requests.exceptions.Timeout:
+        logger.error("✗ GitHub API request timed out.")
+        return False
+
+    except Exception as e:
+        logger.error(f"✗ Unexpected error testing GitHub API: {e}")
+        return False
+
+
+def get_github_rate_limit(github_token: str) -> Dict[str, Any]:
+    """
+    Get detailed GitHub API rate limit information.
+
+    Args:
+        github_token: GitHub API token
+
+    Returns:
+        Dictionary with rate limit information
+    """
+    headers = {'Authorization': f'token {github_token}'}
+
+    try:
+        response = requests.get("https://api.github.com/rate_limit", headers=headers)
+        response.raise_for_status()
+        rate_data = response.json()
+
+        return {
+            'core': rate_data.get('resources', {}).get('core', {}),
+            'search': rate_data.get('resources', {}).get('search', {}),
+            'graphql': rate_data.get('resources', {}).get('graphql', {})
+        }
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to get rate limit: {e}")
+        return {}
+
+
+def display_rate_limit_info(github_token: str) -> None:
+    """
+    Display GitHub API rate limit information in a formatted table.
+
+    Args:
+        github_token: GitHub API token
+    """
+    rate_limit = get_github_rate_limit(github_token)
+
+    if not rate_limit:
+        logger.warning("Could not retrieve rate limit information")
+        return
+
+    table = Table(title="GitHub API Rate Limits", show_header=True, header_style="bold blue")
+    table.add_column("Resource", style="cyan")
+    table.add_column("Limit", style="green")
+    table.add_column("Remaining", style="yellow")
+    table.add_column("Reset Time", style="magenta")
+    table.add_column("Used", style="white")
+
+    for resource_name, resource_data in rate_limit.items():
+        if resource_data:
+            limit = resource_data.get('limit', 'N/A')
+            remaining = resource_data.get('remaining', 'N/A')
+            reset_time = resource_data.get('reset', 'N/A')
+            used = resource_data.get('used', 'N/A')
+
+            # Convert reset timestamp to readable time
+            if reset_time != 'N/A':
+                reset_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(reset_time))
+
+            # Color code remaining requests
+            remaining_style = "green"
+            if remaining != 'N/A':
+                if remaining < limit * 0.2:  # Less than 20% remaining
+                    remaining_style = "red"
+                elif remaining < limit * 0.5:  # Less than 50% remaining
+                    remaining_style = "yellow"
+
+            table.add_row(
+                resource_name.upper(),
+                str(limit),
+                f"[{remaining_style}]{remaining}[/{remaining_style}]",
+                str(reset_time),
+                str(used)
+            )
+
+    console.print(table)
+
+
+def validate_configuration_and_api_access(config_path: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Validate configuration and test API access in one call.
+
+    Args:
+        config_path: Optional path to config file
+
+    Returns:
+        Validated configuration dictionary
+
+    Raises:
+        ValueError: If configuration or API access fails
+    """
+    # Step 1: Load configuration
+    logger.info("Loading configuration...")
+    try:
+        config = load_configuration(config_path)
+        logger.success("✓ Configuration loaded successfully")
+
+        console.print(f'{config=}')
+
+        # Mask token for display
+        masked_token = config['token'][:8] + "..." if len(config['token']) > 8 else "***"
+        logger.info(f"  Token: {masked_token}")
+
+    except ValueError as e:
+        logger.error("✗ Configuration loading failed")
+        raise ValueError(f"Configuration error: {e}")
+
+    # Step 2: Test API access
+    logger.info("\nTesting GitHub API access...")
+    if not test_github_api_access(config['token']):
+        raise ValueError("GitHub API access test failed")
+
+    # Step 3: Display rate limit information
+    logger.info("\nChecking API rate limits...")
+    display_rate_limit_info(config['token'])
+
+    return config
 
 
 def check_file_exists(file_path: str) -> bool:
@@ -165,21 +338,6 @@ def is_valid_graphml(file_path: str) -> bool:
         return False
 
 
-def get_rate_limit(headers: Dict[str, str]) -> Dict[str, Any]:
-    """Get GitHub API rate limit information."""
-    logger.info("Getting rate limit")
-    response = requests.get("https://api.github.com/rate_limit", headers=headers)
-    data = response.json()
-    return data["resources"]["core"]
-
-
-def display_rate_limit(headers: Dict[str, str]) -> None:
-    """Display GitHub API rate limit information."""
-    logger.info("Displaying rate limit")
-    rate_limit = get_rate_limit(headers)
-    console.print(rate_limit)
-
-
 def print_github_user_data(user_data: Dict[str, Any]) -> None:
     """Print GitHub user data in a formatted table."""
     table = Table(show_header=True, header_style="bold magenta")
@@ -192,18 +350,20 @@ def print_github_user_data(user_data: Dict[str, Any]) -> None:
     console.print(table)
 
 
-def get_user_organizations(username: str, headers: Dict[str, str]) -> List[str]:
+def get_user_organizations(username: str, github_token: str) -> List[str]:
     """
     Fetch the organizations a GitHub user belongs to.
 
     Args:
         username: GitHub username
-        headers: Authentication headers
+        github_token: GitHub API token
 
     Returns:
         List of organization names
     """
     url = f'https://api.github.com/users/{username}/orgs'
+    headers = {'Authorization': f'token {github_token}'}
+
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
@@ -278,6 +438,7 @@ def deanonymize_github_user_with_cache_and_pygithub(
         logger.info(f"Checking if user {username} is a member of organizations")
         organizations = [org.login for org in user.get_orgs()]
         console.print(f"Organizations for {username}: {organizations}")
+
 
         # Use first organization if available and not the current project
         if organizations:
@@ -366,9 +527,8 @@ def copy_graph_with_attributes(source_graph: nx.Graph) -> nx.Graph:
 def iterate_graph(
         input_file: str,
         output_file: str,
-        github_token: str,
-        current_project: str
-) -> None:
+        github_token: str
+        ) -> None:
     """
     Process GraphML file to deanonymize GitHub emails.
 
@@ -376,7 +536,7 @@ def iterate_graph(
         input_file: Path to input GraphML file
         output_file: Path to output GraphML file
         github_token: GitHub API token
-        current_project: Current project name
+
     """
     logger.info(f"Iterating network: {input_file} -> {output_file}")
 
@@ -397,12 +557,6 @@ def iterate_graph(
 
     # Create a copy of the graph
     G_copy = copy_graph_with_attributes(G)
-
-    # Prepare authentication headers for REST API
-    git_hub_auth_headers = {'Authorization': f'token {github_token}'}
-
-    # Display rate limit before starting
-    display_rate_limit(git_hub_auth_headers)
 
     console.rule("Replacing emails and affiliations using GitHub REST API")
     logger.info("Looking for @users.noreply.github.com emails to deanonymize")
@@ -470,6 +624,13 @@ def main() -> None:
         help='Path to configuration file (default: config.ini or environment variables).'
     )
 
+    # Skip API test argument
+    parser.add_argument(
+        '--skip-api-test',
+        action='store_true',
+        help='Skip GitHub API access test (not recommended)'
+    )
+
     args = parser.parse_args()
 
     # Validate input file
@@ -480,18 +641,21 @@ def main() -> None:
         base, ext = os.path.splitext(args.input)
         args.output = f"{base}.out.graphml"
 
-    # Load configuration
     try:
-        config = load_config(args.config)
-        github_token = config['token']
-        current_project = config['current_project']
+        if args.skip_api_test:
+            # Just load configuration without testing API
+            logger.warning("⚠ Skipping GitHub API access test")
+            config = load_configuration(args.config)
+            github_token = config['token']
 
-        console.print(f"[green]✓ Configuration loaded successfully[/green]")
-        console.print(f"  Token: {github_token[:10]}...")
-        console.print(f"  Project: {current_project}")
+        else:
+            # Load configuration and test API access
+            config = validate_configuration_and_api_access(args.config)
+            github_token = config['token']
+
 
     except ValueError as e:
-        console.print(f"[red]Configuration error: {e}[/red]")
+        console.print(f"[red]Configuration/API error: {e}[/red]")
         sys.exit(1)
 
     # Process the graph
@@ -499,7 +663,7 @@ def main() -> None:
         input_file=args.input,
         output_file=args.output,
         github_token=github_token,
-        current_project=current_project
+
     )
 
 
