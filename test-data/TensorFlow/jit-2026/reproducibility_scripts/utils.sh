@@ -17,8 +17,8 @@ test_config() {
     echo -e "${CYAN}=== Testing Configuration Variables ===${NC}"
     echo ""
 
-    # Test the first 3 variables for file existence and execution
-    local file_vars=("SCRAPLOG_SCRIPT" "FFV_NO_FI_GRAPHML_SCRIPT" "TRANSFORM_GRAPHML_SCRIPT")
+    # Test the first 4 variables for file existence and execution
+    local file_vars=("SCRAPLOG_SCRIPT" "FFV_NO_FI_GRAPHML_SCRIPT" "TRANSFORM_GRAPHML_SCRIPT" "DEANONYMIZE_GRAPHML_SCRIPT")
 
     for var_name in "${file_vars[@]}"; do
         local file_path="${!var_name}"
@@ -729,6 +729,38 @@ verify_and_visualize_all() {
     done
 }
 
+
+
+ask_yes_no() {
+    local question="$1"
+    local default="$2"  # "y" or "n"
+    local prompt
+
+    # Set prompt based on default value
+    if [[ "$default" == "y" ]]; then
+        prompt="[Y/n]"
+    elif [[ "$default" == "n" ]]; then
+        prompt="[y/N]"
+    else
+        prompt="[y/n]"
+    fi
+
+    while true; do
+        read -p "$question $prompt: " -n 1 -r answer
+        echo ""
+
+        # Handle Enter key (use default)
+        if [[ -z "$answer" ]]; then
+            answer="$default"
+        fi
+
+        case "$answer" in
+            [Yy]* ) return 0 ;;  # Yes = true
+            [Nn]* ) return 1 ;;  # No = false
+            * ) echo "Please answer yes (y) or no (n)." ;;
+        esac
+    done
+}
 
 
 # Example usage after sourcing utils.sh:
