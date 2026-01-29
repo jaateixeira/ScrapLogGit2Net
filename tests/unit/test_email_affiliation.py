@@ -1,11 +1,9 @@
 import pytest
 import sys
-from unittest.mock import patch, MagicMock
+
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
-from rich.text import Text
-from rich import print as rprint
 
 # Import your function (replace with actual import)
 # Note: You'll need to handle the import based on your project structure
@@ -207,7 +205,7 @@ def test_with_table_report(test_results_table):
 
 
 # Run all tests with a custom session fixture
-def pytest_sessionfinish(session, exitstatus):
+def pytest_session_finish(session, exitstatus):
     """Hook called after all tests are run."""
     # Print summary if we have a test_results_table
     for item in session.items:

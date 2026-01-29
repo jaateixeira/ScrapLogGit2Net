@@ -14,7 +14,7 @@ setup(
     entry_points={
         "console_scripts": [
             "scraplog=scraplog:main",
-            "transform-nofi-2-nofo=transform_nofi_2_nofo_GraphML:main",
+            "transform-nofi-2-nofo = transform_nofi_2_nofo_graphml:main",
             "deanonymize-github-users=deanonymize_github_users:main",
         ],
     },

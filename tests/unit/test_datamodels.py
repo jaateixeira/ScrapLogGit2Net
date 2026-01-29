@@ -111,8 +111,8 @@ def test_commit_block_path_conversion(valid_commit_data):
 def test_commit_block_attributes(sample_commit_block):
     """Test commit block has correct attributes."""
     assert sample_commit_block.hash == 'abc123'
-    assert sample_commit_block.author.name == "Valid Name"
-    assert sample_commit_block.email.email == "valid@example.com"
+    assert sample_commit_block.author == "Valid Name"
+    assert sample_commit_block.email == "valid@example.com"
     assert len(sample_commit_block.files) == 1
 
 
@@ -153,7 +153,7 @@ def test_repository_path_validation_invalid(mocker):
     ("", False),
     ("@nodomain.com", False),
 ])
-def test_gitemail_validation_parametrized(email_input, expected_valid, mocker):
+def test_git_email_validation_parametrized(email_input, expected_valid, mocker):
     """Parametrized test for email validation."""
     mock_validate = mocker.patch('utils.validators.validate_git_email')
 
@@ -246,7 +246,7 @@ def test_large_file_list():
 from unittest.mock import patch
 
 
-def test_gitemail_with_unittest_mock():
+def test_git_email_with_unittest_mock():
     """Example using unittest.mock directly."""
     with patch('utils.validators.validate_git_email') as mock_validate:
         mock_validate.return_value = (True, "")
