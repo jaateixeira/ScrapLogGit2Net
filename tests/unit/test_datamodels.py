@@ -1,8 +1,8 @@
 import pytest
+from pytest_mock import mocker
+
 from pathlib import Path
 from datetime import datetime
-import sys
-import os
 
 
 from datamodels import GitEmail, GitName, GitCommitBlock, Repository
