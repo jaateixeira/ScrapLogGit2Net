@@ -1,3 +1,6 @@
+IBM agregation not working 
+
+
 Metrics in COmpare, should can to report nofi as well
 Impkenet the core-periphery 
 
