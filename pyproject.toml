@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scraplog-git2net"
+version = "0.1.0"
+description = "Transform Git logs into collaboration networks"
+authors = [{name = "Your Name"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+
+# Only list dependencies your scripts actually import
+dependencies = [
+    "networkx>=3.0",
+    "rich>=13.0",
+    "loguru>=0.7.0",
+]
+
+[project.scripts]
+scraplog = "scraplog:main"
+transform-nofi-2-nofo = "transform_nofi_2_nofo_GraphML:main"
+deanonymize-github-users = "deanonymize_github_users:main"
+export-log-data = "exportLogData:main"
+compare-graphml = "compareGraphMLNetworks:main"
+
+# Optional: Add entry points for other scripts
+format-report-nofi = "formatAndReport_nofi_GraphML:main"
+format-viz-nofo = "formatFilterAndViz_nofo_GraphML:main"
+format-viz-nofi = "formatFilterAndViz_nofi_GraphML:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-v"
