@@ -1,4 +1,6 @@
 #!/bin/bash
+
+
 # ##########################################################
 # 4-transform-noi-2-noo.sh - Transforms network of individuals into networks of firms
 # finds .graphml files then invokes transform-nofi-2-nofo-GraphML.py from the ScrapLogGit2Net project
