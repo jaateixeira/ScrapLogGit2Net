@@ -167,7 +167,7 @@ def remove_isolates(graph: nx.Graph, verbose: bool = False) -> nx.Graph:
     if isolate_ids:
         logger.warning(f"Found {len(isolate_ids)} isolates:")
 
-        table = console.Table(title="Isolated Nodes", show_header=True, header_style="bold magenta")
+        table = Table(title="Isolated Nodes", show_header=True, header_style="bold magenta")
         table.add_column("Node ID", style="cyan")
         table.add_column("Email", style="green")
         table.add_column("Affiliation", style="yellow")
