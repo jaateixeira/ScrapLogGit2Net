@@ -5,15 +5,14 @@ echo "Part of the ScrapLogGit2Net open-source project"
 echo "Developed by Jose Teixeira <jose.teixeira@iki.fi> "
 echo -e "\n"
 
-source test-scripts/config.cfg
-source test-scripts/utils.sh
+ls  test-scripts/config.cfg
+ls  test-scripts/utils.sh
+
+source "test-scripts/utils.sh"
+
+test_config
 
 
-
-
-echo ""
-echo -e "\t Testing validGraphmlXMLfile() and command_exits() functions"
-echo ""
 
 
 # Fuction that validates if a fiven XML file is valid 
@@ -52,15 +51,6 @@ fi
 echo -e "\t\t validGraphmlXMLfile() passed test"
 
 
-# FUCTION that checks if a given command exists / is isntalled. 
-command_exists()
-{
-  command -v "$1" >/dev/null 2>&1
-}
-
-
-
-
 # Unit test for function exists()
 
 commandThatExists="bash"
@@ -79,19 +69,6 @@ echo -e "\t\t command_exists() passed test"
 
 
 
-# Adds escape characters to a string, so it can be passed as an argument to grep
-escape_grep_string() {
-    local input="$1"
-    local escaped=$(echo "$input" | sed 's/[\.\*\?\+\[\]\ \^\$\|\\]/\\&/g')
-    echo "$escaped"
-}
-
-# Removes escape caracters 
-unescape_string() {
-    local input="$1"
-    local unescaped=$(echo -e "$input")
-    echo "$unescaped"
-}
 
 echo "" 
 echo -e "\t Testing escape_grep_string()  and unescape_string() functions"
@@ -171,12 +148,16 @@ fi
 echo -e "${GREEN}\n \t Dependencies grep and xmllint are met${NC}"
 
 
+echo -e ""
+print_info "TEST CASE 1"
+print_info "Transforms a small network where there should be only one inter-organizational edge"
+print_info "2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML"
 
-# TEST CASE 1
-# Transforms a small network where there should be only one inter-organizational edge
-# 2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML
+
 
 TC1FILE=test-data/2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML
+
+print_info "TEST CASE 1 file: $TC1FILE"
 
 if [ ! -f "$TC1FILE" ]; then
     echo "$TC1FILE does not exist."
@@ -186,39 +167,47 @@ fi
 
 echo ""
 echo "Testing with test-data/TensorFlow/2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship.graphML"
-cmd="./formatAndViz-nofi-GraphML.py -pl  $TC1FILE"
+cmd="$FFV_NO_FI_GRAPHML_SCRIPT -pl  $TC1FILE"
 echo $cmd
 
 echo ""
-echo "Showing original network"
-./formatAndViz-nofi-GraphML.py -pl  $TC1FILE & 
-sleep 1
+print_info "Showing original network"
+# run_or_exit "python3 $FFV_NO_FI_GRAPHML_SCRIPT -pl  $TC1FILE &"
 
-
-echo "transforming it"
-./transform-nofi-2-nofo-GraphML.py  -v  $TC1FILE --show  
-
-sleep 1
+# ask_yes_no "Did you see a small network where there should be only one inter-organizational edge"
 echo "You should now see only one edge between two nodes"
- 
+
+
+
+print_info "transforming it: nofi -> nofo"
+print_info "running python3  $TRANSFORM_GRAPHML_SCRIPT -v  $TC1FILE --show"
+
+run_or_exit  "python3  $TRANSFORM_GRAPHML_SCRIPT -v  $TC1FILE --show"
+
+print_info "TC1 network transformed"
 
 
 echo ""
-echo "Checking now if the test case 1 have the  right output"
-echo "\t Inter-organizational network should have one edge with weight=1 between two nodes only"
+print_info "Checking now if the test case 1 have the  right output"
+print_info  "\t Inter-organizational network should have one edge with weight=1 between two nodes only"
 echo ""
-
 
 TC1OUTFILE=2-org-with-2-developers-each-with-only-two-engaging-in-one-inter-firm-cooperation-relationship-transformed-to-nofo.graphML
 
+# Check if the file exists
+if [ ! -f "$TC1OUTFILE" ]; then
+    echo "Error: File '$TC1OUTFILE' does not exist." >&2
+    exit 1
+fi
 
+print_info "created network of organizations exits: $TC1OUTFILE"
 
 
 expectedString="data" 
 
 
 echo ""
-echo -e "\t Testing if $TC1OUTFILE is a valid under the graphML xml schema"
+print_info "\t Testing if $TC1OUTFILE is a valid under the graphML xml schema"
 echo ""
 
 
@@ -245,10 +234,11 @@ expectedString=\<data\ key=\"d0\"\>1\<\/data\>
 echo "Expected String="$expectedString
 
 if grep -q \<data\ key=\"d0\"\>1\<\/data\>  "$TC1OUTFILE" ; then
-    echo "${GREEN}TESTCASE 1 passed${NC}"
-    echo $expectedString "is in the output inter-org network as expected" 
+    print_success "TESTCASE 1 passed"
+    echo $expectedString "is in the output inter-org network as expected"
+    sleep 1
 else
-       echo "echo ${RED}TESTCASE 1 did not pass${NC}"
+       print_error "TESTCASE 1 did not pass"
        echo $expectedString should be in $TC1OUTFILE
        exit
        
@@ -261,8 +251,6 @@ rm  $TC1OUTFILE
 
 
 
-
-
 # TEST CASE 2
 # Transforms a small network where there should be only one inter-organizational edge with a weight of 3. 
 # test-data/2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML
@@ -270,30 +258,30 @@ rm  $TC1OUTFILE
 TC2FILE=test-data/2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML
 
 if [ ! -f "$TC2FILE" ]; then
-    echo "ERROR $TC2FILE does not exist."
+    print_error "$TC2FILE does not exist."
     exit 
 fi
 
 
 echo ""
 echo "TC2: Testing with $TC2FILE"
-cmd="./formatAndViz-nofi-GraphML.py -pl  $TC2FILE"
+cmd="$FFV_NO_FI_GRAPHML_SCRIPT -pl  $TC2FILE"
 echo $cmd
 
 echo ""
-echo "TC2: Showing original network"
-./formatAndViz-nofi-GraphML.py -pl  $TC2FILE & 
-sleep 1
+print_info "TC2: Showing original network"
+run_or_exit "python3  $FFV_NO_FI_GRAPHML_SCRIPT -pl  $TC2FILE"
 
-echo "TC2: transforming it"
-./transform-nofi-2-nofo-GraphML.py  -v  $TC2FILE --show  
 
-sleep 1
-echo "TC2: You should now see only one edge between two nodes with a weight of 3, as three developers from the two organizations worked together"
+print_info "TC2: transforming it"
+run_or_exit "python3 $TRANSFORM_GRAPHML_SCRIPT  -v  $TC2FILE --show"
+
+
+print_info "TC2: You should now see only one edge between two nodes with a weight of 3, as three developers from the two organizations worked together"
 
 
 echo ""
-echo "TC2: Checking now if the test case 2 have the  right output"
+print_info "TC2: Checking now if the test case 2 have the  right output"
 echo "\t Inter-organizational network should have one edge with weight=1 between two nodes only"
 echo ""
 
@@ -304,7 +292,7 @@ TC2OUTFILE=2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationsh
 
 
 echo ""
-echo -e "\t Testing if $TC2OUTFILE is a valid under the graphML xml schema"
+print_info -e "\t Testing if $TC2OUTFILE is a valid under the graphML xml schema"
 echo ""
 
 
@@ -318,7 +306,7 @@ fi
 
 
 echo "" 
-echo -e "\t checking now if the  $TC2OUTFILE have the expected content" 
+print_info"\t checking now if the  $TC2OUTFILE have the expected content"
 echo ""
 
 if [ ! -f "$TC2OUTFILE" ]; then
@@ -331,20 +319,19 @@ expectedString=\<data\ key=\"d0\"\>3\<\/data\>
 echo -e "\t Expected String="$expectedString
 
 if grep -q \<data\ key=\"d0\"\>3\<\/data\>  "$TC2OUTFILE" ; then
-    echo "${GREEN}TESTCASE 2 passed${NC}"
-    echo -e "\t" $expectedString "is in the output inter-org network as expected" 
+    print_success "TESTCASE 2 passed"
+    echo -e "\t" $expectedString "is in the output inter-org network as expected"
+    sleep 1
 else
-       echo "echo ${RED}TESTCASE 2 did not pass${NC}"
+        print_error"TESTCASE 2 did not pass"
        echo $expectedString should be in $TC2OUTFILE
        exit
        
 fi 
 
-
 sleep 1
 echo "Removing inter-organizational network that resulted from transformation"
 rm  $TC2OUTFILE
-
 
 
 
@@ -362,31 +349,29 @@ fi
 
 
 echo ""
-echo "TC3: Testing with $TC3FILE"
+print_info "TC3: Testing with $TC3FILE"
 cmd="./formatAndViz-nofi-GraphML.py -pl  $TC3FILE"
 echo $cmd
 
 echo ""
-echo "TC3: Showing original network"
-./formatAndViz-nofi-GraphML.py -pl  $TC3FILE & 
+print_info "TC3: Showing original network - DISABLED"
+# $FFV_NO_FI_GRAPHML_SCRIPT -pl  $TC3FILE &
 sleep 1
 
-echo "TC3: transforming it"
-./transform-nofi-2-nofo-GraphML.py  -v  $TC3FILE --show  
+print_info "TC3: transforming it"
+run_or_exit "python3 $TRANSFORM_GRAPHML_SCRIPT -v  $TC3FILE --show"
 
-sleep 1
-echo "TC2: You should now see only one edge between two nodes with a weight of 3, as three developers from the two organizations worked together"
+
+print_info "TC2: You should now see only one edge between two nodes with a weight of 3, as three developers from the two organizations worked together"
 
 
 echo ""
-echo "TC3: Checking now if the test case 3 have the  right output"
-echo "\t Inter-organizational network should have one edge with weight=1 between two nodes only"
+print_info "TC3: Checking now if the test case 3 have the  right output
+Inter-organizational network should have one edge with weight=1 between two nodes only"
 echo ""
 
 
 TC3OUTFILE=5-pentagon-with-star-transformed-to-nofo.graphML
-
-
 
 
 echo ""
@@ -420,12 +405,12 @@ echo -e "\t Expected String="$expectedString
 
 if grep -q  $expectedString "$TC3OUTFILE" ; then
     echo ""
-    echo "${GREEN}TESTCASE 3 passed${NC}"
+    print_success "TESTCASE 3 passed"
     echo -e "\t" $expectedString "is in the output inter-org network as expected"
     echo ""
 else
     
-       echo "echo ${RED}TESTCASE 3 did not pass${NC}"
+       print_error "TESTCASE 3 did not pass"
        echo $expectedString should be in $TC3OUTFILE
        exit
        

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-
-source config.cfg
+source "test-scripts/config.cfg"
 
 # Color definitions
 RED='\033[0;31m'
@@ -389,4 +388,35 @@ check_or_create_directory() {
     fi
 }
 
+# Checks if a given command exists / is installed.
+command_exists()
+{
+  command -v "$1" >/dev/null 2>&1
+}
 
+
+
+# Adds escape characters to a string, so it can be passed as an argument to grep
+escape_grep_string() {
+    local input="$1"
+    local escaped=$(echo "$input" | sed 's/[\.\*\?\+\[\]\ \^\$\|\\]/\\&/g')
+    echo "$escaped"
+}
+
+# Removes escape characters
+unescape_string() {
+    local input="$1"
+    local unescaped=$(echo -e "$input")
+    echo "$unescaped"
+}
+
+
+# Function to run a command and handle errors
+run_or_exit() {
+    local cmd="$*"  # Capture all arguments as the command
+    echo "Running: $cmd"
+    if ! eval "$cmd"; then
+        echo "Error: Command failed: '$cmd'" >&2
+        exit 1
+    fi
+}
