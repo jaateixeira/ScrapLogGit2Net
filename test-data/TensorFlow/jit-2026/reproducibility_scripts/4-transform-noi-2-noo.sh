@@ -158,10 +158,10 @@ if [[ ${#selected_files[@]} -gt 0 ]]; then
 
 
             # For demonstration,
-            echo "   → Command: python3 $TRANSFORM_GRAPHML_SCRIPT --top-firms-only --filter-by-org  --show $file "
+            echo "   → Command: python3 $TRANSFORM_GRAPHML_SCRIPT --top-firms-only --filter-by-org  --show $file  -o $output_file "
 
 
-            if  $TRANSFORM_GRAPHML_SCRIPT  -v  --show  "$file" ; then
+            if  $TRANSFORM_GRAPHML_SCRIPT  -v  --show  "$file" -o "$output_file" ; then
                  echo "   ✅ Successfully processed $file"
                  echo "   See $output_file"
                  echo ""

@@ -10,6 +10,11 @@ Nokia and Apple have three developers co-editing the same files
 Nokia and Apple are then connected with an edge weight of 3.
 """
 
+
+# Path to visualization script
+noo_viz_script = "/home/apolinex/rep_clones/own-tools/ScrapLogGit2Net/transform-nofi-2-nofo-GraphML.py"
+
+
 import sys
 import os
 import argparse
@@ -359,8 +364,6 @@ def main() -> None:
     if args.show:
         console.print("\n[bold cyan]Displaying the results[/bold cyan]")
 
-        # Path to visualization script
-        noo_viz_script = "/home/apolinex/rep-clones/own-tools/ScrapLogGit2Net/formatFilterAndViz-nofo-GraphML.py"
 
         if not os.path.exists(noo_viz_script):
             logger.warning(f"Visualization script not found at {noo_viz_script}")
