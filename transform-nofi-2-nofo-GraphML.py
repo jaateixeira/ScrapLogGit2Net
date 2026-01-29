@@ -10,10 +10,8 @@ Nokia and Apple have three developers co-editing the same files
 Nokia and Apple are then connected with an edge weight of 3.
 """
 
-
 # Path to visualization script
 noo_viz_script = "/home/apolinex/rep_clones/own-tools/ScrapLogGit2Net/transform-nofi-2-nofo-GraphML.py"
-
 
 import sys
 import os
@@ -23,27 +21,16 @@ from collections import defaultdict
 from typing import Optional
 
 import networkx as nx
-from networkx import Graph
 from rich.progress import track
 
-# Import unified logger from uutils module
-try:
-    from utils.unifiedOutputAndLogger import (
-        console,
-        logger,
-        rprint,
-        Progress,
-        traceback,
-        Table
-    )
-except ImportError:
-    # Fallback if the module is not available
-    from rich.console import Console
-    from rich import print as rprint
-
-    console = Console()
-    logger = console  # Simple fallback
-    Progress = None
+from utils.unifiedOutputAndLogger import (
+    console,
+    logger,
+    rprint,
+    Progress,
+    traceback,
+    Table
+)
 
 
 def print_graph_as_dict_of_dicts(graph: nx.Graph) -> None:
@@ -291,9 +278,9 @@ def main() -> None:
     # Read the input graph
     console.print(f"[cyan]Reading graph from {args.file}[/cyan]")
     try:
-        G = nx.read_graphml(args.file)
-    except Exception as e:
-        logger.error(f"Error reading graph file: {e}")
+        g = nx.read_graphml(args.file)
+    except Exception as e_read:
+        logger.error(f"Error reading graph file: {e_read}")
         console.print_exception()
         sys.exit(1)
 
@@ -302,31 +289,31 @@ def main() -> None:
     stats_table.add_column("Metric", style="cyan")
     stats_table.add_column("Value", style="green", justify="right")
 
-    stats_table.add_row("Number of nodes", str(G.number_of_nodes()))
-    stats_table.add_row("Number of edges", str(G.number_of_edges()))
-    stats_table.add_row("Number of isolates", str(nx.number_of_isolates(G)))
+    stats_table.add_row("Number of nodes", str(g.number_of_nodes()))
+    stats_table.add_row("Number of edges", str(g.number_of_edges()))
+    stats_table.add_row("Number of isolates", str(nx.number_of_isolates(g)))
 
     console.print(stats_table)
 
     if args.verbose:
         console.print("\n[bold yellow]Verbose output:[/bold yellow]")
         console.print("[bold]Graph as dictionary of dictionaries:[/bold]")
-        print_graph_as_dict_of_dicts(G)
+        print_graph_as_dict_of_dicts(g)
         console.print("\n[bold]Graph nodes and their data:[/bold]")
-        print_graph_nodes_and_its_data(G)
+        print_graph_nodes_and_its_data(g)
 
     # Remove isolates
     console.print("\n[cyan]Checking for isolates[/cyan]")
-    G = remove_isolates(G, args.verbose)
+    g = remove_isolates(g, args.verbose)
 
     # Display updated statistics
     stats_table = Table(title="Graph Statistics After Removing Isolates", show_header=True)
     stats_table.add_column("Metric", style="cyan")
     stats_table.add_column("Value", style="green", justify="right")
 
-    stats_table.add_row("Number of nodes", str(G.number_of_nodes()))
-    stats_table.add_row("Number of edges", str(G.number_of_edges()))
-    stats_table.add_row("Number of isolates", str(nx.number_of_isolates(G)))
+    stats_table.add_row("Number of nodes", str(g.number_of_nodes()))
+    stats_table.add_row("Number of edges", str(g.number_of_edges()))
+    stats_table.add_row("Number of isolates", str(nx.number_of_isolates(g)))
 
     console.print(stats_table)
 
@@ -335,22 +322,22 @@ def main() -> None:
     console.print("[bold yellow]Transforming it into a network of organizations...[/bold yellow]\n")
 
     # Create organizational network
-    orgG : nx.Graph = create_organizational_network(G, args.verbose)
+    org_g: nx.Graph = create_organizational_network(g, args.verbose)
 
     if args.verbose:
         console.print("\n[bold]Current orgG (network of organizations):[/bold]")
         console.print("\n[bold]The nodes:[/bold]")
-        print_graph_nodes_and_its_data(orgG)
+        print_graph_nodes_and_its_data(org_g)
         console.print("\n[bold]The edges:[/bold]")
-        print_graph_edges_and_its_data(orgG)
+        print_graph_edges_and_its_data(org_g)
 
     # Display organizational network statistics
     org_stats_table = Table(title="Organizational Network Statistics", show_header=True)
     org_stats_table.add_column("Metric", style="cyan")
     org_stats_table.add_column("Value", style="green", justify="right")
 
-    org_stats_table.add_row("Number of organizations", str(orgG.number_of_nodes()))
-    org_stats_table.add_row("Number of inter-org relationships", str(orgG.number_of_edges()))
+    org_stats_table.add_row("Number of organizations", str(org_g.number_of_nodes()))
+    org_stats_table.add_row("Number of inter-org relationships", str(org_g.number_of_edges()))
 
     console.print(org_stats_table)
 
@@ -358,12 +345,11 @@ def main() -> None:
     console.print("\n[yellow]Time to save orgG, the inter-organizational network "
                   "with weighted edges into the GraphML format[/yellow]")
 
-    output_file = save_network(orgG, args.outfile, args.file)
+    output_file = save_network(org_g, args.outfile, args.file)
 
     # Display results if requested
     if args.show:
         console.print("\n[bold cyan]Displaying the results[/bold cyan]")
-
 
         if not os.path.exists(noo_viz_script):
             logger.warning(f"Visualization script not found at {noo_viz_script}")
@@ -377,8 +363,8 @@ def main() -> None:
 
             try:
                 subprocess.call(show_cmd, shell=True)
-            except Exception as e:
-                logger.error(f"Error running visualization script: {e}")
+            except Exception as e_read:
+                logger.error(f"Error running visualization script: {e_read}")
                 console.print_exception()
 
     console.print("\n[bold green]✓ Transformation completed successfully![/bold green]")
