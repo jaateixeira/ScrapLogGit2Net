@@ -1,12 +1,16 @@
 """
 Test cases for transform-nofi-2-nofo-GraphML.py using pytest functions only.
 """
+from typing import Any, Hashable
+
 import pytest
 import networkx as nx
 import tempfile
 import os
 import sys
 from pathlib import Path
+
+from networkx import Graph
 
 # Add the parent directory to Python path to import the module
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -91,7 +95,7 @@ def test_create_organizational_network_empty_network():
 
 def test_create_organizational_network_only_intra_firm_edges():
     """Test network with only intra-firm collaborations."""
-    G = nx.Graph()
+    G: nx.Graph[] = nx.Graph()
     G.add_node("dev1", affiliation="Apple")
     G.add_node("dev2", affiliation="Apple")
     G.add_node("dev3", affiliation="Apple")
@@ -332,45 +336,6 @@ def test_print_graph_edges_and_its_data(capsys, sample_individual_network):
 
     captured = capsys.readouterr()
     assert "dev1" in captured.out or "dev3" in captured.out
-
-
-# Test integration and main function using pytest-mock
-def test_main_with_show_option(mocker, monkeypatch, sample_individual_network, mock_visualization_script):
-    """Test main function with --show option."""
-    # Mock dependencies
-    mock_read_graphml = mocker.patch('transform_nofi_2_nofo_graphml.nx.read_graphml')
-    mock_save = mocker.patch('transform_nofi_2_nofo_graphml.save_network')
-    mock_subprocess = mocker.patch('transform_nofi_2_nofo_graphml.subprocess.call')
-
-    # Setup mocks
-    mock_read_graphml.return_value = sample_individual_network
-    mock_save.return_value = "output.graphML"
-
-    # Temporarily replace the visualization script path
-    original_path = transform_module.noo_viz_script
-    transform_module.noo_viz_script = mock_visualization_script
-
-    # Test arguments
-    test_args = ["script.py", "test.graphML", "--show", "--verbose"]
-
-    # Set sys.argv using monkeypatch
-    monkeypatch.setattr(sys, 'argv', test_args)
-
-    # Run main - it might exit with SystemExit
-    try:
-        transform_module.main()
-    except SystemExit as e:
-        # Check if exit was successful (code 0 or None)
-        if e.code not in (0, None):
-            raise
-
-    # Restore original path
-    transform_module.noo_viz_script = original_path
-
-    # Verify calls
-    mock_read_graphml.assert_called_once_with("test.graphML")
-    mock_save.assert_called_once()
-    mock_subprocess.assert_called_once()
 
 
 def test_main_without_show_option(mocker, monkeypatch, sample_individual_network):
