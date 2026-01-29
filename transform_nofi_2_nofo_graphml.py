@@ -126,6 +126,8 @@ def create_organizational_network(
     if verbose:
         logger.debug("Adding nodes and weighted edges to the inter-organizational network")
 
+    logger.info(f"Number of inter organisational edges={len(org_edges.items())}")
+
     for org_edge, weight in org_edges.items():
         if verbose:
             logger.debug(f"org_edge={org_edge}, weight={weight}")
@@ -133,7 +135,7 @@ def create_organizational_network(
         org_u, org_v = list(org_edge)
         org_network.add_edge(org_u, org_v, weight=weight)
 
-    logger.success(f"Organizational network created with {org_network.number_of_nodes()} nodes "
+    logger.info(f"Organizational network created with {org_network.number_of_nodes()} nodes "
                    f"and {org_network.number_of_edges()} edges")
     return org_network
 

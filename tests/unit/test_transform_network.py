@@ -1,22 +1,37 @@
 """
 Test cases for transform-nofi-2-nofo-GraphML.py using pytest functions only.
+
+For a single test case run:
+pytest -v -s tests/unit/test_transform_network.py::test_create_organizational_network_only_intra_firm_edges
+
 """
 from typing import Any, Hashable
 
 import pytest
-import networkx as nx
+
 import tempfile
 import os
 import sys
 from pathlib import Path
 
+import networkx as nx
 from networkx import Graph
 
-# Add the parent directory to Python path to import the module
-sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from rich.console import Console
+console = Console(force_terminal=True)
+
+
+def test_rich_output():
+    from rich.console import Console
+
+    console.print("Hello, [bold red]Rich[/bold red]!")
 
 # Import the module (renamed to use underscores)
 import transform_nofi_2_nofo_graphml as transform_module
+
+
+
 
 
 # Test create_organizational_network function
@@ -95,18 +110,33 @@ def test_create_organizational_network_empty_network():
 
 def test_create_organizational_network_only_intra_firm_edges():
     """Test network with only intra-firm collaborations."""
-    G: nx.Graph[] = nx.Graph()
-    G.add_node("dev1", affiliation="Apple")
-    G.add_node("dev2", affiliation="Apple")
-    G.add_node("dev3", affiliation="Apple")
-    G.add_edge("dev1", "dev2")
-    G.add_edge("dev2", "dev3")
+    g: Graph = nx.Graph()
+    g.add_node("dev1", affiliation="Apple")
+    g.add_node("dev2", affiliation="Apple")
+    g.add_node("dev3", affiliation="Apple")
+    g.add_edge("dev1", "dev2")
+    g.add_edge("dev2", "dev3")
 
-    org_network = transform_module.create_organizational_network(G)
+    """
+    Note: The networks to be transformed have only collaborations inside Apple. 
+    No inter firm edges, only intra firm edges. 
+    We expert the resulting network to have only 1 node (i.e., Apple) and 0 edges.
+    But as the tranformmer job is to aggregate inter-organizatinal edges only, we have 0 node and 0 edges. 
+    """
+
+    org_network = transform_module.create_organizational_network(g,verbose=True)
+
+    console.print(f'{org_network.number_of_nodes()=}')
+    console.print(f'{org_network.number_of_edges()=}')
+
+    console.print("Corresponding GraphML:")
+    for line in nx.generate_graphml(org_network):
+        console.print(line)
+
 
     # Should have Apple node but no edges
-    assert org_network.number_of_nodes() == 1
-    assert "Apple" in org_network
+    assert org_network.number_of_nodes() == 0
+    assert "Apple" not in org_network
     assert org_network.number_of_edges() == 0
 
 
