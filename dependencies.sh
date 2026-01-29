@@ -32,3 +32,5 @@ sudo apt install python3-pytest
 sudo apt-get install python3-email-validator
 pip3 install email_validator
 pip3 install python_dateutil
+sudo apt-get install python3-github
+sudo apt-get install python3-json5
