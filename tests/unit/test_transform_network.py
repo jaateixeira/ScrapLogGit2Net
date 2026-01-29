@@ -5,8 +5,7 @@ import pytest
 import networkx as nx
 import tempfile
 import os
-import sys
-from pathlib import Path
+
 from unittest.mock import patch, mock_open, MagicMock, call
 
 

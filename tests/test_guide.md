@@ -361,6 +361,11 @@ python -m pytest tests/test_parsing.py::test_specific --pdb
 Generate Coverage Reports
 bash
 
+
+# Check that mocks work
+pytest tests/ -k "test_main" -v
+
+
 # Terminal coverage report
 python -m pytest tests/ --cov=. --cov-report=term-missing
 
