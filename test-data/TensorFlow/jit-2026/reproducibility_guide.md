@@ -69,4 +69,22 @@ curl -L \
 ```
 
 
+At this point, after (1) retrieving the logs with git log, (2) scrapping them with ScrapLogGit2net and (3) deaninomizing the networks by using the GitHub restapi 
+
+the following folders and files should be created by our scripts:
+1-get-raw-inputs-all.sh  1-get-raw-inputs-yearly.sh  2-get-and-viz-networks-noi-graphml.sh   3-deanonymize-noi-graphml.sh
+
+
+networks-nofi-graphML/:
+tensorflow_2015_network.IN.NetworkFile.graphML  tensorflow_2015_network.out.graphML  tensorflow_2025_network.IN.NetworkFile.graphML  tensorflow_2025_network.out.graphML
+
+raw-inputs/:
+tensorflow_2026-01-24_all.IN.TXT  yearly_logs  yearly_summary_20260124.txt
+
+raw-inputs/yearly_logs/:
+tensorflow_2015_network.IN.TXT  tensorflow_2017_network.IN.TXT  tensorflow_2019_network.IN.TXT  tensorflow_2021_network.IN.TXT  tensorflow_2023_network.IN.TXT  tensorflow_2025_network.IN.TXT
+tensorflow_2016_network.IN.TXT  tensorflow_2018_network.IN.TXT  tensorflow_2020_network.IN.TXT  tensorflow_2022_network.IN.TXT  tensorflow_2024_network.IN.TXT  tensorflow_2026_network.IN.TXT
+ 
+
+
 

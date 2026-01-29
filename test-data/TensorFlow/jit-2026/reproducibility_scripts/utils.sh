@@ -12,6 +12,25 @@ MAGENTA='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+
+# Function to print colored messages
+print_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+
 # Function to test configuration
 test_config() {
     echo -e "${CYAN}=== Testing Configuration Variables ===${NC}"
@@ -760,6 +779,77 @@ ask_yes_no() {
             * ) echo "Please answer yes (y) or no (n)." ;;
         esac
     done
+}
+
+
+# Function to check and handle directory
+check_or_create_directory() {
+    local dir_path="$1"
+
+    print_info "Checking directory: $dir_path"
+
+    # Check if directory exists
+    if [[ -d "$dir_path" ]]; then
+        print_success "Directory exists: $dir_path"
+
+        # Check if it's readable
+        if [[ ! -r "$dir_path" ]]; then
+            print_warning "Directory exists but is not readable"
+        fi
+
+        # Check if it's writable
+        if [[ ! -w "$dir_path" ]]; then
+            print_warning "Directory exists but is not writable"
+        fi
+
+        # List contents (optional)
+        if [[ -r "$dir_path" ]]; then
+            local file_count=$(find "$dir_path" -maxdepth 1 -type f 2>/dev/null | wc -l)
+            local dir_count=$(find "$dir_path" -maxdepth 1 -type d 2>/dev/null | wc -l)
+            ((dir_count--))  # Subtract the directory itself
+
+            print_info "Directory contains: $file_count files, $dir_count subdirectories"
+
+            if [[ $file_count -gt 0 ]]; then
+                if ask_yes_no "Show first 5 files?" "n"; then
+                    echo "Files in directory:"
+                    find "$dir_path" -maxdepth 1 -type f 2>/dev/null | head -5
+                fi
+            fi
+        fi
+
+        return 0
+    else
+        print_warning "Directory does not exist: $dir_path"
+
+        # Ask user if they want to create it
+        if ask_yes_no "Would you like to create this directory now?" "y"; then
+            print_info "Creating directory: $dir_path"
+
+            # Try to create directory
+            if mkdir -p "$dir_path"; then
+                print_success "Directory created successfully: $dir_path"
+
+                # Set permissions (optional)
+                if ask_yes_no "Set directory permissions to 755 (rwxr-xr-x)?" "y"; then
+                    if chmod 755 "$dir_path"; then
+                        print_success "Permissions set to 755"
+                    else
+                        print_warning "Could not set permissions (continuing anyway)"
+                    fi
+                fi
+
+                return 0
+            else
+                print_error "Failed to create directory: $dir_path"
+                print_error "Please check your permissions or disk space"
+                return 1
+            fi
+        else
+            print_error "User chose not to create directory. Exiting."
+            return 1
+        fi
+    fi
 }
 
 

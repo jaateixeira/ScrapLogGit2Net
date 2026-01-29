@@ -13,7 +13,7 @@ if [ ! "$BASH_VERSION" ] ; then
 fi
 
 
-source config.cfg
+
 
 
 source config.cfg

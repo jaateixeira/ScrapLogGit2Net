@@ -11,15 +11,11 @@ print("")
 
 
 
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 import networkx as nx
-import sys
+
 import argparse
 import os 
 global out_file_name
-import numpy as np
-import turtle, math, random, time
 
 "For writing exel files"
 import xlwt
