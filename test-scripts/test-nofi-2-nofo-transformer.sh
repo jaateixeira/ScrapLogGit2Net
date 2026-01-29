@@ -1,17 +1,19 @@
 #!/bin/bash
-echo "Is ./transform-nofi-2-nofo-GraphML.py doing what is supposed to do?"
-echo "This tests ./transform-nofi-2-nofo-GraphML.py by executing it against graphML test files in ./test-data/"
-echo "part of the ScrapLogGit2Net open-source project"
-echo "Developed by Jose Teixeira <jose.teixeira@abo.fi> "
+echo "Is transform_nofi_2_nofo_graphml.py  doing what is supposed to do?"
+echo "This tests ./transform_nofi_2_nofo_graphml.py executing it against graphML test files in ./test-data/"
+echo "Part of the ScrapLogGit2Net open-source project"
+echo "Developed by Jose Teixeira <jose.teixeira@iki.fi> "
 echo -e "\n"
 
-echo "" 
-echo -e "\t Testing validGraphmlXMLfile() and command_exits() functions"
-echo "" 
+source test-scripts/config.cfg
+source test-scripts/utils.sh
 
-GREEN=$(tput setaf 2)
-RED=$(tput setaf 1)
-NC=$(tput sgr0)
+
+
+
+echo ""
+echo -e "\t Testing validGraphmlXMLfile() and command_exits() functions"
+echo ""
 
 
 # Fuction that validates if a fiven XML file is valid 
