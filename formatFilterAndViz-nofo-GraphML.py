@@ -52,7 +52,7 @@ class NetworkVisualizer:
     def load_graph(self) -> None:
         """Load GraphML file."""
         logger.info(f"Loading network from {self.config.input_file}")
-        self.graph = nx.read_graphml(self.config.input_file)
+        self.graph = nx.read_graphml(self.config.input_file[0])
 
         logger.info(f"Number of nodes: {self.graph.number_of_nodes()}")
         logger.info(f"Number of edges: {self.graph.number_of_edges()}")
@@ -326,7 +326,16 @@ def parse_arguments() -> NetworkConfig:
         description="Formats and visualizes a graphML file capturing a weighted Network of Organizations"
     )
 
-    parser.add_argument("file", type=str, help="The network file (GraphML format)")
+    # parser.add_argument("file", type=str, help="The network file (GraphML format)")
+
+    # Or make it required with nargs=1
+    parser.add_argument(
+        "file",
+        nargs=1,
+        type=str,
+        help="The network file (created by ScrapLogGit2Net)"
+    )
+
 
     parser.add_argument(
         "-n", "--network_layout",

@@ -88,6 +88,22 @@ test_config() {
 }
 
 
+# Check if a file exists and is readable
+check_file_exists() {
+    local file_path="$1"
+
+    if [[ ! -f "$file_path" ]]; then
+        print_error  "file not found: $file_path"
+        return 1
+    fi
+
+    if [[ ! -r "$file_path" ]]; then
+        print_error "file not readable: $file_path"
+        return 1
+    fi
+
+    return 0
+}
 
 check_dir_writable() {
     local dir_path="$1"

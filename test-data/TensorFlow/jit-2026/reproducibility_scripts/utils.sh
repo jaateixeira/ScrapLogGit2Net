@@ -101,6 +101,13 @@ echo "Directory exists and is writable"
     echo -e "${GREEN}${COMPANIES_TO_IGNORE}${NC}"
     echo ""
 
+
+    echo -e "${MAGENTA}FIRM_COLORS_JSON:${NC}"
+    echo -e "${GREEN}${FIRM_COLORS_JSON}${NC}"
+    echo ""
+
+
+
     echo -e "${CYAN}=== Configuration Test Complete ===${NC}"
 }
 

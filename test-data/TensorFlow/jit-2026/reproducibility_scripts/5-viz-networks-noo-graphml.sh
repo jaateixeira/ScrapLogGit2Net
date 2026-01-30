@@ -219,8 +219,11 @@ visualize_files() {
     for network_file in "${selected_files[@]}"; do
         print_success "📊 Visualizing: $network_file"
 
+        check_file_exists   $FIRM_COLORS_JSON
+
         # Build the command
-        CMD="$FFV_NO_FO_GRAPHML_SCRIPT --legend --show \"$network_file\""
+        CMD="$FFV_NO_FO_GRAPHML_SCRIPT --legend --show  --color_map=$FIRM_COLORS_JSON    --filter_by_org=$COMPANIES_TO_IGNORE --top_firms_only=Intel  $network_file"
+        #CMD="$FFV_NO_FO_GRAPHML_SCRIPT -v --legend --show  --color_map=$FIRM_COLORS_JSON    $network_file"
 
         print_info "   Command: $CMD"
         echo ""
