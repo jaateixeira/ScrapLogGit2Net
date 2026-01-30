@@ -173,13 +173,8 @@ if [[ ${#selected_files[@]} -gt 0 ]]; then
                  echo "   ❌ Failed to process $file"
             fi
 
-            exit
 
-            echo
-
-
-
-            viz_question="Do you want to visualize $file vs. $output_file before and after deanonymizing via GitHub REST API? "
+            viz_question="Do you want to visualize $file vs. $output_file before and after de-anonymizing via GitHub REST API? "
 
 
             echo "Do you want to visualize both the networks before and after deanonymizing via GitHub REST API?"

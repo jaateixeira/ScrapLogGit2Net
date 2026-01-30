@@ -1,0 +1,586 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d0" for="edge" attr.name="weight" attr.type="long"/>
+<graph edgedefault="undirected"><node id="google"/>
+<node id="tensorflow"/>
+<node id="nvidia"/>
+<node id="intel"/>
+<node id="gmail"/>
+<node id="xAI"/>
+<node id="zml"/>
+<node id="amd"/>
+<node id="amazon"/>
+<node id="NVIDIA"/>
+<node id="unknown-by-GitHub"/>
+<node id="outlook"/>
+<node id="arm"/>
+<node id="yunlongl@x.ai.com"/>
+<node id="kgpian"/>
+<node id="@ROCm "/>
+<node id="instadeep"/>
+<node id="JuliaDynamics"/>
+<node id="Google"/>
+<node id="AMD Silo AI"/>
+<node id="wm"/>
+<node id="tu-dresden"/>
+<node id="multicorewareinc"/>
+<node id="numpy"/>
+<node id="quantco"/>
+<node id="vesilehto"/>
+<node id="maskedmails"/>
+<node id="infi"/>
+<node id="daangn"/>
+<node id="rachum"/>
+<node id="ibm"/>
+<node id="@intel"/>
+<node id="quansight"/>
+<node id="us"/>
+<node id="azul"/>
+<node id="gmx"/>
+<node id="traversaro"/>
+<node id="ustc"/>
+<node id="Return-To-The-Roots"/>
+<node id="quicinc"/>
+<node id="mediatek"/>
+<node id="foxmail"/>
+<node id="mathworks"/>
+<node id="platin"/>
+<node id="KLA "/>
+<node id="Fujitsu Research"/>
+<node id="fujitsu"/>
+<node id="Arm"/>
+<node id="qq"/>
+<edge source="google" target="tensorflow">
+  <data key="d0">295</data>
+</edge>
+<edge source="google" target="nvidia">
+  <data key="d0">1831</data>
+</edge>
+<edge source="google" target="intel">
+  <data key="d0">420</data>
+</edge>
+<edge source="google" target="gmail">
+  <data key="d0">407</data>
+</edge>
+<edge source="google" target="xAI">
+  <data key="d0">82</data>
+</edge>
+<edge source="google" target="zml">
+  <data key="d0">70</data>
+</edge>
+<edge source="google" target="amd">
+  <data key="d0">582</data>
+</edge>
+<edge source="google" target="amazon">
+  <data key="d0">49</data>
+</edge>
+<edge source="google" target="NVIDIA">
+  <data key="d0">26</data>
+</edge>
+<edge source="google" target="unknown-by-GitHub">
+  <data key="d0">229</data>
+</edge>
+<edge source="google" target="outlook">
+  <data key="d0">34</data>
+</edge>
+<edge source="google" target="arm">
+  <data key="d0">116</data>
+</edge>
+<edge source="google" target="yunlongl@x.ai.com">
+  <data key="d0">65</data>
+</edge>
+<edge source="google" target="JuliaDynamics">
+  <data key="d0">48</data>
+</edge>
+<edge source="google" target="tu-dresden">
+  <data key="d0">24</data>
+</edge>
+<edge source="google" target="quantco">
+  <data key="d0">17</data>
+</edge>
+<edge source="google" target="vesilehto">
+  <data key="d0">27</data>
+</edge>
+<edge source="google" target="infi">
+  <data key="d0">33</data>
+</edge>
+<edge source="google" target="AMD Silo AI">
+  <data key="d0">20</data>
+</edge>
+<edge source="google" target="rachum">
+  <data key="d0">7</data>
+</edge>
+<edge source="google" target="us">
+  <data key="d0">4</data>
+</edge>
+<edge source="google" target="azul">
+  <data key="d0">12</data>
+</edge>
+<edge source="google" target="ibm">
+  <data key="d0">14</data>
+</edge>
+<edge source="google" target="@intel">
+  <data key="d0">8</data>
+</edge>
+<edge source="google" target="@ROCm ">
+  <data key="d0">14</data>
+</edge>
+<edge source="google" target="quansight">
+  <data key="d0">7</data>
+</edge>
+<edge source="google" target="instadeep">
+  <data key="d0">7</data>
+</edge>
+<edge source="google" target="traversaro">
+  <data key="d0">2</data>
+</edge>
+<edge source="google" target="ustc">
+  <data key="d0">7</data>
+</edge>
+<edge source="google" target="numpy">
+  <data key="d0">4</data>
+</edge>
+<edge source="google" target="wm">
+  <data key="d0">1</data>
+</edge>
+<edge source="google" target="quicinc">
+  <data key="d0">17</data>
+</edge>
+<edge source="google" target="mediatek">
+  <data key="d0">5</data>
+</edge>
+<edge source="google" target="maskedmails">
+  <data key="d0">2</data>
+</edge>
+<edge source="google" target="Google">
+  <data key="d0">7</data>
+</edge>
+<edge source="google" target="gmx">
+  <data key="d0">1</data>
+</edge>
+<edge source="google" target="mathworks">
+  <data key="d0">4</data>
+</edge>
+<edge source="google" target="platin">
+  <data key="d0">2</data>
+</edge>
+<edge source="google" target="daangn">
+  <data key="d0">1</data>
+</edge>
+<edge source="google" target="Fujitsu Research">
+  <data key="d0">2</data>
+</edge>
+<edge source="google" target="fujitsu">
+  <data key="d0">2</data>
+</edge>
+<edge source="google" target="Arm">
+  <data key="d0">1</data>
+</edge>
+<edge source="google" target="multicorewareinc">
+  <data key="d0">2</data>
+</edge>
+<edge source="tensorflow" target="gmail">
+  <data key="d0">31</data>
+</edge>
+<edge source="tensorflow" target="amd">
+  <data key="d0">16</data>
+</edge>
+<edge source="tensorflow" target="unknown-by-GitHub">
+  <data key="d0">13</data>
+</edge>
+<edge source="tensorflow" target="nvidia">
+  <data key="d0">25</data>
+</edge>
+<edge source="tensorflow" target="intel">
+  <data key="d0">15</data>
+</edge>
+<edge source="tensorflow" target="outlook">
+  <data key="d0">3</data>
+</edge>
+<edge source="tensorflow" target="arm">
+  <data key="d0">5</data>
+</edge>
+<edge source="tensorflow" target="yunlongl@x.ai.com">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="xAI">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="kgpian">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="zml">
+  <data key="d0">2</data>
+</edge>
+<edge source="tensorflow" target="@ROCm ">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="instadeep">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="JuliaDynamics">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="Google">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="amazon">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="AMD Silo AI">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="NVIDIA">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="wm">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="tu-dresden">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="multicorewareinc">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="numpy">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="quantco">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="vesilehto">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="maskedmails">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="infi">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="daangn">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="rachum">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="ibm">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="@intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="quansight">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="us">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="azul">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="gmx">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="traversaro">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="ustc">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="Return-To-The-Roots">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="quicinc">
+  <data key="d0">4</data>
+</edge>
+<edge source="tensorflow" target="mediatek">
+  <data key="d0">1</data>
+</edge>
+<edge source="tensorflow" target="foxmail">
+  <data key="d0">1</data>
+</edge>
+<edge source="nvidia" target="amd">
+  <data key="d0">89</data>
+</edge>
+<edge source="nvidia" target="unknown-by-GitHub">
+  <data key="d0">57</data>
+</edge>
+<edge source="nvidia" target="intel">
+  <data key="d0">56</data>
+</edge>
+<edge source="nvidia" target="gmail">
+  <data key="d0">42</data>
+</edge>
+<edge source="nvidia" target="xAI">
+  <data key="d0">10</data>
+</edge>
+<edge source="nvidia" target="yunlongl@x.ai.com">
+  <data key="d0">13</data>
+</edge>
+<edge source="nvidia" target="zml">
+  <data key="d0">9</data>
+</edge>
+<edge source="nvidia" target="@ROCm ">
+  <data key="d0">2</data>
+</edge>
+<edge source="nvidia" target="JuliaDynamics">
+  <data key="d0">10</data>
+</edge>
+<edge source="nvidia" target="tu-dresden">
+  <data key="d0">4</data>
+</edge>
+<edge source="nvidia" target="numpy">
+  <data key="d0">3</data>
+</edge>
+<edge source="nvidia" target="amazon">
+  <data key="d0">6</data>
+</edge>
+<edge source="nvidia" target="quantco">
+  <data key="d0">4</data>
+</edge>
+<edge source="nvidia" target="arm">
+  <data key="d0">10</data>
+</edge>
+<edge source="nvidia" target="outlook">
+  <data key="d0">3</data>
+</edge>
+<edge source="nvidia" target="NVIDIA">
+  <data key="d0">3</data>
+</edge>
+<edge source="nvidia" target="vesilehto">
+  <data key="d0">2</data>
+</edge>
+<edge source="nvidia" target="AMD Silo AI">
+  <data key="d0">1</data>
+</edge>
+<edge source="nvidia" target="infi">
+  <data key="d0">2</data>
+</edge>
+<edge source="nvidia" target="quansight">
+  <data key="d0">1</data>
+</edge>
+<edge source="nvidia" target="rachum">
+  <data key="d0">1</data>
+</edge>
+<edge source="nvidia" target="ibm">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="amd">
+  <data key="d0">20</data>
+</edge>
+<edge source="intel" target="unknown-by-GitHub">
+  <data key="d0">14</data>
+</edge>
+<edge source="intel" target="gmail">
+  <data key="d0">19</data>
+</edge>
+<edge source="intel" target="xAI">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="yunlongl@x.ai.com">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="amazon">
+  <data key="d0">3</data>
+</edge>
+<edge source="intel" target="@intel">
+  <data key="d0">6</data>
+</edge>
+<edge source="intel" target="arm">
+  <data key="d0">10</data>
+</edge>
+<edge source="intel" target="infi">
+  <data key="d0">3</data>
+</edge>
+<edge source="intel" target="outlook">
+  <data key="d0">2</data>
+</edge>
+<edge source="intel" target="JuliaDynamics">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="quantco">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="ibm">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="zml">
+  <data key="d0">1</data>
+</edge>
+<edge source="intel" target="@ROCm ">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="amd">
+  <data key="d0">23</data>
+</edge>
+<edge source="gmail" target="unknown-by-GitHub">
+  <data key="d0">9</data>
+</edge>
+<edge source="gmail" target="xAI">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="yunlongl@x.ai.com">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="JuliaDynamics">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="outlook">
+  <data key="d0">3</data>
+</edge>
+<edge source="gmail" target="arm">
+  <data key="d0">15</data>
+</edge>
+<edge source="gmail" target="zml">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="@ROCm ">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="AMD Silo AI">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="KLA ">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="mathworks">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="platin">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="Arm">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="Google">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="numpy">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmail" target="quansight">
+  <data key="d0">2</data>
+</edge>
+<edge source="gmail" target="gmx">
+  <data key="d0">1</data>
+</edge>
+<edge source="xAI" target="zml">
+  <data key="d0">1</data>
+</edge>
+<edge source="zml" target="unknown-by-GitHub">
+  <data key="d0">3</data>
+</edge>
+<edge source="zml" target="amd">
+  <data key="d0">9</data>
+</edge>
+<edge source="zml" target="@ROCm ">
+  <data key="d0">1</data>
+</edge>
+<edge source="zml" target="tu-dresden">
+  <data key="d0">1</data>
+</edge>
+<edge source="amd" target="unknown-by-GitHub">
+  <data key="d0">31</data>
+</edge>
+<edge source="amd" target="yunlongl@x.ai.com">
+  <data key="d0">3</data>
+</edge>
+<edge source="amd" target="@ROCm ">
+  <data key="d0">10</data>
+</edge>
+<edge source="amd" target="NVIDIA">
+  <data key="d0">2</data>
+</edge>
+<edge source="amd" target="infi">
+  <data key="d0">2</data>
+</edge>
+<edge source="amd" target="AMD Silo AI">
+  <data key="d0">4</data>
+</edge>
+<edge source="amd" target="outlook">
+  <data key="d0">1</data>
+</edge>
+<edge source="amd" target="arm">
+  <data key="d0">4</data>
+</edge>
+<edge source="amd" target="JuliaDynamics">
+  <data key="d0">1</data>
+</edge>
+<edge source="amd" target="quantco">
+  <data key="d0">1</data>
+</edge>
+<edge source="amd" target="vesilehto">
+  <data key="d0">2</data>
+</edge>
+<edge source="amazon" target="NVIDIA">
+  <data key="d0">1</data>
+</edge>
+<edge source="amazon" target="unknown-by-GitHub">
+  <data key="d0">2</data>
+</edge>
+<edge source="NVIDIA" target="unknown-by-GitHub">
+  <data key="d0">1</data>
+</edge>
+<edge source="unknown-by-GitHub" target="@ROCm ">
+  <data key="d0">1</data>
+</edge>
+<edge source="unknown-by-GitHub" target="arm">
+  <data key="d0">1</data>
+</edge>
+<edge source="unknown-by-GitHub" target="AMD Silo AI">
+  <data key="d0">1</data>
+</edge>
+<edge source="unknown-by-GitHub" target="gmx">
+  <data key="d0">1</data>
+</edge>
+<edge source="outlook" target="arm">
+  <data key="d0">2</data>
+</edge>
+<edge source="outlook" target="quansight">
+  <data key="d0">1</data>
+</edge>
+<edge source="arm" target="quantco">
+  <data key="d0">2</data>
+</edge>
+<edge source="arm" target="mathworks">
+  <data key="d0">14</data>
+</edge>
+<edge source="arm" target="platin">
+  <data key="d0">11</data>
+</edge>
+<edge source="arm" target="Arm">
+  <data key="d0">10</data>
+</edge>
+<edge source="arm" target="Google">
+  <data key="d0">7</data>
+</edge>
+<edge source="arm" target="@intel">
+  <data key="d0">1</data>
+</edge>
+<edge source="Google" target="mathworks">
+  <data key="d0">1</data>
+</edge>
+<edge source="tu-dresden" target="traversaro">
+  <data key="d0">1</data>
+</edge>
+<edge source="infi" target="ibm">
+  <data key="d0">1</data>
+</edge>
+<edge source="ibm" target="azul">
+  <data key="d0">1</data>
+</edge>
+<edge source="gmx" target="qq">
+  <data key="d0">1</data>
+</edge>
+<edge source="mathworks" target="platin">
+  <data key="d0">1</data>
+</edge>
+<edge source="mathworks" target="Arm">
+  <data key="d0">1</data>
+</edge>
+<edge source="platin" target="Arm">
+  <data key="d0">1</data>
+</edge>
+<edge source="Fujitsu Research" target="fujitsu">
+  <data key="d0">1</data>
+</edge>
+</graph></graphml>

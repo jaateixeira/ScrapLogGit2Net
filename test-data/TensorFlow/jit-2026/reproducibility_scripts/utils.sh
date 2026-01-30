@@ -51,7 +51,7 @@ test_config() {
         else
             echo -e "  File exists: ${RED}✗${NC}"
             echo -e "  ${RED}ERROR: File not found!${NC}"
-            continue
+            exit
         fi
 
         # Test 2: Check if it's executable
@@ -60,6 +60,7 @@ test_config() {
         else
             echo -e "  Is executable: ${RED}✗${NC}"
             echo -e "  ${YELLOW}WARNING: File is not executable. Consider running 'chmod +x ${file_path}'${NC}"
+            exit
         fi
 
         # Test 3: Check if it's a Python file
@@ -68,6 +69,7 @@ test_config() {
         else
             echo -e "  Python file: ${YELLOW}?${NC}"
             echo -e "  ${YELLOW}Note: This may not be a Python script${NC}"
+            exit
         fi
 
         echo ""
