@@ -1,608 +1,462 @@
-#! /usr/bin/env python3
-
-# Formats and visualizes a graphML file capturing a weighted Network of Organizations created by ScrapLog
-# Edges thickness maps its weight
-# Colorize nodes according to affiliation attribute
-
-
-# Example of use: 
-# ./formatAndViz-nofo-GraphML.py test-data/2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML-transformed-to-nofo.graphML 
-
-
-
+#!/usr/bin/env python3
+"""
+Formats and visualizes a graphML file capturing a weighted Network of Organizations created by ScrapLog.
+Edges thickness maps its weight, nodes are colorized according to affiliation attribute.
+"""
 
 import sys
 import os
-
+import json
+import math
+import random
 import argparse
+from typing import Dict, List, Tuple, Optional, Any
+from dataclasses import dataclass
+
 import networkx as nx
-
-from typing import Tuple
-
-import time
-from time import sleep
-
-
-# Combining loguru with rich provides a powerful logging setup that enhances readability and adds visual appeal to your logs. This integration makes it easier to debug and monitor applications by presenting log messages in a clear, color-coded, and structured format while using loguru's other features, such as log rotation and filtering,
-from loguru import logger
-
-# You can then print strings or objects to the terminal in the usual way. Rich will do some basic syntax highlighting and format data structures to make them easier to read.
-from rich import print as rprint
-
-
-# For complete control over terminal formatting, Rich offers a Console class.
-# Most applications will require a single Console instance, so you may want to create one at the module level or as an attribute of your top-level object.
-from rich.console import Console
-
-# Initialize the console
-console = Console()
-
-# JSON gets easier to understand
-from rich import print_json
-from rich.json import JSON
-
-
-
-
-
-# Strings may contain Console Markup which can be used to insert color and styles in to the output.
-from rich.markdown import Markdown
-
-# Python data structures can be automatically pretty printed with syntax highlighting.
-from rich import pretty
-from rich.pretty import pprint
-pretty.install()
-
-# Rich has an inspect() function which can generate a report on any Python object. It is a fantastic debug aid
-from rich import inspect
-from rich.color import Color
-
-#Rich supplies a logging handler which will format and colorize text written by Python’s logging module.
-from rich.logging import RichHandler
-
-# Add RichHandler to the loguru logger
-logger.remove()  # Remove the default logger
-logger.add(
-    RichHandler(console=console, show_time=True, show_path=True, rich_tracebacks=True),
-    format="{message}",  # You can customize this format as needed
-    level="DEBUG",  # Set the desired logging level
-    #level="INFO",  # Set the desired logging level
-)
-
-
-# Rich’s Table class offers a variety of ways to render tabular data to the terminal.
-from rich.table import Table
-
-
-# Rich provides the Live  class to to animate parts of the terminal
-# It's handy to annimate tables that grow row by row
-from rich.live import Live
-
-# Rich provides the Align class to align rendable objects
-from rich.align import Align
-
-# Rich can display continuously updated information regarding the progress of long running tasks / file copies etc. The information displayed is configurable, the default will display a description of the ‘task’, a progress bar, percentage complete, and estimated time remaining.
-from rich.progress import Progress, TaskID
-
-# Rich has a Text class you can use to mark up strings with color and style attributes.
-from rich.text import Text
-
-
-from rich.traceback import Traceback
-
-# For configuring
-from rich.traceback import install
-# Install the Rich Traceback handler with custom options
-install(
-    show_locals=True,  # Show local variables in the traceback
-    locals_max_length=10, locals_max_string=80, locals_hide_dunder=True, locals_hide_sunder=False,
-    indent_guides=True,
-    suppress=[__name__],
-    # suppress=[your_module],  # Suppress tracebacks from specific modules
-    #max_frames=3,  # Limit the number of frames shown
-    max_frames=5,  # Limit the number of frames shown
-    #width=50,  # Set the width of the traceback display
-    width=100,  # Set the width of the traceback display
-    extra_lines=3,  # Show extra lines of code around the error
-    theme="solarized-dark",  # Use a different color theme
-    word_wrap=True,  # Enable word wrapping for long lines
-)
-
-
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-import networkx as nx
 
-# SYS and OS utils 
-import sys
-import os
-
-# For parsing arguments 
-import argparse
-
-
-"needed to assign random colors"
-import random
-
-"need for logarithms"
-import math
-
-# To be able to load a dictionary key = firm, value = color
-import json
-
-from rich import (print as rprint)
-# For nicer terminal outputs
-
-
-def printGraph_as_dict_of_dicts(graph):
-    print (nx.to_dict_of_dicts(graph))
-
-
-def printGraph_nodes_and_its_data(graph):
-    
-    for node, data in graph.nodes(data=True):
-        print ("\t"+ str(node))
-        print ("\t" + str(data))
-
-def printGraph_edges_and_its_data(graph):
-    
-    for edge in graph.edges(data=True):
-        print ("\t"+str(edge))
-
-
-
-
-print ("")
-print ("formatAndViz-nofo-GraphML.py - visualizing weighted networks of organizations since June 2024")
-print ("Let's go")
-print ("")
-
-
-
-
-#No filtering implemented yet
-#top_firms_that_matter = ['google','microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
-#top_firms_that_matter = ['microsoft','ibm','amazon','intel','amd','nvidia','arm','meta','bytedance']
-#top_firms_that_do_not_matter = ['users','tensorflow','google']
-#top_firms_that_do_not_matter = ['users','tensorflow','gmail']
-
-parser = argparse.ArgumentParser(prog="formatAndViz-nofo-GraphML.py",description="Formats and visualizes a graphML file capturing a weighted Network of Organizations")
-parser.add_argument("file", type=str, help="the network file")
-
-parser.add_argument("-n", "--network_layout",  choices=['circular', 'spring'],  default='spring', help="the type of network visualization layout (i.e., node positioning algorithm)")
-
-parser.add_argument("-v", "--verbose", action="store_true",
-                    help="increase output verbosity")
-
-parser.add_argument("-ns", "--node_sizing_strategy", choices=['all-equal','centrality-score'],
-                    default='centrality-score',
-                    help="How big the nodes/developers should be? All equal or a function of their centrality?")
-
-parser.add_argument("-nc", "--node_coloring_strategy", choices=['random-color-to-unknown-firms',
-                                                                'gray-color-to-unknown-firms',
-                                                                'gray-color-to-others-not-in-topn-filter'],
-                    default='random-color-to-unknown-firms',
-                    help="Some default colors exist in the firm_color dict (e.g., IBM is blue, RedHat is red, Nvidia is green) but how to color others? Set a coloring strategy. Default: random-color-to-unknown-firms.")
-
-
-
-
-parser.add_argument("-ff", "--focal_firm",
-                    help="the focal firm we want to highlight")
-
-parser.add_argument("-t", "--top_firms_only", action="store_true",
-                    help="only top_firms_that_matter")
-
-parser.add_argument("-f", "--filter_by_org", action="store_true",
-                    help="top_firms_that_do_not_matter")
-
-parser.add_argument("-s", "--show", action="store_true",
-                    help="show the visualization, otherwise saves to png and pdf")
-
-parser.add_argument("-l", "--legend", action="store_true",
-                    help="adds a legend to the sociogram")
-
-
-args = parser.parse_args()
-
-if args.verbose:
-    print("In verbose mode")
-
-if args.top_firms_only:
-    print()
-    print("In top-firms only mode")
-    print()
-
-if args.filter_by_org:
-    print()
-    print("In filtering by org mode")
-    print()
-
-if args.focal_firm:
-    print(f"\n\t focal_firm = {args.focal_firm}\n")
-
-    
-if args.show:
-    rprint("\n In snow mode \n")
-else:
-    rprint("\n In save png and pdf mode \n")
-
-if args.legend:
-    print()
-    print("Show a legend")
-    print()
-    
-
-print()
-print(f"Chosen network layout: {args.network_layout}")
-print()
-
-print (f"Visualizing the {args.file} inter organizational network created with transform-nofi-2-nofo-GraphML.py")
-
-# Reads the GraphML network using NetworkX
-input_file_name = args.file
-
-G = nx.read_graphml(input_file_name)
-prefix_for_figures_filenames = os.path.basename(input_file_name)
-
-if args.verbose:
-    print() 
-    print("Printing inter-organizational network:")
-    printGraph_as_dict_of_dicts(G)
-    print() 
-    print("printing graph notes and its data:")
-    printGraph_nodes_and_its_data(G)
-    print() 
-    print("printing graph notes and its data:")
-    printGraph_edges_and_its_data(G)
-    print() 
-
-
-print("Inter organizational weighted Graph imported successfully")
-print("Number_of_nodes="+str(G.number_of_nodes()))
-print("Number_of_edges="+str(G.number_of_edges()))
-print("Number_of_isolates="+str(nx.number_of_isolates(G)))
-
-
-print ()
-print ("Calculating centralities")
-
-degree_centrality = nx.eigenvector_centrality(G)  # sort by de
-sorted_degree_centrality=(sorted(degree_centrality.items(), key=lambda item: item[1], reverse=True))
-
-
-
-# See https://matplotlib.org/stable/gallery/color/named_colors.html for the name of colors in python 
-print("coloring by firm")
-
-
-# less common goes to gray
-# Convention of black gro research institutes
-# Gray for anonymous e-mails
-# Yellow for startups
-
-# Loads the firm-color dictionary - Now we know how to map firm to a color
-with open('business_firm_color_dictionary_json/firm_color_dict.json', 'r') as file:
-    known_org_node_colors = json.load(file)
-
-
-
-print()
-print("Assigning colors to organizations/nodes")
-print()
-
-# Colors to actually be shown - In known_org_node_colors or random color 
-org_colors = []
-
-for node in G.nodes:
-    if args.verbose:
-        print(f"node={node}")
-    if node in list(known_org_node_colors.keys()):
-        org_colors.append(known_org_node_colors[node])
-    else:
-        "Gray for everything not in top_colors - not in use"
-        #org_colors.append('gray')
-        "random color for everyhing not in top_colors" 
-        r = random.random()
-        b = random.random()
-        g = random.random()
-
-        random_color = (r, g, b)
-        org_colors.append(random_color)
-
-        "prevents the repetition of random colors"
-        known_org_node_colors[node] = random_color
-
-
-print("Colors assigned to organizations/nodes:")
-print(org_colors)
-print()
-
-print("Drawing inter organizational network in given layout ...")
-print()
-
-
-if args.network_layout == 'circular':
-    pos = nx.circular_layout(G)
-elif args.network_layout == 'spring':
-    pos = nx.spring_layout(G)
-else:
-    print("Error - Unknow network layout")
-    sys.exit()
-
-
-print("Drawing inter organizational nodes ... ")
-
-
-def get_nodes_color(coloring_strategy: str = "random-color-to-unknown-firms") -> list:
-    coloring_strategy_possible_choices = ['random-color-to-unknown-firms', 'gray-color-to-unknown-firms',
-                                          'gray-color-to-others-not-in-topn-filter']
-
-    if coloring_strategy not in coloring_strategy_possible_choices:
-        print("ERROR Invalid coloring_strategy")
-        sys.exit()
-
-    if coloring_strategy not in ['random-color-to-unknown-firms', 'gray-color-to-unknown-firms']:
-        print(
-            "ERROR, Only 'random-color-to-unknown-firms' and 'gray-color-to-unknown-firms' coloring strategies were implemented so far")
-        sys.exit()
-
-    # The actual colors to be shown <- depend on top colors
-    org_colors = []
-
-    for node in G.nodes(data=False):
-        # print (node)
-        # print (data['affiliation'])
-
-
-        if node in list(known_org_node_colors.keys()):
-            org_colors.append(known_org_node_colors[node])
+from utils.unified_logger import logger
+from utils.unified_console import Console
+from utils.unified_console import rprint
+
+
+@dataclass
+class NetworkConfig:
+    """Configuration for network visualization."""
+    input_file: str
+    network_layout: str = "spring"
+    node_sizing_strategy: str = "centrality-score"
+    node_coloring_strategy: str = "random-color-to-unknown-firms"
+    focal_firm: Optional[str] = None
+    color_map_file: Optional[str] = None
+    show_visualization: bool = False
+    show_legend: bool = False
+    verbose: bool = False
+    top_firms_only: bool = False
+    filter_by_org: bool = False
+
+
+class NetworkVisualizer:
+    """Handles network visualization with various customization options."""
+
+    def __init__(self, config: NetworkConfig):
+        self.config = config
+        self.graph: Optional[nx.Graph] = None
+        self.pos: Optional[Dict[str, Tuple[float, float]]] = None
+        self.known_org_node_colors: Dict[str, Any] = {}
+        self.degree_centrality: Optional[Dict[str, float]] = None
+
+    def load_graph(self) -> None:
+        """Load GraphML file."""
+        logger.info(f"Loading network from {self.config.input_file}")
+        self.graph = nx.read_graphml(self.config.input_file)
+
+        logger.info(f"Number of nodes: {self.graph.number_of_nodes()}")
+        logger.info(f"Number of edges: {self.graph.number_of_edges()}")
+        logger.info(f"Number of isolates: {nx.number_of_isolates(self.graph)}")
+
+        if self.config.verbose:
+            self._print_graph_details()
+
+    def _print_graph_details(self) -> None:
+        """Print detailed graph information (verbose mode only)."""
+        if not self.graph:
+            return
+
+        logger.debug("Graph as dict of dicts:")
+        logger.debug(nx.to_dict_of_dicts(self.graph))
+
+        logger.debug("Nodes and their data:")
+        for node, data in self.graph.nodes(data=True):
+            logger.debug(f"\t{node}: {data}")
+
+        logger.debug("Edges and their data:")
+        for edge in self.graph.edges(data=True):
+            logger.debug(f"\t{edge}")
+
+    def calculate_centralities(self) -> None:
+        """Calculate network centralities."""
+        logger.info("Calculating centralities...")
+        if not self.graph:
+            raise ValueError("Graph not loaded")
+
+        self.degree_centrality = nx.eigenvector_centrality(self.graph)
+        sorted_centrality = sorted(
+            self.degree_centrality.items(),
+            key=lambda item: item[1],
+            reverse=True
+        )
+
+        if self.config.verbose:
+            logger.debug("Top 10 central nodes:")
+            for node, centrality in sorted_centrality[:10]:
+                logger.debug(f"\t{node}: {centrality:.4f}")
+
+    def load_color_map(self) -> None:
+        """Load color map from JSON file or initialize empty."""
+        if self.config.color_map_file:
+            try:
+                with open(self.config.color_map_file, 'r') as file:
+                    self.known_org_node_colors = json.load(file)
+                logger.info(f"Loaded color map from {self.config.color_map_file}")
+            except FileNotFoundError:
+                logger.warning(f"Color map file not found: {self.config.color_map_file}")
+                self.known_org_node_colors = {}
+            except json.JSONDecodeError:
+                logger.error(f"Invalid JSON in color map file: {self.config.color_map_file}")
+                self.known_org_node_colors = {}
         else:
-            if coloring_strategy == 'gray-color-to-unknown-firms':
-                "Gray for everything not in firm_color"
-                org_colors.append('gray')
-                known_org_node_colors[node] = 'gray'
-            elif coloring_strategy == 'random-color-to-unknown-firms':
-                "random color for everyhing not in firm_color"
-                r = random.random()
-                b = random.random()
-                g = random.random()
+            self.known_org_node_colors = {}
+            logger.info("No color map provided, using random colors for unknown firms")
 
-                color = (r, g, b)
-                org_colors.append(color)
-                known_org_node_colors[node] = color
+    def get_node_colors(self) -> List[Any]:
+        """Get colors for all nodes based on coloring strategy."""
+        if not self.graph:
+            return []
+
+        colors = []
+        strategy = self.config.node_coloring_strategy
+
+        for node in self.graph.nodes():
+            if node in self.known_org_node_colors:
+                colors.append(self.known_org_node_colors[node])
             else:
-                print(
-                    "ERROR, Only 'random-color-to-unknown-firms' and 'gray-color-to-unknown-firms' coloring strategies were implemented so far")
-                sys.exit()
+                if strategy == 'gray-color-to-unknown-firms':
+                    color = 'gray'
+                elif strategy == 'random-color-to-unknown-firms':
+                    color = (random.random(), random.random(), random.random())
+                else:
+                    logger.error(f"Unknown coloring strategy: {strategy}")
+                    color = 'gray'
 
-    if org_colors == []:
-        print("ERROR: How come the list of colors to be shown is empty")
-        sys.exit()
+                colors.append(color)
+                self.known_org_node_colors[node] = color
 
-    if args.verbose:
-        print()
-        print("Showing color by organizational affiliation_")
-        # print(org_colors)
-        for node in G.nodes(data=False):
-            print(f"\t color({node}) -->  {known_org_node_colors[node]}")
-        print()
+        if self.config.verbose:
+            logger.debug("Node colors:")
+            for node, color in zip(self.graph.nodes(), colors):
+                logger.debug(f"\t{node}: {color}")
 
-    return org_colors
+        return colors
+
+    def get_node_sizes(self) -> List[float]:
+        """Calculate node sizes based on centrality."""
+        if not self.degree_centrality or not self.graph:
+            return [100] * self.graph.number_of_nodes()
+
+        if self.config.node_sizing_strategy == 'all-equal':
+            return [100] * self.graph.number_of_nodes()
+
+        # Centrality-based sizing
+        custom_factor = 20
+        return [v * custom_factor * 100 for v in self.degree_centrality.values()]
+
+    def get_edge_thickness(self) -> List[float]:
+        """Calculate edge thickness based on weights."""
+        if not self.graph:
+            return []
+
+        thickness = []
+        for _, _, edge_data in self.graph.edges(data=True):
+            weight = edge_data.get('weight', 1)
+            # Use log base 2 to scale thickness
+            thickness.append(1 + math.log(weight, 2))
+
+        return thickness
+
+    def get_layout_positions(self) -> Dict[str, Tuple[float, float]]:
+        """Calculate node positions based on layout algorithm."""
+        if not self.graph:
+            return {}
+
+        if self.config.network_layout == 'circular':
+            return nx.circular_layout(self.graph)
+        elif self.config.network_layout == 'spring':
+            return nx.spring_layout(self.graph)
+        else:
+            logger.error(f"Unknown layout: {self.config.network_layout}")
+            return nx.spring_layout(self.graph)
+
+    def get_legend_elements(self) -> List[Line2D]:
+        """Create legend elements for the plot."""
+        elements = []
+
+        for org in self.graph.nodes() if self.graph else []:
+            color = self.known_org_node_colors.get(org, 'gray')
+            elements.append(
+                Line2D(
+                    [0], [0],
+                    marker='o',
+                    color=color,
+                    label=org,
+                    lw=0,
+                    markerfacecolor=color,
+                    markersize=5
+                )
+            )
+
+        return elements
+
+    def add_focal_firm_highlight(self, ax: plt.Axes) -> None:
+        """Add a highlight circle around the focal firm."""
+        if not self.config.focal_firm or not self.graph:
+            return
+
+        if self.config.focal_firm not in self.graph.nodes():
+            logger.error(f"Focal firm '{self.config.focal_firm}' not in graph nodes")
+            return
+
+        if self.config.focal_firm not in self.pos:
+            logger.error(f"Position not calculated for focal firm '{self.config.focal_firm}'")
+            return
+
+        custom_radius = 0.10
+        highlight_circle = plt.Circle(
+            self.pos[self.config.focal_firm],
+            custom_radius,
+            fill=False,
+            alpha=0.5
+        )
+        ax.add_artist(highlight_circle)
+
+        if self.config.verbose:
+            logger.info(f"Focal firm position: {self.pos[self.config.focal_firm]}")
+
+    def visualize(self) -> None:
+        """Main visualization method."""
+        if not self.graph:
+            raise ValueError("Graph not loaded")
+
+        logger.info("Creating visualization...")
+
+        # Calculate positions
+        self.pos = self.get_layout_positions()
+
+        # Create figure
+        plt.figure(figsize=(12, 10))
+
+        # Get visualization parameters
+        node_colors = self.get_node_colors()
+        node_sizes = self.get_node_sizes()
+        edge_thickness = self.get_edge_thickness()
+
+        # Draw nodes
+        node_options = {
+            'node_shape': 'o',
+            'node_color': node_colors,
+            'node_size': node_sizes,
+            'alpha': 0.75
+        }
+
+        nx.draw_networkx_nodes(self.graph, self.pos, **node_options)
+
+        # Draw edges
+        edge_options = {
+            'width': edge_thickness,
+            'alpha': 0.2
+        }
+        nx.draw_networkx_edges(self.graph, self.pos, **edge_options)
+
+        # Draw labels
+        nx.draw_networkx_labels(
+            self.graph,
+            self.pos,
+            font_size=10,
+            font_family="sans-serif",
+            font_weight="bold",
+            font_color='black',
+            alpha=1.0
+        )
+
+        # Draw edge labels
+        weight_labels = nx.get_edge_attributes(self.graph, name='weight')
+        nx.draw_networkx_edge_labels(self.graph, self.pos, edge_labels=weight_labels)
+
+        # Add legend if requested
+        if self.config.show_legend:
+            legend_elements = self.get_legend_elements()
+            plt.legend(
+                handles=legend_elements,
+                loc='center left',
+                bbox_to_anchor=(0.95, 0.5),
+                frameon=False,
+                prop={'weight': 'bold', 'size': 10, 'family': 'sans-serif'}
+            )
+
+        # Add focal firm highlight
+        ax = plt.gca()
+        self.add_focal_firm_highlight(ax)
+
+        # Configure plot
+        ax.margins(0.08)
+        plt.axis("off")
+        plt.tight_layout()
+
+        # Set title from config
+        config_str = str(vars(self.config))
+        mid_point = (len(config_str) + 1) // 2
+        title = f"{config_str[:mid_point]}\n{config_str[mid_point:]}"
+        plt.title(title, fontsize=8)
+
+        # Show or save
+        if self.config.show_visualization:
+            logger.info("Displaying visualization...")
+            plt.show()
+        else:
+            base_name = os.path.splitext(self.config.input_file)[0]
+            pdf_path = f"{base_name}-{self.config.network_layout}.pdf"
+            png_path = f"{base_name}-{self.config.network_layout}.png"
+
+            logger.info(f"Saving PDF to {pdf_path}")
+            plt.savefig(pdf_path, format='pdf', dpi=300, bbox_inches='tight')
+
+            logger.info(f"Saving PNG to {png_path}")
+            plt.savefig(png_path, format='png', dpi=300, bbox_inches='tight')
+
+        plt.close()
 
 
-def get_nodes_size()->list:
-    custom_factor = 20
-    # setting size of node according centrality
-    # see https://stackoverflow.com/questions/16566871/node-size-dependent-on-the-node-degree-on-networkx
-    return [v * custom_factor * 100 for v in degree_centrality.values()]
+def parse_arguments() -> NetworkConfig:
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        prog="formatAndViz-nofo-GraphML.py",
+        description="Formats and visualizes a graphML file capturing a weighted Network of Organizations"
+    )
+
+    parser.add_argument("file", type=str, help="The network file (GraphML format)")
+
+    parser.add_argument(
+        "-n", "--network_layout",
+        choices=['circular', 'spring'],
+        default='spring',
+        help="Network layout algorithm"
+    )
+
+    parser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Increase output verbosity"
+    )
+
+    parser.add_argument(
+        "-ns", "--node_sizing_strategy",
+        choices=['all-equal', 'centrality-score'],
+        default='centrality-score',
+        help="Node sizing strategy"
+    )
+
+    parser.add_argument(
+        "-nc", "--node_coloring_strategy",
+        choices=[
+            'random-color-to-unknown-firms',
+            'gray-color-to-unknown-firms',
+            'gray-color-to-others-not-in-topn-filter'
+        ],
+        default='random-color-to-unknown-firms',
+        help="Node coloring strategy"
+    )
+
+    parser.add_argument(
+        "-c", "--color_map",
+        type=str,
+        help="JSON file mapping firms to colors"
+    )
+
+    parser.add_argument(
+        "-ff", "--focal_firm",
+        type=str,
+        help="Focal firm to highlight"
+    )
+
+    parser.add_argument(
+        "-t", "--top_firms_only",
+        action="store_true",
+        help="Only show top firms"
+    )
+
+    parser.add_argument(
+        "-f", "--filter_by_org",
+        action="store_true",
+        help="Filter by organization"
+    )
+
+    parser.add_argument(
+        "-s", "--show",
+        action="store_true",
+        help="Show visualization instead of saving"
+    )
+
+    parser.add_argument(
+        "-l", "--legend",
+        action="store_true",
+        help="Add legend to visualization"
+    )
+
+    args = parser.parse_args()
+
+    return NetworkConfig(
+        input_file=args.file,
+        network_layout=args.network_layout,
+        node_sizing_strategy=args.node_sizing_strategy,
+        node_coloring_strategy=args.node_coloring_strategy,
+        focal_firm=args.focal_firm,
+        color_map_file=args.color_map,
+        show_visualization=args.show,
+        show_legend=args.legend,
+        verbose=args.verbose,
+        top_firms_only=args.top_firms_only,
+        filter_by_org=args.filter_by_org,
+    )
 
 
-if args.verbose:
-    print("\n Node sizes \n \t")
-    rprint(get_nodes_size())
-
-node_circular_options = {
-    'node_size': 10,
-}
-
-
-node_spring_options = {
-'alpha':0.75
-}
-
-
-
-print("Drawing inter individual network nodes ... ")
-
-if args.network_layout == 'circular':
-    nx.draw_networkx_nodes(G, pos, node_shape='o', node_color=get_nodes_color(args.node_coloring_strategy),
-                           **node_circular_options)
-
-elif args.network_layout == 'spring':
-    nx.draw_networkx_nodes(G, pos, node_shape='o',
-                           node_size=get_nodes_size(),
-                           node_color=get_nodes_color(args.node_coloring_strategy),
-                           **node_spring_options)
-    # nx.draw_networkx_nodes(G, pos, node_shape='s', node_color=get_nodes_color(),node_size=[v * 100 for v in degree_centrality.values()])
-
-else:
-    print("Error - Unknow network layout")
-    sys.exit()
-
-
-
-
-
-
-print("Drawing inter organizational edges ... ")
-
-edge_options = {
-'alpha':0.2
-}
-
-
-
-
-print("\t Calculating edge thinkness ... ")
-
-edge_thickness = []
-for u,v,a in G.edges(data=True):
-    if args.verbose:
-        print(f"u={u}, v={v}, a={a}")
-    "Using weights as they are"
-    #edge_thickness.append(a['weight'])
-    "Using log base 2"
-    edge_thickness.append(1+math.log(a['weight'], 2))
-
-
-if args.verbose:
-    print("\t  edge_thickness:")
-    rprint(edge_thickness)
-
-nx.draw_networkx_edges(G, pos, width=edge_thickness, **edge_options)
-
-print("Drawing organizations  node labels") 
-nx.draw_networkx_labels(G, pos, font_size=10, font_family="sans-serif",font_weight="bold", font_color='black',alpha=1.0)
-
-print("Drawing inter-organizational edge weight labels") 
-
-
-print("\t Calculating edge labels based on weight attribute ... ")
-
-weight_labels = nx.get_edge_attributes(G,name='weight')
-print("\t  weight_labels = " + str(weight_labels))
-
-#nx.draw_networkx_edge_labels(G, pos, edge_labels)
-nx.draw_networkx_edge_labels(G, pos, edge_labels=weight_labels)  
-
-
-def get_legend_elements(known_org_colors:list)->list:
-    print()
-    print("Getting the organizational affiliations to be included in the legend")
-    print("\t How should a legend look with the following arguments?")
-    print()
-    
-    legend_items = []
-    for org  in G.nodes:
-        try:
-            if args.verbose:
-                print(f"Adding legend to organization/node={org}")
-            legend_items.append(Line2D([0], [0],
-                                       marker='o',
-                                       color=known_org_colors[org],
-                                       label=org,
-                                       lw=0,
-                                       markerfacecolor=known_org_colors[org],
-                                       markersize=5))
-        except KeyError:
-            print(f"Dirm {org}' color is not defined in top_colors")
-            sys.exit()
-
-        #legend_items_top10_plus_one = legend_items[:10]
-        #egend_items_top10_plus_one.append( Line2D([0], [0],
-        #                         marker='o',
-        #                         color=top_colors[org],
-        #                         label=args.legend_extra_organizations[0] +" n=("+str(top_all_org[org])+")",
-        #                         lw=0,
-        #                         markerfacecolor=top_colors[org],
-        #                         markersize=5))
-                
-    return legend_items
-
-
-
-if args.legend:
-    print("\t Adding a legend") 
-
-    plt.legend(handles=get_legend_elements(known_org_node_colors),
-               loc='center left',
-               bbox_to_anchor=(0.95, 0.5),
-               frameon=False,
-               prop={'weight': 'bold', 'size': 12, 'family': 'sans-serif'})
-
-
-
-
-def get_first_half(s):
+def print_banner() -> None:
+    """Print application banner."""
+    banner = """
+╔══════════════════════════════════════════════════════════════╗
+║ formatAndViz-nofo-GraphML.py                                 ║
+║ Visualizing weighted networks of organizations since June 2024║
+╚══════════════════════════════════════════════════════════════╝
     """
-    Returns the first half of the string.
-    If the length of the string is odd, the extra character will be included in the first half.
-    
-    Parameters:
-    s (str): The input string
-    
-    Returns:
-    str: The first half of the input string
-    """
-    mid_index = (len(s) + 1) // 2  # Middle index, rounded up for odd lengths
-    return s[:mid_index]
-
-def get_second_half(s):
-    """
-    Returns the second half of the string.
-    If the length of the string is odd, the extra character will be included in the first half.
-    
-    Parameters:
-    s (str): The input string
-    
-    Returns:
-    str: The second half of the input string
-    """
-    mid_index = (len(s) + 1) // 2  # Middle index, rounded up for odd lengths
-    return s[mid_index:]
+    rprint(banner)
 
 
+def main() -> None:
+    """Main function."""
+    print_banner()
 
-first_half = get_first_half(str(args))
-second_half = get_second_half(str(args))
+    try:
+        # Parse arguments
+        config = parse_arguments()
 
-print("First Half:", first_half)  # Output: "abcd"
-print("Second Half:", second_half)  # Output: "efgh"
+        # Create visualizer
+        visualizer = NetworkVisualizer(config)
 
-    
+        # Load and process graph
+        visualizer.load_graph()
+        visualizer.calculate_centralities()
+        visualizer.load_color_map()
 
-#plt.title(first_half+"\n"+second_half)
-    
-ax = plt.gca()
-ax.margins(0.08)
+        # Generate visualization
+        visualizer.visualize()
 
+        logger.success("Visualization completed successfully!")
 
-if args.focal_firm:
-
-    if args.focal_firm not in G.nodes():
-        rprint ("Error- focal firm is on in G nodes list")
-        sys.exit()
-    
-    custom_radius= 0.10
-    Drawing_colored_circle = plt.Circle(pos[args.focal_firm], custom_radius, fill=False, alpha=0.5)
-
-    ax.add_artist(Drawing_colored_circle)
-
-plt.axis("off")
-plt.tight_layout()
-
-if args.show:
-    plt.show()
-else:
-    # Save the plot as a PDF file
-    plt.savefig(f'{args.file}-{args.network_layout}.pdf', format='pdf')
-
-    # Save the plot as a PNG file
-    plt.savefig(f'{args.file}-{args.network_layout}'
-                f''
-                f''
-                f'.png', format='png')
-
-"prints the position of the focal firm if any given by the cli"
-
-if args.focal_firm:
-    rprint(f"The position of {args.focal_firm } is:")
-    rprint(pos[args.focal_firm ])
+    except FileNotFoundError as e:
+        logger.error(f"File not found: {e}")
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON file: {e}")
+        sys.exit(1)
+    except nx.NetworkXError as e:
+        logger.error(f"NetworkX error: {e}")
+        sys.exit(1)
+    except Exception as e:
+        logger.exception(f"Unexpected error: {e}")
+        sys.exit(1)
 
 
-
-print("")
-print("DONE")
-print("")
+if __name__ == "__main__":
+    main()
