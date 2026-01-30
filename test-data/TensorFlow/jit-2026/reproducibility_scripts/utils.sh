@@ -37,7 +37,7 @@ test_config() {
     echo ""
 
     # Test the first 4 variables for file existence and execution
-    local file_vars=("SCRAPLOG_SCRIPT" "FFV_NO_FI_GRAPHML_SCRIPT" "TRANSFORM_GRAPHML_SCRIPT" "DEANONYMIZE_GRAPHML_SCRIPT")
+    local file_vars=("SCRAPLOG_SCRIPT" "FFV_NO_FI_GRAPHML_SCRIPT" "TRANSFORM_GRAPHML_SCRIPT" "DEANONYMIZE_GRAPHML_SCRIPT" )
 
     for var_name in "${file_vars[@]}"; do
         local file_path="${!var_name}"
@@ -74,6 +74,20 @@ test_config() {
 
         echo ""
     done
+
+
+  if [ ! -d "$DIR_4_MINED_NETWORKS_NOFO_GRAPHML" ]; then
+    echo "ERROR: Directory '$DIR_4_MINED_NETWORKS_NOFO_GRAPHML' does not exist"
+    exit 1
+fi
+
+if [ ! -w "$DIR_4_MINED_NETWORKS_NOFO_GRAPHML" ]; then
+    echo "ERROR: Directory '$DIR_4_MINED_NETWORKS_NOFO_GRAPHML' is not writable"
+    exit 1
+fi
+
+echo "Directory exists and is writable"
+
 
     # Display the last 2 variables with color
     echo -e "${CYAN}=== Displaying Configuration Variables ===${NC}"
@@ -854,6 +868,46 @@ check_or_create_directory() {
     fi
 }
 
+
+copy_with_confirmation() {
+    local source_file="$1"
+    local dest_dir="$2"
+
+    # Check if both arguments are provided
+    if [ -z "$source_file" ] || [ -z "$dest_dir" ]; then
+        echo "Usage: copy_with_confirmation <source_file> <dest_directory>"
+        return 1
+    fi
+
+    # Check if source file exists
+    if [ ! -f "$source_file" ]; then
+        echo "Error: Source file '$source_file' does not exist or is not a regular file"
+        return 1
+    fi
+
+    # Check if destination directory exists
+    if [ ! -d "$dest_dir" ]; then
+        echo "Error: Destination directory '$dest_dir' does not exist"
+        return 1
+    fi
+
+    # Ask for confirmation
+    read -p "Do you want to copy '$source_file' to '$dest_dir'? [y/N] " -n 1 -r
+    echo  # Move to a new line
+
+    # Check response
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        cp "$source_file" "$dest_dir"
+        if [ $? -eq 0 ]; then
+            echo "File copied successfully!"
+        else
+            echo "Error: Failed to copy file"
+            return 1
+        fi
+    else
+        echo "Copy cancelled."
+    fi
+}
 
 # Example usage after sourcing utils.sh:
 # source config.cfg

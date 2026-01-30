@@ -156,72 +156,52 @@ if [[ ${#selected_files[@]} -gt 0 ]]; then
 
             echo "   → Output will be: $output_file"
 
-
-
-
             # For demonstration,
-            echo "   → Command: python3 $TRANSFORM_GRAPHML_SCRIPT --top-firms-only --filter-by-org  --show $file  -o $output_file "
+            echo "   → Command: python3 $TRANSFORM_GRAPHML_SCRIPT --top-firms-only --filter-by-org --show $file -o $output_file"
 
-
-            if  $TRANSFORM_GRAPHML_SCRIPT  -v  --show  "$file" -o "$output_file" ; then
-                 echo "   ✅ Successfully processed $file"
-                 echo "   See $output_file"
-                 echo ""
-                 echo "   You can add to repo with: "
-                 echo "   git add $output_file"
-             else
-                 echo "   ❌ Failed to process $file"
+            if python3 "$TRANSFORM_GRAPHML_SCRIPT" -v --show "$file" -o "$output_file"; then
+                echo "   ✅ Successfully processed $file"
+                echo "   See $output_file"
+                echo ""
+                echo "   You can add to repo with: "
+                echo "   git add $output_file"
+            else
+                echo "   ❌ Failed to process $file"
             fi
-
-
-            viz_question="Do you want to visualize $file vs. $output_file before and after de-anonymizing via GitHub REST API? "
-
-
-            echo "Do you want to visualize both the networks before and after deanonymizing via GitHub REST API?"
-            echo "You should not longer see so many developers affiliated with 'user'"
-
-
-            # First check if visualization script exists
-if [[ ! -f "$FFV_NO_FI_GRAPHML_SCRIPT" ]]; then
-    echo -e "${RED}✗ Visualization script not found: $FFV_NO_FI_GRAPHML_SCRIPT${NC}"
-    # Optionally ask if they want to continue without visualization
-    if ask_yes_no "Continue processing without visualization?" "y"; then
-        VISUALIZE_BOTH=false
-    fi
-else
-    echo -e "${GREEN}✓ Visualization script available${NC}"
-    echo -e "${BLUE}Script: ${YELLOW}$FFV_NO_FI_GRAPHML_SCRIPT${NC}"
-    echo ""
-
-    # Now ask about visualization
-    if ask_yes_no "Do you want to visualize both the networks before and after deanonymizing via GitHub REST API?" "n"; then
-        VISUALIZE_BOTH=true
-        echo -e "Visualization will be performed on both input and output files."
-        echo -e "\"$file\" vs. \"$output_file"
-
-        $FFV_NO_FI_GRAPHML_SCRIPT --plot --legend $file &
-        $FFV_NO_FI_GRAPHML_SCRIPT --plot --legend $output_file &
-
+        done  # Close the for loop
     else
-        VISUALIZE_BOTH=false
-        echo "Skipping visualization."
-    fi
-fi
-
-
-
-
-
-        done
-
-        echo "🎉 Processing complete!"
-    else
-        echo "❌ Processing cancelled."
-    fi
+        echo "❌ Processing cancelled by user."
+    fi  # Close the inner if statement
 else
-    echo "⚠️  No files selected."
-fi
+    echo "⚠️  No files selected for processing."
+fi  # Close the outer if statement
 
-# Optional: Save selection to a file for batch processing
-# echo "💾 Saving selection to 'selected_files.txt'..."
-# printf "%s\n" "${selected_files[@]}" > selected_files.txt
+
+print_info " Checking if $output_file was created"
+
+
+        # Test 1: Check if output file exists
+        if [[ -f "$output_file" ]]; then
+            echo "   → Command: python3 $TRANSFORM_GRAPHML_SCRIPT --top-firms-only --filter-by-org  --show $file  -o $output_file "
+            print_success "$output_file successfully created by transforming "
+        else
+
+            print_error "ERROR: File not found!"
+            exit
+        fi
+
+      copy_with_confirmation $output_file $DIR_4_MINED_NETWORKS_NOFO_GRAPHML
+
+      ls $DIR_4_MINED_NETWORKS_NOFO_GRAPHML
+
+
+    # Test 2: Test if file was copied
+        if [[ -f "${DIR_4_MINED_NETWORKS_NOFO_GRAPHML}/$output_file" ]]; then
+            print_success "$output_file successfully copied to $DIR_4_MINED_NETWORKS_NOFO_GRAPHML"
+        else
+            print_error "ERROR: File not found!"
+            echo -e "Not in ${DIR_4_MINED_NETWORKS_NOFO_GRAPHML}/$output_file"
+            exit
+        fi
+
+    du -sh "${DIR_4_MINED_NETWORKS_NOFO_GRAPHML}/$output_file"
