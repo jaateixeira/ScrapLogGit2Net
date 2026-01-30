@@ -5,10 +5,10 @@ echo "Part of the ScrapLogGit2Net open-source project"
 echo "Developed by Jose Teixeira <jose.teixeira@iki.fi> "
 echo -e "\n"
 
-ls  test-scripts/config.cfg
-ls  test-scripts/utils.sh
+ls  tests/acceptance-test-scripts/config.cfg
+ls  tests/acceptance-test-scripts/utils.sh
 
-source "test-scripts/utils.sh"
+source "tests/acceptance-test-scripts/utils.sh"
 
 test_config
 
@@ -270,7 +270,7 @@ echo $cmd
 
 echo ""
 print_info "TC2: Showing original network"
-run_or_exit "python3  $FFV_NO_FI_GRAPHML_SCRIPT -pl  $TC2FILE"
+#run_or_exit "python3  $FFV_NO_FI_GRAPHML_SCRIPT -pl  $TC2FILE"
 
 
 print_info "TC2: transforming it"

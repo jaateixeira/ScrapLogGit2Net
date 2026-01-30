@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "test-scripts/config.cfg"
+source "tests/acceptance-test-scripts/config.cfg"
 
 # Color definitions
 RED='\033[0;31m'
