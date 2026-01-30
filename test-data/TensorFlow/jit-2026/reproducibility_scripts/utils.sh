@@ -37,7 +37,7 @@ test_config() {
     echo ""
 
     # Test the first 4 variables for file existence and execution
-    local file_vars=("SCRAPLOG_SCRIPT" "FFV_NO_FI_GRAPHML_SCRIPT" "TRANSFORM_GRAPHML_SCRIPT" "DEANONYMIZE_GRAPHML_SCRIPT" )
+    local file_vars=("SCRAPLOG_SCRIPT" "FFV_NO_FI_GRAPHML_SCRIPT" "FFV_NO_FO_GRAPHML_SCRIPT" "TRANSFORM_GRAPHML_SCRIPT" "DEANONYMIZE_GRAPHML_SCRIPT" )
 
     for var_name in "${file_vars[@]}"; do
         local file_path="${!var_name}"
