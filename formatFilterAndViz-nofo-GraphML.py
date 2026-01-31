@@ -10,6 +10,7 @@ import json
 import math
 import random
 import argparse
+from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 
@@ -17,9 +18,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-
 from utils.unified_logger import logger
-from utils.unified_console import Console
+from utils.unified_console import console
+from utils.unified_console import inspect
 from utils.unified_console import rprint
 
 
@@ -50,9 +51,17 @@ class NetworkVisualizer:
         self.degree_centrality: Optional[Dict[str, float]] = None
 
     def load_graph(self) -> None:
-        """Load GraphML file."""
-        logger.info(f"Loading network from {self.config.input_file}")
-        self.graph = nx.read_graphml(self.config.input_file[0])
+        """Load GraphML file from string or Path object."""
+        # Convert input_file to Path object if it's a string
+        input_path = Path(self.config.input_file) if isinstance(self.config.input_file, str) else self.config.input_file
+
+        logger.info(f"Loading network from {input_path}")
+
+        # Ensure it's a Path object for type safety
+        if not isinstance(input_path, Path):
+            raise TypeError(f"input_file must be str or Path, got {type(self.config.input_file)}")
+
+        self.graph = nx.read_graphml(input_path)
 
         logger.info(f"Number of nodes: {self.graph.number_of_nodes()}")
         logger.info(f"Number of edges: {self.graph.number_of_edges()}")
@@ -60,7 +69,6 @@ class NetworkVisualizer:
 
         if self.config.verbose:
             self._print_graph_details()
-
     def _print_graph_details(self) -> None:
         """Print detailed graph information (verbose mode only)."""
         if not self.graph:
@@ -306,7 +314,8 @@ class NetworkVisualizer:
             logger.info("Displaying visualization...")
             plt.show()
         else:
-            base_name = os.path.splitext(self.config.input_file)[0]
+            # base_name = os.path.splitext(self.config.input_file)[0]
+            base_name = os.path.splitext(self.config.input_file)
             pdf_path = f"{base_name}-{self.config.network_layout}.pdf"
             png_path = f"{base_name}-{self.config.network_layout}.png"
 
@@ -331,8 +340,7 @@ def parse_arguments() -> NetworkConfig:
     # Or make it required with nargs=1
     parser.add_argument(
         "file",
-        nargs=1,
-        type=str,
+        type=Path,
         help="The network file (created by ScrapLogGit2Net)"
     )
 
@@ -392,8 +400,9 @@ def parse_arguments() -> NetworkConfig:
         help="Filter by organization"
     )
 
+    # Single argument with multiple option strings
     parser.add_argument(
-        "-s", "--show",
+        "-s", "--show", "-p", "--plot",  # All four are valid
         action="store_true",
         help="Show visualization instead of saving"
     )
@@ -437,19 +446,41 @@ def main() -> None:
     print_banner()
 
     try:
+
+
+
         # Parse arguments
+        console.print("[bold blue] Parsing cli arguments")
         config = parse_arguments()
+        console.print("[bold green] Success:[/bold green] Arguments parsed 😀\n")
 
         # Create visualizer
+        console.print(f"[bold blue] Creating visualizer based on {config=}\n")
         visualizer = NetworkVisualizer(config)
+        console.print("[bold green] Success:[/bold green] Visualizer created 😀\n")
+
+
 
         # Load and process graph
+        console.print(f"[bold blue] loading the graph {config.input_file=}\n")
         visualizer.load_graph()
+        console.print("[bold green] Success:[/bold green] Graph loaded 😀\n")
+
+        console.print(f"[bold blue]  Calculating centrality of nodes \n")
         visualizer.calculate_centralities()
+
+
+
+        console.print(f"[bold blue] Load color map vs. random colors for nodes \n")
         visualizer.load_color_map()
+        console.print("[bold green] Success:[/bold green] Nodes associated with colors 😀\n")
+
+
 
         # Generate visualization
+        console.print(f"[bold blue] Visualizing the grap {inspect(visualizer)} \n")
         visualizer.visualize()
+        console.print("[bold green] Success:[/bold green] Visualization completed successfully! 😀\n")
 
         logger.success("Visualization completed successfully!")
 

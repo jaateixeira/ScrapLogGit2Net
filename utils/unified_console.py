@@ -14,6 +14,7 @@ from rich import inspect
 from rich import pretty
 # Wth rprint, Rich will do some basic syntax highlighting and format data structures to make them easier to read.
 from rich import print as rprint
+from rich.color import Color
 # For complete control over terminal formatting, Rich offers a Console class.
 # Most applications will require a single Console instance, so you may want to create one at
 # the module level or as an attribute of your top-level object.
@@ -74,7 +75,7 @@ console = Console()
 from rich.progress import Progress
 
 # For configuring
-from rich import traceback
+#from rich import traceback
 
 # Install the Rich Traceback handler with custom options
 """
@@ -345,4 +346,8 @@ if __name__ == '__main__':
     console_messages()
     console.print("[bold green]Success:[/bold green] Your saw many way to output. 😀\n")
     sleep(3)
+
+    console.print("[bold blue] \n How  about inspecting objects")
+    color = Color.parse("red")
+    inspect(color, methods=True)
 
