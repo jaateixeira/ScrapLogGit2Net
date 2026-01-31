@@ -36,7 +36,7 @@ class NetworkConfig:
     show_visualization: bool = False
     show_legend: bool = False
     verbose: bool = False
-    top_firms_only: bool = False
+    filter_by_n_top_central_firms_only: bool = False
     filter_by_org: bool = False
 
 
@@ -389,9 +389,9 @@ def parse_arguments() -> NetworkConfig:
     )
 
     parser.add_argument(
-        "-t", "--top_firms_only",
-        action="store_true",
-        help="Only show top firms"
+        "-tf", "--filter_by_n_top_central_firms_only",
+        type=str,
+        help="Only show top n firms"
     )
 
     parser.add_argument(
@@ -425,7 +425,7 @@ def parse_arguments() -> NetworkConfig:
         show_visualization=args.show,
         show_legend=args.legend,
         verbose=args.verbose,
-        top_firms_only=args.top_firms_only,
+        filter_by_n_top_central_firms_only=args.filter_by_n_top_central_firms_only,
         filter_by_org=args.filter_by_org,
     )
 
