@@ -390,7 +390,7 @@ def parse_arguments() -> NetworkConfig:
 
     parser.add_argument(
         "-tf", "--filter_by_n_top_central_firms_only",
-        type=str,
+        type=int,
         help="Only show top n firms"
     )
 
