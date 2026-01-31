@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 import networkx as nx
 
-from your_module_name import NetworkConfig, NetworkVisualizer, parse_arguments
+from formatFilterAndViz-nofo-GraphML import NetworkConfig, NetworkVisualizer, parse_arguments
 
 
 # Note: Replace 'your_module_name' with the actual name of your Python file

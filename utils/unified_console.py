@@ -23,10 +23,15 @@ from rich.console import Console
 from rich.json import JSON
 # Strings may contain Console Markup which can be used to insert color and styles in to the output.
 from rich.markdown import Markdown
+
 # Rich has a Text class you can use to mark up strings with color and style attributes.
 from rich.text import Text
 
-from utils.unified_logger import logger
+from rich import table as Table
+
+from rich.progress import Progress
+
+from rich import traceback
 
 # TODO Document this import
 # Rich can display continuously updated information regarding the progress of long executing tasks  file copies etc.
@@ -72,7 +77,7 @@ console = Console()
 # The information displayed is configurable, the default will display a description of the ‘task’,
 # a progress bar, percentage complete, and estimated time remaining.
 
-from rich.progress import Progress
+
 
 # For configuring
 #from rich import traceback
