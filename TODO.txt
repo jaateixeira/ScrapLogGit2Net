@@ -1,11 +1,14 @@
-testScript acceptance tests are failing
 
 Investigate @ROCm
 yunlongl@x.ai.com                                                               
 infi
 
+Write tests cases for sample commit blocks to expected graphml
+test for filter and email agregation
+visualizer mfo should use jason
 
-Write unittests for transformattion
+
+
 
 IBM agregation not working 
 
