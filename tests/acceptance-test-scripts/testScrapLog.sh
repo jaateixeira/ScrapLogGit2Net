@@ -70,7 +70,7 @@ if [ ! -f "$file" ]; then
     exit 1
 fi
 # Check if the file contains the specific error message
-if grep -q 'GRAPHML export Number of nodes/authors = 2' "$file"; then
+if grep -q 'Network nodes (developers): 2' "$file"; then
     echo "Success: The error message was found."
         echo "${GREEN}TESTCASE 2.1 passed${NC}"
 else
@@ -176,8 +176,8 @@ echo "./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-20
 
 echo""
 
-if grep -q 'analized changelog blocks \[4431\]' testResults.tmp; then
-    echo "${GREEN}TESTCASE 3.1 - analized changelog blocks [4431] as expected${NC}"
+if grep -q 'Total commit blocks found: 4431' testResults.tmp; then
+    echo "${GREEN}TESTCASE 3.1 - Scrapped changelog blocks [4431] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.1 did not pass - unexpected number of changelog blocks${NC}"
 fi
@@ -185,7 +185,7 @@ fi
 
 echo""
 
-if grep -q 'Number of files affected by the commits reported by change log\[8467\]' testResults.tmp; then
+if grep -q 'Files affected: 8467' testResults.tmp; then
     echo "${GREEN}TESTCASE 3.2 - number of changed files [8467] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.2 did not pass - unexpected number of changed files${NC}"
@@ -195,7 +195,7 @@ fi
 
 echo""
 
-if grep -q 'Number of nodes/authors = 256' testResults.tmp; then
+if grep -q 'Network nodes (developers): 256' testResults.tmp; then
     echo "${GREEN}TESTCASE 3.3 - number of nodes [279] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.3 did not pass - unexpected number of nodes${NC}"
@@ -203,7 +203,7 @@ fi
 
 echo""
 
-if grep -q 'Number of unique collaborations (i.e., network edges)\[3363\]' testResults.tmp; then
+if grep -q 'Network edges (collaborations): 3363' testResults.tmp; then
     echo "${GREEN}TESTCASE 3.4 - number of edges [3363] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.4 did not pass - unexpected number of edges ${NC}"
