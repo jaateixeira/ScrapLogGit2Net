@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+This module  provides unified functions for stdout and a logger for all python scripts from the ScrapLogGit2Net family
+"""
+
+
 # TODO Implement function for the unused import statements
 # TODO Fix status spinner
 
@@ -27,11 +32,18 @@ from rich.markdown import Markdown
 # Rich has a Text class you can use to mark up strings with color and style attributes.
 from rich.text import Text
 
-from rich import table as Table
-
 from rich.progress import Progress
+from rich.progress import track
 
 from rich import traceback
+
+
+
+#from utils.unified_logger import logger
+
+# Rich tables
+from rich.table import Table
+
 
 # TODO Document this import
 # Rich can display continuously updated information regarding the progress of long executing tasks  file copies etc.
@@ -100,9 +112,6 @@ traceback.install(
 )
 """
 
-"""
-This module  provides unified functions for stdout and a logger for all python scripts from the ScrapLogGit2Net family
-"""
 
 
 def console_messages() -> None:
@@ -287,10 +296,6 @@ def progress_bars_demo():
     print("Counting to 100 and 200 completed!")
 
 
-"""
-This module  provides unified functions for stdout and a logger for all python scripts from the ScrapLogGit2Net family
-"""
-
 
 def log_messages() -> None:
     rprint("\n\t [green] Testing logger messages:\n")
@@ -306,10 +311,9 @@ def log_messages() -> None:
 
 
 if __name__ == '__main__':
-    console.print("[bold blue] Welcome to [blink] ScrapLogGit2Net unified stdout consoler [/blink]![/bold blue] Let's "
-                  "go .. ")
 
     console.print("[bold blue]  How  about output to console/terminal")
+
     console_messages()
     console.print("[bold green]Success:[/bold green] Your saw many way to output. 😀\n")
     sleep(3)
@@ -339,16 +343,12 @@ if __name__ == '__main__':
     progress_bars_demo()
     console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
 
-    console.print(
-        "[bold blue] Welcome to [blink] ScrapLogGit2Net unified stdout and logger [/blink]![/bold blue] Let's go .. ")
 
     console.print("[bold blue] \n You can log messages to terminal or separate log file")
     log_messages()
     console.print("[bold green]Success:[/bold green] You saw how to log  😀\n")
     sleep(3)
 
-    console.print("[bold blue] \n How  about output to console/terminal")
-    console_messages()
     console.print("[bold green]Success:[/bold green] Your saw many way to output. 😀\n")
     sleep(3)
 

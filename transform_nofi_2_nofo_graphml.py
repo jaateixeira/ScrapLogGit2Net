@@ -9,7 +9,7 @@ Example:
 Nokia and Apple have three developers co-editing the same files
 Nokia and Apple are then connected with an edge weight of 3.
 """
-from rich.progress import track
+
 
 # Path to visualization script
 noo_viz_script = "/home/apolinex/rep_clones/own-tools/ScrapLogGit2Net/transform-nofi-2-nofo-GraphML.py"
@@ -27,7 +27,8 @@ import networkx as nx
 from utils.unified_console import (
     console,
     rprint,
-    Table
+    Table,
+    track
 )
 
 from utils.unified_logger import logger
