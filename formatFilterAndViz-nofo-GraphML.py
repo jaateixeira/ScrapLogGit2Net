@@ -36,7 +36,7 @@ class NetworkConfig:
     show_visualization: bool = False
     show_legend: bool = False
     verbose: bool = False
-    filter_by_n_top_central_firms_only: int  = None
+    filter_by_n_top_central_firms_only: Optional[int] = None
     filter_by_org: bool = False
 
 
@@ -69,6 +69,53 @@ class NetworkVisualizer:
 
         if self.config.verbose:
             self._print_graph_details()
+
+    def filter_top_n_central_firms(self) -> None:
+        """Filter the graph to show only top N central firms."""
+        if not self.config.filter_by_n_top_central_firms_only:
+            return
+
+        if not self.graph:
+            raise ValueError("Graph not loaded")
+
+        if not self.degree_centrality:
+            raise ValueError("Centrality not calculated")
+
+        n = self.config.filter_by_n_top_central_firms_only
+        logger.info(f"Filtering to show top {n} central firms")
+
+        # Sort nodes by centrality (descending)
+        sorted_nodes = sorted(
+            self.degree_centrality.items(),
+            key=lambda item: item[1],
+            reverse=True
+        )
+
+        # Get top N nodes
+        top_n_nodes = [node for node, _ in sorted_nodes[:n]]
+
+        if self.config.verbose:
+            logger.debug(f"Top {n} central nodes:")
+            for node, centrality in sorted_nodes[:n]:
+                logger.debug(f"\t{node}: {centrality:.4f}")
+
+        # Create a subgraph with only the top N nodes
+        # First, we need to get the induced subgraph which includes only
+        # edges between nodes in top_n_nodes
+        original_nodes = list(self.graph.nodes())
+        self.graph = self.graph.subgraph(top_n_nodes)
+
+        logger.info(f"After filtering: {self.graph.number_of_nodes()} nodes, {self.graph.number_of_edges()} edges")
+
+        # Recalculate centrality for the filtered graph
+        self.calculate_centralities()
+
+        # Also filter known_org_node_colors to only include remaining nodes
+        self.known_org_node_colors = {
+            node: color for node, color in self.known_org_node_colors.items()
+            if node in top_n_nodes
+        }
+
     def _print_graph_details(self) -> None:
         """Print detailed graph information (verbose mode only)."""
         if not self.graph:
@@ -91,7 +138,14 @@ class NetworkVisualizer:
         if not self.graph:
             raise ValueError("Graph not loaded")
 
-        self.degree_centrality = nx.eigenvector_centrality(self.graph)
+        # Use eigenvector centrality for weighted graphs
+        # If the graph has no edges or is disconnected, fall back to degree centrality
+        try:
+            self.degree_centrality = nx.eigenvector_centrality(self.graph, max_iter=1000)
+        except (nx.PowerIterationFailedConvergence, nx.NetworkXError):
+            logger.warning("Eigenvector centrality failed, using degree centrality instead")
+            self.degree_centrality = nx.degree_centrality(self.graph)
+
         sorted_centrality = sorted(
             self.degree_centrality.items(),
             key=lambda item: item[1],
@@ -183,10 +237,10 @@ class NetworkVisualizer:
         if self.config.network_layout == 'circular':
             return nx.circular_layout(self.graph)
         elif self.config.network_layout == 'spring':
-            return nx.spring_layout(self.graph)
+            return nx.spring_layout(self.graph, seed=42)  # Add seed for reproducibility
         else:
             logger.error(f"Unknown layout: {self.config.network_layout}")
-            return nx.spring_layout(self.graph)
+            return nx.spring_layout(self.graph, seed=42)
 
     def get_legend_elements(self) -> List[Line2D]:
         """Create legend elements for the plot."""
@@ -314,10 +368,13 @@ class NetworkVisualizer:
             logger.info("Displaying visualization...")
             plt.show()
         else:
-            # base_name = os.path.splitext(self.config.input_file)[0]
-            base_name = os.path.splitext(self.config.input_file)
-            pdf_path = f"{base_name}-{self.config.network_layout}.pdf"
-            png_path = f"{base_name}-{self.config.network_layout}.png"
+            # Use Path object for better path handling
+            input_path = Path(self.config.input_file)
+            base_name = input_path.stem
+            output_dir = input_path.parent
+
+            pdf_path = output_dir / f"{base_name}-{self.config.network_layout}-top{self.config.filter_by_n_top_central_firms_only if self.config.filter_by_n_top_central_firms_only else 'all'}.pdf"
+            png_path = output_dir / f"{base_name}-{self.config.network_layout}-top{self.config.filter_by_n_top_central_firms_only if self.config.filter_by_n_top_central_firms_only else 'all'}.png"
 
             logger.info(f"Saving PDF to {pdf_path}")
             plt.savefig(pdf_path, format='pdf', dpi=300, bbox_inches='tight')
@@ -335,15 +392,11 @@ def parse_arguments() -> NetworkConfig:
         description="Formats and visualizes a graphML file capturing a weighted Network of Organizations"
     )
 
-    # parser.add_argument("file", type=str, help="The network file (GraphML format)")
-
-    # Or make it required with nargs=1
     parser.add_argument(
         "file",
         type=Path,
         help="The network file (created by ScrapLogGit2Net)"
     )
-
 
     parser.add_argument(
         "-n", "--network_layout",
@@ -391,7 +444,7 @@ def parse_arguments() -> NetworkConfig:
     parser.add_argument(
         "-tf", "--filter_by_n_top_central_firms_only",
         type=int,
-        help="Only show top n firms"
+        help="Only show top n central firms (e.g., --filter_by_n_top_central_firms_only=2)"
     )
 
     parser.add_argument(
@@ -446,9 +499,6 @@ def main() -> None:
     print_banner()
 
     try:
-
-
-
         # Parse arguments
         console.print("[bold blue] Parsing cli arguments")
         config = parse_arguments()
@@ -459,26 +509,29 @@ def main() -> None:
         visualizer = NetworkVisualizer(config)
         console.print("[bold green] Success:[/bold green] Visualizer created 😀\n")
 
-
-
         # Load and process graph
         console.print(f"[bold blue] loading the graph {config.input_file=}\n")
         visualizer.load_graph()
         console.print("[bold green] Success:[/bold green] Graph loaded 😀\n")
 
-        console.print(f"[bold blue]  Calculating centrality of nodes \n")
+        console.print(f"[bold blue] Calculating centrality of nodes \n")
         visualizer.calculate_centralities()
+        console.print("[bold green] Success:[/bold green] Centrality calculated 😀\n")
 
-
+        # Apply top N filter if requested
+        if config.filter_by_n_top_central_firms_only:
+            console.print(
+                f"[bold blue] Filtering to show top {config.filter_by_n_top_central_firms_only} central firms\n")
+            visualizer.filter_top_n_central_firms()
+            console.print(
+                f"[bold green] Success:[/bold green] Filtered to top {config.filter_by_n_top_central_firms_only} central firms 😀\n")
 
         console.print(f"[bold blue] Load color map vs. random colors for nodes \n")
         visualizer.load_color_map()
         console.print("[bold green] Success:[/bold green] Nodes associated with colors 😀\n")
 
-
-
         # Generate visualization
-        console.print(f"[bold blue] Visualizing the grap {inspect(visualizer)} \n")
+        console.print(f"[bold blue] Visualizing the graph {inspect(visualizer)} \n")
         visualizer.visualize()
         console.print("[bold green] Success:[/bold green] Visualization completed successfully! 😀\n")
 
