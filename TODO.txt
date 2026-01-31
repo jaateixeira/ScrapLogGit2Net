@@ -1,3 +1,10 @@
+Investigate @ROCm
+yunlongl@x.ai.com                                                                │
+zml
+quantco
+infi
+
+
 Write unittests for transformattion
 
 IBM agregation not working 
