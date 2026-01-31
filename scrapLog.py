@@ -19,10 +19,12 @@ from collections import defaultdict
 
 import networkx as nx
 from colorama import Fore, Style
-from rich.console import Console
-from rich.table import Table
 
 import export_log_data
+
+from utils.unified_console import (console, Table)
+from utils.unified_logger import logger
+
 from utils.validators import (
     validate_git_name,
     validate_git_email,
@@ -31,20 +33,23 @@ from utils.validators import (
     validate_git_commit_block
 )
 
-# Initialize the rich console
-console = Console()
-start_time = time.time()
 
-# Type aliases
+
+from typing import TypeAlias
+
+# Type aliases using built-in types
 Email = str
 Affiliation = str
 Filename = str
 Date = str
-DeveloperInfo = Tuple[Date, Email, Affiliation]
-ChangeLogEntry = Tuple[DeveloperInfo, List[Filename]]
-EmailAggregationConfig = Dict[str, str]  # prefix -> consolidated_name
-Connection = Tuple[Email, Email]
-ConnectionWithFile = Tuple[Connection, Filename]
+
+DeveloperInfo: TypeAlias = tuple[Date, Email, Affiliation]  # Note: lowercase tuple, list, dict
+ChangeLogEntry: TypeAlias = tuple[DeveloperInfo, list[Filename]]
+EmailAggregationConfig: TypeAlias = dict[str, str]
+Connection: TypeAlias = tuple[Email, Email]
+ConnectionWithFile: TypeAlias = tuple[Connection, Filename]
+
+start_time = time.time()
 
 
 @dataclass
@@ -96,7 +101,7 @@ class ProcessingState:
 
 
 def print_exit_info() -> None:
-    """Print execution summary at exit."""
+    """console.print execution summary at exit."""
     execution_time = time.time() - start_time
     table = Table(title="Script Execution Summary")
     table.add_column("Metric", style="cyan")
@@ -107,7 +112,7 @@ def print_exit_info() -> None:
 
 
 atexit.register(print_exit_info)
-print(f"Executing {sys.argv}")
+console.print(f"Executing {sys.argv}")
 
 
 def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
@@ -127,20 +132,20 @@ def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
             if not isinstance(prefix, str) or not isinstance(consolidated_name, str):
                 raise ValueError(f"Invalid entry in config: {prefix}: {consolidated_name}")
 
-        print(f"Loaded email aggregation config from {config_file}")
+        console.print(f"Loaded email aggregation config from {config_file}")
         for prefix, name in config.items():
-            print(f"  {prefix}.* -> {name}")
+            console.print(f"  {prefix}.* -> {name}")
 
         return config
 
     except FileNotFoundError:
-        print(f"Warning: Email aggregation config file not found: {config_file}")
+        console.print(f"Warning: Email aggregation config file not found: {config_file}")
         return {}
     except json.JSONDecodeError as e:
-        print(f"Error: Invalid JSON in config file {config_file}: {e}")
+        console.print(f"Error: Invalid JSON in config file {config_file}: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"Error loading email aggregation config: {e}")
+        console.print(f"Error loading email aggregation config: {e}")
         sys.exit(1)
 
 
@@ -150,7 +155,7 @@ def extract_affiliation_from_email(
 ) -> Affiliation:
     """Get affiliation from an email address with aggregation support."""
     if state.debug_mode:
-        print(f"\textract_affiliation_from_email({email})")
+        console.print(f"\textract_affiliation_from_email({email})")
 
     if state.email_filtering_mode and email in state.emails_to_filter:
         return "filtered - included in file passed with -f argument"
@@ -163,7 +168,7 @@ def extract_affiliation_from_email(
 
         # Simple extraction: get domain part after @
         if '@' not in email:
-            print(f"WARNING: No @ in email: {email}")
+            console.print(f"WARNING: No @ in email: {email}")
             return "unknown"
 
         domain_part = email.split('@')[-1]
@@ -179,7 +184,7 @@ def extract_affiliation_from_email(
         return domain_component
     except Exception as e:
         if state.debug_mode:
-            print(f"Error extracting affiliation from {email}: {e}")
+            console.print(f"Error extracting affiliation from {email}: {e}")
         return "unknown"
 
 
@@ -202,7 +207,7 @@ def parse_date_email_affiliation(
 
             # Basic email validation
             if '@' not in email:
-                print(f"WARNING: No @ in email: {email}")
+                console.print(f"WARNING: No @ in email: {email}")
                 state.statistics.increment_validation_errors()
 
             # Get affiliation
@@ -215,7 +220,7 @@ def parse_date_email_affiliation(
 
     except Exception as e:
         if state.debug_mode:
-            print(f"Error parsing line: {e}")
+            console.print(f"Error parsing line: {e}")
         state.statistics.increment_validation_errors()
         return None
 
@@ -260,7 +265,7 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Deve
 
     except Exception as e:
         if state.debug_mode:
-            print(f"Error parsing exceptional format: {e}")
+            console.print(f"Error parsing exceptional format: {e}")
         return None
 
 
@@ -299,7 +304,7 @@ def process_commit_block(
 
     first_line = block[0]
     if not first_line.startswith('=='):
-        print(f"ERROR: Invalid block - does not start with '==': {first_line[:50]}...")
+        console.print(f"ERROR: Invalid block - does not start with '==': {first_line[:50]}...")
         state.statistics.increment_skipped_blocks()
         return False
 
@@ -309,7 +314,7 @@ def process_commit_block(
 
         if not dev_info:
             if state.debug_mode:
-                print(f"WARNING: Could not parse commit header: {first_line[:50]}...")
+                console.print(f"WARNING: Could not parse commit header: {first_line[:50]}...")
             state.statistics.increment_skipped_blocks()
             return False
 
@@ -320,7 +325,7 @@ def process_commit_block(
 
         if not changed_files:
             if state.debug_mode:
-                print(f"WARNING: No files in commit block for {email}")
+                console.print(f"WARNING: No files in commit block for {email}")
             state.statistics.increment_skipped_blocks()
             return False
 
@@ -329,10 +334,10 @@ def process_commit_block(
         return True
 
     except Exception as e:
-        print(f"ERROR processing commit block: {e}")
+        console.print(f"ERROR processing commit block: {e}")
         if state.debug_mode:
             import traceback
-            traceback.print_exc()
+            traceback.console.print_exc()
         state.statistics.increment_skipped_blocks()
         return False
 
@@ -340,7 +345,7 @@ def process_commit_block(
 def aggregate_files_and_contributors(state: ProcessingState) -> None:
     """Aggregate data: for each file, what are the contributors."""
     if state.debug_mode:
-        print("\nAggregating data: for each file what are the contributors")
+        console.print("\nAggregating data: for each file what are the contributors")
 
     files_visited: Set[Filename] = set()
 
@@ -361,7 +366,7 @@ def aggregate_files_and_contributors(state: ProcessingState) -> None:
 def extract_contributor_connections(state: ProcessingState) -> None:
     """Get tuples of authors that coded/contributed on the same file."""
     if state.debug_mode:
-        print("\nGetting tuples of contributors that coded/contributed on the same file")
+        console.print("\nGetting tuples of contributors that coded/contributed on the same file")
 
     state.connections_with_files.clear()
 
@@ -392,7 +397,7 @@ def get_unique_connections(
 def extract_affiliations(state: ProcessingState) -> None:
     """Get affiliations of all authors committing code."""
     if state.debug_mode:
-        print("\nGetting author affiliations from their unique email in changeLogData")
+        console.print("\nGetting author affiliations from their unique email in changeLogData")
 
     for entry in state.change_log_data:
         email = entry[0][1]
@@ -402,7 +407,7 @@ def extract_affiliations(state: ProcessingState) -> None:
 def create_network_graph(state: ProcessingState) -> None:
     """Create and populate the network graph."""
     if state.debug_mode:
-        print("\nCreating network graph from unique connections")
+        console.print("\nCreating network graph from unique connections")
 
     state.dev_to_dev_network.clear()
     state.dev_to_dev_network.add_edges_from(state.unique_connections)
@@ -423,13 +428,13 @@ def apply_email_filtering(state: ProcessingState) -> None:
         return
 
     if state.debug_mode:
-        print("\nRemoving filtered emails from the network graph")
+        console.print("\nRemoving filtered emails from the network graph")
 
     nodes_removed = 0
     for email in state.emails_to_filter:
         if state.dev_to_dev_network.has_node(email):
             if state.debug_mode:
-                print(f"\t removing node {email}")
+                console.print(f"\t removing node {email}")
             state.dev_to_dev_network.remove_node(email)
             nodes_removed += 1
 
@@ -437,27 +442,27 @@ def apply_email_filtering(state: ProcessingState) -> None:
     isolates = list(nx.isolates(state.dev_to_dev_network))
     if isolates:
         if state.debug_mode:
-            print(f"\nRemoving {len(isolates)} isolates that resulted from filtering")
+            console.print(f"\nRemoving {len(isolates)} isolates that resulted from filtering")
         state.dev_to_dev_network.remove_nodes_from(isolates)
 
 
 def print_processing_summary(state: ProcessingState, work_file: str) -> None:
-    """Print a summary of processing results."""
-    print("\n" + "=" * 60)
-    print("PROCESSING SUMMARY")
-    print("=" * 60)
-    print(f"Input file: {work_file}")
-    print(f"Total lines processed: {state.statistics.nlines}")
-    print(f"Total commit blocks found: {state.statistics.n_blocks}")
-    print(f"Successfully processed blocks: {state.statistics.n_blocks - state.statistics.n_skipped_blocks}")
-    print(f"Skipped/invalid blocks: {state.statistics.n_skipped_blocks}")
-    print(f"Blocks changing code: {state.statistics.n_blocks_changing_code}")
-    print(f"Files affected: {state.statistics.n_changed_files}")
-    print(f"Validation errors: {state.statistics.n_validation_errors}")
-    print(f"Network nodes (developers): {state.dev_to_dev_network.number_of_nodes()}")
-    print(f"Network edges (collaborations): {state.dev_to_dev_network.size()}")
-    print(f"Unique affiliations: {len(set(state.affiliations.values()))}")
-    print("=" * 60)
+    """console.print a summary of processing results."""
+    console.print("\n" + "=" * 60)
+    console.print("PROCESSING SUMMARY")
+    console.print("=" * 60)
+    console.print(f"Input file: {work_file}")
+    console.print(f"Total lines processed: {state.statistics.nlines}")
+    console.print(f"Total commit blocks found: {state.statistics.n_blocks}")
+    console.print(f"Successfully processed blocks: {state.statistics.n_blocks - state.statistics.n_skipped_blocks}")
+    console.print(f"Skipped/invalid blocks: {state.statistics.n_skipped_blocks}")
+    console.print(f"Blocks changing code: {state.statistics.n_blocks_changing_code}")
+    console.print(f"Files affected: {state.statistics.n_changed_files}")
+    console.print(f"Validation errors: {state.statistics.n_validation_errors}")
+    console.print(f"Network nodes (developers): {state.dev_to_dev_network.number_of_nodes()}")
+    console.print(f"Network edges (collaborations): {state.dev_to_dev_network.size()}")
+    console.print(f"Unique affiliations: {len(set(state.affiliations.values()))}")
+    console.print("=" * 60)
 
 
 def main() -> None:
@@ -491,7 +496,7 @@ def main() -> None:
     state.strict_validation = args.strict
 
     if state.debug_mode:
-        print("\nVerbosity turned on")
+        console.print("\nVerbosity turned on")
 
     # Load email aggregation config
     if args.aggregate_email_prefixes:
@@ -502,11 +507,11 @@ def main() -> None:
     # Set filtering modes
     if args.filter_emails:
         state.email_filtering_mode = True
-        print("\nEmail filtering turned on")
+        console.print("\nEmail filtering turned on")
 
     if args.filter_files:
         state.file_filtering_mode = True
-        print("\nFile filtering turned on")
+        console.print("\nFile filtering turned on")
 
     # Determine input file
     work_file = args.raw
@@ -516,23 +521,23 @@ def main() -> None:
         try:
             with open(args.filter_emails, 'r') as ff:
                 state.emails_to_filter = {line.strip() for line in ff if line.strip()}
-            print(f"\tLoaded {len(state.emails_to_filter)} emails to filter")
+            console.print(f"\tLoaded {len(state.emails_to_filter)} emails to filter")
         except IOError as e:
-            print(f"WARNING: Could not read filter file {args.filter_emails}: {e}")
+            console.print(f"WARNING: Could not read filter file {args.filter_emails}: {e}")
             state.email_filtering_mode = False
 
     if state.file_filtering_mode and args.filter_files:
         try:
             with open(args.filter_files, 'r') as ff:
                 state.files_to_filter = {line.strip() for line in ff if line.strip()}
-            print(f"\tLoaded {len(state.files_to_filter)} files to filter")
+            console.print(f"\tLoaded {len(state.files_to_filter)} files to filter")
         except IOError as e:
-            print(f"WARNING: Could not read filter file {args.filter_files}: {e}")
+            console.print(f"WARNING: Could not read filter file {args.filter_files}: {e}")
             state.file_filtering_mode = False
 
     # Process based on mode
     start_time = datetime.now()
-    print(f"\nStarting processing of {work_file} at {start_time}")
+    console.print(f"\nStarting processing of {work_file} at {start_time}")
 
     try:
         with open(work_file, 'r') as f:
@@ -557,44 +562,44 @@ def main() -> None:
                 continue
             else:
                 if state.debug_mode:
-                    print(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
+                    console.print(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
 
         # Process final block
         if current_block:
             process_commit_block(current_block, state)
 
-        print(Fore.GREEN + f"\n✓ Successfully processed {len(state.change_log_data)} commits")
-        print(Style.RESET_ALL)
+        console.print(Fore.GREEN + f"\n✓ Successfully processed {len(state.change_log_data)} commits")
+        console.print(Style.RESET_ALL)
 
         if args.save:
-            print(f"\nSaving processed data to {args.save}")
+            console.print(f"\nSaving processed data to {args.save}")
             with open(args.save, 'wb') as fp:
                 pickle.dump(state.change_log_data, fp)
-            print("Data saved successfully")
+            console.print("Data saved successfully")
 
     except FileNotFoundError:
-        print(f"ERROR: Input file not found: {work_file}")
+        console.print(f"ERROR: Input file not found: {work_file}")
         sys.exit(1)
     except Exception as e:
-        print(f"ERROR processing file: {e}")
+        console.print(f"ERROR processing file: {e}")
         sys.exit(1)
 
     # Process the data
     aggregate_files_and_contributors(state)
-    print(Fore.GREEN + "\n✓ Data aggregated by files and contributors")
-    print(Style.RESET_ALL)
+    console.print(Fore.GREEN + "\n✓ Data aggregated by files and contributors")
+    console.print(Style.RESET_ALL)
 
     extract_contributor_connections(state)
-    print(Fore.GREEN + "\n✓ Contributor connections extracted")
-    print(Style.RESET_ALL)
+    console.print(Fore.GREEN + "\n✓ Contributor connections extracted")
+    console.print(Style.RESET_ALL)
 
     state.unique_connections = get_unique_connections(state.connections_with_files)
-    print(Fore.GREEN + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
-    print(Style.RESET_ALL)
+    console.print(Fore.GREEN + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
+    console.print(Style.RESET_ALL)
 
     create_network_graph(state)
-    print(Fore.GREEN + "\n✓ Network graph created")
-    print(Style.RESET_ALL)
+    console.print(Fore.GREEN + "\n✓ Network graph created")
+    console.print(Style.RESET_ALL)
 
     extract_affiliations(state)
 
@@ -604,12 +609,12 @@ def main() -> None:
     graphml_filename = Path(work_file).stem + ".NetworkFile.graphML"
     try:
         export_log_data.createGraphML(state.dev_to_dev_network, graphml_filename)
-        print(Fore.GREEN + f"\n✓ Network exported to GraphML file: {graphml_filename}")
-        print(Style.RESET_ALL)
+        console.print(Fore.GREEN + f"\n✓ Network exported to GraphML file: {graphml_filename}")
+        console.print(Style.RESET_ALL)
     except Exception as e:
-        print(f"ERROR exporting to GraphML: {e}")
+        console.print(f"ERROR exporting to GraphML: {e}")
 
-    # Print summary
+    # console.print summary
     print_processing_summary(state, work_file)
 
 
