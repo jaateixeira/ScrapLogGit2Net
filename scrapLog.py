@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple, Optional, Set, DefaultDict, Any
+from typing import Dict, List,  Optional, Set, DefaultDict
 from collections import defaultdict
 
 import networkx as nx
@@ -22,7 +22,7 @@ from colorama import Fore, Style
 
 import export_log_data
 
-from utils.unified_console import (console, Table)
+from utils.unified_console import (console, traceback, Table)
 from utils.unified_logger import logger
 
 from utils.validators import (
@@ -305,18 +305,26 @@ def process_commit_block(
     first_line = block[0]
     if not first_line.startswith('=='):
         console.print(f"ERROR: Invalid block - does not start with '==': {first_line[:50]}...")
-        state.statistics.increment_skipped_blocks()
-        return False
+
+        console.print(traceback.Traceback(), style="bold red")
+
+        console.print("[bold red]Error:[/bold red] Processing a block not starting with '=='...")
+        sys.exit(1)
 
     try:
         # Parse the commit header
         dev_info = parse_date_email_affiliation(first_line, state)
 
+        if state.debug_mode:
+            logger.debug("Retrieved ")
+            logger.debug(f"{dev_info=}")
+
+
         if not dev_info:
-            if state.debug_mode:
-                console.print(f"WARNING: Could not parse commit header: {first_line[:50]}...")
+            console.print(f"WARNING: Could not parse commit header: {first_line[:50]}...")
+            console.print(f"[bold red]Error:[/bold red] Could not get developer information from commit block {first_line}")
             state.statistics.increment_skipped_blocks()
-            return False
+            sys.exit(1)
 
         date_str, email, affiliation = dev_info
 
@@ -336,8 +344,9 @@ def process_commit_block(
     except Exception as e:
         console.print(f"ERROR processing commit block: {e}")
         if state.debug_mode:
-            import traceback
-            traceback.console.print_exc()
+            logger.debug(f"ERROR processing commit block:")
+            logger.debug(f"{block=}")
+            console.print(traceback.Traceback(), style="bold red")
         state.statistics.increment_skipped_blocks()
         return False
 
@@ -498,6 +507,7 @@ def main() -> None:
     if state.debug_mode:
         console.print("\nVerbosity turned on")
 
+
     # Load email aggregation config
     if args.aggregate_email_prefixes:
         state.email_aggregation_config = load_email_aggregation_config(
@@ -526,18 +536,10 @@ def main() -> None:
             console.print(f"WARNING: Could not read filter file {args.filter_emails}: {e}")
             state.email_filtering_mode = False
 
-    if state.file_filtering_mode and args.filter_files:
-        try:
-            with open(args.filter_files, 'r') as ff:
-                state.files_to_filter = {line.strip() for line in ff if line.strip()}
-            console.print(f"\tLoaded {len(state.files_to_filter)} files to filter")
-        except IOError as e:
-            console.print(f"WARNING: Could not read filter file {args.filter_files}: {e}")
-            state.file_filtering_mode = False
 
     # Process based on mode
-    start_time = datetime.now()
-    console.print(f"\nStarting processing of {work_file} at {start_time}")
+    start_scrapping_time = time.time()
+    console.print(f"\nStarting processing of {work_file} at {start_scrapping_time}")
 
     try:
         with open(work_file, 'r') as f:
@@ -553,7 +555,10 @@ def main() -> None:
 
             if line.startswith('=='):
                 if current_block:
+                    if state.debug_mode:
+                        logger.debug(f"processing {current_block=}")
                     process_commit_block(current_block, state)
+
                 current_block = [line]
                 state.statistics.n_blocks += 1
             elif '.' in line or '/' in line or len(line.strip()) >= 3:
