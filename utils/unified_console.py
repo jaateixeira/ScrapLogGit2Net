@@ -4,49 +4,36 @@
 # TODO Implement function for the unused import statements
 # TODO Fix status spinner
 
-import sys
-
 # To set some time delays
 from time import sleep
 
 # Rich has an inspect() function which can generate a report on any Python object.
 # It is a fantastic debug aid
 from rich import inspect
-
 # Python data structures can be automatically pretty printed with syntax highlighting.
 from rich import pretty
-
 # Wth rprint, Rich will do some basic syntax highlighting and format data structures to make them easier to read.
 from rich import print as rprint
-
 # For complete control over terminal formatting, Rich offers a Console class.
 # Most applications will require a single Console instance, so you may want to create one at
 # the module level or as an attribute of your top-level object.
 from rich.console import Console
-
-# TODO Document this import
-from rich import traceback
-
 # JSON gets easier to understand
 from rich.json import JSON
-
 # Strings may contain Console Markup which can be used to insert color and styles in to the output.
 from rich.markdown import Markdown
-
-# Rich can display continuously updated information regarding the progress of long executing tasks  file copies etc.
-# The information displayed is configurable, the default will display a description of the ‘task’, a progress bar,
-# percentage complete, and estimated time remaining.
-from rich.progress import Progress
-
 # Rich has a Text class you can use to mark up strings with color and style attributes.
 from rich.text import Text
 
-# Rich’s Table class offers a variety of ways to render tabular data to the terminal.
-from rich.table import Table
+from utils.unified_logger import logger
 
+# TODO Document this import
+# Rich can display continuously updated information regarding the progress of long executing tasks  file copies etc.
+# The information displayed is configurable, the default will display a description of the ‘task’, a progress bar,
+# percentage complete, and estimated time remaining.
+# Rich’s Table class offers a variety of ways to render tabular data to the terminal.
 # Rich provides the Live  class to animate parts of the terminal
 # It's handy to animate tables that grow row by row
-from rich.live import Live
 
 # Install the Rich Traceback handler with custom options
 """
@@ -77,16 +64,14 @@ console = Console()
 
 # Rich provides the Live  class to  animate parts of the terminal
 # It's handy to animate tables that grow row by row
-from rich.live import Live
 
 # Rich provides the Align class to align renderable objects
-from rich.align import Align
 
 # Rich can display continuously updated information regarding the progress of long-running tasks  / file copies etc.
 # The information displayed is configurable, the default will display a description of the ‘task’,
 # a progress bar, percentage complete, and estimated time remaining.
 
-from rich.progress import Progress, TaskID
+from rich.progress import Progress
 
 # For configuring
 from rich import traceback
@@ -296,6 +281,24 @@ def progress_bars_demo():
     print("Counting to 100 and 200 completed!")
 
 
+"""
+This module  provides unified functions for stdout and a logger for all python scripts from the ScrapLogGit2Net family
+"""
+
+
+def log_messages() -> None:
+    rprint("\n\t [green] Testing logger messages:\n")
+
+    # Log messages at different levels
+    logger.debug("This is a debug message.")
+    logger.info("This is an info message.")
+    logger.warning("This is a warning message.")
+    logger.error("This is an error message.")
+    logger.critical("This is a critical message.")
+    rprint("\n")
+
+
+
 if __name__ == '__main__':
     console.print("[bold blue] Welcome to [blink] ScrapLogGit2Net unified stdout consoler [/blink]![/bold blue] Let's "
                   "go .. ")
@@ -329,3 +332,17 @@ if __name__ == '__main__':
     console.print("[bold blue] \n Showing progress bars")
     progress_bars_demo()
     console.print("[bold green]Success:[/bold green] Your operation completed successfully.\n")
+
+    console.print(
+        "[bold blue] Welcome to [blink] ScrapLogGit2Net unified stdout and logger [/blink]![/bold blue] Let's go .. ")
+
+    console.print("[bold blue] \n You can log messages to terminal or separate log file")
+    log_messages()
+    console.print("[bold green]Success:[/bold green] You saw how to log  😀\n")
+    sleep(3)
+
+    console.print("[bold blue] \n How  about output to console/terminal")
+    console_messages()
+    console.print("[bold green]Success:[/bold green] Your saw many way to output. 😀\n")
+    sleep(3)
+
