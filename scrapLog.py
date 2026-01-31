@@ -152,10 +152,13 @@ def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
 def extract_affiliation_from_email(
         email: Email,
         state: ProcessingState
-) -> Affiliation:
+) -> str | None:
+
+    affiliation : str= "Unknown"
+
     """Get affiliation from an email address with aggregation support."""
     if state.debug_mode:
-        console.print(f"\textract_affiliation_from_email({email})")
+        logger.info(f"\textract_affiliation_from_email({email})")
 
     if state.email_filtering_mode and email in state.emails_to_filter:
         return "filtered - included in file passed with -f argument"
@@ -179,9 +182,14 @@ def extract_affiliation_from_email(
         # Apply email aggregation if configured
         for prefix, consolidated_name in state.email_aggregation_config.items():
             if domain_component.startswith(prefix) or prefix in domain_component:
-                return consolidated_name
+                affiliation = consolidated_name
 
-        return domain_component
+        affiliation= domain_component
+
+        if state.debug_mode:
+            logger.info(f"\textracted_affiliation_from_email({email})={affiliation}")
+        return affiliation
+
     except Exception as e:
         if state.debug_mode:
             console.print(f"Error extracting affiliation from {email}: {e}")
@@ -329,20 +337,20 @@ def process_commit_block(
 
     try:
         # Parse the commit header
-        dev_info = parse_time_name_email_affiliation(first_line, state)
+        time_dev_info = parse_time_name_email_affiliation(first_line, state)
 
         if state.debug_mode:
             logger.debug("Retrieved ")
-            logger.debug(f"{dev_info=}")
+            logger.debug(f"{time_dev_info=}")
 
 
-        if not dev_info:
+        if not time_dev_info:
             console.print(f"WARNING: Could not parse commit header: {first_line[:50]}...")
             console.print(f"[bold red]Error:[/bold red] Could not get developer information from commit block {first_line}")
             state.statistics.increment_skipped_blocks()
             sys.exit(1)
 
-        commit_time, dev_name, dev_email, dev_affiliation = dev_info
+        commit_time, dev_name, dev_email, dev_affiliation = time_dev_info
 
         # Extract files
         changed_files = extract_files_from_block(block[1:], state)
@@ -419,16 +427,6 @@ def get_unique_connections(
     return list(seen)
 
 
-def extract_affiliations(state: ProcessingState) -> None:
-    """Get affiliations of all authors committing code."""
-    if state.debug_mode:
-        console.print("\nGetting author affiliations from their unique email in changeLogData")
-
-    for entry in state.change_log_data:
-        email = entry[0][1]
-        state.affiliations[email] = extract_affiliation_from_email(email, state)
-
-
 def create_network_graph(state: ProcessingState) -> None:
     """Create and populate the network graph."""
     if state.debug_mode:
@@ -439,12 +437,13 @@ def create_network_graph(state: ProcessingState) -> None:
 
     # Add node attributes
     for node in state.dev_to_dev_network.nodes():
-        if node in state.affiliations:
-            state.dev_to_dev_network.nodes[node]['affiliation'] = state.affiliations[node]
-        else:
-            state.dev_to_dev_network.nodes[node]['affiliation'] = "unknown"
+        if state.debug_mode: logger.debug( f"Adding node attributes to {node=}")
 
-        state.dev_to_dev_network.nodes[node]['email'] = node
+
+        state.dev_to_dev_network.nodes[node]['email'] = str(node)
+        state.dev_to_dev_network.nodes[node]['affiliation'] = extract_affiliation_from_email(node,state)
+
+
 
 
 def apply_email_filtering(state: ProcessingState) -> None:
@@ -589,8 +588,8 @@ def main() -> None:
         if current_block:
             process_commit_block(current_block, state)
 
-        console.print(Fore.GREEN + f"\n✓ Successfully processed {len(state.change_log_data)} commits")
-        console.print(Style.RESET_ALL)
+        console.print(f"\n✓ Successfully processed {len(state.change_log_data)} commits")
+        console.print()
 
         if args.save:
             console.print(f"\nSaving processed data to {args.save}")
@@ -607,22 +606,26 @@ def main() -> None:
 
     # Process the data
     aggregate_files_and_contributors(state)
-    console.print(Fore.GREEN + "\n✓ Data aggregated by files and contributors")
-    console.print(Style.RESET_ALL)
+    console.print("[bold green]Success:[/bold green]" + "\n✓ Data aggregated by files and contributors")
+
 
     extract_contributor_connections(state)
-    console.print(Fore.GREEN + "\n✓ Contributor connections extracted")
-    console.print(Style.RESET_ALL)
+    console.print("[bold green]Success:[/bold green]" + "\n✓ Contributor connections extracted")
+
 
     state.unique_connections = get_unique_connections(state.connections_with_files)
-    console.print(Fore.GREEN + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
-    console.print(Style.RESET_ALL)
+    console.print("[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
+
+
+    if state.debug_mode:
+        print(f"{state.unique_connections=}")
+
+
 
     create_network_graph(state)
-    console.print(Fore.GREEN + "\n✓ Network graph created")
-    console.print(Style.RESET_ALL)
 
-    extract_affiliations(state)
+    console.print("[bold green]Success:[/bold green]" + "\n✓ Network graph created")
+
 
     apply_email_filtering(state)
 
@@ -630,8 +633,8 @@ def main() -> None:
     graphml_filename = Path(work_file).stem + ".NetworkFile.graphML"
     try:
         export_log_data.createGraphML(state.dev_to_dev_network, graphml_filename)
-        console.print(Fore.GREEN + f"\n✓ Network exported to GraphML file: {graphml_filename}")
-        console.print(Style.RESET_ALL)
+        console.print(f"\n✓ Network exported to GraphML file: {graphml_filename}")
+        console.print()
     except Exception as e:
         console.print(f"ERROR exporting to GraphML: {e}")
 
