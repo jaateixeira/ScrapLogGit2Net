@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from dataclasses import dataclass, field
-from typing import Dict, List,  Optional, Set, DefaultDict
+from typing import Dict, List, Optional, Set, DefaultDict, Tuple
 from collections import defaultdict
 
 import networkx as nx
@@ -188,41 +188,57 @@ def extract_affiliation_from_email(
         return "unknown"
 
 
-def parse_date_email_affiliation(
+def parse_time_name_email_affiliation(
         line: str,
         state: ProcessingState
-) -> Optional[DeveloperInfo]:
-    """Extract and validate date, email, and affiliation from a log line."""
+) -> Optional[Tuple[str, str, str, str]]:
+    """
+    Extract time, name, email, and affiliation from a log line.
+
+    Args:
+        line: Input log line
+        state: Processing state object
+
+    Returns:
+        Tuple of (date_time, last_name, email, affiliation) or None if parsing fails
+    """
     try:
-        # Standard pattern: ==Name;email;date +timezone==
-        # More flexible pattern to handle variations
+        # Pattern to capture: ==Name;email;date_time timezone==
+        # The name might contain spaces, so we need to be careful
         pattern = re.compile(r'^==(.+?);(.+?);(.+?)\s([+-]\d{4})==$')
         match = pattern.search(line)
 
-        if match:
-            name, email, date_str, timezone = match.groups()
+        if not match:
+            # Try alternative patterns for exceptional cases
+            return parse_exceptional_format(line, state)
 
-            # Clean up the email
-            email = email.strip()
+        name, email, date_time_str, timezone = match.groups()
 
-            # Basic email validation
-            if '@' not in email:
-                console.print(f"WARNING: No @ in email: {email}")
-                state.statistics.increment_validation_errors()
+        # Clean email
+        email = email.strip()
 
-            # Get affiliation
-            affiliation = extract_affiliation_from_email(email, state)
+        # Validate email format
+        if '@' not in email:
+            console.print(f"WARNING: Invalid email format (no @): {email}")
+            state.statistics.increment_validation_errors()
+            return None
 
-            return (date_str, email, affiliation)
+        # Extract affiliation from email domain
+        affiliation = extract_affiliation_from_email(email, state)
 
-        # Try alternative patterns for exceptional cases
-        return parse_exceptional_format(line, state)
+        # Combine date_time with timezone for complete timestamp
+        full_timestamp = f"{date_time_str} {timezone}"
+
+        return (full_timestamp, name, email, affiliation)
 
     except Exception as e:
         if state.debug_mode:
-            console.print(f"Error parsing line: {e}")
+            console.print(f"Error parsing line '{line}': {e}")
         state.statistics.increment_validation_errors()
         return None
+
+
+
 
 
 def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[DeveloperInfo]:
@@ -313,7 +329,7 @@ def process_commit_block(
 
     try:
         # Parse the commit header
-        dev_info = parse_date_email_affiliation(first_line, state)
+        dev_info = parse_time_name_email_affiliation(first_line, state)
 
         if state.debug_mode:
             logger.debug("Retrieved ")
@@ -326,19 +342,19 @@ def process_commit_block(
             state.statistics.increment_skipped_blocks()
             sys.exit(1)
 
-        date_str, email, affiliation = dev_info
+        commit_time, dev_name, dev_email, dev_affiliation = dev_info
 
         # Extract files
         changed_files = extract_files_from_block(block[1:], state)
 
         if not changed_files:
             if state.debug_mode:
-                console.print(f"WARNING: No files in commit block for {email}")
+                console.print(f"WARNING: No files in commit block for {first_line}")
             state.statistics.increment_skipped_blocks()
             return False
 
         # Store the data
-        state.change_log_data.append(((date_str, email, affiliation), changed_files))
+        state.change_log_data.append(((dev_name, dev_email, dev_affiliation), changed_files))
         return True
 
     except Exception as e:
