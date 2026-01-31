@@ -10,7 +10,7 @@ import re
 import csv
 from datetime import * 
 import networkx as nx
-import exportGraphMLformat
+import export_graphml_format
 
 # Replace '@' and '.' by "AT" and "DOT" 
 def clearDotsAndAts(contribEmail):
@@ -261,17 +261,17 @@ def createGraphML(network_with_affiliation_atributes :nx.Graph ,outFileName :str
 
     
     # open XML headers 
-    gfile.writelines(exportGraphMLformat.graphml_header)
+    gfile.writelines(export_graphml_format.graphml_header)
     
     # Add grapth atributes 
 
-    gfile.writelines(exportGraphMLformat.setNodeAntributeKey(0,"e-mail","string"))
-    gfile.writelines(exportGraphMLformat.setNodeAntributeKey(1,"color","string"))
-    gfile.writelines(exportGraphMLformat.setNodeAntributeKey(2,"affiliation","string"))
+    gfile.writelines(export_graphml_format.setNodeAntributeKey(0,"e-mail","string"))
+    gfile.writelines(export_graphml_format.setNodeAntributeKey(1,"color","string"))
+    gfile.writelines(export_graphml_format.setNodeAntributeKey(2,"affiliation","string"))
     
 
     # Open grapth 
-    gfile.writelines(exportGraphMLformat.graph_opener)
+    gfile.writelines(export_graphml_format.graph_opener)
     
     # store the nodes id for each email/contributor
     tmpNodeId = {} 
@@ -288,7 +288,7 @@ def createGraphML(network_with_affiliation_atributes :nx.Graph ,outFileName :str
         email=node
         afl=data['affiliation']
         #print(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
-        gfile.writelines(exportGraphMLformat.addNode(node_id,[(0,email),(1,"turquoise"),(2,afl)]))
+        gfile.writelines(export_graphml_format.addNode(node_id,[(0,email),(1,"turquoise"),(2,afl)]))
         # Give a each node and numeric id atribute data as well 
         network_with_affiliation_atributes.nodes[node]['id']= node_id
         node_id+=1
@@ -306,7 +306,7 @@ def createGraphML(network_with_affiliation_atributes :nx.Graph ,outFileName :str
         
         
         #print(exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
-        gfile.writelines(exportGraphMLformat.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
+        gfile.writelines(export_graphml_format.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
         nTup+=1
 
         if edge[0] == edge[1]:
@@ -315,10 +315,10 @@ def createGraphML(network_with_affiliation_atributes :nx.Graph ,outFileName :str
             sys.exit()            
     
     # Close grapth
-    gfile.writelines(exportGraphMLformat.graph_closer)
+    gfile.writelines(export_graphml_format.graph_closer)
 
     # close XML document 
-    gfile.writelines(exportGraphMLformat.graphml_closer)
+    gfile.writelines(export_graphml_format.graphml_closer)
 
     # close the export file 
     gfile.close()

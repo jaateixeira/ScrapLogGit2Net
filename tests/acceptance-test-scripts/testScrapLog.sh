@@ -32,7 +32,7 @@ if [ ! -f "$file" ]; then
     exit 1
 fi
 # Check if the file contains the specific error message
-if grep -q "ERROR collaboration tuplesList is empty" "$file"; then
+if grep -q "ERROR network have less than two nodes" "$file"; then
     echo "Success: The error message was found."
         echo "${GREEN}TESTCASE 1 passed${NC}"
 else
