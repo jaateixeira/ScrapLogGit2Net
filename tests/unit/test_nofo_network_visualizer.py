@@ -631,6 +631,452 @@ def test_integration_workflow(sample_graphml_file, sample_color_map_file):
     # But we've tested all the components
 
 
+# ============================================================================
+# Test Case 1: Test empty filtering results in error
+# ============================================================================
+
+def test_filter_by_organization_names_empty_result(sample_graphml_file):
+    """Test that filtering with no matching nodes raises an error."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    # Test include-only that doesn't match any nodes
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["NonExistentOrg1", "NonExistentOrg2"]
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+
+    # Should raise ValueError when no nodes remain
+    with pytest.raises(ValueError, match="Collaborative network has no nodes after filtering"):
+        visualizer.filter_by_organization_names()
+
+
+def test_filter_by_organization_names_all_excluded(sample_graphml_file):
+    """Test that excluding all nodes raises an error."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        exclude_orgs=["A", "B", "C", "D", "E"]  # Exclude all nodes
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+
+    with pytest.raises(ValueError, match="Collaborative network has no nodes after filtering"):
+        visualizer.filter_by_organization_names()
+
+
+# ============================================================================
+# Test Case 2: Test combined include-exclude edge cases
+# ============================================================================
+
+def test_filter_include_and_exclude_same_organization(sample_graphml_file):
+    """Test when an organization is both included and excluded (exclude should win)."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    # "A" is in both include and exclude - exclude should take precedence
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["A", "B", "C"],
+        exclude_orgs=["A"]  # A should be excluded even though it's in include
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+    visualizer.filter_by_organization_names()
+
+    # Should have only B and C (A was excluded)
+    assert set(visualizer.graph.nodes()) == {"B", "C"}
+    assert visualizer.graph.number_of_nodes() == 2
+
+
+def test_filter_include_only_with_non_existent_orgs(sample_graphml_file):
+    """Test include-only with some organizations that don't exist in the graph."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["A", "C", "NonExistent1", "NonExistent2"]
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+    visualizer.filter_by_organization_names()
+
+    # Should only keep A and C (the ones that actually exist)
+    assert set(visualizer.graph.nodes()) == {"A", "C"}
+    assert visualizer.graph.number_of_nodes() == 2
+
+
+# ============================================================================
+# Test Case 3: Test filter_by_org flag with organization filtering
+# ============================================================================
+
+def test_filter_by_org_flag_removes_isolates(sample_graphml_content):
+    """Test that --filter_by_org removes isolated nodes after organization filtering."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    # Create a graph where filtering leaves isolated nodes
+    isolated_content = """<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+  <key id="weight" for="edge" attr.name="weight" attr.type="double"/>
+  <graph id="G" edgedefault="undirected">
+    <node id="A"/>
+    <node id="B"/>
+    <node id="C"/>
+    <node id="D"/>  <!-- This will be isolated after filtering -->
+    <edge source="A" target="B">
+      <data key="weight">5.0</data>
+    </edge>
+    <edge source="B" target="C">
+      <data key="weight">3.0</data>
+    </edge>
+  </graph>
+</graphml>"""
+
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.graphml', delete=False) as f:
+        f.write(isolated_content)
+        temp_path = Path(f.name)
+
+    try:
+        # Test WITH filter_by_org flag
+        config_with_flag = NetworkConfig(
+            input_file=temp_path,
+            include_only_orgs=["A", "B", "C", "D"],  # Include all
+            filter_by_org=True  # Should remove isolated node D
+        )
+
+        visualizer_with = NetworkVisualizer(config_with_flag)
+        visualizer_with.load_graph()
+        visualizer_with.filter_by_organization_names()
+
+        # D should be removed because it's isolated
+        assert set(visualizer_with.graph.nodes()) == {"A", "B", "C"}
+        assert visualizer_with.graph.number_of_nodes() == 3
+
+        # Test WITHOUT filter_by_org flag
+        config_without_flag = NetworkConfig(
+            input_file=temp_path,
+            include_only_orgs=["A", "B", "C", "D"],
+            filter_by_org=False  # Should keep isolated node D
+        )
+
+        visualizer_without = NetworkVisualizer(config_without_flag)
+        visualizer_without.load_graph()
+        visualizer_without.filter_by_organization_names()
+
+        # D should be kept even though it's isolated
+        assert set(visualizer_without.graph.nodes()) == {"A", "B", "C", "D"}
+        assert visualizer_without.graph.number_of_nodes() == 4
+
+    finally:
+        if temp_path.exists():
+            temp_path.unlink()
+
+
+def test_filter_by_org_with_empty_graph_after_filtering():
+    """Test that filter_by_org doesn't cause issues when graph is already empty."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    # Create a minimal graph
+    minimal_content = """<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+  <graph id="G" edgedefault="undirected">
+    <node id="A"/>
+    <node id="B"/>
+    <edge source="A" target="B"/>
+  </graph>
+</graphml>"""
+
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.graphml', delete=False) as f:
+        f.write(minimal_content)
+        temp_path = Path(f.name)
+
+    try:
+        config = NetworkConfig(
+            input_file=temp_path,
+            include_only_orgs=["NonExistent"],  # No matching nodes
+            filter_by_org=True
+        )
+
+        visualizer = NetworkVisualizer(config)
+        visualizer.load_graph()
+
+        # Should raise error about empty graph, not about filter_by_org
+        with pytest.raises(ValueError, match="Collaborative network has no nodes after filtering"):
+            visualizer.filter_by_organization_names()
+
+    finally:
+        if temp_path.exists():
+            temp_path.unlink()
+
+
+# ============================================================================
+# Test Case 4: Test organization filtering with edge preservation
+# ============================================================================
+
+def test_organization_filtering_preserves_correct_edges(sample_graphml_file):
+    """Test that edges between remaining nodes are preserved after filtering."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["A", "B", "C"]  # These nodes have edges between them
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+    visualizer.filter_by_organization_names()
+
+    # Check that edges between remaining nodes are preserved
+    assert visualizer.graph.has_edge("A", "B")
+    assert visualizer.graph.has_edge("B", "C")
+    assert visualizer.graph.has_edge("A", "C")
+
+    # Check edge weights are preserved
+    assert visualizer.graph["A"]["B"]["weight"] == 5.0
+    assert visualizer.graph["B"]["C"]["weight"] == 3.0
+
+    # Edges to D and E should be removed
+    assert not visualizer.graph.has_edge("C", "D")
+    assert not visualizer.graph.has_edge("D", "E")
+
+
+def test_organization_filtering_edge_count_correct(sample_graphml_file):
+    """Test that edge count is correctly reduced after organization filtering."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    # Original graph has 5 edges total
+    # If we keep A, B, C only, we should keep edges: A-B, B-C, A-C (3 edges)
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["A", "B", "C"]
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+
+    original_edges = visualizer.graph.number_of_edges()  # Should be 5
+    visualizer.filter_by_organization_names()
+    new_edges = visualizer.graph.number_of_edges()  # Should be 3
+
+    assert original_edges == 5
+    assert new_edges == 3
+    assert new_edges < original_edges
+
+
+# ============================================================================
+# Test Case 5: Test CLI argument parsing for organization filters
+# ============================================================================
+
+def test_parse_arguments_comma_separated_include():
+    """Test parsing of comma-separated include-only argument."""
+    from nofo_graphml_network_visualizer import parse_arguments
+
+    test_args = [
+        "test.graphml",
+        "--include-only", "nvidia,google,amazon",
+        "--exclude", "user,test"
+    ]
+
+    with patch('sys.argv', ['script.py'] + test_args):
+        config = parse_arguments()
+
+        assert config.include_only_orgs == ["nvidia", "google", "amazon"]
+        assert config.exclude_orgs == ["user", "test"]
+
+
+def test_parse_arguments_comma_separated_with_spaces():
+    """Test parsing of comma-separated values with spaces."""
+    from nofo_graphml_network_visualizer import parse_arguments
+
+    test_args = [
+        "test.graphml",
+        "--include-only", "nvidia, google, amazon web services",
+        "--exclude", "user , test , unknown"
+    ]
+
+    with patch('sys.argv', ['script.py'] + test_args):
+        config = parse_arguments()
+
+        # Spaces should be stripped
+        assert config.include_only_orgs == ["nvidia", "google", "amazon web services"]
+        assert config.exclude_orgs == ["user", "test", "unknown"]
+
+
+def test_parse_arguments_empty_comma_separated():
+    """Test parsing of empty comma-separated strings."""
+    from nofo_graphml_network_visualizer import parse_arguments
+
+    test_args = [
+        "test.graphml",
+        "--include-only", "",
+        "--exclude", ",,,"  # Multiple commas
+    ]
+
+    with patch('sys.argv', ['script.py'] + test_args):
+        config = parse_arguments()
+
+        # Empty strings should result in None (converted from empty list)
+        assert config.include_only_orgs is None
+        assert config.exclude_orgs is None
+
+
+def test_parse_arguments_no_org_filters():
+    """Test when organization filters are not specified."""
+    from nofo_graphml_network_visualizer import parse_arguments
+
+    test_args = ["test.graphml"]
+
+    with patch('sys.argv', ['script.py'] + test_args):
+        config = parse_arguments()
+
+        assert config.include_only_orgs is None
+        assert config.exclude_orgs is None
+
+
+# ============================================================================
+# Test Case 6: Test integration of organization filtering with other features
+# ============================================================================
+
+def test_organization_filtering_before_centrality(sample_graphml_file):
+    """Test that organization filtering happens before centrality calculation."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["A", "B", "C"]
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+
+    # Filter first
+    visualizer.filter_by_organization_names()
+    assert set(visualizer.graph.nodes()) == {"A", "B", "C"}
+
+    # Then calculate centrality
+    visualizer.calculate_centralities()
+
+    # Centrality should only be calculated for A, B, C
+    assert set(visualizer.degree_centrality.keys()) == {"A", "B", "C"}
+    assert len(visualizer.degree_centrality) == 3
+
+
+def test_organization_filtering_then_top_n_filter(sample_graphml_file):
+    """Test combination of organization filtering followed by top-N filtering."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["A", "B", "C", "D", "E"],  # Keep all initially
+        filter_by_n_top_central_firms_only=2
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+
+    # Organization filtering (keeps all in this case)
+    visualizer.filter_by_organization_names()
+    assert visualizer.graph.number_of_nodes() == 5
+
+    # Calculate centrality on all nodes
+    visualizer.calculate_centralities()
+
+    # Then apply top-N filter
+    visualizer.filter_top_n_central_firms()
+
+    # Should have exactly 2 nodes (top 2 most central from A-E)
+    assert visualizer.graph.number_of_nodes() == 2
+    assert len(visualizer.degree_centrality) == 2
+
+
+def test_organization_filtering_then_top_n_filter_with_color_map(sample_graphml_file, sample_color_map_file):
+    """Test organization filtering, top-N filtering, and color map integration."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["A", "B", "C"],  # Filter to A, B, C
+        filter_by_n_top_central_firms_only=2,  # Then take top 2
+        color_map_file=sample_color_map_file
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+
+    # Organization filtering
+    visualizer.filter_by_organization_names()
+    assert set(visualizer.graph.nodes()) == {"A", "B", "C"}
+
+    # Calculate centrality
+    visualizer.calculate_centralities()
+
+    # Top-N filtering
+    visualizer.filter_top_n_central_firms()
+    assert visualizer.graph.number_of_nodes() == 2
+
+    # Load color map (should only load colors for remaining nodes)
+    visualizer.load_color_map()
+
+    # Color map should only contain colors for nodes that are still in the graph
+    # After organization filtering and top-N filtering
+    remaining_nodes = set(visualizer.graph.nodes())
+    for node in visualizer.known_org_node_colors:
+        assert node in remaining_nodes
+
+
+# ============================================================================
+# Test Case 7: Test error messages and console output
+# ============================================================================
+
+def test_filter_error_message_includes_filter_details(sample_graphml_file):
+    """Test that error message includes details about applied filters."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["NonExistent1", "NonExistent2"],
+        exclude_orgs=["AlsoNonExistent"]
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+
+    # Capture the error and check its message
+    with pytest.raises(ValueError) as exc_info:
+        visualizer.filter_by_organization_names()
+
+    error_msg = str(exc_info.value)
+
+    # Check that error message contains filter information
+    assert "Collaborative network has no nodes after filtering" in error_msg
+    assert "Include filter" in error_msg or "Include-only" in error_msg
+    # Note: The exact format depends on your implementation
+
+
+def test_filter_with_case_sensitivity(sample_graphml_file):
+    """Test that organization filtering is case-sensitive."""
+    from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer
+
+    # Graph has nodes "A", "B", "C" (uppercase)
+    config = NetworkConfig(
+        input_file=sample_graphml_file,
+        include_only_orgs=["a", "b"]  # lowercase - should not match
+    )
+
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+
+    # Should raise error because "a" and "b" don't match "A" and "B"
+    with pytest.raises(ValueError, match="Collaborative network has no nodes after filtering"):
+        visualizer.filter_by_organization_names()
+
+
+
 if __name__ == "__main__":
     # Run tests directly if needed
     pytest.main([__file__, "-v"])
