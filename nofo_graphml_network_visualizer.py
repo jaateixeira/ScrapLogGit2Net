@@ -38,6 +38,9 @@ class NetworkConfig:
     verbose: bool = False
     filter_by_n_top_central_firms_only: Optional[int] = None
     filter_by_org: bool = False
+    # Add organization filtering fields
+    include_only_orgs: Optional[List[str]] = None
+    exclude_orgs: Optional[List[str]] = None
 
 
 class NetworkVisualizer:
@@ -69,6 +72,95 @@ class NetworkVisualizer:
 
         if self.config.verbose:
             self._print_graph_details()
+
+    def filter_by_organization_names(self) -> None:
+        """Filter graph by organization names using include/exclude lists."""
+        if not self.graph:
+            raise ValueError("Graph not loaded")
+
+        # Check if we have any organization filters to apply
+        has_include = self.config.include_only_orgs is not None and len(self.config.include_only_orgs) > 0
+        has_exclude = self.config.exclude_orgs is not None and len(self.config.exclude_orgs) > 0
+
+        if not (has_include or has_exclude):
+            return  # No organization filtering needed
+
+        logger.info("Filtering by organization names...")
+
+        original_node_count = self.graph.number_of_nodes()
+        original_edge_count = self.graph.number_of_edges()
+
+        # Get all current nodes
+        all_nodes = set(self.graph.nodes())
+        nodes_to_keep = set(all_nodes)
+
+        # Apply include-only filter
+        if has_include:
+            include_set = set(self.config.include_only_orgs)
+            nodes_to_keep = nodes_to_keep.intersection(include_set)
+
+            if self.config.verbose:
+                logger.debug(f"Including only organizations: {include_set}")
+                logger.debug(f"Nodes matching include filter: {nodes_to_keep}")
+
+        # Apply exclude filter
+        if has_exclude:
+            exclude_set = set(self.config.exclude_orgs)
+            nodes_to_keep = nodes_to_keep.difference(exclude_set)
+
+            if self.config.verbose:
+                logger.debug(f"Excluding organizations: {exclude_set}")
+                logger.debug(f"Nodes after exclude filter: {nodes_to_keep}")
+
+        # Create subgraph with only the nodes we want to keep
+        self.graph = self.graph.subgraph(list(nodes_to_keep))
+
+        # Remove isolated nodes if filter_by_org flag is set
+        if self.config.filter_by_org:
+            isolates = list(nx.isolates(self.graph))
+            if isolates:
+                self.graph.remove_nodes_from(isolates)
+                if self.config.verbose:
+                    logger.debug(f"Removed isolated nodes: {isolates}")
+
+        new_node_count = self.graph.number_of_nodes()
+        new_edge_count = self.graph.number_of_edges()
+
+        logger.info(f"Organization filtering: {original_node_count} -> {new_node_count} nodes, "
+                    f"{original_edge_count} -> {new_edge_count} edges")
+
+        if new_node_count == 0:
+            # Build error message with filter details
+            error_msg = "Collaborative network has no nodes after filtering.\n"
+
+            if has_include:
+                error_msg += f"Include filter: {self.config.include_only_orgs}\n"
+            if has_exclude:
+                error_msg += f"Exclude filter: {self.config.exclude_orgs}\n"
+
+            # Display with unified console
+            console.print("[bold red]Error:[/bold red] Collaborative network has no nodes after filtering! 😞")
+            console.print(f"[yellow]Filters applied:[/yellow]")
+            if has_include:
+                console.print(f"  Include-only: {', '.join(self.config.include_only_orgs)}")
+            if has_exclude:
+                console.print(f"  Exclude: {', '.join(self.config.exclude_orgs)}")
+            console.print("[yellow]Hint:[/yellow] Your filters may be too restrictive. Consider:")
+            console.print("  - Using fewer organizations in --include-only")
+            console.print("  - Removing or adjusting --exclude filters")
+            console.print("  - Checking organization names match exactly")
+
+            # Log and raise
+            logger.error(f"No nodes remain after organization filtering. Filters: {error_msg}")
+            raise ValueError(error_msg)
+
+
+        # Update color map to only include remaining nodes
+        if self.known_org_node_colors:
+            self.known_org_node_colors = {
+                node: color for node, color in self.known_org_node_colors.items()
+                if node in nodes_to_keep
+            }
 
     def filter_top_n_central_firms(self) -> None:
         """Filter the graph to show only top N central firms."""
@@ -373,8 +465,19 @@ class NetworkVisualizer:
             base_name = input_path.stem
             output_dir = input_path.parent
 
-            pdf_path = output_dir / f"{base_name}-{self.config.network_layout}-top{self.config.filter_by_n_top_central_firms_only if self.config.filter_by_n_top_central_firms_only else 'all'}.pdf"
-            png_path = output_dir / f"{base_name}-{self.config.network_layout}-top{self.config.filter_by_n_top_central_firms_only if self.config.filter_by_n_top_central_firms_only else 'all'}.png"
+            # Create descriptive filename with filters
+            filters = []
+            if self.config.filter_by_n_top_central_firms_only:
+                filters.append(f"top{self.config.filter_by_n_top_central_firms_only}")
+            if self.config.include_only_orgs:
+                filters.append(f"inc-{len(self.config.include_only_orgs)}")
+            if self.config.exclude_orgs:
+                filters.append(f"exc-{len(self.config.exclude_orgs)}")
+
+            filter_str = "-".join(filters) if filters else "all"
+
+            pdf_path = output_dir / f"{base_name}-{self.config.network_layout}-{filter_str}.pdf"
+            png_path = output_dir / f"{base_name}-{self.config.network_layout}-{filter_str}.png"
 
             logger.info(f"Saving PDF to {pdf_path}")
             plt.savefig(pdf_path, format='pdf', dpi=300, bbox_inches='tight')
@@ -387,6 +490,15 @@ class NetworkVisualizer:
 
 def parse_arguments() -> NetworkConfig:
     """Parse command line arguments."""
+
+    # Helper function to parse comma-separated strings into lists
+    def comma_separated_list(value: str) -> List[str]:
+        """Convert comma-separated string to list of strings."""
+        if not value:
+            return []
+        # Split by comma, strip whitespace, filter empty strings
+        return [item.strip() for item in value.split(',') if item.strip()]
+
     parser = argparse.ArgumentParser(
         prog="formatAndViz-nofo-GraphML.py",
         description="Formats and visualizes a graphML file capturing a weighted Network of Organizations"
@@ -450,7 +562,22 @@ def parse_arguments() -> NetworkConfig:
     parser.add_argument(
         "-f", "--filter_by_org",
         action="store_true",
-        help="Filter by organization"
+        help="Remove isolated nodes after organization filtering"
+    )
+
+    # Add organization filtering arguments
+    parser.add_argument(
+        "--include-only",
+        type=comma_separated_list,
+        default=[],
+        help="Comma-separated list of organizations to include (e.g., 'nvidia,google,amazon')"
+    )
+
+    parser.add_argument(
+        "--exclude",
+        type=comma_separated_list,
+        default=[],
+        help="Comma-separated list of organizations to exclude (e.g., 'user,test,unknown')"
     )
 
     # Single argument with multiple option strings
@@ -480,6 +607,9 @@ def parse_arguments() -> NetworkConfig:
         verbose=args.verbose,
         filter_by_n_top_central_firms_only=args.filter_by_n_top_central_firms_only,
         filter_by_org=args.filter_by_org,
+        # Convert empty lists to None for consistency
+        include_only_orgs=args.include_only if args.include_only else None,
+        exclude_orgs=args.exclude if args.exclude else None,
     )
 
 
@@ -509,16 +639,23 @@ def main() -> None:
         visualizer = NetworkVisualizer(config)
         console.print("[bold green] Success:[/bold green] Visualizer created 😀\n")
 
-        # Load and process graph
+        # Load graph
         console.print(f"[bold blue] loading the graph {config.input_file=}\n")
         visualizer.load_graph()
         console.print("[bold green] Success:[/bold green] Graph loaded 😀\n")
 
+        # Apply organization name filtering IMMEDIATELY (removes nodes and their edges)
+        if config.include_only_orgs or config.exclude_orgs:
+            console.print(f"[bold blue] Filtering by organization names\n")
+            visualizer.filter_by_organization_names()
+            console.print("[bold green] Success:[/bold green] Organization filtering applied 😀\n")
+
+        # Calculate centrality on FILTERED graph
         console.print(f"[bold blue] Calculating centrality of nodes \n")
         visualizer.calculate_centralities()
         console.print("[bold green] Success:[/bold green] Centrality calculated 😀\n")
 
-        # Apply top N filter if requested
+        # Apply top N filter if requested (on already filtered graph)
         if config.filter_by_n_top_central_firms_only:
             console.print(
                 f"[bold blue] Filtering to show top {config.filter_by_n_top_central_firms_only} central firms\n")
