@@ -36,7 +36,7 @@ class NetworkConfig:
     show_visualization: bool = False
     show_legend: bool = False
     verbose: bool = False
-    filter_by_n_top_central_firms_only: bool = False
+    filter_by_n_top_central_firms_only: int  = 0
     filter_by_org: bool = False
 
 
