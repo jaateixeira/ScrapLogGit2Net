@@ -16,13 +16,17 @@ from datetime import datetime
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, DefaultDict, Tuple
 from collections import defaultdict
+from difflib import SequenceMatcher
+from itertools import combinations
+
+
 
 import networkx as nx
 from colorama import Fore, Style
 
 import export_log_data
 
-from utils.unified_console import (console, traceback, Table)
+from utils.unified_console import (console, traceback, Table, inspect)
 from utils.unified_logger import logger
 
 from utils.validators import (
@@ -88,6 +92,8 @@ class ProcessingState:
     email_aggregation_config: EmailAggregationConfig = field(default_factory=dict)
 
     # Operational modes
+    verbose_mode: bool = False
+    very_verbose_mode: bool = False
     debug_mode: bool = False
     save_mode: bool = False
     load_mode: bool = False
@@ -113,6 +119,39 @@ def print_exit_info() -> None:
 
 atexit.register(print_exit_info)
 console.print(f"Executing {sys.argv}")
+
+
+def find_similar_strings(strings: set[str], similarity_threshold: float = 0.8) -> set[Tuple[str, str, float]]:
+    """
+    Find pairs of strings that are at least n% similar to each other.
+
+    Args:
+        strings: List of strings to compare
+        similarity_threshold: Minimum similarity ratio (0.0 to 1.0), e.g., 0.8 for 80%
+
+    Returns:
+        List of tuples (string1, string2, similarity_score) for pairs above threshold
+    """
+    if not strings:
+        console.print()
+        sys.exit()
+
+    similar_pairs = []
+
+    # Generate all unique pairs of strings
+    for str1, str2 in combinations(strings, 2):
+        # Calculate similarity ratio (0.0 to 1.0)
+        similarity = SequenceMatcher(None, str1, str2).ratio()
+
+        if similarity >= similarity_threshold:
+            similar_pairs.append((str1, str2, similarity))
+
+    # Sort by similarity score (highest first)
+    similar_pairs.sort(key=lambda x: x[2], reverse=True)
+
+    return set(similar_pairs)
+
+
 
 
 def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
@@ -157,7 +196,7 @@ def extract_affiliation_from_email(
     affiliation : str= "Unknown"
 
     """Get affiliation from an email address with aggregation support."""
-    if state.debug_mode:
+    if state.verbose_mode:
         logger.info(f"\textract_affiliation_from_email({email})")
 
     if state.email_filtering_mode and email in state.emails_to_filter:
@@ -186,12 +225,12 @@ def extract_affiliation_from_email(
 
         affiliation= domain_component
 
-        if state.debug_mode:
+        if state.verbose_mode:
             logger.info(f"\textracted_affiliation_from_email({email})={affiliation}")
         return affiliation
 
     except Exception as e:
-        if state.debug_mode:
+        if state.verbose_mode:
             console.print(f"Error extracting affiliation from {email}: {e}")
         return "unknown"
 
@@ -240,7 +279,7 @@ def parse_time_name_email_affiliation(
         return (full_timestamp, name, email, affiliation)
 
     except Exception as e:
-        if state.debug_mode:
+        if state.verbose_mode:
             console.print(f"Error parsing line '{line}': {e}")
         state.statistics.increment_validation_errors()
         return None
@@ -288,7 +327,7 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Deve
         return None
 
     except Exception as e:
-        if state.debug_mode:
+        if state.verbose_mode:
             console.print(f"Error parsing exceptional format: {e}")
         return None
 
@@ -339,7 +378,7 @@ def process_commit_block(
         # Parse the commit header
         time_dev_info = parse_time_name_email_affiliation(first_line, state)
 
-        if state.debug_mode:
+        if state.verbose_mode:
             logger.debug("Retrieved ")
             logger.debug(f"{time_dev_info=}")
 
@@ -356,7 +395,7 @@ def process_commit_block(
         changed_files = extract_files_from_block(block[1:], state)
 
         if not changed_files:
-            if state.debug_mode:
+            if state.verbose_mode:
                 console.print(f"WARNING: No files in commit block for {first_line}")
             state.statistics.increment_skipped_blocks()
             return False
@@ -367,7 +406,7 @@ def process_commit_block(
 
     except Exception as e:
         console.print(f"ERROR processing commit block: {e}")
-        if state.debug_mode:
+        if state.verbose_mode:
             logger.debug(f"ERROR processing commit block:")
             logger.debug(f"{block=}")
             console.print(traceback.Traceback(), style="bold red")
@@ -377,8 +416,8 @@ def process_commit_block(
 
 def aggregate_files_and_contributors(state: ProcessingState) -> None:
     """Aggregate data: for each file, what are the contributors."""
-    if state.debug_mode:
-        console.print("\nAggregating data: for each file what are the contributors")
+
+    # console.print(f"\nAggregating data: for each file what are the contributors")
 
     files_visited: Set[Filename] = set()
 
@@ -398,8 +437,8 @@ def aggregate_files_and_contributors(state: ProcessingState) -> None:
 
 def extract_contributor_connections(state: ProcessingState) -> None:
     """Get tuples of authors that coded/contributed on the same file."""
-    if state.debug_mode:
-        console.print("\nGetting tuples of contributors that coded/contributed on the same file")
+
+    # console.print("\nGetting tuples of contributors that coded/contributed on the same file")
 
     state.connections_with_files.clear()
 
@@ -420,16 +459,26 @@ def get_unique_connections(
 
     for connection in tuples_list:
         (author1, author2), _ = connection
-        # Add both directions to ensure uniqueness
-        pair = tuple(sorted((author1, author2)))
+
+
+        if author1 < author2:
+            pair: Connection = (author1, author2)
+        else:
+            pair: Connection = (author2, author1)
+
+
         seen.add(pair)
 
     return list(seen)
 
 
+
+
+
+
 def create_network_graph(state: ProcessingState) -> None:
     """Create and populate the network graph."""
-    if state.debug_mode:
+    if state.verbose_mode:
         console.print("\nCreating network graph from unique connections")
 
     state.dev_to_dev_network.clear()
@@ -437,12 +486,13 @@ def create_network_graph(state: ProcessingState) -> None:
 
     # Add node attributes
     for node in state.dev_to_dev_network.nodes():
-        if state.debug_mode: logger.debug( f"Adding node attributes to {node=}")
+        if state.verbose_mode: logger.debug( f"Adding node attributes to {node=}")
 
-
-        state.dev_to_dev_network.nodes[node]['email'] = str(node)
-        state.dev_to_dev_network.nodes[node]['affiliation'] = extract_affiliation_from_email(node,state)
-
+        node_email = node
+        node_affiliation = extract_affiliation_from_email(node,state)
+        state.dev_to_dev_network.nodes[node]['email'] = node_email
+        state.dev_to_dev_network.nodes[node]['affiliation'] = node_affiliation
+        state.affiliations[node] = node_affiliation
 
 
 
@@ -451,13 +501,13 @@ def apply_email_filtering(state: ProcessingState) -> None:
     if not state.email_filtering_mode:
         return
 
-    if state.debug_mode:
+    if state.verbose_mode:
         console.print("\nRemoving filtered emails from the network graph")
 
     nodes_removed = 0
     for email in state.emails_to_filter:
         if state.dev_to_dev_network.has_node(email):
-            if state.debug_mode:
+            if state.verbose_mode:
                 console.print(f"\t removing node {email}")
             state.dev_to_dev_network.remove_node(email)
             nodes_removed += 1
@@ -465,7 +515,7 @@ def apply_email_filtering(state: ProcessingState) -> None:
     # Remove isolates after filtering
     isolates = list(nx.isolates(state.dev_to_dev_network))
     if isolates:
-        if state.debug_mode:
+        if state.verbose_mode:
             console.print(f"\nRemoving {len(isolates)} isolates that resulted from filtering")
         state.dev_to_dev_network.remove_nodes_from(isolates)
 
@@ -486,11 +536,19 @@ def print_processing_summary(state: ProcessingState, work_file: str) -> None:
     console.print(f"Network nodes (developers): {state.dev_to_dev_network.number_of_nodes()}")
     console.print(f"Network edges (collaborations): {state.dev_to_dev_network.size()}")
     console.print(f"Unique affiliations: {len(set(state.affiliations.values()))}")
+    console.print(f"Similar affiliation strings: 0.8 threshold {find_similar_strings(set(state.affiliations.values()))}")
+    console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
     console.print("=" * 60)
+
+
+def _ask_continue():
+    response = input("Do you want to continue? (y/n): ").strip().lower()
+    return response in ['y', 'yes', 'Y', 'YES']
 
 
 def main() -> None:
     """Main execution function."""
+
     state = ProcessingState()
 
     parser = argparse.ArgumentParser(
@@ -508,18 +566,31 @@ def main() -> None:
                         help='ignores the files listed in a text file (one file per line)')
     parser.add_argument('-a', '--aggregate-email-prefixes', type=str,
                         help='JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})')
-    parser.add_argument("-v", "--verbose", action="store_true",
-                        help="increased output verbosity")
+
+    # Verbosity using count action (supports -v, -vv, -vvv)
+    parser.add_argument(
+        '-v', '--verbose',
+        action='count',
+        default=0,
+        help='Increase verbosity level (use -v, -vv, or -vvv)'
+    )
+
+    # If we want actually to debug (e.g., inspect variable)
+    parser.add_argument('--debug', action='store_true', help='Enable debug output')
+
     parser.add_argument("--strict", action="store_true",
                         help="strict validation mode - fail on validation errors")
 
     args = parser.parse_args()
 
     # Set modes
-    state.debug_mode = args.verbose
+    state.verbose_mode = True if args.verbose == 1 else False
+    state.very_verbose_mode = True if args.verbose == 2 else False
+    state.debug_mode = True if args.debug  else False
+
     state.strict_validation = args.strict
 
-    if state.debug_mode:
+    if state.verbose_mode:
         console.print("\nVerbosity turned on")
 
 
@@ -570,8 +641,10 @@ def main() -> None:
 
             if line.startswith('=='):
                 if current_block:
-                    if state.debug_mode:
-                        logger.debug(f"processing {current_block=}")
+                    if state.verbose_mode:
+                        logger.debug(f"Processing {current_block[0]=}")
+                    elif state.very_verbose_mode: ## Very verbose mode
+                        logger.debug(f"Processing {current_block=}")
                     process_commit_block(current_block, state)
 
                 current_block = [line]
@@ -581,7 +654,7 @@ def main() -> None:
             elif line == '--\n':
                 continue
             else:
-                if state.debug_mode:
+                if state.verbose_mode:
                     console.print(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
 
         # Process final block
@@ -605,26 +678,32 @@ def main() -> None:
         sys.exit(1)
 
     # Process the data
+    console.print("[blue] Aggregating data:[/blue] For each file, what are the contributors.")
     aggregate_files_and_contributors(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Data aggregated by files and contributors")
+    if state.debug_mode:
+        console.print("[bold green] ✓ Data aggregated by files and contributors. Do you wanna inspect state?")
+        _ask_continue()
+        console.print("Do you want to continue?")
+        console.print(f'state={inspect(state)}')
+        _ask_continue()
 
-
+    console.print("[blue] Mapping connections between developers:[/blue] Getting tuples of contributors that coded/contributed on the same file")
     extract_contributor_connections(state)
-    console.print("[bold green]Success:[/bold green]" + "\n✓ Contributor connections extracted")
+    console.print("[bold green]Success:[/bold green]" + "\n✓ Contributor connections extracted as tupples")
+    if state.verbose_mode == 2:console.print(f'state={inspect(state)}')
 
-
+    console.print("[blue] Getting unique connections from tuples list.")
     state.unique_connections = get_unique_connections(state.connections_with_files)
     console.print("[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
+    if state.verbose_mode == 2: print(f'state={inspect(state)}')
 
+    if state.verbose_mode: print(f"{state.unique_connections=}")
 
-    if state.debug_mode:
-        print(f"{state.unique_connections=}")
-
-
-
+    console.print("[blue] Creating the network using NetworkX.")
     create_network_graph(state)
-
     console.print("[bold green]Success:[/bold green]" + "\n✓ Network graph created")
+    if state.verbose_mode == 2: console.print(f'state={inspect(state)}')
 
 
     apply_email_filtering(state)

@@ -1,1 +1,4 @@
 logs from scraplog should be created as well as the .graphml files
+
+Write test cases for sample of commit blocks
+
