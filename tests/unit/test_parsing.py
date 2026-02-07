@@ -11,7 +11,7 @@ from scrapLog import (
     ProcessingStatistics,
     load_email_aggregation_config,
     extract_affiliation_from_email,
-    parse_date_email_affiliation,
+    parse_time_name_email_affiliation,
     parse_exceptional_format,
     extract_files_from_block,
     process_commit_block,
@@ -20,7 +20,7 @@ from scrapLog import (
     get_unique_connections,
     create_network_graph,
     apply_email_filtering,
-    extract_affiliations,
+    extract_affiliation_from_email,
     print_processing_summary,
     ChangeLogEntry,
     DeveloperInfo
