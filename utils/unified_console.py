@@ -135,7 +135,7 @@ console = Console()
 # MESSAGE TYPE FUNCTIONS WITH EMOJIS
 # ============================================================================
 
-def fatal_error(message: str, details: str = None) -> None:
+def print_fatal_error(message: str, details: str = None) -> None:
     """
     Display a fatal error message.
 
@@ -166,7 +166,7 @@ def fatal_error(message: str, details: str = None) -> None:
     ))
 
 
-def error(message: str, details: str = None) -> None:
+def print_error(message: str, details: str = None) -> None:
     """
     Display an error message.
 
@@ -193,7 +193,7 @@ def error(message: str, details: str = None) -> None:
     ))
 
 
-def warning(message: str, details: str = None, highlight: bool = False) -> None:
+def print_warning(message: str, details: str = None, highlight: bool = False) -> None:
     """
     Display a warning message.
 
@@ -234,7 +234,7 @@ def warning(message: str, details: str = None, highlight: bool = False) -> None:
         console.print(warning_text)
 
 
-def success(message: str, details: str = None, highlight: bool = False) -> None:
+def print_success(message: str, details: str = None, highlight: bool = False) -> None:
     """
     Display a success message.
 
@@ -275,7 +275,7 @@ def success(message: str, details: str = None, highlight: bool = False) -> None:
         console.print(success_text)
 
 
-def key_action(message: str, symbol: str = "→", style: str = "bold blue") -> None:
+def print_key_action(message: str, symbol: str = "→", style: str = "bold blue") -> None:
     """
     Display a key action or step in a process.
 
@@ -291,7 +291,7 @@ def key_action(message: str, symbol: str = "→", style: str = "bold blue") -> N
     console.print(action_text)
 
 
-def info(message: str, icon: str = "ℹ️", details: str = None) -> None:
+def print_info(message: str, icon: str = "ℹ️", details: str = None) -> None:
     """
     Display an informational message.
 
@@ -311,7 +311,7 @@ def info(message: str, icon: str = "ℹ️", details: str = None) -> None:
     console.print(info_text)
 
 
-def note(message: str, details: str = None) -> None:
+def print_note(message: str, details: str = None) -> None:
     """
     Display a note message.
 
@@ -331,7 +331,7 @@ def note(message: str, details: str = None) -> None:
     console.print(note_text)
 
 
-def tip(message: str, details: str = None) -> None:
+def print_tip(message: str, details: str = None) -> None:
     """
     Display a helpful tip.
 
@@ -351,7 +351,7 @@ def tip(message: str, details: str = None) -> None:
     console.print(tip_text)
 
 
-def status(message: str, state: str = "processing") -> None:
+def print_status(message: str, state: str = "processing") -> None:
     """
     Display a status message with appropriate emoji.
 
@@ -389,7 +389,7 @@ def status(message: str, state: str = "processing") -> None:
     console.print(status_text)
 
 
-def step(message: str, number: int = None, total: int = None) -> None:
+def print_step(message: str, number: int = None, total: int = None) -> None:
     """
     Display a step in a process.
 
@@ -412,7 +412,7 @@ def step(message: str, number: int = None, total: int = None) -> None:
     console.print(step_text)
 
 
-def header(title: str, emoji: str = "📌") -> None:
+def print_header(title: str, emoji: str = "📌") -> None:
     """
     Display a section header.
 
@@ -429,7 +429,7 @@ def header(title: str, emoji: str = "📌") -> None:
     console.print()
 
 
-def subheader(title: str, emoji: str = "↳") -> None:
+def print_subheader(title: str, emoji: str = "↳") -> None:
     """
     Display a subheader.
 
@@ -445,7 +445,7 @@ def subheader(title: str, emoji: str = "↳") -> None:
 
 
 
-def emoji_message(emoji: str, message: str, style: str = None) -> None:
+def print_emoji_message(emoji: str, message: str, style: str = None) -> None:
     """
     Display a message with a custom emoji.
 

@@ -15,7 +15,7 @@ import networkx as nx
 import export_graphml_format
 
 from utils.unified_console import console
-from utils.unified_console import fatal_error
+from utils.unified_console import print_fatal_error
 from rich import inspect
 
 # Replace '@' and '.' by "AT" and "DOT" 
@@ -222,11 +222,11 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
 
     
     if network_with_affiliation_atributes.order() < 2:
-        fatal_error("Network have less than two nodes !")
+        print_fatal_error("Network have less than two nodes !")
         exit(1)
 
     if network_with_affiliation_atributes.size() < 1:
-        fatal_error("Network have less than one edge !!")
+        print_fatal_error("Network have less than one edge !!")
         exit(1)
 
         
@@ -236,12 +236,12 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
 
     for node, data in network_with_affiliation_atributes.nodes(data=True):
         if len(data['affiliation']) == 0:
-            fatal_error ("invalid affiliation attribute")
+            print_fatal_error("invalid affiliation attribute")
             console.print(f'{node=}')
             console.print(f'{data['affiliation']}')
             exit(1)
         if 'affiliation' not in data.keys():
-            fatal_error ("affiliation attribute is missing")
+            print_fatal_error("affiliation attribute is missing")
             console.print(f'{node=}')
             console.print(f'{data['affiliation']}')
             exit(1)
@@ -253,17 +253,15 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
             pass  # Already a Path, do nothing
         else:
             # Only error on truly invalid types
-            fatal_error(
-             "Invalid output filename",
-                f"Must be Path or string, got {type(out_file_name).__name__}: {repr(out_file_name)}"
-            )
+            print_fatal_error("Invalid output filename",
+                              f"Must be Path or string, got {type(out_file_name).__name__}: {repr(out_file_name)}")
         
-    if len(out_file_name) < 5 :
-        fatal_error("\tERROR outfilename must be a long string. More than 5 characters !")
+    if len(out_file_name.name) < 5 :
+        print_fatal_error("\tERROR outfilename must be a long string. More than 5 characters !")
         exit()
 
     if out_file_name[-8:] != ".graphML":
-        fatal_error("\tERROR outfilename must finish with .grapML extension")
+        print_fatal_error("\tERROR outfilename must finish with .grapML extension")
         exit()
 
     # open the export file 
