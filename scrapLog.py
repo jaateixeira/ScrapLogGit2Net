@@ -546,14 +546,6 @@ def _ask_continue():
     return response in ['y', 'yes', 'Y', 'YES']
 
 
-def main() -> None:
-    """Main execution function."""
-    state = ProcessingState()
-    args = parse_arguments()
-    setup_processing_state(state, args)
-    process_changelog_file(state, args)
-    execute_data_processing_pipeline(state)
-    export_results(state, args)
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -770,8 +762,18 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
         console.print()
     except Exception as e:
         console.print(f"ERROR exporting to GraphML: {e}")
-
     # Print summary
     print_processing_summary(state, args.raw)
+
+def main() -> None:
+    """Main execution function."""
+    state = ProcessingState()
+    args = parse_arguments()
+    setup_processing_state(state, args)
+    process_changelog_file(state, args)
+    execute_data_processing_pipeline(state)
+    export_results(state, args)
+
+
 if __name__ == "__main__":
     main()
