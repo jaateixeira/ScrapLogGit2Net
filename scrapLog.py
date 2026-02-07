@@ -548,9 +548,16 @@ def _ask_continue():
 
 def main() -> None:
     """Main execution function."""
-
     state = ProcessingState()
+    args = parse_arguments()
+    setup_processing_state(state, args)
+    process_changelog_file(state, args)
+    execute_data_processing_pipeline(state)
+    export_results(state, args)
 
+
+def parse_arguments() -> argparse.Namespace:
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         description='Scrap changelog to create networks/graphs for research purposes'
     )
@@ -567,32 +574,29 @@ def main() -> None:
     parser.add_argument('-a', '--aggregate-email-prefixes', type=str,
                         help='JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})')
 
-    # Verbosity using count action (supports -v, -vv, -vvv)
     parser.add_argument(
         '-v', '--verbose',
         action='count',
         default=0,
         help='Increase verbosity level (use -v, -vv, or -vvv)'
     )
-
-    # If we want actually to debug (e.g., inspect variable)
     parser.add_argument('--debug', action='store_true', help='Enable debug output')
-
     parser.add_argument("--strict", action="store_true",
                         help="strict validation mode - fail on validation errors")
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> None:
+    """Configure the processing state based on arguments."""
     # Set modes
     state.verbose_mode = True if args.verbose == 1 else False
     state.very_verbose_mode = True if args.verbose == 2 else False
-    state.debug_mode = True if args.debug  else False
-
+    state.debug_mode = True if args.debug else False
     state.strict_validation = args.strict
 
     if state.verbose_mode:
         console.print("\nVerbosity turned on")
-
 
     # Load email aggregation config
     if args.aggregate_email_prefixes:
@@ -609,21 +613,26 @@ def main() -> None:
         state.file_filtering_mode = True
         console.print("\nFile filtering turned on")
 
-    # Determine input file
-    work_file = args.raw
-
     # Load filter files
     if state.email_filtering_mode and args.filter_emails:
-        try:
-            with open(args.filter_emails, 'r') as ff:
-                state.emails_to_filter = {line.strip() for line in ff if line.strip()}
-            console.print(f"\tLoaded {len(state.emails_to_filter)} emails to filter")
-        except IOError as e:
-            console.print(f"WARNING: Could not read filter file {args.filter_emails}: {e}")
-            state.email_filtering_mode = False
+        load_email_filter_file(state, args.filter_emails)
 
 
-    # Process based on mode
+def load_email_filter_file(state: ProcessingState, filter_file_path: str) -> None:
+    """Load email filter list from file."""
+    try:
+        with open(filter_file_path, 'r') as ff:
+            state.emails_to_filter = {line.strip() for line in ff if line.strip()}
+        console.print(f"\tLoaded {len(state.emails_to_filter)} emails to filter")
+    except IOError as e:
+        console.print(f"WARNING: Could not read filter file {filter_file_path}: {e}")
+        state.email_filtering_mode = False
+
+
+def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> None:
+    """Process the raw changelog file."""
+    work_file = args.raw
+
     start_scrapping_time = time.time()
     console.print(f"\nStarting processing of {work_file} at {start_scrapping_time}")
 
@@ -631,44 +640,13 @@ def main() -> None:
         with open(work_file, 'r') as f:
             lines = f.readlines()
 
-        current_block: List[str] = []
-
-        for line_num, line in enumerate(lines, 1):
-            if line == "\n":
-                continue
-
-            state.statistics.nlines += 1
-
-            if line.startswith('=='):
-                if current_block:
-                    if state.verbose_mode:
-                        logger.debug(f"Processing {current_block[0]=}")
-                    elif state.very_verbose_mode: ## Very verbose mode
-                        logger.debug(f"Processing {current_block=}")
-                    process_commit_block(current_block, state)
-
-                current_block = [line]
-                state.statistics.n_blocks += 1
-            elif '.' in line or '/' in line or len(line.strip()) >= 3:
-                current_block.append(line)
-            elif line == '--\n':
-                continue
-            else:
-                if state.verbose_mode:
-                    console.print(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
-
-        # Process final block
-        if current_block:
-            process_commit_block(current_block, state)
+        process_file_lines(lines, state)
 
         console.print(f"\n✓ Successfully processed {len(state.change_log_data)} commits")
         console.print()
 
         if args.save:
-            console.print(f"\nSaving processed data to {args.save}")
-            with open(args.save, 'wb') as fp:
-                pickle.dump(state.change_log_data, fp)
-            console.print("Data saved successfully")
+            save_processed_data(state, args.save)
 
     except FileNotFoundError:
         console.print(f"ERROR: Input file not found: {work_file}")
@@ -677,10 +655,68 @@ def main() -> None:
         console.print(f"ERROR processing file: {e}")
         sys.exit(1)
 
-    # Process the data
+
+def process_file_lines(lines: List[str], state: ProcessingState) -> None:
+    """Process all lines from the input file."""
+    current_block: List[str] = []
+
+    for line_num, line in enumerate(lines, 1):
+        if line == "\n":
+            continue
+
+        state.statistics.nlines += 1
+
+        if line.startswith('=='):
+            if current_block:
+                process_current_block(state, current_block)
+                process_commit_block(current_block, state)
+
+            current_block = [line]
+            state.statistics.n_blocks += 1
+        elif '.' in line or '/' in line or len(line.strip()) >= 3:
+            current_block.append(line)
+        elif line == '--\n':
+            continue
+        else:
+            if state.verbose_mode:
+                console.print(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
+
+    # Process final block
+    if current_block:
+        process_commit_block(current_block, state)
+
+
+def process_current_block(state: ProcessingState, current_block: List[str]) -> None:
+    """Handle logging for the current block being processed."""
+    if state.verbose_mode:
+        logger.debug(f"Processing {current_block[0]=}")
+    elif state.very_verbose_mode:
+        logger.debug(f"Processing {current_block=}")
+
+
+def save_processed_data(state: ProcessingState, save_path: str) -> None:
+    """Save processed data to a pickle file."""
+    console.print(f"\nSaving processed data to {save_path}")
+    with open(save_path, 'wb') as fp:
+        pickle.dump(state.change_log_data, fp)
+    console.print("Data saved successfully")
+
+
+def execute_data_processing_pipeline(state: ProcessingState) -> None:
+    """Execute the main data processing pipeline."""
+    process_aggregation_step(state)
+    process_connections_step(state)
+    process_unique_connections_step(state)
+    process_network_creation_step(state)
+    apply_email_filtering(state)
+
+
+def process_aggregation_step(state: ProcessingState) -> None:
+    """Aggregate files and contributors."""
     console.print("[blue] Aggregating data:[/blue] For each file, what are the contributors.")
     aggregate_files_and_contributors(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Data aggregated by files and contributors")
+
     if state.debug_mode:
         console.print("[bold green] ✓ Data aggregated by files and contributors. Do you wanna inspect state?")
         _ask_continue()
@@ -688,28 +724,46 @@ def main() -> None:
         console.print(f'state={inspect(state)}')
         _ask_continue()
 
-    console.print("[blue] Mapping connections between developers:[/blue] Getting tuples of contributors that coded/contributed on the same file")
+
+def process_connections_step(state: ProcessingState) -> None:
+    """Extract contributor connections."""
+    console.print(
+        "[blue] Mapping connections between developers:[/blue] Getting tuples of contributors that coded/contributed on the same file")
     extract_contributor_connections(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Contributor connections extracted as tupples")
-    if state.verbose_mode == 2:console.print(f'state={inspect(state)}')
 
+    if state.verbose_mode == 2:
+        console.print(f'state={inspect(state)}')
+
+
+def process_unique_connections_step(state: ProcessingState) -> None:
+    """Get unique connections from tuples list."""
     console.print("[blue] Getting unique connections from tuples list.")
     state.unique_connections = get_unique_connections(state.connections_with_files)
-    console.print("[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
-    if state.verbose_mode == 2: print(f'state={inspect(state)}')
+    console.print(
+        "[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
 
-    if state.verbose_mode: print(f"{state.unique_connections=}")
+    if state.verbose_mode == 2:
+        print(f'state={inspect(state)}')
 
+    if state.verbose_mode:
+        print(f"{state.unique_connections=}")
+
+
+def process_network_creation_step(state: ProcessingState) -> None:
+    """Create network graph using NetworkX."""
     console.print("[blue] Creating the network using NetworkX.")
     create_network_graph(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Network graph created")
-    if state.verbose_mode == 2: console.print(f'state={inspect(state)}')
+
+    if state.verbose_mode == 2:
+        console.print(f'state={inspect(state)}')
 
 
-    apply_email_filtering(state)
-
+def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
+    """Export results to GraphML and print summary."""
     # Export to GraphML
-    graphml_filename = Path(work_file).stem + ".NetworkFile.graphML"
+    graphml_filename = Path(args.raw).stem + ".NetworkFile.graphML"
     try:
         export_log_data.createGraphML(state.dev_to_dev_network, graphml_filename)
         console.print(f"\n✓ Network exported to GraphML file: {graphml_filename}")
@@ -717,9 +771,7 @@ def main() -> None:
     except Exception as e:
         console.print(f"ERROR exporting to GraphML: {e}")
 
-    # console.print summary
-    print_processing_summary(state, work_file)
-
-
+    # Print summary
+    print_processing_summary(state, args.raw)
 if __name__ == "__main__":
     main()
