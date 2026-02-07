@@ -4,6 +4,7 @@ Scrap date, authors, affiliations and file changes from a Git Changelog.
 """
 
 import sys
+import os
 import re
 import argparse
 import pickle
@@ -22,6 +23,7 @@ from itertools import combinations
 
 
 import networkx as nx
+
 from colorama import Fore, Style
 
 import export_log_data
@@ -520,12 +522,13 @@ def apply_email_filtering(state: ProcessingState) -> None:
         state.dev_to_dev_network.remove_nodes_from(isolates)
 
 
-def print_processing_summary(state: ProcessingState, work_file: str) -> None:
+def print_processing_summary(state: ProcessingState, in_work_file: Path, out_graphml_file: Path ) -> None:
     """console.print a summary of processing results."""
     console.print("\n" + "=" * 60)
     console.print("PROCESSING SUMMARY")
     console.print("=" * 60)
-    console.print(f"Input file: {work_file}")
+    console.print(f"Input log file: {in_work_file}")
+    console.print(f"Out network graphml file: {out_graphml_file}")
     console.print(f"Total lines processed: {state.statistics.nlines}")
     console.print(f"Total commit blocks found: {state.statistics.n_blocks}")
     console.print(f"Successfully processed blocks: {state.statistics.n_blocks - state.statistics.n_skipped_blocks}")
@@ -553,18 +556,20 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Scrap changelog to create networks/graphs for research purposes'
     )
-    parser.add_argument('-l', '--load', type=str,
+    parser.add_argument('-l', '--load', type=Path,
                         help='loads and processes a serialized changelog')
-    parser.add_argument('-r', '--raw', type=str, required=True,
+    parser.add_argument('-r', '--raw', type=Path, required=True,
                         help='processes from a raw git changelog')
-    parser.add_argument('-s', '--save', type=str,
+    parser.add_argument('-s', '--save', type=Path,
                         help='processes from a raw git changelog and saves it into a serialized changelog')
-    parser.add_argument('-fe', '--filter-emails', type=str,
+    parser.add_argument('-fe', '--filter-emails', type=Path,
                         help='ignores the emails listed in a text file (one email per line)')
-    parser.add_argument('-ff', '--filter-files', type=str,
+    parser.add_argument('-ff', '--filter-files', type=Path,
                         help='ignores the files listed in a text file (one file per line)')
-    parser.add_argument('-a', '--aggregate-email-prefixes', type=str,
+    parser.add_argument('-a', '--aggregate-email-prefixes', type=Path,
                         help='JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})')
+    parser.add_argument('-o','--output-file', type=Path,
+                         help='creates a network/graph graphml file with the given name')
 
     parser.add_argument(
         '-v', '--verbose',
@@ -572,8 +577,8 @@ def parse_arguments() -> argparse.Namespace:
         default=0,
         help='Increase verbosity level (use -v, -vv, or -vvv)'
     )
-    parser.add_argument('--debug', action='store_true', help='Enable debug output')
-    parser.add_argument("--strict", action="store_true",
+    parser.add_argument('-d','--debug', action='store_true', help='Enable debug output')
+    parser.add_argument('-st','--strict', action='store_true',
                         help="strict validation mode - fail on validation errors")
 
     return parser.parse_args()
@@ -686,11 +691,26 @@ def process_current_block(state: ProcessingState, current_block: List[str]) -> N
         logger.debug(f"Processing {current_block=}")
 
 
-def save_processed_data(state: ProcessingState, save_path: str) -> None:
+def save_processed_data(state: ProcessingState, save_path: Path) -> None:
     """Save processed data to a pickle file."""
     console.print(f"\nSaving processed data to {save_path}")
-    with open(save_path, 'wb') as fp:
-        pickle.dump(state.change_log_data, fp)
+
+    def save_data(data, path):
+        """Safely save data with pickle."""
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        # Save with error handling
+        try:
+            with open(path, 'wb') as fp:
+                pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
+            print(f"Successfully saved to {path}")
+        except Exception as e:
+            print(f"Failed to save: {e}")
+            raise
+
+    # Usage
+    save_data(state.change_log_data, save_path)
     console.print("Data saved successfully")
 
 
@@ -755,15 +775,22 @@ def process_network_creation_step(state: ProcessingState) -> None:
 def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     """Export results to GraphML and print summary."""
     # Export to GraphML
-    graphml_filename = Path(args.raw).stem + ".NetworkFile.graphML"
+
+    if state.verbose_mode: console.print(f'export results to GraphML')
+    if state.very_verbose_mode: console.print(f'export results to GraphML: state={state}, args={args}')
+
+
+    if args.output_file: graphml_filename = Path(args.output_file)
+    else: graphml_filename = Path(args.raw).stem + ".NetworkFile.graphML"
+
     try:
-        export_log_data.createGraphML(state.dev_to_dev_network, graphml_filename)
+        export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
         console.print(f"\n✓ Network exported to GraphML file: {graphml_filename}")
         console.print()
     except Exception as e:
         console.print(f"ERROR exporting to GraphML: {e}")
     # Print summary
-    print_processing_summary(state, args.raw)
+    print_processing_summary(state, args.raw,args.output_file)
 
 def main() -> None:
     """Main execution function."""

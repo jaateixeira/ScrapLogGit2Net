@@ -112,6 +112,359 @@ traceback.install(
 )
 """
 
+# !/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Enhanced console functions with rich formatting and emojis.
+Pure message-based functions without exit codes.
+"""
+
+from rich.console import Console
+from rich.text import Text
+from rich.panel import Panel
+from rich.columns import Columns
+from rich.align import Align
+from rich.box import ROUNDED, HEAVY, DOUBLE, SIMPLE
+
+# Initialize the console
+console = Console()
+
+
+# ============================================================================
+# MESSAGE TYPE FUNCTIONS WITH EMOJIS
+# ============================================================================
+
+def fatal_error(message: str, details: str = None) -> None:
+    """
+    Display a fatal error message.
+
+    Args:
+        message: The main error message
+        details: Additional details (optional)
+    """
+    error_text = Text()
+    error_text.append("💀 ", style="bold red")
+    error_text.append("FATAL ERROR: ", style="bold white on red")
+    error_text.append(message, style="bold red")
+
+    if details:
+        error_text.append("\n\n")
+        error_text.append("Details: ", style="bold yellow")
+        error_text.append(details, style="yellow")
+
+    error_text.append("\n\n❌ ", style="bold red")
+    error_text.append("Program cannot continue.", style="italic red")
+
+    console.print("\n")
+    console.print(Panel(
+        error_text,
+        title="[bold white]Critical Failure[/bold white]",
+        border_style="red",
+        box=HEAVY,
+        padding=(1, 2)
+    ))
+
+
+def error(message: str, details: str = None) -> None:
+    """
+    Display an error message.
+
+    Args:
+        message: The main error message
+        details: Additional details (optional)
+    """
+    error_text = Text()
+    error_text.append("❌ ", style="bold red")
+    error_text.append("Error: ", style="bold red")
+    error_text.append(message, style="red")
+
+    if details:
+        error_text.append("\n")
+        error_text.append("ℹ️  ", style="cyan")
+        error_text.append(details, style="dim cyan")
+
+    console.print("\n")
+    console.print(Panel(
+        error_text,
+        border_style="red",
+        box=ROUNDED,
+        padding=(1, 1)
+    ))
+
+
+def warning(message: str, details: str = None, highlight: bool = False) -> None:
+    """
+    Display a warning message.
+
+    Args:
+        message: The main warning message
+        details: Additional details (optional)
+        highlight: If True, uses stronger styling (default: False)
+    """
+    warning_text = Text()
+
+    if highlight:
+        warning_text.append("🚨 ", style="bold yellow")
+        warning_text.append("Important Warning: ", style="bold yellow")
+        warning_text.append(message, style="bold yellow")
+
+        if details:
+            warning_text.append("\n")
+            warning_text.append("📝 ", style="dim yellow")
+            warning_text.append(details, style="dim yellow")
+
+        console.print("\n")
+        console.print(Panel(
+            warning_text,
+            title="[bold yellow]Attention Required[/bold yellow]",
+            border_style="yellow",
+            box=HEAVY,
+            padding=(1, 2)
+        ))
+    else:
+        warning_text.append("⚠️  ", style="yellow")
+        warning_text.append("Warning: ", style="yellow")
+        warning_text.append(message, style="yellow")
+
+        if details:
+            warning_text.append(" - ")
+            warning_text.append(details, style="dim")
+
+        console.print(warning_text)
+
+
+def success(message: str, details: str = None, highlight: bool = False) -> None:
+    """
+    Display a success message.
+
+    Args:
+        message: The main success message
+        details: Additional details (optional)
+        highlight: If True, uses celebratory styling (default: False)
+    """
+    if highlight:
+        success_text = Text()
+        success_text.append("🎉 ", style="bold green")
+        success_text.append("Success: ", style="bold green")
+        success_text.append(message, style="bold green")
+
+        if details:
+            success_text.append("\n")
+            success_text.append("✨ ", style="cyan")
+            success_text.append(details, style="cyan")
+
+        console.print("\n")
+        console.print(Panel(
+            success_text,
+            title="[bold white]Achievement![/bold white]",
+            border_style="green",
+            box=DOUBLE,
+            padding=(1, 2)
+        ))
+        console.print()
+    else:
+        success_text = Text()
+        success_text.append("✅ ", style="green")
+        success_text.append(message, style="green")
+
+        if details:
+            success_text.append(" - ")
+            success_text.append(details, style="dim")
+
+        console.print(success_text)
+
+
+def key_action(message: str, symbol: str = "→", style: str = "bold blue") -> None:
+    """
+    Display a key action or step in a process.
+
+    Args:
+        message: The action description
+        symbol: Symbol to use (default: →)
+        style: Style for the message (default: bold blue)
+    """
+    action_text = Text()
+    action_text.append(f"{symbol} ", style=style)
+    action_text.append(message, style="bold")
+
+    console.print(action_text)
+
+
+def info(message: str, icon: str = "ℹ️", details: str = None) -> None:
+    """
+    Display an informational message.
+
+    Args:
+        message: The main info message
+        icon: Icon to use (default: ℹ️)
+        details: Additional details (optional)
+    """
+    info_text = Text()
+    info_text.append(f"{icon} ", style="cyan")
+    info_text.append(message, style="blue")
+
+    if details:
+        info_text.append("\n   ")
+        info_text.append(details, style="dim")
+
+    console.print(info_text)
+
+
+def note(message: str, details: str = None) -> None:
+    """
+    Display a note message.
+
+    Args:
+        message: The main note
+        details: Additional details (optional)
+    """
+    note_text = Text()
+    note_text.append("📝 ", style="bold cyan")
+    note_text.append("Note: ", style="bold cyan")
+    note_text.append(message, style="cyan")
+
+    if details:
+        note_text.append("\n")
+        note_text.append(details, style="dim")
+
+    console.print(note_text)
+
+
+def tip(message: str, details: str = None) -> None:
+    """
+    Display a helpful tip.
+
+    Args:
+        message: The main tip
+        details: Additional details (optional)
+    """
+    tip_text = Text()
+    tip_text.append("💡 ", style="bold yellow")
+    tip_text.append("Tip: ", style="bold yellow")
+    tip_text.append(message, style="yellow")
+
+    if details:
+        tip_text.append("\n")
+        tip_text.append(details, style="dim")
+
+    console.print(tip_text)
+
+
+def status(message: str, state: str = "processing") -> None:
+    """
+    Display a status message with appropriate emoji.
+
+    Args:
+        message: What's being done
+        state: Current state (processing, done, waiting, etc.)
+    """
+    # Map states to emojis
+    state_emojis = {
+        "processing": "🔄",
+        "working": "⚙️",
+        "loading": "📥",
+        "saving": "💾",
+        "done": "✅",
+        "complete": "✅",
+        "ready": "✅",
+        "waiting": "⏳",
+        "paused": "⏸️",
+        "stopped": "⏹️",
+        "failed": "❌",
+        "error": "❌",
+        "warning": "⚠️",
+        "info": "ℹ️",
+    }
+
+    emoji = state_emojis.get(state.lower(), "📌")
+
+    status_text = Text()
+    status_text.append(f"{emoji} ", style="bold")
+    status_text.append(message, style="cyan")
+
+    if state:
+        status_text.append(f" [{state}]", style="dim")
+
+    console.print(status_text)
+
+
+def step(message: str, number: int = None, total: int = None) -> None:
+    """
+    Display a step in a process.
+
+    Args:
+        message: Step description
+        number: Step number (optional)
+        total: Total steps (optional)
+    """
+    step_text = Text()
+
+    if number and total:
+        step_text.append(f"Step {number}/{total}: ", style="bold magenta")
+    elif number:
+        step_text.append(f"Step {number}: ", style="bold magenta")
+    else:
+        step_text.append("• ", style="bold magenta")
+
+    step_text.append(message, style="bold")
+
+    console.print(step_text)
+
+
+def header(title: str, emoji: str = "📌") -> None:
+    """
+    Display a section header.
+
+    Args:
+        title: Header title
+        emoji: Leading emoji (default: 📌)
+    """
+    console.print()
+    header_text = Text()
+    header_text.append(f"{emoji} ", style="bold")
+    header_text.append(title, style="bold white on blue")
+    console.print(header_text)
+    console.rule(style="blue")
+    console.print()
+
+
+def subheader(title: str, emoji: str = "↳") -> None:
+    """
+    Display a subheader.
+
+    Args:
+        title: Subheader title
+        emoji: Leading symbol (default: ↳)
+    """
+    subheader_text = Text()
+    subheader_text.append(f"{emoji} ", style="bold cyan")
+    subheader_text.append(title, style="bold cyan underline")
+    console.print(subheader_text)
+
+
+
+
+def emoji_message(emoji: str, message: str, style: str = None) -> None:
+    """
+    Display a message with a custom emoji.
+
+    Args:
+        emoji: The emoji to use
+        message: The message text
+        style: Optional style (default: None)
+    """
+    message_text = Text()
+    message_text.append(f"{emoji} ", style="bold")
+
+    if style:
+        message_text.append(message, style=style)
+    else:
+        message_text.append(message)
+
+    console.print(message_text)
+
+
 
 
 def console_messages() -> None:
