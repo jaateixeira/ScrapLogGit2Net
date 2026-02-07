@@ -23,7 +23,8 @@ def clearDotsAndAts(contribEmail):
 
     #print ("clearing Strings From Dots and Ats from: [" + contribEmail+ "]")
 
-    pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
+    # pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
+    pattern = re.compile(r'^[\w\.-]+@[\w\.-]+\.\w+$')
  
     if (pattern.search(contribEmail)== None):
         print ("ERROR Contributor have an invalidName")
