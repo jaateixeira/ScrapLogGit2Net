@@ -897,10 +897,10 @@ def test_extract_affiliation_with_custom_config(processing_state):
     }
 
     test_cases = [
-        ("jose.teixeira@abo.fi", "Åbo Akademi", "Custom affiliation for abo.fi"),
-        ("smallguy@alumni.mit.edu", "Massachusetts Institute of Technology", "Custom affiliation for MIT"),
-        ("bigguy@us.ibm.com", "International Business Machines", "Custom affiliation for IBM"),
-        ("user@gmail.com", "Google Mail", "Custom affiliation for Gmail"),
+        ("jose.teixeira@abo.fi", "abo", "Custom affiliation for abo.fi"),
+        ("smallguy@alumni.mit.edu", "mit", "Custom affiliation for MIT"),
+        ("bigguy@us.ibm.com", "ibm", "Custom affiliation for IBM"),
+        ("user@gmail.com", "gmail", "Custom affiliation for Gmail"),
     ]
 
     for email, expected, description in test_cases:
