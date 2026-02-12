@@ -29,7 +29,8 @@ from colorama import Fore, Style
 
 import export_log_data
 
-from utils.unified_console import (console, traceback, Table, inspect)
+from utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
+                                   print_error)
 from utils.unified_logger import logger
 
 
@@ -472,10 +473,10 @@ def process_commit_block(
 
 
         if not time_dev_info:
-            console.print(f"WARNING: Could not parse commit header: {first_line[:50]}...")
-            console.print(f"[bold red]Error:[/bold red] Could not get developer information from commit block {first_line}")
+            print_warning(f"Could not parse commit header: {first_line[:50]}...")
+            print_error(f"Could not get developer information from commit block {first_line}")
             state.statistics.increment_skipped_blocks()
-            sys.exit(1)
+            #sys.exit(1)
 
         commit_time, dev_name, dev_email, dev_affiliation = time_dev_info
 
@@ -678,6 +679,8 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
     state.debug_mode = True if args.debug else False
     state.strict_validation = args.strict
 
+
+
     if state.verbose_mode:
         console.print("\nVerbosity turned on")
 
@@ -690,7 +693,8 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
     # Set filtering modes
     if args.filter_emails:
         state.email_filtering_mode = True
-        console.print("\nEmail filtering turned on")
+        print_info("Email filtering turned on.")
+        print_tip("The filtering based on  only happen when creating the graphml network output file.")
 
     if args.filter_files:
         state.file_filtering_mode = True

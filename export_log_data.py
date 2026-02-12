@@ -3,8 +3,6 @@
 # Second implementation to GraphML (VISIONE) for OpenStack SNA - Open Journal special issue  - using the exportgraphml form
 
 
-from __future__ import absolute_import
-from __future__ import print_function
 import sys
 import re
 import csv
@@ -15,7 +13,7 @@ import networkx as nx
 import export_graphml_format
 
 from utils.unified_console import console
-from utils.unified_console import print_fatal_error
+from utils.unified_console import print_fatal_error , print_warning , print_error, print_success, print_info
 from rich import inspect
 
 # Replace '@' and '.' by "AT" and "DOT" 
@@ -216,7 +214,7 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     elif not isinstance(out_file_name, Path):
         raise TypeError(f"{out_file_name} must be a string or Path object")
 
-    console.print(f"Exporting graph to file (.graphml): {out_file_name=}  ")
+    print_info(f"Exporting graph to file (.graphml): {out_file_name=}  ")
     
     # verify arguments data
     ## verify graph/network 
@@ -236,6 +234,11 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     "verify every node as affiliation data"
 
     for node, data in network_with_affiliation_atributes.nodes(data=True):
+        #console.print(f"{node}: {data['affiliation']}")
+
+        if None == data['affiliation']:
+            break
+
         if len(data['affiliation']) == 0:
             print_fatal_error("invalid affiliation attribute")
             console.print(f'{node=}')
@@ -260,15 +263,14 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     if len(out_file_name.name) < 5 :
         print_fatal_error("\tERROR outfilename must be a long string. More than 5 characters !")
         exit()
-
-    if out_file_name[-8:] != ".graphML":
-        print_fatal_error("\tERROR outfilename must finish with .grapML extension")
+    if out_file_name.suffix.lower() != ".graphml":
+        print_fatal_error("\tERROR outfilename must finish with .graphml extension")
         exit()
 
     # open the export file 
 
-    print ("")    
-    print(("\tWriting grapthML file  (for VISIONE SNA tool or other ) on file:[" + out_file_name + "]"))
+
+    print_info(f"Writing graphml file  (for VISONE SNA tool or other ) {out_file_name= }")
 
     gfile= open(out_file_name, 'w')
 
@@ -299,9 +301,13 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     node_id = 0
     for node, data in network_with_affiliation_atributes.nodes(data=True):
         email=node
-        afl=data['affiliation']
+        afl= data['affiliation']
         #print(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
-        gfile.writelines(export_graphml_format.addNode(node_id,[(0,email),(1,"turquoise"),(2,afl)]))
+        if afl == None :
+            gfile.writelines(export_graphml_format.addNode(node_id, [(0, email), (1, "turquoise"), (2, "unknown")]))
+            print_warning(f"node = {email=} does not have a known affiliation attribute")
+        else:
+            gfile.writelines(export_graphml_format.addNode(node_id,[(0,email),(1,"turquoise"),(2,afl)]))
         # Give a each node and numeric id atribute data as well 
         network_with_affiliation_atributes.nodes[node]['id']= node_id
         node_id+=1

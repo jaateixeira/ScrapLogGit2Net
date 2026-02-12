@@ -338,6 +338,9 @@ def print_tip(message: str, details: str = None) -> None:
     Args:
         message: The main tip
         details: Additional details (optional)
+
+    Returns:
+        None: 
     """
     tip_text = Text()
     tip_text.append("💡 ", style="bold yellow")
