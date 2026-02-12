@@ -23,6 +23,7 @@ from scrapLog import (
     extract_affiliation_from_email,
     print_processing_summary,
     ChangeLogEntry,
+
     DeveloperInfo
 )
 
@@ -504,12 +505,12 @@ def test_extract_affiliations():
             (("date3", "charlie@test.com", ""), ["file3.js"]),
         ]
 
-        extract_affiliations(state)
+        create_network_graph(state)
 
         assert len(state.affiliations) == 3
-        assert state.affiliations["alice@example.com"] == "Example Corp"
-        assert state.affiliations["bob@example.com"] == "Example Corp"
-        assert state.affiliations["charlie@test.com"] == "Test Inc"
+        assert state.affiliations["alice@example.com"] == "example"
+        assert state.affiliations["bob@alummi.example.com"] == "example"
+        assert state.affiliations["charlie@test.com"] == "test"
     finally:
         # Restore original function
         scrapLog.extract_affiliation_from_email = original_func
@@ -686,17 +687,16 @@ def test_full_processing_flow():
     extract_contributor_connections(state)
     assert len(state.connections_with_files) > 0
 
+
+
     # Get unique connections
     state.unique_connections = get_unique_connections(state.connections_with_files)
 
-    # Extract affiliations
-    extract_affiliations(state)
-    assert len(state.affiliations) == 3
 
     # Create network graph
     create_network_graph(state)
     assert state.dev_to_dev_network.number_of_nodes() == 3
-
+    assert len(state.affiliations) == 3
     # Verify specific connections
     assert state.dev_to_dev_network.has_edge("alice@example.com", "bob@test.com")  # Both edited src/main.py
     assert state.dev_to_dev_network.has_edge("alice@example.com", "charlie@example.com")  # Both edited README.md
