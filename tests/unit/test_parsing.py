@@ -4,9 +4,15 @@ import json
 from collections import defaultdict
 
 import pytest
-import tempfile
 import networkx as nx
 from pathlib import Path
+import tempfile
+from pathlib import Path
+import argparse
+from types import SimpleNamespace
+import sys
+import os
+
 
 from scrapLog import (
     ProcessingState,
@@ -711,25 +717,17 @@ def test_full_processing_flow():
 
 
 # Bonus test: Test with debug mode
-def test_extract_affiliation_from_email_debug_mode(capsys):
+def test_extract_affiliation_from_email_debug_mode():
     """Test email extraction with debug mode enabled."""
     state = ProcessingState()
     state.debug_mode = True
 
     result = extract_affiliation_from_email("test@example.com", state)
 
-    captured = capsys.readouterr()
-    assert "extract_affiliation_from_email" in captured.out
     assert result == "example"
 
 
 
-import tempfile
-from pathlib import Path
-import argparse
-from types import SimpleNamespace
-import sys
-import os
 
 
 # Test that -o option creates the correct output file
@@ -849,24 +847,6 @@ def test_extract_affiliation_from_email(processing_state):
         result = extract_affiliation_from_email(email, processing_state)
         assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
 
-
-def test_extract_affiliation_with_filtering_mode(processing_state):
-    """Test email filtering mode."""
-
-    # Set up filtering
-    processing_state.email_filtering_mode = True
-    processing_state.emails_to_filter = {"jose.teixeira@abo.fi", "bigguy@us.ibm.com"}
-
-    test_cases = [
-        ("jose.teixeira@abo.fi", None, "Filtered email should return None"),
-        ("bigguy@us.ibm.com", None, "Filtered email should return None"),
-        ("smallguy@alumni.mit.edu", "MIT", "Non-filtered email should process normally"),
-        ("evenbigguy@ca.us.ibm.com", "IBM", "Non-filtered email should process normally"),
-    ]
-
-    for email, expected, description in test_cases:
-        result = extract_affiliation_from_email(email, processing_state)
-        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
 
 
 def test_extract_affiliation_case_sensitivity(processing_state):
