@@ -146,6 +146,10 @@ def find_similar_strings(strings: set[str], similarity_threshold: float = 0.8) -
 
     # Generate all unique pairs of strings
     for str1, str2 in combinations(strings, 2):
+
+        if None in (str1, str2):
+            continue
+
         # Calculate similarity ratio (0.0 to 1.0)
         similarity = SequenceMatcher(None, str1, str2).ratio()
 
@@ -627,7 +631,7 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     console.print(f"Network edges (collaborations): {state.dev_to_dev_network.size()}")
     console.print(f"Unique affiliations: {len(set(state.affiliations.values()))}")
     console.print(f"Similar affiliation strings: 0.8 threshold {find_similar_strings(set(state.affiliations.values()))}")
-    console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
+    #console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
     console.print("=" * 60)
 
 
