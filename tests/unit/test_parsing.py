@@ -23,7 +23,6 @@ from scrapLog import (
     extract_affiliation_from_email,
     print_processing_summary,
     ChangeLogEntry,
-
     DeveloperInfo
 )
 
@@ -194,10 +193,10 @@ def test_parse_time_name_email_affiliation_standard():
     result = parse_time_name_email_affiliation(line, state)
     assert result is not None
 
-    date, email, affiliation = result
+    time, name, email, affiliation = result
     assert email == "john@example.com"
     assert affiliation == "example"
-    assert "Feb 20" in date
+    assert "Feb 20" in time
 
 
 # Test 12: parse_time_name_email_affiliation - exceptional format 1
