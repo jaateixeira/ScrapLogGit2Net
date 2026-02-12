@@ -238,10 +238,10 @@ def test_parse_time_name_email_affiliation_launchpad():
     result = parse_time_name_email_affiliation(line, state)
     assert result is not None
 
-    date, email, affiliation = result
+    time, name , email, affiliation = result
     assert email == "launchpad@bot.bot"
     assert affiliation == "bot"
-    assert "Sep 20" in date
+    assert "Sep 20" in time
 
 
 # Test 15: parse_time_name_email_affiliation - invalid format
