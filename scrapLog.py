@@ -19,6 +19,7 @@ from typing import Dict, List, Optional, Set, DefaultDict, Tuple
 from collections import defaultdict
 from difflib import SequenceMatcher
 from itertools import combinations
+from email.utils import parseaddr
 
 
 
@@ -192,6 +193,41 @@ def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
         sys.exit(1)
 
 
+def _clean_email(email: str) -> str | None:
+    """
+    Clean an email address by removing common artifacts.
+    Uses email.utils.parseaddr for robust parsing.
+    """
+    if not email or not isinstance(email, str):
+        return None
+
+    # Remove all whitespace first
+    email = ''.join(email.split())
+
+    # Use Python's built-in email parser (handles "Name <email>", quotes, etc.)
+    _, email = parseaddr(email)
+
+    if not email or '@' not in email:
+        return None
+
+    # Remove trailing ? if present
+    email = email.rstrip('?')
+
+    # URL decode %40 to @
+    try:
+        from urllib.parse import unquote
+        email = unquote(email)
+    except ImportError:
+        pass
+
+    # Take last @ if multiple (common in malformed emails)
+    if email.count('@') > 1:
+        parts = email.split('@')
+        email = f"{parts[0]}@{parts[-1]}"
+
+    return email.lower()
+
+
 def extract_affiliation_from_email(
         email: Email,
         state: ProcessingState
@@ -204,6 +240,12 @@ def extract_affiliation_from_email(
     # Input validation
     if not email or not isinstance(email, str):
         return None
+
+        # Clean the email
+    cleaned_email = _clean_email(email)
+    if not cleaned_email:
+        return None
+    email = cleaned_email.lower()
 
     try:
         # Clean email

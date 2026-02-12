@@ -841,6 +841,8 @@ def test_extract_affiliation_from_email(processing_state):
         ("president@whitehouse.gov", "whitehouse", "Government domain"),
         ("researcher@cern.ch", "cern", "Research institution"),
         ("employee@company.co.uk", "company", "Country code TLD"),
+        ("yunlongl@x.ai.com", "ai", "ai - Musk company"),
+        ("yun lon gl@x. ai.com", "ai", "ai - Musk company")
     ]
 
     for email, expected, description in test_cases:
