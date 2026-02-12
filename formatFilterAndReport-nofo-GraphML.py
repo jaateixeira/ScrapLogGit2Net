@@ -15,10 +15,8 @@ import xlwt
 from rich.panel import Panel
 
 from utils.unified_logger import logger
-from utils.unified_console import console
+from utils.unified_console import console, traceback
 from utils.unified_console import Table
-
-
 
 
 
@@ -538,9 +536,7 @@ def main() -> None:
     except Exception as e:
         console.print(f"\n❌ [bold red]Unexpected error:[/bold red]")
         console.print(f"   {e}")
-        if config.verbose:
-            import traceback
-            console.print(traceback.format_exc())
+        console.print(traceback)
         sys.exit(1)
 
 

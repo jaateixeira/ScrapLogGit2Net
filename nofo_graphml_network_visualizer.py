@@ -5,7 +5,6 @@ Edges thickness maps its weight, nodes are colorized according to affiliation at
 """
 
 import sys
-import os
 import json
 import math
 import random
@@ -59,10 +58,6 @@ class NetworkVisualizer:
         input_path = Path(self.config.input_file) if isinstance(self.config.input_file, str) else self.config.input_file
 
         logger.info(f"Loading network from {input_path}")
-
-        # Ensure it's a Path object for type safety
-        if not isinstance(input_path, Path):
-            raise TypeError(f"input_file must be str or Path, got {type(self.config.input_file)}")
 
         self.graph = nx.read_graphml(input_path)
 
