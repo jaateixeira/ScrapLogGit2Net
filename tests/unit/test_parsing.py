@@ -822,6 +822,107 @@ def test_output_option_creates_file():
             f"File has wrong extension: {output_file.suffix}"
 
 
+
+
+def test_extract_affiliation_from_email(processing_state):
+    """Test email affiliation extraction with various email formats."""
+
+    test_cases = [
+        # (email, expected_affiliation, description)
+        ("jose.teixeira@abo.fi", "abo", "University domain with specific prefix"),
+        ("smallguy@alumni.mit.edu", "mit", "Subdomain with alumni prefix"),
+        ("bigguy@us.IBM.com", "ibm", "IBM with country subdomain"),
+        ("evenbigguy@ca.us.ibm.com", "ibm", "IBM with multiple subdomains"),
+        ("user@gmail.com", "gmail", "Generic email provider"),
+        ("no-at-symbol", None, "Invalid email - no @"),
+        ("", None, "Empty string"),
+        (None, None, "None value"),
+        ("test@", None, "Invalid email - no domain"),
+        ("president@whitehouse.gov", "whitehouse", "Government domain"),
+        ("researcher@cern.ch", "cern", "Research institution"),
+        ("employee@company.co.uk", "company", "Country code TLD"),
+    ]
+
+    for email, expected, description in test_cases:
+        result = extract_affiliation_from_email(email, processing_state)
+        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
+
+
+def test_extract_affiliation_with_filtering_mode(processing_state):
+    """Test email filtering mode."""
+
+    # Set up filtering
+    processing_state.email_filtering_mode = True
+    processing_state.emails_to_filter = {"jose.teixeira@abo.fi", "bigguy@us.ibm.com"}
+
+    test_cases = [
+        ("jose.teixeira@abo.fi", None, "Filtered email should return None"),
+        ("bigguy@us.ibm.com", None, "Filtered email should return None"),
+        ("smallguy@alumni.mit.edu", "MIT", "Non-filtered email should process normally"),
+        ("evenbigguy@ca.us.ibm.com", "IBM", "Non-filtered email should process normally"),
+    ]
+
+    for email, expected, description in test_cases:
+        result = extract_affiliation_from_email(email, processing_state)
+        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
+
+
+def test_extract_affiliation_case_sensitivity(processing_state):
+    """Test case handling in email domains."""
+
+    test_cases = [
+        ("Jose.Teixeira@ABO.FI", "abo", "Uppercase domain should normalize to lowercase"),
+        ("SmallGuy@ALUMNI.MIT.EDU", "mit", "Mixed case with MIT config"),
+        ("BigGuy@US.IBM.COM", "ibm", "Uppercase IBM domain"),
+    ]
+
+    for email, expected, description in test_cases:
+        result = extract_affiliation_from_email(email, processing_state)
+        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
+
+
+
+
+def test_extract_affiliation_with_custom_config(processing_state):
+    """Test with custom email aggregation configuration."""
+
+    # Override config for specific test
+    processing_state.email_aggregation_config = {
+        "abo": "Åbo Akademi",
+        "mit": "Massachusetts Institute of Technology",
+        "ibm": "International Business Machines",
+        "gmail": "Google Mail",
+    }
+
+    test_cases = [
+        ("jose.teixeira@abo.fi", "Åbo Akademi", "Custom affiliation for abo.fi"),
+        ("smallguy@alumni.mit.edu", "Massachusetts Institute of Technology", "Custom affiliation for MIT"),
+        ("bigguy@us.ibm.com", "International Business Machines", "Custom affiliation for IBM"),
+        ("user@gmail.com", "Google Mail", "Custom affiliation for Gmail"),
+    ]
+
+    for email, expected, description in test_cases:
+        result = extract_affiliation_from_email(email, processing_state)
+        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
+
+
+def test_extract_affiliation_partial_matches(processing_state):
+    """Test that partial prefix matches don't cause false positives."""
+
+    # Add a config that could cause false matches
+    processing_state.email_aggregation_config["a"] = "Should not match"
+
+    test_cases = [
+        ("jose.teixeira@abo.fi", "abo", "Should not match on single letter 'a'"),
+        ("bigguy@us.ibm.com", "ibm", "Should match exact IBM, not partial"),
+        ("user@amazon.com", "amazon", "Should not match 'a' prefix"),
+    ]
+
+    for email, expected, description in test_cases:
+        result = extract_affiliation_from_email(email, processing_state)
+        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
+
+
 # Test with different filename formats
 @pytest.mark.parametrize("filename", [
     "output.graphml",
