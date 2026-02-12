@@ -208,10 +208,10 @@ def test_parse_time_name_email_affiliation_exceptional1():
     result = parse_time_name_email_affiliation(line, state)
     assert result is not None
 
-    date, email, affiliation = result
+    time , name , email, affiliation = result
     assert email == "bmcconne@rackspace.com"
     assert affiliation == "rackspace"
-    assert "Sep 20" in date
+    assert "Sep 20" in time
 
 
 # Test 13: parse_time_name_email_affiliation - exceptional format 2
@@ -223,10 +223,10 @@ def test_parse_time_name_email_affiliation_exceptional2():
     result = parse_time_name_email_affiliation(line, state)
     assert result is not None
 
-    date, email, affiliation = result
+    time, name , email, affiliation = result
     assert email == "bmcconne@rackspace.com"
     assert affiliation == "rackspace"
-    assert "Sep 20" in date
+    assert "Sep 20" in time
 
 
 # Test 14: parse_time_name_email_affiliation - Launchpad bot
