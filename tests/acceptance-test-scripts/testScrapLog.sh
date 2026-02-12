@@ -9,6 +9,21 @@ RED=$(tput setaf 1)
 NC=$(tput sgr0)
 
 
+
+assert_str_in_file() {
+    local expected="$1"
+    local file="$2"
+
+    if grep -qF "$expected" "$file"; then
+        echo "${GREEN}✓ Found: '$expected' in $file${NC}"
+        return 0
+    else
+        echo "${RED}✗ Failed: '$expected' NOT found in $file${NC}"
+        return 1
+    fi
+}
+
+
 # TEST CASE 1
 # Input with 3 commits but not edges associating developers 
 
@@ -31,8 +46,9 @@ if [ ! -f "$file" ]; then
     echo "Error: File $file not found."
     exit 1
 fi
-# Check if the file contains the specific error message
-if grep -q $expectedLastLine "$file"; then
+
+
+if assert_str_in_file "$expectedLastLine" "$file" ; then
     echo "Success: The error message was found."
         echo "${GREEN}TESTCASE 1 passed${NC}"
 else
@@ -41,6 +57,8 @@ else
     echo "ScrapLog should result in  $expectedLastLine"§
     exit 1
 fi
+
+
 
 echo 
 rm testResults.tmp
@@ -70,7 +88,7 @@ if [ ! -f "$file" ]; then
     exit 1
 fi
 # Check if the file contains the specific error message
-if grep -q 'Network nodes (developers): 2' "$file"; then
+if assert_str_in_file "Network nodes (developers): 2" "$file" ; then
     echo "Success: The error message was found."
         echo "${GREEN}TESTCASE 2.1 passed${NC}"
 else
