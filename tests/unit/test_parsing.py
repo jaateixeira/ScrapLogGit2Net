@@ -1,6 +1,8 @@
 # tests/test_scraplog.py
 
 import json
+from collections import defaultdict
+
 import pytest
 import tempfile
 import networkx as nx
@@ -420,12 +422,12 @@ def test_extract_contributor_connections():
     state = ProcessingState()
 
     # Set up file contributors
-    state.file_contributors = {
-        "file1.txt": ["alice@example.com"],
-        "file2.py": ["alice@example.com", "bob@example.com"],
-        "file3.js": ["alice@example.com", "bob@example.com", "charlie@test.com"],
-        "file4.md": ["bob@example.com", "charlie@test.com"],
-    }
+    state.file_contributors = defaultdict(list, {
+    "file1.txt": ["alice@example.com"],
+    "file2.py": ["alice@example.com", "bob@example.com"],
+    "file3.js": ["alice@example.com", "bob@example.com", "charlie@test.com"],
+    "file4.md": ["bob@example.com", "charlie@test.com"],
+})
 
     extract_contributor_connections(state)
 
@@ -627,8 +629,9 @@ def test_print_processing_summary(capsys):
         "c@test.com": "Test",
     }
 
-    work_file = "test.log"
-    print_processing_summary(state, work_file)
+    in_file = Path("./test.log")
+    out_file = Path("./test.graphml)")
+    print_processing_summary(state, in_file, out_file)
 
     captured = capsys.readouterr()
     output = captured.out
@@ -765,7 +768,7 @@ def test_output_option_creates_file():
         # Mock the export_log_data module
         class MockExportModule:
             @staticmethod
-            def createGraphML(network, filename):
+            def create_graphml(network, filename):
                 nonlocal create_graphml_called, create_graphml_args
                 create_graphml_called = True
                 create_graphml_args = (network, filename)
@@ -773,10 +776,10 @@ def test_output_option_creates_file():
                 filename.touch(exist_ok=True)
 
         # Simulate the export_results function behavior
-        def simulate_export_results(state, args):
+        def simulate_export_results(sim_state, sim_args):
             """Simulate export_results function behavior."""
-            if args.output_file:
-                graphml_filename = args.output_file
+            if sim_args.output_file:
+                graphml_filename = sim_args.output_file
             else:
                 graphml_filename = Path(args.raw).stem + ".NetworkFile.graphML"
 
@@ -785,7 +788,7 @@ def test_output_option_creates_file():
                 graphml_filename = Path(graphml_filename)
 
             # Call the mock GraphML creation
-            MockExportModule.createGraphML(state.dev_to_dev_network, graphml_filename)
+            MockExportModule.create_graphml(sim_state.dev_to_dev_network, graphml_filename)
 
             return graphml_filename
 
@@ -852,7 +855,7 @@ def test_output_option_various_filenames(filename):
 
         class MockExport:
             @staticmethod
-            def createGraphML(network, fname):
+            def create_graphml(network, fname):
                 nonlocal graphml_called
                 graphml_called = True
                 fname.touch()
@@ -860,7 +863,7 @@ def test_output_option_various_filenames(filename):
         # Simulate export
         if args.output_file:
             result_file = args.output_file
-            MockExport.createGraphML(state.dev_to_dev_network, result_file)
+            MockExport.create_graphml(state.dev_to_dev_network, result_file)
 
         assert output_file.exists()
         assert graphml_called
