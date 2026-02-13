@@ -3,7 +3,7 @@
 Formats and visualizes a graphML file capturing a weighted Network of Organizations created by ScrapLog.
 Edges thickness maps its weight, nodes are colorized according to affiliation attribute.
 """
-
+import os
 import sys
 import json
 import math
@@ -18,9 +18,13 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 from utils.unified_logger import logger
-from utils.unified_console import console
-from utils.unified_console import inspect
-from utils.unified_console import rprint
+from utils.unified_console import (console,
+                                   inspect,
+                                   print_info,
+                                   print_warning,
+                                   print_error,
+                                   print_fatal_error,
+                                   print_header)
 
 
 @dataclass
@@ -98,7 +102,7 @@ class NetworkVisualizer:
                 logger.debug(f"Including only organizations: {include_set}")
                 logger.debug(f"Nodes matching include filter: {nodes_to_keep}")
 
-        # Apply exclude filter
+        # excludes the organizations provided as cli arguments
         if has_exclude:
             exclude_set = set(self.config.exclude_orgs)
             nodes_to_keep = nodes_to_keep.difference(exclude_set)
@@ -444,11 +448,21 @@ class NetworkVisualizer:
         plt.axis("off")
         plt.tight_layout()
 
-        # Set title from config
-        config_str = str(vars(self.config))
-        mid_point = (len(config_str) + 1) // 2
-        title = f"{config_str[:mid_point]}\n{config_str[mid_point:]}"
-        plt.title(title, fontsize=8)
+        if self.config.verbose:
+            # Set title from config
+            args_str = str(sys.argv)
+
+            # Split by commas and group into 4 lines
+            items = args_str.split(', ')
+            items_per_line = (len(items) + 3) // 4  # Ceiling division
+
+            lines = []
+            for i in range(0, len(items), items_per_line):
+                line = ', '.join(items[i:i + items_per_line])
+                lines.append(line)
+
+            title = "\n".join(lines)
+            plt.suptitle(title, fontsize=8, y=0.98)
 
         # Show or save
         if self.config.show_visualization:
@@ -611,12 +625,11 @@ def parse_arguments() -> NetworkConfig:
 def print_banner() -> None:
     """Print application banner."""
     banner = """
-╔══════════════════════════════════════════════════════════════╗
-║ formatAndViz-nofo-GraphML.py                                 ║
-║ Visualizing weighted networks of organizations since June 2024║
-╚══════════════════════════════════════════════════════════════╝
-    """
-    rprint(banner)
+╔════════════════════════════════════════════════════════════════╗
+║ formatAndViz-nofo-GraphML.py                                   ║
+║ Visualizing weighted networks of organizations since June 2024 ║
+╚════════════════════════════════════════════════════════════════╝"""
+    print_header(banner)
 
 
 def main() -> None:
@@ -627,10 +640,12 @@ def main() -> None:
         # Parse arguments
         console.print("[bold blue] Parsing cli arguments")
         config = parse_arguments()
-        console.print("[bold green] Success:[/bold green] Arguments parsed 😀\n")
+        console.print("[bold green]"
+                      " Success:[/bold green] Arguments parsed 😀\n")
 
         # Create visualizer
-        console.print(f"[bold blue] Creating visualizer based on {config=}\n")
+        if config.verbose:
+            console.print(f"[bold blue] Creating visualizer based on[/bold blue] {config=}\n")
         visualizer = NetworkVisualizer(config)
         console.print("[bold green] Success:[/bold green] Visualizer created 😀\n")
 
@@ -663,7 +678,8 @@ def main() -> None:
         console.print("[bold green] Success:[/bold green] Nodes associated with colors 😀\n")
 
         # Generate visualization
-        console.print(f"[bold blue] Visualizing the graph {inspect(visualizer)} \n")
+        if config.verbose:
+            console.print(f"[bold blue] Visualizing the graph {inspect(visualizer)} \n")
         visualizer.visualize()
         console.print("[bold green] Success:[/bold green] Visualization completed successfully! 😀\n")
 
