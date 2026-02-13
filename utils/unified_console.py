@@ -94,9 +94,20 @@ console = Console()
 # For configuring
 #from rich import traceback
 
-# Install the Rich Traceback handler with custom options
-"""
-traceback.install(
+import os
+
+def in_pycharm():
+    return "PYCHARM_HOSTED" in os.environ or "PYCHARM_HELP_IDE" in os.environ
+
+if in_pycharm():
+    # Don't use Rich tracebacks in PyCharm - preserve clickable links
+    import traceback
+else:
+    from rich.traceback import install
+    install(show_locals=True)
+
+    # Install the Rich Traceback handler with custom options
+    traceback.install(
     show_locals=True,  # Show local variables in the traceback
     locals_max_length=10, locals_max_string=80, locals_hide_dunder=True, locals_hide_sunder=False,
     indent_guides=True,
@@ -109,8 +120,8 @@ traceback.install(
     extra_lines=3,  # Show extra lines of code around the error
     theme="solarized-dark",  # Use a different color theme
     word_wrap=True,  # Enable word wrapping for long lines
-)
-"""
+    )
+
 
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-

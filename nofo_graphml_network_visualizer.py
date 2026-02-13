@@ -17,6 +17,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+
 from utils.unified_logger import logger
 from utils.unified_console import (console,
                                    inspect,
@@ -25,6 +26,9 @@ from utils.unified_console import (console,
                                    print_error,
                                    print_fatal_error,
                                    print_header)
+
+#from rich import traceback
+import traceback
 
 
 @dataclass
@@ -38,6 +42,7 @@ class NetworkConfig:
     color_map_file: Optional[str] = None
     show_visualization: bool = False
     show_legend: bool = False
+    show_webpage: bool = False
     verbose: bool = False
     filter_by_n_top_central_firms_only: Optional[int] = None
     filter_by_org: bool = False
@@ -468,7 +473,8 @@ class NetworkVisualizer:
         if self.config.show_visualization:
             logger.info("Displaying visualization...")
             plt.show()
-        else:
+
+        if self.config.show_webpage or not self.config.show_visualization:
             # Use Path object for better path handling
             input_path = Path(self.config.input_file)
             base_name = input_path.stem
@@ -495,6 +501,42 @@ class NetworkVisualizer:
             plt.savefig(png_path, format='png', dpi=300, bbox_inches='tight')
 
         plt.close()
+
+        if self.config.show_webpage:
+            logger.info(f"built and displaying HTML with {png_path=}")
+            create_webpage(self.config.input_file,png_path,str(sys.argv))
+
+
+def create_webpage(input_file: Path, png_path: Path, caption: str):
+    """
+    Creates a simple HTML file with the figure and caption.
+    """
+    html_file = input_file.with_suffix('.html')
+
+    # Get relative path for the image
+    try:
+        png_relative = Path(os.path.relpath(png_path, html_file.parent))
+    except ValueError:
+        png_relative = png_path.absolute()
+
+    html_content = f"""<!DOCTYPE html>
+   <html>
+   <head>
+       <title>Figure: {input_file.name}</title>
+   </head>
+   <body>
+       <figure>
+           <img src="{png_relative}" style="max-width:100%; height:auto;">
+           <figcaption><strong>Figure:</strong> {caption}</figcaption>
+       </figure>
+   </body>
+   </html>"""
+
+    with open(html_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+    print(f"Created webpage: {html_file}")
+    return html_file
 
 
 def parse_arguments() -> NetworkConfig:
@@ -596,6 +638,13 @@ def parse_arguments() -> NetworkConfig:
         help="Show visualization instead of saving"
     )
 
+    # Single argument with multiple option strings
+    parser.add_argument(
+        "-w", "--web-page",
+        action="store_true",
+        help="Create a html web page with the visualization"
+    )
+
     parser.add_argument(
         "-l", "--legend",
         action="store_true",
@@ -612,6 +661,7 @@ def parse_arguments() -> NetworkConfig:
         focal_firm=args.focal_firm,
         color_map_file=args.color_map,
         show_visualization=args.show,
+        show_webpage=args.web_page,
         show_legend=args.legend,
         verbose=args.verbose,
         filter_by_n_top_central_firms_only=args.filter_by_n_top_central_firms_only,
@@ -685,6 +735,8 @@ def main() -> None:
 
         logger.success("Visualization completed successfully!")
 
+        # Create a
+
     except FileNotFoundError as e:
         logger.error(f"File not found: {e}")
         sys.exit(1)
@@ -695,7 +747,9 @@ def main() -> None:
         logger.error(f"NetworkX error: {e}")
         sys.exit(1)
     except Exception as e:
-        logger.exception(f"Unexpected error: {e}")
+        #logger.exception(f"Unexpected error: {e}")
+        logger.error(f"Unexpected error: {e}", exc_info=True)
+        traceback.print_exc()
         sys.exit(1)
 
 
