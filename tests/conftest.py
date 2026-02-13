@@ -1,6 +1,9 @@
 # tests/conftest.py
 import sys
 import os
+import tempfile
+from types import SimpleNamespace
+
 import pytest
 import networkx as nx
 
@@ -107,3 +110,22 @@ def temp_graphml_file(sample_individual_network):
 def mock_visualization_script():
     """Mock the visualization script path."""
     return "/mock/path/to/viz.py"
+
+
+
+@pytest.fixture
+def processing_state():
+    """Create a processing state with email aggregation config."""
+    state = SimpleNamespace()
+    state.verbose_mode = False
+    state.email_filtering_mode = False
+    state.emails_to_filter = set()
+
+    # Set up email aggregation config
+    state.email_aggregation_config = {
+        "abo": "abo.fi",
+        "mit": "MIT",
+        "ibm": "IBM",
+    }
+
+    return state

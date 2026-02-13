@@ -3,9 +3,8 @@
 Formats and visualizes a graphML file capturing a weighted Network of Organizations created by ScrapLog.
 Edges thickness maps its weight, nodes are colorized according to affiliation attribute.
 """
-
-import sys
 import os
+import sys
 import json
 import math
 import random
@@ -18,10 +17,18 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+
 from utils.unified_logger import logger
-from utils.unified_console import console
-from utils.unified_console import inspect
-from utils.unified_console import rprint
+from utils.unified_console import (console,
+                                   inspect,
+                                   print_info,
+                                   print_warning,
+                                   print_error,
+                                   print_fatal_error,
+                                   print_header)
+
+#from rich import traceback
+import traceback
 
 
 @dataclass
@@ -35,6 +42,7 @@ class NetworkConfig:
     color_map_file: Optional[str] = None
     show_visualization: bool = False
     show_legend: bool = False
+    show_webpage: bool = False
     verbose: bool = False
     filter_by_n_top_central_firms_only: Optional[int] = None
     filter_by_org: bool = False
@@ -59,10 +67,6 @@ class NetworkVisualizer:
         input_path = Path(self.config.input_file) if isinstance(self.config.input_file, str) else self.config.input_file
 
         logger.info(f"Loading network from {input_path}")
-
-        # Ensure it's a Path object for type safety
-        if not isinstance(input_path, Path):
-            raise TypeError(f"input_file must be str or Path, got {type(self.config.input_file)}")
 
         self.graph = nx.read_graphml(input_path)
 
@@ -103,7 +107,7 @@ class NetworkVisualizer:
                 logger.debug(f"Including only organizations: {include_set}")
                 logger.debug(f"Nodes matching include filter: {nodes_to_keep}")
 
-        # Apply exclude filter
+        # excludes the organizations provided as cli arguments
         if has_exclude:
             exclude_set = set(self.config.exclude_orgs)
             nodes_to_keep = nodes_to_keep.difference(exclude_set)
@@ -449,17 +453,28 @@ class NetworkVisualizer:
         plt.axis("off")
         plt.tight_layout()
 
-        # Set title from config
-        config_str = str(vars(self.config))
-        mid_point = (len(config_str) + 1) // 2
-        title = f"{config_str[:mid_point]}\n{config_str[mid_point:]}"
-        plt.title(title, fontsize=8)
+        if self.config.verbose:
+            # Set title from config
+            args_str = str(sys.argv)
+
+            # Split by commas and group into 4 lines
+            items = args_str.split(', ')
+            items_per_line = (len(items) + 3) // 4  # Ceiling division
+
+            lines = []
+            for i in range(0, len(items), items_per_line):
+                line = ', '.join(items[i:i + items_per_line])
+                lines.append(line)
+
+            title = "\n".join(lines)
+            plt.suptitle(title, fontsize=8, y=0.98)
 
         # Show or save
         if self.config.show_visualization:
             logger.info("Displaying visualization...")
             plt.show()
-        else:
+
+        if self.config.show_webpage or not self.config.show_visualization:
             # Use Path object for better path handling
             input_path = Path(self.config.input_file)
             base_name = input_path.stem
@@ -486,6 +501,42 @@ class NetworkVisualizer:
             plt.savefig(png_path, format='png', dpi=300, bbox_inches='tight')
 
         plt.close()
+
+        if self.config.show_webpage:
+            logger.info(f"built and displaying HTML with {png_path=}")
+            create_webpage(self.config.input_file,png_path,str(sys.argv))
+
+
+def create_webpage(input_file: Path, png_path: Path, caption: str):
+    """
+    Creates a simple HTML file with the figure and caption.
+    """
+    html_file = input_file.with_suffix('.html')
+
+    # Get relative path for the image
+    try:
+        png_relative = Path(os.path.relpath(png_path, html_file.parent))
+    except ValueError:
+        png_relative = png_path.absolute()
+
+    html_content = f"""<!DOCTYPE html>
+   <html>
+   <head>
+       <title>Figure: {input_file.name}</title>
+   </head>
+   <body>
+       <figure>
+           <img src="{png_relative}" style="max-width:100%; height:auto;">
+           <figcaption><strong>Figure:</strong> {caption}</figcaption>
+       </figure>
+   </body>
+   </html>"""
+
+    with open(html_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+    print(f"Created webpage: {html_file}")
+    return html_file
 
 
 def parse_arguments() -> NetworkConfig:
@@ -587,6 +638,13 @@ def parse_arguments() -> NetworkConfig:
         help="Show visualization instead of saving"
     )
 
+    # Single argument with multiple option strings
+    parser.add_argument(
+        "-w", "--web-page",
+        action="store_true",
+        help="Create a html web page with the visualization"
+    )
+
     parser.add_argument(
         "-l", "--legend",
         action="store_true",
@@ -603,6 +661,7 @@ def parse_arguments() -> NetworkConfig:
         focal_firm=args.focal_firm,
         color_map_file=args.color_map,
         show_visualization=args.show,
+        show_webpage=args.web_page,
         show_legend=args.legend,
         verbose=args.verbose,
         filter_by_n_top_central_firms_only=args.filter_by_n_top_central_firms_only,
@@ -616,12 +675,11 @@ def parse_arguments() -> NetworkConfig:
 def print_banner() -> None:
     """Print application banner."""
     banner = """
-╔══════════════════════════════════════════════════════════════╗
-║ formatAndViz-nofo-GraphML.py                                 ║
-║ Visualizing weighted networks of organizations since June 2024║
-╚══════════════════════════════════════════════════════════════╝
-    """
-    rprint(banner)
+╔════════════════════════════════════════════════════════════════╗
+║ formatAndViz-nofo-GraphML.py                                   ║
+║ Visualizing weighted networks of organizations since June 2024 ║
+╚════════════════════════════════════════════════════════════════╝"""
+    print_header(banner)
 
 
 def main() -> None:
@@ -632,10 +690,12 @@ def main() -> None:
         # Parse arguments
         console.print("[bold blue] Parsing cli arguments")
         config = parse_arguments()
-        console.print("[bold green] Success:[/bold green] Arguments parsed 😀\n")
+        console.print("[bold green]"
+                      " Success:[/bold green] Arguments parsed 😀\n")
 
         # Create visualizer
-        console.print(f"[bold blue] Creating visualizer based on {config=}\n")
+        if config.verbose:
+            console.print(f"[bold blue] Creating visualizer based on[/bold blue] {config=}\n")
         visualizer = NetworkVisualizer(config)
         console.print("[bold green] Success:[/bold green] Visualizer created 😀\n")
 
@@ -668,11 +728,14 @@ def main() -> None:
         console.print("[bold green] Success:[/bold green] Nodes associated with colors 😀\n")
 
         # Generate visualization
-        console.print(f"[bold blue] Visualizing the graph {inspect(visualizer)} \n")
+        if config.verbose:
+            console.print(f"[bold blue] Visualizing the graph {inspect(visualizer)} \n")
         visualizer.visualize()
         console.print("[bold green] Success:[/bold green] Visualization completed successfully! 😀\n")
 
         logger.success("Visualization completed successfully!")
+
+        # Create a
 
     except FileNotFoundError as e:
         logger.error(f"File not found: {e}")
@@ -684,7 +747,9 @@ def main() -> None:
         logger.error(f"NetworkX error: {e}")
         sys.exit(1)
     except Exception as e:
-        logger.exception(f"Unexpected error: {e}")
+        #logger.exception(f"Unexpected error: {e}")
+        logger.error(f"Unexpected error: {e}", exc_info=True)
+        traceback.print_exc()
         sys.exit(1)
 
 

@@ -9,6 +9,21 @@ RED=$(tput setaf 1)
 NC=$(tput sgr0)
 
 
+
+assert_str_in_file() {
+    local expected="$1"
+    local file="$2"
+
+    if grep -qF "$expected" "$file"; then
+        echo "${GREEN}✓ Found: '$expected' in $file${NC}"
+        return 0
+    else
+        echo "${RED}✗ Failed: '$expected' NOT found in $file${NC}"
+        return 1
+    fi
+}
+
+
 # TEST CASE 1
 # Input with 3 commits but not edges associating developers 
 
@@ -20,8 +35,8 @@ echo "./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.
 
 ./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp
 #echo "Output should contain ERROR collaboration tuplesList is empty !!"
-expectedLastLine="ERROR collaboration tuplesList is empty"
-
+#expectedLastLine="ERROR collaboration tuplesList is empty"
+expectedLastLine="FATAL ERROR: Network have less than two nodes"
 
 # Define the file to read
 file="testResults.tmp"
@@ -31,16 +46,19 @@ if [ ! -f "$file" ]; then
     echo "Error: File $file not found."
     exit 1
 fi
-# Check if the file contains the specific error message
-if grep -q "ERROR network have less than two nodes" "$file"; then
+
+
+if assert_str_in_file "$expectedLastLine" "$file" ; then
     echo "Success: The error message was found."
         echo "${GREEN}TESTCASE 1 passed${NC}"
 else
     echo "Failure: The error message was not found."
     echo "${RED}TESTCASE 1 did not pass${NC}"
-    echo "ScrapLog sould result in  'ERROR collaboration tuplesList is empty expected'"§
+    echo "ScrapLog should result in  $expectedLastLine"§
     exit 1
 fi
+
+
 
 echo 
 rm testResults.tmp
@@ -70,7 +88,7 @@ if [ ! -f "$file" ]; then
     exit 1
 fi
 # Check if the file contains the specific error message
-if grep -q 'Network nodes (developers): 2' "$file"; then
+if assert_str_in_file "Network nodes (developers): 2" "$file" ; then
     echo "Success: The error message was found."
         echo "${GREEN}TESTCASE 2.1 passed${NC}"
 else

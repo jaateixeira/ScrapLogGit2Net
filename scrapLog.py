@@ -4,6 +4,7 @@ Scrap date, authors, affiliations and file changes from a Git Changelog.
 """
 
 import sys
+import os
 import re
 import argparse
 import pickle
@@ -18,16 +19,21 @@ from typing import Dict, List, Optional, Set, DefaultDict, Tuple
 from collections import defaultdict
 from difflib import SequenceMatcher
 from itertools import combinations
+from email.utils import parseaddr
 
 
 
 import networkx as nx
+
 from colorama import Fore, Style
 
 import export_log_data
 
-from utils.unified_console import (console, traceback, Table, inspect)
+from utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
+                                   print_error)
 from utils.unified_logger import logger
+
+
 
 from utils.validators import (
     validate_git_name,
@@ -140,6 +146,10 @@ def find_similar_strings(strings: set[str], similarity_threshold: float = 0.8) -
 
     # Generate all unique pairs of strings
     for str1, str2 in combinations(strings, 2):
+
+        if None in (str1, str2):
+            continue
+
         # Calculate similarity ratio (0.0 to 1.0)
         similarity = SequenceMatcher(None, str1, str2).ratio()
 
@@ -188,52 +198,135 @@ def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
         sys.exit(1)
 
 
+def _clean_email(email: str) -> str | None:
+    """
+    Clean an email address by removing common artifacts.
+    Uses email.utils.parseaddr for robust parsing.
+    """
+    if not email or not isinstance(email, str):
+        return None
+
+    # Remove all whitespace first
+    email = ''.join(email.split())
+
+    # Use Python's built-in email parser (handles "Name <email>", quotes, etc.)
+    _, email = parseaddr(email)
+
+    if not email or '@' not in email:
+        return None
+
+    # Remove trailing ? if present
+    email = email.rstrip('?')
+
+    # URL decode %40 to @
+    try:
+        from urllib.parse import unquote
+        email = unquote(email)
+    except ImportError:
+        pass
+
+    # Take last @ if multiple (common in malformed emails)
+    if email.count('@') > 1:
+        parts = email.split('@')
+        email = f"{parts[0]}@{parts[-1]}"
+
+    return email.lower()
+
+
 def extract_affiliation_from_email(
         email: Email,
         state: ProcessingState
 ) -> str | None:
-
-    affiliation : str= "Unknown"
-
     """Get affiliation from an email address with aggregation support."""
+
     if state.verbose_mode:
         logger.info(f"\textract_affiliation_from_email({email})")
 
-    if state.email_filtering_mode and email in state.emails_to_filter:
-        return "filtered - included in file passed with -f argument"
+    # Input validation
+    if not email or not isinstance(email, str):
+        return None
 
-    # Extract domain using regex - more robust version
+        # Clean the email
+    cleaned_email = _clean_email(email)
+    if not cleaned_email:
+        return None
+    email = cleaned_email.lower()
+
     try:
-        # Handle emails with potential issues
+        # Clean email
+        email = email.strip()
         if email.endswith('?'):
             email = email[:-1]
 
-        # Simple extraction: get domain part after @
+        # Validate email format
         if '@' not in email:
-            console.print(f"WARNING: No @ in email: {email}")
-            return "unknown"
+            if state.verbose_mode:
+                console.print(f"WARNING: No @ in email: {email}")
+            return None
 
-        domain_part = email.split('@')[-1]
+        # Extract domain and normalize to lowercase
+        domain_part = email.split('@')[-1].lower()
 
-        # Get first component before first dot
-        domain_component = domain_part.split('.')[0]
+        # Handle case where there's nothing after @
+        if not domain_part:
+            if state.verbose_mode:
+                console.print(f"WARNING: Empty domain in email: {email}")
+            return None
+
+        domain_parts = domain_part.split('.')
+
+        # Remove any empty parts from trailing/leading dots
+        domain_parts = [part for part in domain_parts if part]
+
+        # If no valid domain parts after cleaning, return None
+        if not domain_parts:
+            if state.verbose_mode:
+                console.print(f"WARNING: No valid domain parts in: {email}")
+            return None
+
+        # The organization is almost always the second-to-last component
+        # Examples:
+        # - abo.fi -> "abo" (fi is TLD)
+        # - mit.edu -> "mit" (edu is TLD)
+        # - us.ibm.com -> "ibm" (com is TLD, us is subdomain)
+        # - ca.us.ibm.com -> "ibm" (com is TLD, ca.us are subdomains)
+        # - alumni.mit.edu -> "mit" (edu is TLD, alumni is subdomain)
+        # - company.co.uk -> "company" (co.uk is compound TLD)
+        # - gmail.com -> "gmail" (com is TLD)
+
+        # Check for compound TLDs (co.uk, com.au, etc.)
+        # The organization is usually the part before the compound TLD
+        if len(domain_parts) >= 3 and domain_parts[-2] in {'co', 'com', 'ac', 'edu', 'gov', 'net', 'org', 'ltd', 'plc'}:
+            potential_org = domain_parts[-3]
+        elif len(domain_parts) >= 2:
+            # Default case: organization is the second-to-last part
+            # abo.fi -> abo
+            # mit.edu -> mit
+            # ibm.com -> ibm
+            # gmail.com -> gmail
+            # whitehouse.gov -> whitehouse
+            potential_org = domain_parts[-2]
+        else:
+            # Single part domain (e.g., "localhost", "internal")
+            potential_org = domain_parts[0]
 
         # Apply email aggregation if configured
         for prefix, consolidated_name in state.email_aggregation_config.items():
-            if domain_component.startswith(prefix) or prefix in domain_component:
-                affiliation = consolidated_name
+            prefix_lower = prefix.lower()
+            if potential_org == prefix_lower or potential_org.startswith(prefix_lower):
+                if state.verbose_mode:
+                    logger.info(f"\textracted_affiliation_from_email({email})={potential_org}")
+                return potential_org
 
-        affiliation= domain_component
-
+        # No config match, return the potential organization
         if state.verbose_mode:
-            logger.info(f"\textracted_affiliation_from_email({email})={affiliation}")
-        return affiliation
+            logger.info(f"\textracted_affiliation_from_email({email})={potential_org}")
+        return potential_org
 
     except Exception as e:
         if state.verbose_mode:
             console.print(f"Error extracting affiliation from {email}: {e}")
-        return "unknown"
-
+        return None
 
 def parse_time_name_email_affiliation(
         line: str,
@@ -384,10 +477,10 @@ def process_commit_block(
 
 
         if not time_dev_info:
-            console.print(f"WARNING: Could not parse commit header: {first_line[:50]}...")
-            console.print(f"[bold red]Error:[/bold red] Could not get developer information from commit block {first_line}")
+            print_warning(f"Could not parse commit header: {first_line[:50]}...")
+            print_error(f"Could not get developer information from commit block {first_line}")
             state.statistics.increment_skipped_blocks()
-            sys.exit(1)
+            #sys.exit(1)
 
         commit_time, dev_name, dev_email, dev_affiliation = time_dev_info
 
@@ -520,12 +613,13 @@ def apply_email_filtering(state: ProcessingState) -> None:
         state.dev_to_dev_network.remove_nodes_from(isolates)
 
 
-def print_processing_summary(state: ProcessingState, work_file: str) -> None:
+def print_processing_summary(state: ProcessingState, in_work_file: Path, out_graphml_file: Path ) -> None:
     """console.print a summary of processing results."""
     console.print("\n" + "=" * 60)
     console.print("PROCESSING SUMMARY")
     console.print("=" * 60)
-    console.print(f"Input file: {work_file}")
+    console.print(f"Input log file: {in_work_file}")
+    console.print(f"Out network graphml file: {out_graphml_file}")
     console.print(f"Total lines processed: {state.statistics.nlines}")
     console.print(f"Total commit blocks found: {state.statistics.n_blocks}")
     console.print(f"Successfully processed blocks: {state.statistics.n_blocks - state.statistics.n_skipped_blocks}")
@@ -537,7 +631,7 @@ def print_processing_summary(state: ProcessingState, work_file: str) -> None:
     console.print(f"Network edges (collaborations): {state.dev_to_dev_network.size()}")
     console.print(f"Unique affiliations: {len(set(state.affiliations.values()))}")
     console.print(f"Similar affiliation strings: 0.8 threshold {find_similar_strings(set(state.affiliations.values()))}")
-    console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
+    #console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
     console.print("=" * 60)
 
 
@@ -546,53 +640,53 @@ def _ask_continue():
     return response in ['y', 'yes', 'Y', 'YES']
 
 
-def main() -> None:
-    """Main execution function."""
 
-    state = ProcessingState()
 
+def parse_arguments() -> argparse.Namespace:
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         description='Scrap changelog to create networks/graphs for research purposes'
     )
-    parser.add_argument('-l', '--load', type=str,
+    parser.add_argument('-l', '--load', type=Path,
                         help='loads and processes a serialized changelog')
-    parser.add_argument('-r', '--raw', type=str, required=True,
+    parser.add_argument('-r', '--raw', type=Path, required=True,
                         help='processes from a raw git changelog')
-    parser.add_argument('-s', '--save', type=str,
+    parser.add_argument('-s', '--save', type=Path,
                         help='processes from a raw git changelog and saves it into a serialized changelog')
-    parser.add_argument('-fe', '--filter-emails', type=str,
+    parser.add_argument('-fe', '--filter-emails', type=Path,
                         help='ignores the emails listed in a text file (one email per line)')
-    parser.add_argument('-ff', '--filter-files', type=str,
+    parser.add_argument('-ff', '--filter-files', type=Path,
                         help='ignores the files listed in a text file (one file per line)')
-    parser.add_argument('-a', '--aggregate-email-prefixes', type=str,
+    parser.add_argument('-a', '--aggregate-email-prefixes', type=Path,
                         help='JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})')
+    parser.add_argument('-o','--output-file', type=Path,
+                         help='creates a network/graph graphml file with the given name')
 
-    # Verbosity using count action (supports -v, -vv, -vvv)
     parser.add_argument(
         '-v', '--verbose',
         action='count',
         default=0,
         help='Increase verbosity level (use -v, -vv, or -vvv)'
     )
-
-    # If we want actually to debug (e.g., inspect variable)
-    parser.add_argument('--debug', action='store_true', help='Enable debug output')
-
-    parser.add_argument("--strict", action="store_true",
+    parser.add_argument('-d','--debug', action='store_true', help='Enable debug output')
+    parser.add_argument('-st','--strict', action='store_true',
                         help="strict validation mode - fail on validation errors")
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> None:
+    """Configure the processing state based on arguments."""
     # Set modes
     state.verbose_mode = True if args.verbose == 1 else False
     state.very_verbose_mode = True if args.verbose == 2 else False
-    state.debug_mode = True if args.debug  else False
-
+    state.debug_mode = True if args.debug else False
     state.strict_validation = args.strict
+
+
 
     if state.verbose_mode:
         console.print("\nVerbosity turned on")
-
 
     # Load email aggregation config
     if args.aggregate_email_prefixes:
@@ -603,27 +697,33 @@ def main() -> None:
     # Set filtering modes
     if args.filter_emails:
         state.email_filtering_mode = True
-        console.print("\nEmail filtering turned on")
+        print_info("Email filtering turned on.")
+        print_tip("The filtering based on  only happen when creating the graphml network output file.")
 
     if args.filter_files:
         state.file_filtering_mode = True
         console.print("\nFile filtering turned on")
 
-    # Determine input file
-    work_file = args.raw
-
     # Load filter files
     if state.email_filtering_mode and args.filter_emails:
-        try:
-            with open(args.filter_emails, 'r') as ff:
-                state.emails_to_filter = {line.strip() for line in ff if line.strip()}
-            console.print(f"\tLoaded {len(state.emails_to_filter)} emails to filter")
-        except IOError as e:
-            console.print(f"WARNING: Could not read filter file {args.filter_emails}: {e}")
-            state.email_filtering_mode = False
+        load_email_filter_file(state, args.filter_emails)
 
 
-    # Process based on mode
+def load_email_filter_file(state: ProcessingState, filter_file_path: str) -> None:
+    """Load email filter list from file."""
+    try:
+        with open(filter_file_path, 'r') as ff:
+            state.emails_to_filter = {line.strip() for line in ff if line.strip()}
+        console.print(f"\tLoaded {len(state.emails_to_filter)} emails to filter")
+    except IOError as e:
+        console.print(f"WARNING: Could not read filter file {filter_file_path}: {e}")
+        state.email_filtering_mode = False
+
+
+def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> None:
+    """Process the raw changelog file."""
+    work_file = args.raw
+
     start_scrapping_time = time.time()
     console.print(f"\nStarting processing of {work_file} at {start_scrapping_time}")
 
@@ -631,44 +731,13 @@ def main() -> None:
         with open(work_file, 'r') as f:
             lines = f.readlines()
 
-        current_block: List[str] = []
-
-        for line_num, line in enumerate(lines, 1):
-            if line == "\n":
-                continue
-
-            state.statistics.nlines += 1
-
-            if line.startswith('=='):
-                if current_block:
-                    if state.verbose_mode:
-                        logger.debug(f"Processing {current_block[0]=}")
-                    elif state.very_verbose_mode: ## Very verbose mode
-                        logger.debug(f"Processing {current_block=}")
-                    process_commit_block(current_block, state)
-
-                current_block = [line]
-                state.statistics.n_blocks += 1
-            elif '.' in line or '/' in line or len(line.strip()) >= 3:
-                current_block.append(line)
-            elif line == '--\n':
-                continue
-            else:
-                if state.verbose_mode:
-                    console.print(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
-
-        # Process final block
-        if current_block:
-            process_commit_block(current_block, state)
+        process_file_lines(lines, state)
 
         console.print(f"\n✓ Successfully processed {len(state.change_log_data)} commits")
         console.print()
 
         if args.save:
-            console.print(f"\nSaving processed data to {args.save}")
-            with open(args.save, 'wb') as fp:
-                pickle.dump(state.change_log_data, fp)
-            console.print("Data saved successfully")
+            save_processed_data(state, args.save)
 
     except FileNotFoundError:
         console.print(f"ERROR: Input file not found: {work_file}")
@@ -677,10 +746,83 @@ def main() -> None:
         console.print(f"ERROR processing file: {e}")
         sys.exit(1)
 
-    # Process the data
+
+def process_file_lines(lines: List[str], state: ProcessingState) -> None:
+    """Process all lines from the input file."""
+    current_block: List[str] = []
+
+    for line_num, line in enumerate(lines, 1):
+        if line == "\n":
+            continue
+
+        state.statistics.nlines += 1
+
+        if line.startswith('=='):
+            if current_block:
+                process_current_block(state, current_block)
+                process_commit_block(current_block, state)
+
+            current_block = [line]
+            state.statistics.n_blocks += 1
+        elif '.' in line or '/' in line or len(line.strip()) >= 3:
+            current_block.append(line)
+        elif line == '--\n':
+            continue
+        else:
+            if state.verbose_mode:
+                console.print(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
+
+    # Process final block
+    if current_block:
+        process_commit_block(current_block, state)
+
+
+def process_current_block(state: ProcessingState, current_block: List[str]) -> None:
+    """Handle logging for the current block being processed."""
+    if state.verbose_mode:
+        logger.debug(f"Processing {current_block[0]=}")
+    elif state.very_verbose_mode:
+        logger.debug(f"Processing {current_block=}")
+
+
+def save_processed_data(state: ProcessingState, save_path: Path) -> None:
+    """Save processed data to a pickle file."""
+    console.print(f"\nSaving processed data to {save_path}")
+
+    def save_data(data, path):
+        """Safely save data with pickle."""
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        # Save with error handling
+        try:
+            with open(path, 'wb') as fp:
+                pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
+            print(f"Successfully saved to {path}")
+        except Exception as e:
+            print(f"Failed to save: {e}")
+            raise
+
+    # Usage
+    save_data(state.change_log_data, save_path)
+    console.print("Data saved successfully")
+
+
+def execute_data_processing_pipeline(state: ProcessingState) -> None:
+    """Execute the main data processing pipeline."""
+    process_aggregation_step(state)
+    process_connections_step(state)
+    process_unique_connections_step(state)
+    process_network_creation_step(state)
+    apply_email_filtering(state)
+
+
+def process_aggregation_step(state: ProcessingState) -> None:
+    """Aggregate files and contributors."""
     console.print("[blue] Aggregating data:[/blue] For each file, what are the contributors.")
     aggregate_files_and_contributors(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Data aggregated by files and contributors")
+
     if state.debug_mode:
         console.print("[bold green] ✓ Data aggregated by files and contributors. Do you wanna inspect state?")
         _ask_continue()
@@ -688,37 +830,70 @@ def main() -> None:
         console.print(f'state={inspect(state)}')
         _ask_continue()
 
-    console.print("[blue] Mapping connections between developers:[/blue] Getting tuples of contributors that coded/contributed on the same file")
+
+def process_connections_step(state: ProcessingState) -> None:
+    """Extract contributor connections."""
+    console.print(
+        "[blue] Mapping connections between developers:[/blue] Getting tuples of contributors that coded/contributed on the same file")
     extract_contributor_connections(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Contributor connections extracted as tupples")
-    if state.verbose_mode == 2:console.print(f'state={inspect(state)}')
 
+    if state.verbose_mode == 2:
+        console.print(f'state={inspect(state)}')
+
+
+def process_unique_connections_step(state: ProcessingState) -> None:
+    """Get unique connections from tuples list."""
     console.print("[blue] Getting unique connections from tuples list.")
     state.unique_connections = get_unique_connections(state.connections_with_files)
-    console.print("[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
-    if state.verbose_mode == 2: print(f'state={inspect(state)}')
+    console.print(
+        "[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
 
-    if state.verbose_mode: print(f"{state.unique_connections=}")
+    if state.verbose_mode == 2:
+        print(f'state={inspect(state)}')
 
+    if state.verbose_mode:
+        print(f"{state.unique_connections=}")
+
+
+def process_network_creation_step(state: ProcessingState) -> None:
+    """Create network graph using NetworkX."""
     console.print("[blue] Creating the network using NetworkX.")
     create_network_graph(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Network graph created")
-    if state.verbose_mode == 2: console.print(f'state={inspect(state)}')
+
+    if state.verbose_mode == 2:
+        console.print(f'state={inspect(state)}')
 
 
-    apply_email_filtering(state)
-
+def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
+    """Export results to GraphML and print summary."""
     # Export to GraphML
-    graphml_filename = Path(work_file).stem + ".NetworkFile.graphML"
+
+    if state.verbose_mode: console.print(f'export results to GraphML')
+    if state.very_verbose_mode: console.print(f'export results to GraphML: state={state}, args={args}')
+
+
+    if args.output_file: graphml_filename = Path(args.output_file)
+    else: graphml_filename = Path(args.raw).stem + ".NetworkFile.graphML"
+
     try:
-        export_log_data.createGraphML(state.dev_to_dev_network, graphml_filename)
+        export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
         console.print(f"\n✓ Network exported to GraphML file: {graphml_filename}")
         console.print()
     except Exception as e:
         console.print(f"ERROR exporting to GraphML: {e}")
+    # Print summary
+    print_processing_summary(state, args.raw,args.output_file)
 
-    # console.print summary
-    print_processing_summary(state, work_file)
+def main() -> None:
+    """Main execution function."""
+    state = ProcessingState()
+    args = parse_arguments()
+    setup_processing_state(state, args)
+    process_changelog_file(state, args)
+    execute_data_processing_pipeline(state)
+    export_results(state, args)
 
 
 if __name__ == "__main__":

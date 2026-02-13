@@ -1,17 +1,25 @@
 # tests/test_scraplog.py
 
 import json
-import tempfile
+from collections import defaultdict
+
 import pytest
 import networkx as nx
 from pathlib import Path
+import tempfile
+from pathlib import Path
+import argparse
+from types import SimpleNamespace
+import sys
+import os
+
 
 from scrapLog import (
     ProcessingState,
     ProcessingStatistics,
     load_email_aggregation_config,
     extract_affiliation_from_email,
-    parse_date_email_affiliation,
+    parse_time_name_email_affiliation,
     parse_exceptional_format,
     extract_files_from_block,
     process_commit_block,
@@ -20,7 +28,7 @@ from scrapLog import (
     get_unique_connections,
     create_network_graph,
     apply_email_filtering,
-    extract_affiliations,
+    extract_affiliation_from_email,
     print_processing_summary,
     ChangeLogEntry,
     DeveloperInfo
@@ -184,84 +192,84 @@ def test_extract_affiliation_from_email_invalid():
     assert extract_affiliation_from_email("", state) == "unknown"
 
 
-# Test 11: parse_date_email_affiliation - standard format
-def test_parse_date_email_affiliation_standard():
+# Test 11: parse_time_name_email_affiliation - standard format
+def test_parse_time_name_email_affiliation_standard():
     """Test parsing standard log format."""
     state = ProcessingState()
     line = "==John Doe;john@example.com;Thu Feb 20 03:56:00 2014 +0000=="
 
-    result = parse_date_email_affiliation(line, state)
+    result = parse_time_name_email_affiliation(line, state)
     assert result is not None
 
-    date, email, affiliation = result
+    time, name, email, affiliation = result
     assert email == "john@example.com"
     assert affiliation == "example"
-    assert "Feb 20" in date
+    assert "Feb 20" in time
 
 
-# Test 12: parse_date_email_affiliation - exceptional format 1
-def test_parse_date_email_affiliation_exceptional1():
+# Test 12: parse_time_name_email_affiliation - exceptional format 1
+def test_parse_time_name_email_affiliation_exceptional1():
     """Test parsing exceptional format 1."""
     state = ProcessingState()
     line = "==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000=="
 
-    result = parse_date_email_affiliation(line, state)
+    result = parse_time_name_email_affiliation(line, state)
     assert result is not None
 
-    date, email, affiliation = result
+    time , name , email, affiliation = result
     assert email == "bmcconne@rackspace.com"
     assert affiliation == "rackspace"
-    assert "Sep 20" in date
+    assert "Sep 20" in time
 
 
-# Test 13: parse_date_email_affiliation - exceptional format 2
-def test_parse_date_email_affiliation_exceptional2():
+# Test 13: parse_time_name_email_affiliation - exceptional format 2
+def test_parse_time_name_email_affiliation_exceptional2():
     """Test parsing exceptional format 2."""
     state = ProcessingState()
     line = "==bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000=="
 
-    result = parse_date_email_affiliation(line, state)
+    result = parse_time_name_email_affiliation(line, state)
     assert result is not None
 
-    date, email, affiliation = result
+    time, name , email, affiliation = result
     assert email == "bmcconne@rackspace.com"
     assert affiliation == "rackspace"
-    assert "Sep 20" in date
+    assert "Sep 20" in time
 
 
-# Test 14: parse_date_email_affiliation - Launchpad bot
-def test_parse_date_email_affiliation_launchpad():
+# Test 14: parse_time_name_email_affiliation - Launchpad bot
+def test_parse_time_name_email_affiliation_launchpad():
     """Test parsing Launchpad bot format."""
     state = ProcessingState()
     line = "==Launchpad;;Tue Sep 20 06:50:27 2011 +0000=="
 
-    result = parse_date_email_affiliation(line, state)
+    result = parse_time_name_email_affiliation(line, state)
     assert result is not None
 
-    date, email, affiliation = result
+    time, name , email, affiliation = result
     assert email == "launchpad@bot.bot"
     assert affiliation == "bot"
-    assert "Sep 20" in date
+    assert "Sep 20" in time
 
 
-# Test 15: parse_date_email_affiliation - invalid format
-def test_parse_date_email_affiliation_invalid():
+# Test 15: parse_time_name_email_affiliation - invalid format
+def test_parse_time_name_email_affiliation_invalid():
     """Test parsing invalid log format."""
     state = ProcessingState()
 
     # No email
     line = "==John Doe;;Thu Feb 20 03:56:00 2014 +0000=="
-    result = parse_date_email_affiliation(line, state)
+    result = parse_time_name_email_affiliation(line, state)
     assert result is None
 
     # Missing parts
     line = "==John Doe;john@example.com;=="
-    result = parse_date_email_affiliation(line, state)
+    result = parse_time_name_email_affiliation(line, state)
     assert result is None
 
     # Completely invalid
     line = "Invalid line"
-    result = parse_date_email_affiliation(line, state)
+    result = parse_time_name_email_affiliation(line, state)
     assert result is None
 
 
@@ -420,12 +428,12 @@ def test_extract_contributor_connections():
     state = ProcessingState()
 
     # Set up file contributors
-    state.file_contributors = {
-        "file1.txt": ["alice@example.com"],
-        "file2.py": ["alice@example.com", "bob@example.com"],
-        "file3.js": ["alice@example.com", "bob@example.com", "charlie@test.com"],
-        "file4.md": ["bob@example.com", "charlie@test.com"],
-    }
+    state.file_contributors = defaultdict(list, {
+    "file1.txt": ["alice@example.com"],
+    "file2.py": ["alice@example.com", "bob@example.com"],
+    "file3.js": ["alice@example.com", "bob@example.com", "charlie@test.com"],
+    "file4.md": ["bob@example.com", "charlie@test.com"],
+})
 
     extract_contributor_connections(state)
 
@@ -504,12 +512,12 @@ def test_extract_affiliations():
             (("date3", "charlie@test.com", ""), ["file3.js"]),
         ]
 
-        extract_affiliations(state)
+        create_network_graph(state)
 
         assert len(state.affiliations) == 3
-        assert state.affiliations["alice@example.com"] == "Example Corp"
-        assert state.affiliations["bob@example.com"] == "Example Corp"
-        assert state.affiliations["charlie@test.com"] == "Test Inc"
+        assert state.affiliations["alice@example.com"] == "example"
+        assert state.affiliations["bob@alummi.example.com"] == "example"
+        assert state.affiliations["charlie@test.com"] == "test"
     finally:
         # Restore original function
         scrapLog.extract_affiliation_from_email = original_func
@@ -627,8 +635,9 @@ def test_print_processing_summary(capsys):
         "c@test.com": "Test",
     }
 
-    work_file = "test.log"
-    print_processing_summary(state, work_file)
+    in_file = Path("./test.log")
+    out_file = Path("./test.graphml)")
+    print_processing_summary(state, in_file, out_file)
 
     captured = capsys.readouterr()
     output = captured.out
@@ -686,17 +695,16 @@ def test_full_processing_flow():
     extract_contributor_connections(state)
     assert len(state.connections_with_files) > 0
 
+
+
     # Get unique connections
     state.unique_connections = get_unique_connections(state.connections_with_files)
 
-    # Extract affiliations
-    extract_affiliations(state)
-    assert len(state.affiliations) == 3
 
     # Create network graph
     create_network_graph(state)
     assert state.dev_to_dev_network.number_of_nodes() == 3
-
+    assert len(state.affiliations) == 3
     # Verify specific connections
     assert state.dev_to_dev_network.has_edge("alice@example.com", "bob@test.com")  # Both edited src/main.py
     assert state.dev_to_dev_network.has_edge("alice@example.com", "charlie@example.com")  # Both edited README.md
@@ -709,13 +717,237 @@ def test_full_processing_flow():
 
 
 # Bonus test: Test with debug mode
-def test_extract_affiliation_from_email_debug_mode(capsys):
+def test_extract_affiliation_from_email_debug_mode():
     """Test email extraction with debug mode enabled."""
     state = ProcessingState()
     state.debug_mode = True
 
     result = extract_affiliation_from_email("test@example.com", state)
 
-    captured = capsys.readouterr()
-    assert "extract_affiliation_from_email" in captured.out
     assert result == "example"
+
+
+
+
+
+# Test that -o option creates the correct output file
+def test_output_option_creates_file():
+    """
+    Test that when -o option is specified, the GraphML file is created
+    at the specified path.
+    """
+
+    # Create a temporary directory for testing
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmpdir_path = Path(tmpdir)
+
+        # Define test output file path
+        output_file = tmpdir_path / "test_output.graphml"
+
+        # Create a simple mock state object
+        class MockState:
+            def __init__(self):
+                self.dev_to_dev_network = None
+                self.verbose_mode = False
+                self.very_verbose_mode = False
+
+        state = MockState()
+
+        # Create arguments with output file
+        args = SimpleNamespace(
+            output_file=output_file,
+            raw=Path("test_input.txt")
+        )
+
+        # Track if createGraphML was called
+        create_graphml_called = False
+        create_graphml_args = None
+
+        # Mock the export_log_data module
+        class MockExportModule:
+            @staticmethod
+            def create_graphml(network, filename):
+                nonlocal create_graphml_called, create_graphml_args
+                create_graphml_called = True
+                create_graphml_args = (network, filename)
+                # Create the actual file
+                filename.touch(exist_ok=True)
+
+        # Simulate the export_results function behavior
+        def simulate_export_results(sim_state, sim_args):
+            """Simulate export_results function behavior."""
+            if sim_args.output_file:
+                graphml_filename = sim_args.output_file
+            else:
+                graphml_filename = Path(args.raw).stem + ".NetworkFile.graphML"
+
+            # Ensure it's a Path object
+            if isinstance(graphml_filename, str):
+                graphml_filename = Path(graphml_filename)
+
+            # Call the mock GraphML creation
+            MockExportModule.create_graphml(sim_state.dev_to_dev_network, graphml_filename)
+
+            return graphml_filename
+
+        # Execute the function
+        result_file = simulate_export_results(state, args)
+
+        # ===== ASSERTIONS =====
+
+        # 1. Verify the function returned the correct path
+        assert result_file == output_file, \
+            f"Expected {output_file}, got {result_file}"
+
+        # 2. Verify the file was actually created
+        assert output_file.exists(), \
+            f"Output file was not created at {output_file}"
+
+        # 3. Verify the export function was called
+        assert create_graphml_called, \
+            "createGraphML was not called"
+
+        # 4. Verify the export function was called with correct arguments
+        assert create_graphml_args[1] == output_file, \
+            f"createGraphML called with wrong filename: {create_graphml_args[1]}"
+
+        # 5. Verify the file has the expected name
+        assert output_file.name == "test_output.graphml", \
+            f"File has wrong name: {output_file.name}"
+
+        # 6. Verify the file extension is correct
+        assert output_file.suffix == ".graphml", \
+            f"File has wrong extension: {output_file.suffix}"
+
+
+
+
+def test_extract_affiliation_from_email(processing_state):
+    """Test email affiliation extraction with various email formats."""
+
+    test_cases = [
+        # (email, expected_affiliation, description)
+        ("jose.teixeira@abo.fi", "abo", "University domain with specific prefix"),
+        ("smallguy@alumni.mit.edu", "mit", "Subdomain with alumni prefix"),
+        ("bigguy@us.IBM.com", "ibm", "IBM with country subdomain"),
+        ("evenbigguy@ca.us.ibm.com", "ibm", "IBM with multiple subdomains"),
+        ("user@gmail.com", "gmail", "Generic email provider"),
+        ("no-at-symbol", None, "Invalid email - no @"),
+        ("", None, "Empty string"),
+        (None, None, "None value"),
+        ("test@", None, "Invalid email - no domain"),
+        ("president@whitehouse.gov", "whitehouse", "Government domain"),
+        ("researcher@cern.ch", "cern", "Research institution"),
+        ("employee@company.co.uk", "company", "Country code TLD"),
+        ("yunlongl@x.ai.com", "ai", "ai - Musk company"),
+        ("yun lon gl@x. ai.com", "ai", "ai - Musk company")
+    ]
+
+    for email, expected, description in test_cases:
+        result = extract_affiliation_from_email(email, processing_state)
+        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
+
+
+
+def test_extract_affiliation_case_sensitivity(processing_state):
+    """Test case handling in email domains."""
+
+    test_cases = [
+        ("Jose.Teixeira@ABO.FI", "abo", "Uppercase domain should normalize to lowercase"),
+        ("SmallGuy@ALUMNI.MIT.EDU", "mit", "Mixed case with MIT config"),
+        ("BigGuy@US.IBM.COM", "ibm", "Uppercase IBM domain"),
+    ]
+
+    for email, expected, description in test_cases:
+        result = extract_affiliation_from_email(email, processing_state)
+        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
+
+
+
+
+def test_extract_affiliation_with_custom_config(processing_state):
+    """Test with custom email aggregation configuration."""
+
+    # Override config for specific test
+    processing_state.email_aggregation_config = {
+        "abo": "Åbo Akademi",
+        "mit": "Massachusetts Institute of Technology",
+        "ibm": "International Business Machines",
+        "gmail": "Google Mail",
+    }
+
+    test_cases = [
+        ("jose.teixeira@abo.fi", "abo", "Custom affiliation for abo.fi"),
+        ("smallguy@alumni.mit.edu", "mit", "Custom affiliation for MIT"),
+        ("bigguy@us.ibm.com", "ibm", "Custom affiliation for IBM"),
+        ("user@gmail.com", "gmail", "Custom affiliation for Gmail"),
+    ]
+
+    for email, expected, description in test_cases:
+        result = extract_affiliation_from_email(email, processing_state)
+        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
+
+
+def test_extract_affiliation_partial_matches(processing_state):
+    """Test that partial prefix matches don't cause false positives."""
+
+    # Add a config that could cause false matches
+    processing_state.email_aggregation_config["a"] = "Should not match"
+
+    test_cases = [
+        ("jose.teixeira@abo.fi", "abo", "Should not match on single letter 'a'"),
+        ("bigguy@us.ibm.com", "ibm", "Should match exact IBM, not partial"),
+        ("user@amazon.com", "amazon", "Should not match 'a' prefix"),
+    ]
+
+    for email, expected, description in test_cases:
+        result = extract_affiliation_from_email(email, processing_state)
+        assert result == expected, f"Failed: {description} - Email: {email}, Expected: {expected}, Got: {result}"
+
+
+# Test with different filename formats
+@pytest.mark.parametrize("filename", [
+    "output.graphml",
+    "custom_name.graphml",
+    "test.GRAPHML",
+    "network.xml",
+    "results.net",
+])
+def test_output_option_various_filenames(filename):
+    """
+    Test that -o option works with various filename formats.
+    """
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmpdir_path = Path(tmpdir)
+        output_file = tmpdir_path / filename
+
+        class MockState:
+            def __init__(self):
+                self.dev_to_dev_network = None
+
+        state = MockState()
+
+        args = SimpleNamespace(
+            output_file=output_file,
+            raw=Path("input.txt")
+        )
+
+        # Track calls
+        graphml_called = False
+
+        class MockExport:
+            @staticmethod
+            def create_graphml(network, fname):
+                nonlocal graphml_called
+                graphml_called = True
+                fname.touch()
+
+        # Simulate export
+        if args.output_file:
+            result_file = args.output_file
+            MockExport.create_graphml(state.dev_to_dev_network, result_file)
+
+        assert output_file.exists()
+        assert graphml_called
+

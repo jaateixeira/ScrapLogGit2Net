@@ -3,21 +3,26 @@
 # Second implementation to GraphML (VISIONE) for OpenStack SNA - Open Journal special issue  - using the exportgraphml form
 
 
-from __future__ import absolute_import
-from __future__ import print_function
 import sys
 import re
 import csv
-from datetime import * 
+from datetime import *
+from pathlib import Path
+
 import networkx as nx
 import export_graphml_format
+
+from utils.unified_console import console
+from utils.unified_console import print_fatal_error , print_warning , print_error, print_success, print_info
+from rich import inspect
 
 # Replace '@' and '.' by "AT" and "DOT" 
 def clearDotsAndAts(contribEmail):
 
     #print ("clearing Strings From Dots and Ats from: [" + contribEmail+ "]")
 
-    pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
+    # pattern = re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)')
+    pattern = re.compile(r'^[\w\.-]+@[\w\.-]+\.\w+$')
  
     if (pattern.search(contribEmail)== None):
         print ("ERROR Contributor have an invalidName")
@@ -198,25 +203,29 @@ def createAtributesByCoreFileCSV(logData , outFileName):
     csvfile.close()
 
 
-# export the grapth node and edges to GraphML format 
-# Must be readable by Visione
-def createGraphML(network_with_affiliation_atributes :nx.Graph ,outFileName :str):
+# export the graph node and edges to GraphML format
+# Must be readable by Visone
+def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_name: Path):
     # iterator for nAf  
 
-    print ("")    
-    print(("\tExporting graph to file (.graphml):[" + outFileName + "]"))
-    
+    # Accept both string and Path
+    if isinstance(out_file_name, str):
+        out_file_name = Path(out_file_name)
+    elif not isinstance(out_file_name, Path):
+        raise TypeError(f"{out_file_name} must be a string or Path object")
+
+    print_info(f"Exporting graph to file (.graphml): {out_file_name=}  ")
     
     # verify arguments data
     ## verify graph/network 
 
     
     if network_with_affiliation_atributes.order() < 2:
-        print ("\tERROR network have less than two nodes !!")
+        print_fatal_error("Network have less than two nodes !")
         exit(1)
 
     if network_with_affiliation_atributes.size() < 1:
-        print ("\tERROR network have less than one edge !!")
+        print_fatal_error("Network have less than one edge !!")
         exit(1)
 
         
@@ -224,40 +233,46 @@ def createGraphML(network_with_affiliation_atributes :nx.Graph ,outFileName :str
 
     "verify every node as affiliation data"
 
-
     for node, data in network_with_affiliation_atributes.nodes(data=True):
+        #console.print(f"{node}: {data['affiliation']}")
+
+        if None == data['affiliation']:
+            break
+
         if len(data['affiliation']) == 0:
-            print ("invalid affiliation atribute")
-            print (node)
-            print (data['affiliation'])
+            print_fatal_error("invalid affiliation attribute")
+            console.print(f'{node=}')
+            console.print(f'{data['affiliation']}')
             exit(1)
         if 'affiliation' not in data.keys():
-            print ("affiliation atribute is missing")
-            print (node)
-            print (data['affiliation'])
+            print_fatal_error("affiliation attribute is missing")
+            console.print(f'{node=}')
+            console.print(f'{data['affiliation']}')
             exit(1)
 
 
-
-    ## verify outFilename
-    if type(outFileName) != str:
-        print ("\tERROR outfilename must be a string")
-        exit()
+        if isinstance(out_file_name, str):
+            out_file_name = Path(out_file_name)  # Convert string to Path
+        elif isinstance(out_file_name, Path):
+            pass  # Already a Path, do nothing
+        else:
+            # Only error on truly invalid types
+            print_fatal_error("Invalid output filename",
+                              f"Must be Path or string, got {type(out_file_name).__name__}: {repr(out_file_name)}")
         
-    if len(outFileName) < 5 :
-        print ("\tERROR outfilename must be a long string. More than 5 caracters")
+    if len(out_file_name.name) < 5 :
+        print_fatal_error("\tERROR outfilename must be a long string. More than 5 characters !")
         exit()
-
-    if outFileName[-8:] != ".graphML":
-        print ("\tERROR outfilename must finish with .grapthML extenssion")
+    if out_file_name.suffix.lower() != ".graphml":
+        print_fatal_error("\tERROR outfilename must finish with .graphml extension")
         exit()
 
     # open the export file 
 
-    print ("")    
-    print(("\tWriting grapthML file  (for VISIONE SNA tool or other ) on file:[" + outFileName + "]"))
 
-    gfile= open(outFileName, 'w')
+    print_info(f"Writing graphml file  (for VISONE SNA tool or other ) {out_file_name= }")
+
+    gfile= open(out_file_name, 'w')
 
     
     # open XML headers 
@@ -286,9 +301,13 @@ def createGraphML(network_with_affiliation_atributes :nx.Graph ,outFileName :str
     node_id = 0
     for node, data in network_with_affiliation_atributes.nodes(data=True):
         email=node
-        afl=data['affiliation']
+        afl= data['affiliation']
         #print(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
-        gfile.writelines(export_graphml_format.addNode(node_id,[(0,email),(1,"turquoise"),(2,afl)]))
+        if afl == None :
+            gfile.writelines(export_graphml_format.addNode(node_id, [(0, email), (1, "turquoise"), (2, "unknown")]))
+            print_warning(f"node = {email=} does not have a known affiliation attribute")
+        else:
+            gfile.writelines(export_graphml_format.addNode(node_id,[(0,email),(1,"turquoise"),(2,afl)]))
         # Give a each node and numeric id atribute data as well 
         network_with_affiliation_atributes.nodes[node]['id']= node_id
         node_id+=1

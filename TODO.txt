@@ -1,3 +1,23 @@
+test --output file
+add output file
+
+Use
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <desc>
+        <!-- Graph metadata as structured text or XML -->
+        <metadata>
+            <title>Linux Kernel Contributor Network</title>
+            <description>Developer collaboration network extracted from git changelog</description>
+            <source>git log --numstat --oneline v5.15..v6.0</source>
+            <creator>Changelog Analyzer Tool v2.3.1</creator>
+            <created>2024-01-15T14:30:00Z</created>
+            <version>1.0</version>
+            <license>MIT</license>
+            <notes>Filtered emails: bot@company.com, noreply@github.com</notes>
+        </metadata>
+    </desc>
+    
+Implement validator of graphml against schema
 
 Investigate @ROCm
 yunlongl@x.ai.com                                                               
