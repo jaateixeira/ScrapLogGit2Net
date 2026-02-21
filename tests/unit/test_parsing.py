@@ -40,7 +40,7 @@ def test_processing_statistics():
     """Test ProcessingStatistics dataclass."""
     stats = ProcessingStatistics()
 
-    assert stats.nlines == 0
+    assert stats.n_lines == 0
     assert stats.n_blocks == 0
     assert stats.n_validation_errors == 0
 
@@ -616,7 +616,7 @@ def test_apply_email_filtering_no_mode():
 def test_print_processing_summary(capsys):
     """Test printing processing summary."""
     state = ProcessingState()
-    state.statistics.nlines = 1000
+    state.statistics.n_lines = 1000
     state.statistics.n_blocks = 50
     state.statistics.n_skipped_blocks = 5
     state.statistics.n_blocks_changing_code = 45

@@ -53,18 +53,49 @@ Affiliation = str
 Filename = str
 Timestamp = str
 
-DeveloperInfo: TypeAlias = tuple[Timestamp, Email, Affiliation]  # Note: lowercase tuple, list, dict
+# =============================================================================
+# Type Aliases for Core Data Structures
+# =============================================================================
+
+DeveloperInfo: TypeAlias = tuple[Timestamp, Email, Affiliation]
+"""
+Developer information extracted from a commit header.
+
+Contains:
+    - Timestamp: When the commit was made (e.g., '2023-01-15 14:30:22 -0500')
+    - Email: Developer's email (e.g., 'john.doe@company.com')
+    - Affiliation: Organization from email domain (e.g., 'company', 'google', 'nvidia')
+"""
+
 ChangeLogEntry: TypeAlias = tuple[DeveloperInfo, list[Filename]]
+"""
+A complete changelog entry representing one commit.
+
+Structure:
+    - DeveloperInfo: Who made the commit and when
+    - list[Filename]: Files changed in that commit (e.g., ['src/main.py', 'README.md'])
+
+Example: (('2023-01-15...', 'alice@co.com', 'co'), ['file1.py', 'file2.py'])
+"""
+
 EmailAggregationConfig: TypeAlias = dict[str, str]
-Connection: TypeAlias = tuple[Email, Email]
-ConnectionWithFile: TypeAlias = tuple[Connection, Filename]
+"""
+Configuration for grouping email addresses by domain patterns.
+
+Maps domain prefixes to consolidated affiliation names.
+Example: {'ibm': 'ibm', 'google': 'google', 'gmail': 'personal'}
+"""
+
+Connection: TypeAlias = tuple[Email, Email, Timestamp]  # Or store first/last
+
+ConnectionWithFile: TypeAlias = tuple[Connection, Filename, Timestamp]
 
 
 
 @dataclass
 class ProcessingStatistics:
     """Track processing statistics."""
-    nlines: int = 0
+    n_lines: int = 0
     n_blocks: int = 0
     n_blocks_changing_code: int = 0
     n_blocks_not_changing_code: int = 0
@@ -594,6 +625,20 @@ def extract_contributor_connections(state: ProcessingState) -> None:
                 state.file_coediting_collaborative_relationships.append((connection, filename))
 
 
+# Update extraction
+def extract_contributor_connections_temporal(state: ProcessingState) -> None:
+    state.file_coediting_collaborative_relationships.clear()
+
+    # We need to process commits chronologically to get temporal info
+    for entry in state.parsed_change_log_entries:
+        (timestamp, name, email, affiliation), files = entry
+
+        for filename in files:
+            # For each file, we need to know all contributors
+            # This requires a different approach - track file history with timestamps
+            pass
+
+
 def get_unique_connections(
         tuples_list: List[ConnectionWithFile]
 ) -> List[Connection]:
@@ -673,7 +718,7 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     console.print("=" * 60)
     console.print(f"Input log file: {in_work_file}")
     console.print(f"Out network graphml file: {out_graphml_file}")
-    console.print(f"Total lines processed: {state.statistics.nlines}")
+    console.print(f"Total lines processed: {state.statistics.n_lines}")
     console.print(f"Total commit blocks found: {state.statistics.n_blocks}")
     console.print(f"Successfully processed blocks: {state.statistics.n_blocks - state.statistics.n_skipped_blocks}")
     console.print(f"Skipped/invalid blocks: {state.statistics.n_skipped_blocks}")
@@ -808,7 +853,7 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
         if line == "\n":
             continue
 
-        state.statistics.nlines += 1
+        state.statistics.n_lines += 1
 
         if line.startswith('=='):
             if current_block:
@@ -941,7 +986,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
 def main() -> None:
     start_time = time.time()
-    atexit.register(print_exit_info)
+    atexit.register(print_exit_info,start_time)
     console.print(f"[blue]▶ Executing: {' '.join(sys.argv)}[/blue]")
 
     """Main execution function."""
