@@ -51,15 +51,14 @@ from typing import TypeAlias
 Email = str
 Affiliation = str
 Filename = str
-Date = str
+Timestamp = str
 
-DeveloperInfo: TypeAlias = tuple[Date, Email, Affiliation]  # Note: lowercase tuple, list, dict
+DeveloperInfo: TypeAlias = tuple[Timestamp, Email, Affiliation]  # Note: lowercase tuple, list, dict
 ChangeLogEntry: TypeAlias = tuple[DeveloperInfo, list[Filename]]
 EmailAggregationConfig: TypeAlias = dict[str, str]
 Connection: TypeAlias = tuple[Email, Email]
 ConnectionWithFile: TypeAlias = tuple[Connection, Filename]
 
-start_time = time.time()
 
 
 @dataclass
@@ -86,12 +85,67 @@ class ProcessingStatistics:
 class ProcessingState:
     """Container for all processing state."""
     statistics: ProcessingStatistics = field(default_factory=ProcessingStatistics)
-    change_log_data: List[ChangeLogEntry] = field(default_factory=list)
-    file_contributors: DefaultDict[Filename, List[Email]] = field(
+
+    parsed_change_log_entries: List[ChangeLogEntry] = field(default_factory=list)
+
+    """Parsed changelog entries from git log
+
+    Each ChangeLogEntry contains:
+    - commit_hash: str - Unique identifier for the commit
+    - author_email: Email - Email of the commit author
+    - author_date: DateTime - When the commit was made  
+    - files_changed: List[Filename] - Files modified in this commit
+    - commit_message: str - Description of changes
+
+    This is the raw input data that drives all subsequent processing.
+    """
+
+    map_files_to_their_contributors: DefaultDict[Filename, List[Email]] = field(
         default_factory=lambda: defaultdict(list)
     )
-    connections_with_files: List[ConnectionWithFile] = field(default_factory=list)
-    unique_connections: List[Connection] = field(default_factory=list)
+
+
+    """Inverted index mapping files to their contributors.
+
+        Key: Filename - Path to the file within the repository
+        Value: List[Email] - All contributors who have modified this file
+
+        Built by aggregating parsed_change_log_entries . Used for:
+        - Identifying files with multiple contributors (collaboration points)
+        - Generating per-file contribution statistics
+        - Filtering files based on contributor criteria
+        """
+
+    file_coediting_collaborative_relationships: List[ConnectionWithFile] = field(default_factory=list)
+
+    """File coediting collaborative relationships between contributor pairs.
+
+        Each ConnectionWithFile represents a collaboration event on a specific file:
+        - email1: Email - First contributor
+        - email2: Email - Second contributor  
+        - filename: Filename - The file where they collaborated
+        - collaboration_count: int - Number of times they worked on this file
+        - first_collaboration: DateTime - Earliest collaboration on this file
+        - last_collaboration: DateTime - Most recent collaboration on this file
+
+        This preserves file context before aggregation into pair-level connections.
+        """
+
+    agregated_file_coediting_collaborative_relationships: List[Connection] = field(default_factory=list)
+
+    """Aggregated collaboration relationships between contributor pairs.
+
+        Each Connection represents a unique contributor pair across all files:
+        - email1: Email - First contributor
+        - email2: Email - Second contributor
+        - total_collaborations: int - Total collaborations across all files
+        - files_shared: List[Filename] - Files they've both worked on
+        - first_interaction: DateTime - When they first collaborated
+        - last_interaction: DateTime - Most recent collaboration
+
+        This is the deduplicated view used for network graph construction.
+        Populated by aggregating connections_with_files.
+        """
     affiliations: Dict[Email, Affiliation] = field(default_factory=dict)
     emails_to_filter: Set[Email] = field(default_factory=set)
     files_to_filter: Set[Filename] = field(default_factory=set)
@@ -112,7 +166,7 @@ class ProcessingState:
     dev_to_dev_network: nx.Graph = field(default_factory=nx.Graph)
 
 
-def print_exit_info() -> None:
+def print_exit_info(start_time:float) -> None:
     """console.print execution summary at exit."""
     execution_time = time.time() - start_time
     table = Table(title="Script Execution Summary")
@@ -123,8 +177,7 @@ def print_exit_info() -> None:
     console.print(table)
 
 
-atexit.register(print_exit_info)
-console.print(f"Executing {sys.argv}")
+
 
 
 def find_similar_strings(strings: set[str], similarity_threshold: float = 0.8) -> set[Tuple[str, str, float]]:
@@ -494,7 +547,7 @@ def process_commit_block(
             return False
 
         # Store the data
-        state.change_log_data.append(((dev_name, dev_email, dev_affiliation), changed_files))
+        state.parsed_change_log_entries.append(((dev_name, dev_email, dev_affiliation), changed_files))
         return True
 
     except Exception as e:
@@ -514,16 +567,16 @@ def aggregate_files_and_contributors(state: ProcessingState) -> None:
 
     files_visited: Set[Filename] = set()
 
-    for entry in state.change_log_data:
+    for entry in state.parsed_change_log_entries:
         email = entry[0][1]
         files = entry[1]
 
         for filename in files:
             if filename not in files_visited:
                 files_visited.add(filename)
-                state.file_contributors[filename] = [email]
-            elif email not in state.file_contributors[filename]:
-                state.file_contributors[filename].append(email)
+                state.map_files_to_their_contributors[filename] = [email]
+            elif email not in state.map_files_to_their_contributors[filename]:
+                state.map_files_to_their_contributors[filename].append(email)
 
     state.statistics.n_changed_files = len(files_visited)
 
@@ -533,12 +586,12 @@ def extract_contributor_connections(state: ProcessingState) -> None:
 
     # console.print("\nGetting tuples of contributors that coded/contributed on the same file")
 
-    state.connections_with_files.clear()
+    state.file_coediting_collaborative_relationships.clear()
 
-    for filename, contributors in state.file_contributors.items():
+    for filename, contributors in state.map_files_to_their_contributors.items():
         if len(contributors) > 1:
             for connection in itertools.combinations(contributors, 2):
-                state.connections_with_files.append((connection, filename))
+                state.file_coediting_collaborative_relationships.append((connection, filename))
 
 
 def get_unique_connections(
@@ -575,7 +628,7 @@ def create_network_graph(state: ProcessingState) -> None:
         console.print("\nCreating network graph from unique connections")
 
     state.dev_to_dev_network.clear()
-    state.dev_to_dev_network.add_edges_from(state.unique_connections)
+    state.dev_to_dev_network.add_edges_from(state.agregated_file_coediting_collaborative_relationships)
 
     # Add node attributes
     for node in state.dev_to_dev_network.nodes():
@@ -733,7 +786,7 @@ def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> 
 
         process_file_lines(lines, state)
 
-        console.print(f"\n✓ Successfully processed {len(state.change_log_data)} commits")
+        console.print(f"\n✓ Successfully processed {len(state.parsed_change_log_entries)} commits")
         console.print()
 
         if args.save:
@@ -804,7 +857,7 @@ def save_processed_data(state: ProcessingState, save_path: Path) -> None:
             raise
 
     # Usage
-    save_data(state.change_log_data, save_path)
+    save_data(state.parsed_change_log_entries, save_path)
     console.print("Data saved successfully")
 
 
@@ -845,15 +898,15 @@ def process_connections_step(state: ProcessingState) -> None:
 def process_unique_connections_step(state: ProcessingState) -> None:
     """Get unique connections from tuples list."""
     console.print("[blue] Getting unique connections from tuples list.")
-    state.unique_connections = get_unique_connections(state.connections_with_files)
+    state.agregated_file_coediting_collaborative_relationships = get_unique_connections(state.file_coediting_collaborative_relationships)
     console.print(
-        "[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.unique_connections)} unique connections")
+        "[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.agregated_file_coediting_collaborative_relationships)} unique connections")
 
     if state.verbose_mode == 2:
         print(f'state={inspect(state)}')
 
     if state.verbose_mode:
-        print(f"{state.unique_connections=}")
+        print(f"{state.agregated_file_coediting_collaborative_relationships=}")
 
 
 def process_network_creation_step(state: ProcessingState) -> None:
@@ -887,6 +940,10 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     print_processing_summary(state, args.raw,args.output_file)
 
 def main() -> None:
+    start_time = time.time()
+    atexit.register(print_exit_info)
+    console.print(f"[blue]▶ Executing: {' '.join(sys.argv)}[/blue]")
+
     """Main execution function."""
     state = ProcessingState()
     args = parse_arguments()

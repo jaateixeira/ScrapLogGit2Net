@@ -57,10 +57,10 @@ def test_processing_state_initialization():
     state = ProcessingState()
 
     assert isinstance(state.statistics, ProcessingStatistics)
-    assert len(state.change_log_data) == 0
+    assert len(state.parsed_change_log_entries) == 0
     assert len(state.file_contributors) == 0
-    assert len(state.connections_with_files) == 0
-    assert len(state.unique_connections) == 0
+    assert len(state.file_coediting_collaborative_relationships) == 0
+    assert len(state.agregated_file_coediting_collaborative_relationships) == 0
     assert len(state.affiliations) == 0
     assert len(state.emails_to_filter) == 0
     assert len(state.files_to_filter) == 0
@@ -371,9 +371,9 @@ def test_process_commit_block_valid():
 
     result = process_commit_block(block, state)
     assert result is True
-    assert len(state.change_log_data) == 1
+    assert len(state.parsed_change_log_entries) == 1
 
-    entry = state.change_log_data[0]
+    entry = state.parsed_change_log_entries[0]
     assert entry[0][1] == "john@example.com"
     assert entry[0][2] == "example"
     assert entry[1] == ["file1.txt", "file2.py"]
@@ -406,7 +406,7 @@ def test_aggregate_files_and_contributors():
     state = ProcessingState()
 
     # Add some change log data
-    state.change_log_data = [
+    state.parsed_change_log_entries = [
         (("date1", "alice@example.com", "example"), ["file1.txt", "file2.py"]),
         (("date2", "bob@example.com", "example"), ["file2.py", "file3.js"]),
         (("date3", "alice@example.com", "example"), ["file3.js", "file4.md"]),
@@ -438,11 +438,11 @@ def test_extract_contributor_connections():
     extract_contributor_connections(state)
 
     # Check connections
-    assert len(state.connections_with_files) == 4  # 1 + 3 + 3 + 1
+    assert len(state.file_coediting_collaborative_relationships) == 4  # 1 + 3 + 3 + 1
 
     # Check specific connections
-    connections_by_file = {cf[1]: cf[0] for cf in state.connections_with_files}
-    assert ("alice@example.com", "bob@example.com") in [cf[0] for cf in state.connections_with_files if
+    connections_by_file = {cf[1]: cf[0] for cf in state.file_coediting_collaborative_relationships}
+    assert ("alice@example.com", "bob@example.com") in [cf[0] for cf in state.file_coediting_collaborative_relationships if
                                                         cf[1] == "file2.py"]
 
     # Verify all combinations
@@ -455,7 +455,7 @@ def test_extract_contributor_connections():
     ]
 
     for expected in expected_pairs:
-        assert expected in state.connections_with_files
+        assert expected in state.file_coediting_collaborative_relationships
 
 
 # Test 24: get_unique_connections
@@ -506,7 +506,7 @@ def test_extract_affiliations():
 
     try:
         # Set up change log data
-        state.change_log_data = [
+        state.parsed_change_log_entries = [
             (("date1", "alice@example.com", ""), ["file1.txt"]),
             (("date2", "bob@example.com", ""), ["file2.py"]),
             (("date3", "charlie@test.com", ""), ["file3.js"]),
@@ -529,7 +529,7 @@ def test_create_network_graph():
     state = ProcessingState()
 
     # Set up unique connections and affiliations
-    state.unique_connections = [
+    state.agregated_file_coediting_collaborative_relationships = [
         ("alice@example.com", "bob@example.com"),
         ("bob@example.com", "charlie@test.com"),
     ]
@@ -685,7 +685,7 @@ def test_full_processing_flow():
         assert process_commit_block(block, state) is True
 
     # Verify change log data
-    assert len(state.change_log_data) == 3
+    assert len(state.parsed_change_log_entries) == 3
 
     # Aggregate files and contributors
     aggregate_files_and_contributors(state)
@@ -693,12 +693,12 @@ def test_full_processing_flow():
 
     # Extract connections
     extract_contributor_connections(state)
-    assert len(state.connections_with_files) > 0
+    assert len(state.file_coediting_collaborative_relationships) > 0
 
 
 
     # Get unique connections
-    state.unique_connections = get_unique_connections(state.connections_with_files)
+    state.agregated_file_coediting_collaborative_relationships = get_unique_connections(state.file_coediting_collaborative_relationships)
 
 
     # Create network graph
