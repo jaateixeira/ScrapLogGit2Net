@@ -1,3 +1,6 @@
+add 2 acceptance tests for temporal networks
+
+
 test --output file
 add output file
 
