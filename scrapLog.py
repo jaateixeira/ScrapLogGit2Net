@@ -87,9 +87,23 @@ Example: {'ibm': 'ibm', 'google': 'google', 'gmail': 'personal'}
 """
 
 Connection: TypeAlias = tuple[Email, Email, Timestamp]  # Or store first/last
+"""
+TODO document
+"""
 
 ConnectionWithFile: TypeAlias = tuple[Connection, Filename, Timestamp]
 
+"""
+TODO document 
+"""
+
+
+@dataclass
+class TimeStampedFileContribution:
+    """A single contribution to a file."""
+    email: Email
+    timestamp: Timestamp
+    commit_index: int  # To preserve order if timestamps are identical
 
 
 @dataclass
@@ -177,6 +191,12 @@ class ProcessingState:
         This is the deduplicated view used for network graph construction.
         Populated by aggregating connections_with_files.
         """
+
+    # Add to ProcessingState:
+    file_history: DefaultDict[Filename, List[TimeStampedFileContribution]] = field(
+        default_factory=lambda: defaultdict(list)
+    )
+
     affiliations: Dict[Email, Affiliation] = field(default_factory=dict)
     emails_to_filter: Set[Email] = field(default_factory=set)
     files_to_filter: Set[Filename] = field(default_factory=set)
@@ -536,7 +556,8 @@ def extract_files_from_block(
 
 def process_commit_block(
         block: List[str],
-        state: ProcessingState
+        state: ProcessingState,
+        commit_index: int,
 ) -> bool:
     """Process a block of changelog."""
     if not block:
@@ -576,9 +597,18 @@ def process_commit_block(
                 console.print(f"WARNING: No files in commit block for {first_line}")
             state.statistics.increment_skipped_blocks()
             return False
-
         # Store the data
         state.parsed_change_log_entries.append(((dev_name, dev_email, dev_affiliation), changed_files))
+        # NEW: Build file history for temporal analysis
+        for filename in changed_files:
+            state.file_history[filename].append(
+                TimeStampedFileContribution(
+                    email=dev_email,
+                    timestamp=commit_time,
+                    commit_index=commit_index
+                )
+            )
+
         return True
 
     except Exception as e:
@@ -625,18 +655,95 @@ def extract_contributor_connections(state: ProcessingState) -> None:
                 state.file_coediting_collaborative_relationships.append((connection, filename))
 
 
-# Update extraction
-def extract_contributor_connections_temporal(state: ProcessingState) -> None:
+def extract_temporal_connections(state: ProcessingState) -> None:
+    """
+    Extract temporal connections between developers who worked on the same file.
+    Preserves the exact time of each collaboration.
+    """
+    if state.verbose_mode:
+        console.print("[blue] Extracting temporal connections with timestamps[/blue]")
+
     state.file_coediting_collaborative_relationships.clear()
 
-    # We need to process commits chronologically to get temporal info
-    for entry in state.parsed_change_log_entries:
-        (timestamp, name, email, affiliation), files = entry
+    # For each file, look at all contributions in chronological order
+    for filename, contributions in state.file_history.items():
+        if len(contributions) < 2:
+            continue  # Need at least 2 contributors for collaboration
 
-        for filename in files:
-            # For each file, we need to know all contributors
-            # This requires a different approach - track file history with timestamps
-            pass
+        # Sort contributions by timestamp to preserve chronology
+        contributions.sort(key=lambda c: (c.timestamp, c.commit_index))
+
+        # For each pair of contributors to this file
+        # We consider ALL pairs, not just adjacent ones, because
+        # collaboration can happen non-sequentially
+        for i, contrib1 in enumerate(contributions):
+            for contrib2 in contributions[i + 1:]:
+                if contrib1.email == contrib2.email:
+                    continue  # Same contributor
+
+                # Normalize email order for consistent storage
+                if contrib1.email < contrib2.email:
+                    email1, email2 = contrib1.email, contrib2.email
+                    # Store the timestamp of the LATER contribution
+                    # as the collaboration moment
+                    timestamp = contrib2.timestamp
+                else:
+                    email1, email2 = contrib2.email, contrib1.email
+                    timestamp = contrib2.timestamp  # Still use later timestamp
+
+                # Create connection with timestamp
+                connection = (email1, email2, timestamp)
+                state.file_coediting_collaborative_relationships.append(
+                    (connection, filename, timestamp)
+                )
+
+
+def create_temporal_network_graph(state: ProcessingState) -> None:
+    """Create a temporal network graph with time-aware edges."""
+    if state.verbose_mode:
+        console.print("\nCreating temporal network graph")
+
+    state.dev_to_dev_network.clear()
+
+    # Group collaborations by developer pair
+    pair_collaborations = defaultdict(list)
+
+    for (email1, email2, collab_time), filename, timestamp in state.file_coediting_collaborative_relationships:
+        pair = (email1, email2)  # Already normalized
+        pair_collaborations[pair].append({
+            'timestamp': collab_time,
+            'filename': filename,
+            'time': timestamp  # Keep the full timestamp for reference
+        })
+
+    # Add edges with temporal attributes
+    for (email1, email2), collaborations in pair_collaborations.items():
+        # Sort collaborations by timestamp
+        collaborations.sort(key=lambda c: c['timestamp'])
+
+        # Extract temporal metadata
+        first_collab = collaborations[0]['timestamp']
+        last_collab = collaborations[-1]['timestamp']
+        collab_times = [c['timestamp'] for c in collaborations]
+        files = list(set(c['filename'] for c in collaborations))
+
+        # Add edge with temporal attributes
+        state.dev_to_dev_network.add_edge(
+            email1, email2,
+            weight=len(collaborations),  # Number of collaborations
+            first_collaboration=first_collab,
+            last_collaboration=last_collab,
+            collaboration_timeline=collab_times,
+            files_shared=files,
+            collaboration_count=len(collaborations)
+        )
+
+    # Add node attributes (same as before)
+    for node in state.dev_to_dev_network.nodes():
+        node_affiliation = extract_affiliation_from_email(node, state)
+        state.dev_to_dev_network.nodes[node]['email'] = node
+        state.dev_to_dev_network.nodes[node]['affiliation'] = node_affiliation
+        state.affiliations[node] = node_affiliation
 
 
 def get_unique_connections(
@@ -757,6 +864,12 @@ def parse_arguments() -> argparse.Namespace:
                         help='ignores the files listed in a text file (one file per line)')
     parser.add_argument('-a', '--aggregate-email-prefixes', type=Path,
                         help='JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})')
+    parser.add_argument('-t', '--type-of-network',
+                        choices=['inter_individual_graph_unweighted',
+                                 'inter_individual_multigraph_weighted',
+                                 'inter_individual_graph_temporal'],
+                        default='inter_individual_graph_unweighted',
+                        help='Type of network to generate (default: inter_individual_graph_unweighted)')
     parser.add_argument('-o','--output-file', type=Path,
                          help='creates a network/graph graphml file with the given name')
 
@@ -848,6 +961,7 @@ def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> 
 def process_file_lines(lines: List[str], state: ProcessingState) -> None:
     """Process all lines from the input file."""
     current_block: List[str] = []
+    commit_index = 0  # Add counter for commit order
 
     for line_num, line in enumerate(lines, 1):
         if line == "\n":
@@ -858,22 +972,16 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
         if line.startswith('=='):
             if current_block:
                 process_current_block(state, current_block)
-                process_commit_block(current_block, state)
+                process_commit_block(current_block, state, commit_index)
+                commit_index += 1  # Increment after processing
 
             current_block = [line]
             state.statistics.n_blocks += 1
-        elif '.' in line or '/' in line or len(line.strip()) >= 3:
-            current_block.append(line)
-        elif line == '--\n':
-            continue
-        else:
-            if state.verbose_mode:
-                console.print(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
+        # ... rest of the code ...
 
     # Process final block
     if current_block:
-        process_commit_block(current_block, state)
-
+        process_commit_block(current_block, state, commit_index)
 
 def process_current_block(state: ProcessingState, current_block: List[str]) -> None:
     """Handle logging for the current block being processed."""
@@ -909,8 +1017,25 @@ def save_processed_data(state: ProcessingState, save_path: Path) -> None:
 def execute_data_processing_pipeline(state: ProcessingState) -> None:
     """Execute the main data processing pipeline."""
     process_aggregation_step(state)
-    process_connections_step(state)
-    process_unique_connections_step(state)
+
+    # Branch based on network type
+    if state.network_type == 'inter_individual_graph_temporal':
+        # For temporal networks, use the temporal extraction
+        if not hasattr(state, 'file_history') or not state.file_history:
+            console.print("[yellow]Building file history for temporal analysis...[/yellow]")
+            # We need to rebuild file_history - this would require
+            # modifying the parsing phase
+            console.print("[red]Error: File history not available. Run with --rebuild-history[/red]")
+            sys.exit(1)
+
+        extract_temporal_connections(state)
+        # Skip unique connections step - we keep all temporal data
+        console.print(
+            f"[blue] Extracted {len(state.file_coediting_collaborative_relationships)} temporal connections[/blue]")
+    else:
+        process_connections_step(state)
+        process_unique_connections_step(state)
+
     process_network_creation_step(state)
     apply_email_filtering(state)
 
@@ -955,9 +1080,15 @@ def process_unique_connections_step(state: ProcessingState) -> None:
 
 
 def process_network_creation_step(state: ProcessingState) -> None:
-    """Create network graph using NetworkX."""
-    console.print("[blue] Creating the network using NetworkX.")
-    create_network_graph(state)
+    """Create network graph using NetworkX based on network type."""
+    console.print(f"[blue] Creating {state.network_type} network using NetworkX.[/blue]")
+
+    if state.network_type == 'inter_individual_graph_temporal':
+        create_temporal_network_graph(state)
+    else:
+        # Your existing create_network_graph function for unweighted/weighted
+        create_network_graph(state)
+
     console.print("[bold green]Success:[/bold green]" + "\n✓ Network graph created")
 
     if state.verbose_mode == 2:
@@ -966,23 +1097,39 @@ def process_network_creation_step(state: ProcessingState) -> None:
 
 def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     """Export results to GraphML and print summary."""
-    # Export to GraphML
 
-    if state.verbose_mode: console.print(f'export results to GraphML')
-    if state.very_verbose_mode: console.print(f'export results to GraphML: state={state}, args={args}')
-
-
-    if args.output_file: graphml_filename = Path(args.output_file)
-    else: graphml_filename = Path(args.raw).stem + ".NetworkFile.graphML"
+    if args.output_file:
+        graphml_filename = Path(args.output_file)
+    else:
+        base = Path(args.raw).stem
+        if state.network_type == 'inter_individual_graph_temporal':
+            graphml_filename = base + ".TemporalNetwork.graphML"
+        elif state.network_type == 'inter_individual_multigraph_weighted':
+            graphml_filename = base + ".WeightedNetwork.graphML"
+        else:
+            graphml_filename = base + ".NetworkFile.graphML"
 
     try:
-        export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
+        # For temporal networks, ensure complex attributes are stringified for GraphML
+        if state.network_type == 'inter_individual_graph_temporal':
+            # Create a copy with stringified lists for GraphML compatibility
+            G = state.dev_to_dev_network.copy()
+            for u, v, data in G.edges(data=True):
+                if 'collaboration_timeline' in data:
+                    data['collaboration_timeline'] = str(data['collaboration_timeline'])
+                if 'files_shared' in data:
+                    data['files_shared'] = str(data['files_shared'])
+            export_log_data.create_graphml_file(G, graphml_filename)
+        else:
+            export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
+
         console.print(f"\n✓ Network exported to GraphML file: {graphml_filename}")
         console.print()
     except Exception as e:
         console.print(f"ERROR exporting to GraphML: {e}")
-    # Print summary
-    print_processing_summary(state, args.raw,args.output_file)
+
+    print_processing_summary(state, args.raw, args.output_file)
+
 
 def main() -> None:
     start_time = time.time()
