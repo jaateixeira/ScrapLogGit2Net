@@ -64,7 +64,7 @@ ConnectionWithFile: TypeAlias = tuple[Connection, Filename]
 @dataclass
 class ProcessingStatistics:
     """Track processing statistics."""
-    nlines: int = 0
+    n_lines: int = 0
     n_blocks: int = 0
     n_blocks_changing_code: int = 0
     n_blocks_not_changing_code: int = 0
@@ -98,6 +98,28 @@ class ProcessingState:
     - commit_message: str - Description of changes
 
     This is the raw input data that drives all subsequent processing.
+    
+    Simplified example structure from test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN: 
+    
+    parsed_change_log_entries = [
+    # NVIDIA contributor with multiple files
+    (('Olli Lupton', 'olupton@nvidia.com', 'nvidia'),
+     ['third_party/xla/.../BUILD',
+      'third_party/xla/.../nvtx_utils.cc',
+      'tensorflow/.../array_slice.h']),
+      
+    # Google contributor with fewer files
+    (('Lawrence Wolf-Sonkin', 'lawrencews@google.com', 'google'),
+     ['tensorflow/core/lib/gtl/BUILD',
+      'tensorflow/core/lib/gtl/array_slice.h']),
+      
+    # Another Google contributor with patch files
+    (('Gunhyun Park', 'gunhyun@google.com', 'google'),
+     ['third_party/stablehlo/temporary.patch',
+      'third_party/stablehlo/workspace.bzl',
+      'third_party/xla/xla/mlir_hlo/tests/.../ops.mlir'])
+]                                                                                                                
+    
     """
 
     map_files_to_their_contributors: DefaultDict[Filename, List[Email]] = field(
@@ -114,6 +136,28 @@ class ProcessingState:
         - Identifying files with multiple contributors (collaboration points)
         - Generating per-file contribution statistics
         - Filtering files based on contributor criteria
+        
+         Simplified example structure from test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN: 
+         
+        
+>>> file_contributors = defaultdict(list, {
+...     # NVIDIA contributor's files
+...     'third_party/xla/.../profiler/lib/BUILD': ['olupton@nvidia.com'],
+...     'third_party/xla/.../profiler/lib/nvtx_utils.cc': ['olupton@nvidia.com'],
+...
+...     # Shared file with multiple contributors
+...     'tensorflow/core/lib/gtl/array_slice.h': [
+...         'olupton@nvidia.com',      # NVIDIA contributor
+...         'lawrencews@google.com'     # Google contributor
+...     ],
+...
+...     # Google contributor's files
+...     'tensorflow/core/lib/gtl/BUILD': ['lawrencews@google.com'],
+...
+...     # Another Google contributor's files
+...     'third_party/stablehlo/temporary.patch': ['gunhyun@google.com'],
+...     'third_party/xla/.../mlir_hlo/tests/.../ops.mlir': ['gunhyun@google.com']
+... })
         """
 
     file_coediting_collaborative_relationships: List[ConnectionWithFile] = field(default_factory=list)
@@ -129,6 +173,9 @@ class ProcessingState:
         - last_collaboration: DateTime - Most recent collaboration on this file
 
         This preserves file context before aggregation into pair-level connections.
+        
+        Example structure from test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN: 
+        file_coediting_collaborative_relationships=[(('olupton@nvidia.com', 'lawrencews@google.com'), 'tensorflow/core/lib/gtl/array_slice.h')]
         """
 
     agregated_file_coediting_collaborative_relationships: List[Connection] = field(default_factory=list)
@@ -145,6 +192,9 @@ class ProcessingState:
 
         This is the deduplicated view used for network graph construction.
         Populated by aggregating connections_with_files.
+        
+        Example structure from test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN: 
+        agregated_file_coediting_collaborative_relationships=[('lawrencews@google.com', 'olupton@nvidia.com')]
         """
     affiliations: Dict[Email, Affiliation] = field(default_factory=dict)
     emails_to_filter: Set[Email] = field(default_factory=set)
@@ -673,7 +723,7 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     console.print("=" * 60)
     console.print(f"Input log file: {in_work_file}")
     console.print(f"Out network graphml file: {out_graphml_file}")
-    console.print(f"Total lines processed: {state.statistics.nlines}")
+    console.print(f"Total lines processed: {state.statistics.n_lines}")
     console.print(f"Total commit blocks found: {state.statistics.n_blocks}")
     console.print(f"Successfully processed blocks: {state.statistics.n_blocks - state.statistics.n_skipped_blocks}")
     console.print(f"Skipped/invalid blocks: {state.statistics.n_skipped_blocks}")
@@ -808,7 +858,7 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
         if line == "\n":
             continue
 
-        state.statistics.nlines += 1
+        state.statistics.n_lines += 1
 
         if line.startswith('=='):
             if current_block:
@@ -941,7 +991,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
 def main() -> None:
     start_time = time.time()
-    atexit.register(print_exit_info)
+    atexit.register(print_exit_info, start_time)
     console.print(f"[blue]▶ Executing: {' '.join(sys.argv)}[/blue]")
 
     """Main execution function."""
