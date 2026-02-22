@@ -129,9 +129,8 @@ class ProcessingStatistics:
 
 @dataclass
 class ProcessingState:
-    def __init__(self):
 
-    network_type = None
+    network_type: str = None
 
     """Container for all processing state."""
     statistics: ProcessingStatistics = field(default_factory=ProcessingStatistics)
@@ -707,6 +706,7 @@ def extract_temporal_connections(state: ProcessingState) -> None:
                 state.file_coediting_collaborative_relationships.append(
                     (connection, filename, timestamp)
                 )
+    _handle_step_completion(state, "extract_temporal_connections")
 
 
 def create_temporal_network_graph(state: ProcessingState) -> None:
@@ -828,6 +828,8 @@ def apply_email_filtering(state: ProcessingState) -> None:
             console.print(f"\nRemoving {len(isolates)} isolates that resulted from filtering")
         state.dev_to_dev_network.remove_nodes_from(isolates)
 
+    _handle_step_completion(state, "apply_email_filtering")
+
 
 def print_processing_summary(state: ProcessingState, in_work_file: Path, out_graphml_file: Path ) -> None:
     """console.print a summary of processing results."""
@@ -909,7 +911,7 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
     state.debug_mode = True if args.debug else False
     state.strict_validation = args.strict
 
-    # state.network_type = args.type_of_network
+    state.network_type = args.type_of_network
 
     if state.verbose_mode:
         print_info('Verbose mode')
@@ -1044,13 +1046,6 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     # Branch based on network type
     if state.network_type == 'inter_individual_graph_temporal':
         # For temporal networks, use the temporal extraction
-        if not hasattr(state, 'file_history') or not state.file_history:
-            console.print("[yellow]Building file history for temporal analysis...[/yellow]")
-            # We need to rebuild file_history - this would require
-            # modifying the parsing phase
-            console.print("[red]Error: File history not available. Run with --rebuild-history[/red]")
-            sys.exit(1)
-
         extract_temporal_connections(state)
         # Skip unique connections step - we keep all temporal data
         console.print(
@@ -1091,7 +1086,6 @@ def process_aggregation_step(state: ProcessingState) -> None:
     aggregate_files_and_contributors(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Data aggregated by files and contributors")
 
-    #
     _handle_step_completion(state, "process_aggregation_step")
 
 
@@ -1102,8 +1096,10 @@ def process_connections_step(state: ProcessingState) -> None:
     extract_contributor_connections(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Contributor connections extracted as tuples")
 
-    if state.verbose_mode == 2:
+    if state.very_verbose_mode:
         console.print(f'state={inspect(state)}')
+
+    _handle_step_completion(state, "process_aggregation_step")
 
 
 def process_unique_connections_step(state: ProcessingState) -> None:
@@ -1113,11 +1109,13 @@ def process_unique_connections_step(state: ProcessingState) -> None:
     console.print(
         "[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.aggregated_file_coediting_collaborative_relationships)} unique connections")
 
-    if state.verbose_mode == 2:
-        print(f'state={inspect(state)}')
-
     if state.verbose_mode:
         print(f"{state.aggregated_file_coediting_collaborative_relationships=}")
+
+    if state.very_verbose_mode:
+        print(f'state={inspect(state)}')
+
+    _handle_step_completion(state, "process_unique_connections_step")
 
 
 def process_network_creation_step(state: ProcessingState) -> None:
@@ -1132,9 +1130,10 @@ def process_network_creation_step(state: ProcessingState) -> None:
 
     console.print("[bold green]Success:[/bold green]" + "\n✓ Network graph created")
 
-    if state.verbose_mode == 2:
+    if state.very_verbose_mode:
         console.print(f'state={inspect(state)}')
 
+    _handle_step_completion(state, "process_network_creation_step")
 
 def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     """Export results to GraphML and print summary."""
