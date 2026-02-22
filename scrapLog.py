@@ -905,10 +905,18 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
     state.debug_mode = True if args.debug else False
     state.strict_validation = args.strict
 
-
+    # state.network_type = args.type_of_network
 
     if state.verbose_mode:
-        console.print("\nVerbosity turned on")
+        print_info('Verbose mode')
+
+    if state.very_verbose_mode:
+        print_info('Very verbose mode')
+
+    if state.debug_mode:
+        print_info('Debug mode')
+        print_info('You will be called to continue step after step')
+        print_info('You will be invited to ask for processing state')
 
     # Load email aggregation config
     if args.aggregate_email_prefixes:

@@ -96,10 +96,48 @@ console = Console()
 
 import os
 
-def in_pycharm():
-    return "PYCHARM_HOSTED" in os.environ or "PYCHARM_HELP_IDE" in os.environ
+import os
 
-if in_pycharm():
+def is_running_in_pycharm_terminal():
+    """Check if script is running in PyCharm's built-in terminal"""
+
+    # PyCharm sets these in the terminal
+    pycharm_terminal_indicators = [
+        'PYCHARM_HOSTED',  # Set by PyCharm when running code
+        'TERMINAL_EMULATOR',  # Often set to 'JetBrains-JediTerm'
+        'INTELLIJ_ENVIRONMENT',  # Set in IntelliJ-based IDEs
+        'JEDITERM_SOURCE'  # JediTerm is PyCharm's terminal emulator
+    ]
+
+    # Check if any of these env vars exist and have PyCharm-specific values
+    if os.getenv('PYCHARM_HOSTED') is not None:
+        return True
+
+    if os.getenv('TERMINAL_EMULATOR') == 'JetBrains-JediTerm':
+        return True
+
+    if os.getenv('INTELLIJ_ENVIRONMENT') == 'True':
+        return True
+
+    if os.getenv('JEDITERM_SOURCE') is not None:
+        return True
+
+    return False
+
+
+# Usage
+if is_running_in_pycharm_terminal():
+    print("Running in PyCharm terminal")
+else:
+    print("Not in PyCharm terminal")
+
+# Usage
+if is_running_in_pycharm_terminal():
+    print("Running in PyCharm")
+else:
+    print("Not running in PyCharm")
+
+if is_running_in_pycharm_terminal():
     # Don't use Rich tracebacks in PyCharm - preserve clickable links
     import traceback
 else:
@@ -121,7 +159,6 @@ else:
     theme="solarized-dark",  # Use a different color theme
     word_wrap=True,  # Enable word wrapping for long lines
     )
-
 
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
