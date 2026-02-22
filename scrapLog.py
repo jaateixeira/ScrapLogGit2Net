@@ -22,8 +22,6 @@ from itertools import combinations
 from email.utils import parseaddr
 from urllib.parse import unquote
 
-
-
 import networkx as nx
 
 from colorama import Fore, Style
@@ -34,8 +32,6 @@ from utils.unified_console import (console, traceback, Table, inspect, print_inf
                                    print_error, print_success)
 from utils.unified_logger import logger
 
-
-
 from utils.validators import (
     validate_git_name,
     validate_git_email,
@@ -43,8 +39,6 @@ from utils.validators import (
     validate_git_files,
     validate_git_commit_block
 )
-
-
 
 from typing import TypeAlias
 
@@ -129,7 +123,6 @@ class ProcessingStatistics:
 
 @dataclass
 class ProcessingState:
-
     network_type = None
 
     """Container for all processing state."""
@@ -152,7 +145,6 @@ class ProcessingState:
     map_files_to_their_contributors: DefaultDict[Filename, List[Email]] = field(
         default_factory=lambda: defaultdict(list)
     )
-
 
     """Inverted index mapping files to their contributors.
 
@@ -221,7 +213,7 @@ class ProcessingState:
     dev_to_dev_network: nx.Graph = field(default_factory=nx.Graph)
 
 
-def print_exit_info(start_time:float) -> None:
+def print_exit_info(start_time: float) -> None:
     """console.print execution summary at exit."""
     execution_time = time.time() - start_time
     table = Table(title="Script Execution Summary")
@@ -230,9 +222,6 @@ def print_exit_info(start_time:float) -> None:
     table.add_row("Total execution time", f"{execution_time:.2f} seconds")
     table.add_row("Script arguments", str(sys.argv[1:]))
     console.print(table)
-
-
-
 
 
 def find_similar_strings(strings: set[str], similarity_threshold: float = 0.8) -> set[Tuple[str, str, float]]:
@@ -268,8 +257,6 @@ def find_similar_strings(strings: set[str], similarity_threshold: float = 0.8) -
     similar_pairs.sort(key=lambda x: x[2], reverse=True)
 
     return set(similar_pairs)
-
-
 
 
 def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
@@ -442,6 +429,7 @@ def extract_affiliation_from_email(
             console.print(f"Error extracting affiliation from {email}: {e}")
         return None
 
+
 def parse_time_name_email_affiliation(
         line: str,
         state: ProcessingState
@@ -490,9 +478,6 @@ def parse_time_name_email_affiliation(
             console.print(f"Error parsing line '{line}': {e}")
         state.statistics.increment_validation_errors()
         return None
-
-
-
 
 
 def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[DeveloperInfo]:
@@ -590,12 +575,11 @@ def process_commit_block(
             logger.debug("Retrieved ")
             logger.debug(f"{time_dev_info=}")
 
-
         if not time_dev_info:
             print_warning(f"Could not parse commit header: {first_line[:50]}...")
             print_error(f"Could not get developer information from commit block {first_line}")
             state.statistics.increment_skipped_blocks()
-            #sys.exit(1)
+            # sys.exit(1)
 
         commit_time, dev_name, dev_email, dev_affiliation = time_dev_info
 
@@ -769,20 +753,14 @@ def get_unique_connections(
     for connection in tuples_list:
         (author1, author2), _ = connection
 
-
         if author1 < author2:
             pair: Connection = (author1, author2)
         else:
             pair: Connection = (author2, author1)
 
-
         seen.add(pair)
 
     return list(seen)
-
-
-
-
 
 
 def create_network_graph(state: ProcessingState) -> None:
@@ -795,14 +773,13 @@ def create_network_graph(state: ProcessingState) -> None:
 
     # Add node attributes
     for node in state.dev_to_dev_network.nodes():
-        if state.verbose_mode: logger.debug( f"Adding node attributes to {node=}")
+        if state.verbose_mode: logger.debug(f"Adding node attributes to {node=}")
 
         node_email = node
-        node_affiliation = extract_affiliation_from_email(node,state)
+        node_affiliation = extract_affiliation_from_email(node, state)
         state.dev_to_dev_network.nodes[node]['email'] = node_email
         state.dev_to_dev_network.nodes[node]['affiliation'] = node_affiliation
         state.affiliations[node] = node_affiliation
-
 
 
 def apply_email_filtering(state: ProcessingState) -> None:
@@ -831,7 +808,7 @@ def apply_email_filtering(state: ProcessingState) -> None:
     _handle_step_completion(state, "apply_email_filtering")
 
 
-def print_processing_summary(state: ProcessingState, in_work_file: Path, out_graphml_file: Path ) -> None:
+def print_processing_summary(state: ProcessingState, in_work_file: Path, out_graphml_file: Path) -> None:
     """console.print a summary of processing results."""
     console.print("\n" + "=" * 60)
     console.print("PROCESSING SUMMARY")
@@ -848,14 +825,16 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     console.print(f"Network nodes (developers): {state.dev_to_dev_network.number_of_nodes()}")
     console.print(f"Network edges (collaborations): {state.dev_to_dev_network.size()}")
     console.print(f"Unique affiliations: {len(set(state.affiliations.values()))}")
-    console.print(f"Similar affiliation strings: 0.8 threshold {find_similar_strings(set(state.affiliations.values()))}")
-    #console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
+    console.print(
+        f"Similar affiliation strings: 0.8 threshold {find_similar_strings(set(state.affiliations.values()))}")
+    # console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
     console.print("=" * 60)
 
 
-def _ask_yes_or_no_question( question: str) -> bool:
+def _ask_yes_or_no_question(question: str) -> bool:
     response = input(f"{question} (y/n): ").strip().lower()
     return response in ['y', 'yes', 'Y', 'YES']
+
 
 def _ask_continue() -> bool:
     response = input("Do you want to continue? (y/n): ").strip().lower()
@@ -865,7 +844,6 @@ def _ask_continue() -> bool:
 def _ask_inspect_processing_state() -> bool:
     response = input("Do you want to inspect processing state ? (y/n): ").strip().lower()
     return response in ['y', 'yes', 'Y', 'YES']
-
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -891,8 +869,8 @@ def parse_arguments() -> argparse.Namespace:
                                  'inter_individual_graph_temporal'],
                         default='inter_individual_graph_unweighted',
                         help='Type of network to generate (default: inter_individual_graph_unweighted)')
-    parser.add_argument('-o','--output-file', type=Path,
-                         help='creates a network/graph graphml file with the given name')
+    parser.add_argument('-o', '--output-file', type=Path,
+                        help='creates a network/graph graphml file with the given name')
 
     parser.add_argument(
         '-v', '--verbose',
@@ -900,8 +878,8 @@ def parse_arguments() -> argparse.Namespace:
         default=0,
         help='Increase verbosity level (use -v, -vv, or -vvv)'
     )
-    parser.add_argument('-d','--debug', action='store_true', help='Enable debug output')
-    parser.add_argument('-st','--strict', action='store_true',
+    parser.add_argument('-d', '--debug', action='store_true', help='Enable debug output')
+    parser.add_argument('-st', '--strict', action='store_true',
                         help="strict validation mode - fail on validation errors")
 
     return parser.parse_args()
@@ -956,7 +934,7 @@ def load_email_filter_file(state: ProcessingState, filter_file_path: str) -> Non
             state.emails_to_filter = {line.strip() for line in ff if line.strip()}
         console.print(f"\tLoaded {len(state.emails_to_filter)} emails to filter")
     except IOError as e:
-        console.print(f"WARNING: Could not read filter file {filter_file_path}: {e}")
+        console.print(f" Could not read filter file {filter_file_path}: {e}")
         state.email_filtering_mode = False
 
 
@@ -980,7 +958,6 @@ def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> 
             console.print(inspect(state.parsed_change_log_entries))
 
         _handle_step_completion(state, 'parsed_change_log_entries')
-
 
         if args.save:
             save_processed_data(state, args.save)
@@ -1013,9 +990,18 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
             current_block = [line]
             state.statistics.n_blocks += 1
 
+        elif '.' in line or '/' in line or len(line.strip()) >= 3:
+            current_block.append(line)
+        elif line == '--\n':
+            continue
+        else:
+            if state.verbose_mode:
+                print_warning(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
+
     # Process final block
     if current_block:
         process_commit_block(current_block, state, commit_index)
+
 
 def process_current_block(state: ProcessingState, current_block: List[str]) -> None:
     """Handle logging for the current block being processed."""
@@ -1067,27 +1053,27 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     apply_email_filtering(state)
 
 
-
 def _handle_step_completion(state: ProcessingState, step_name: str) -> None:
-        """
-        Handle the completion of a processing step with optional inspection and continuation.
+    """
+    Handle the completion of a processing step with optional inspection and continuation.
 
-        Args:
-            state: The current processing state
-            step_name: Name of the step being completed (for logging)
-        """
-        # Format a generic success message from the step name
+    Args:
+        state: The current processing state
+        step_name: Name of the step being completed (for logging)
+    """
+    # Format a generic success message from the step name
 
-        print_success(f"{step_name} completed successfully ✓")
+    print_success(f"{step_name} completed successfully ✓")
 
-        if state.debug_mode:
-            if _ask_inspect_processing_state():
-                print_info(f"Inspecting state at stage {step_name}")
-                console.print(f'state={inspect(state)}')
+    if state.debug_mode:
+        if _ask_inspect_processing_state():
+            print_info(f"Inspecting state at stage {step_name}")
+            console.print(f'state={inspect(state)}')
 
-            if not _ask_continue():
-                print_info(f"Aborted by user at stage {step_name}")
-                sys.exit()
+        if not _ask_continue():
+            print_info(f"Aborted by user at stage {step_name}")
+            sys.exit()
+
 
 def process_aggregation_step(state: ProcessingState) -> None:
     """Aggregate files and contributors."""
@@ -1114,7 +1100,8 @@ def process_connections_step(state: ProcessingState) -> None:
 def process_unique_connections_step(state: ProcessingState) -> None:
     """Get unique connections from tuples list."""
     console.print("[blue] Getting unique connections from tuples list.")
-    state.aggregated_file_coediting_collaborative_relationships = get_unique_connections(state.file_coediting_collaborative_relationships)
+    state.aggregated_file_coediting_collaborative_relationships = get_unique_connections(
+        state.file_coediting_collaborative_relationships)
     console.print(
         "[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.aggregated_file_coediting_collaborative_relationships)} unique connections")
 
@@ -1143,6 +1130,7 @@ def process_network_creation_step(state: ProcessingState) -> None:
         console.print(f'state={inspect(state)}')
 
     _handle_step_completion(state, "process_network_creation_step")
+
 
 def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     """Export results to GraphML and print summary."""
@@ -1182,7 +1170,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
 def main() -> None:
     start_time = time.time()
-    atexit.register(print_exit_info,start_time)
+    atexit.register(print_exit_info, start_time)
     console.print(f"[blue]▶ Executing: {' '.join(sys.argv)}[/blue]")
 
     """Main execution function."""
