@@ -1149,6 +1149,8 @@ def process_aggregation_step(state: ProcessingState) -> None:
     aggregate_files_and_contributors(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Data aggregated by files and contributors")
 
+    if _ask_yes_or_no_question("Do you want to see state.map_files_to_their_contributors?"):
+        print_info(f"state.map_files_to_their_contributors=")
     _handle_step_completion(state, "process_aggregation_step")
 
 
