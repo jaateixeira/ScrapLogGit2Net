@@ -129,6 +129,10 @@ class ProcessingStatistics:
 
 @dataclass
 class ProcessingState:
+    def __init__(self):
+
+    network_type = None
+
     """Container for all processing state."""
     statistics: ProcessingStatistics = field(default_factory=ProcessingStatistics)
 
