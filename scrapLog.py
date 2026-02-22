@@ -997,7 +997,7 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
         else:
             if state.verbose_mode:
                 print_warning(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
-
+#
     # Process final block
     if current_block:
         process_commit_block(current_block, state, commit_index)
