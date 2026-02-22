@@ -130,7 +130,7 @@ class ProcessingStatistics:
 @dataclass
 class ProcessingState:
 
-    network_type: str = None
+    network_type = None
 
     """Container for all processing state."""
     statistics: ProcessingStatistics = field(default_factory=ProcessingStatistics)
@@ -353,7 +353,7 @@ def extract_affiliation_from_email(
 ) -> str | None:
     """Get affiliation from an email address with aggregation support."""
 
-    if state.verbose_mode:
+    if state.verbose_mode or state.very_verbose_mode:
         logger.info(f"\textract_affiliation_from_email({email})")
 
     # Input validation
@@ -428,17 +428,17 @@ def extract_affiliation_from_email(
         for prefix, consolidated_name in state.email_aggregation_config.items():
             prefix_lower = prefix.lower()
             if potential_org == prefix_lower or potential_org.startswith(prefix_lower):
-                if state.verbose_mode:
+                if state.verbose_mode or state.very_verbose_mode:
                     logger.info(f"\textracted_affiliation_from_email({email})={potential_org}")
                 return potential_org
 
         # No config match, return the potential organization
-        if state.verbose_mode:
+        if state.verbose_mode or state.very_verbose_mode:
             logger.info(f"\textracted_affiliation_from_email({email})={potential_org}")
         return potential_org
 
     except Exception as e:
-        if state.verbose_mode:
+        if state.verbose_mode or state.very_verbose_mode:
             console.print(f"Error extracting affiliation from {email}: {e}")
         return None
 
@@ -586,7 +586,7 @@ def process_commit_block(
         # Parse the commit header
         time_dev_info = parse_time_name_email_affiliation(first_line, state)
 
-        if state.verbose_mode:
+        if state.verbose_mode or state.very_verbose_mode:
             logger.debug("Retrieved ")
             logger.debug(f"{time_dev_info=}")
 
@@ -603,8 +603,8 @@ def process_commit_block(
         changed_files = extract_files_from_block(block[1:], state)
 
         if not changed_files:
-            if state.verbose_mode:
-                console.print(f"WARNING: No files in commit block for {first_line}")
+            if state.verbose_mode or state.very_verbose_mode:
+                print_warning(f"No files in commit block for {first_line}")
             state.statistics.increment_skipped_blocks()
             return False
         # Store the data
@@ -853,12 +853,16 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     console.print("=" * 60)
 
 
-def _ask_continue():
+def _ask_yes_or_no_question( question: str) -> bool:
+    response = input(f"{question} (y/n): ").strip().lower()
+    return response in ['y', 'yes', 'Y', 'YES']
+
+def _ask_continue() -> bool:
     response = input("Do you want to continue? (y/n): ").strip().lower()
     return response in ['y', 'yes', 'Y', 'YES']
 
 
-def _ask_inspect_processing_state():
+def _ask_inspect_processing_state() -> bool:
     response = input("Do you want to inspect processing state ? (y/n): ").strip().lower()
     return response in ['y', 'yes', 'Y', 'YES']
 
@@ -960,8 +964,9 @@ def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> 
     """Process the raw changelog file."""
     work_file = args.raw
 
-    start_scrapping_time = time.time()
-    console.print(f"\nStarting processing of {work_file} at {start_scrapping_time}")
+    start_scrapping_time = datetime.now()
+    # console.print(f"\nStarting processing of {work_file} at {start_scrapping_time}")
+    console.print(f"\nStarting processing of {work_file} at {start_scrapping_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
     try:
         with open(work_file, 'r') as f:
@@ -969,8 +974,13 @@ def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> 
 
         process_file_lines(lines, state)
 
-        console.print(f"\n✓ Successfully processed {len(state.parsed_change_log_entries)} commits")
-        console.print()
+        print_success(f"\n✓ Successfully processed {len(state.parsed_change_log_entries)} commits")
+
+        if _ask_yes_or_no_question('do you want to inspect parsed_change_log_entries?'):
+            console.print(inspect(state.parsed_change_log_entries))
+
+        _handle_step_completion(state, 'parsed_change_log_entries')
+
 
         if args.save:
             save_processed_data(state, args.save)
@@ -1002,7 +1012,6 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
 
             current_block = [line]
             state.statistics.n_blocks += 1
-        # ... rest of the code ...
 
     # Process final block
     if current_block:
