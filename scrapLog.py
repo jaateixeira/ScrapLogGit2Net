@@ -976,7 +976,7 @@ def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> 
 
         print_success(f"\n✓ Successfully processed {len(state.parsed_change_log_entries)} commits")
 
-        if _ask_yes_or_no_question('do you want to inspect parsed_change_log_entries?'):
+        if state.debug_mode and _ask_yes_or_no_question('do you want to inspect parsed_change_log_entries?'):
             console.print(inspect(state.parsed_change_log_entries))
 
         _handle_step_completion(state, 'parsed_change_log_entries')
