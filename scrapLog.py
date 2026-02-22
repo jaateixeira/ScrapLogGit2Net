@@ -20,6 +20,7 @@ from collections import defaultdict
 from difflib import SequenceMatcher
 from itertools import combinations
 from email.utils import parseaddr
+from urllib.parse import unquote
 
 
 
@@ -30,7 +31,7 @@ from colorama import Fore, Style
 import export_log_data
 
 from utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
-                                   print_error)
+                                   print_error, print_success)
 from utils.unified_logger import logger
 
 
@@ -176,7 +177,7 @@ class ProcessingState:
         This preserves file context before aggregation into pair-level connections.
         """
 
-    agregated_file_coediting_collaborative_relationships: List[Connection] = field(default_factory=list)
+    aggregated_file_coediting_collaborative_relationships: List[Connection] = field(default_factory=list)
 
     """Aggregated collaboration relationships between contributor pairs.
 
@@ -327,7 +328,13 @@ def _clean_email(email: str) -> str | None:
         from urllib.parse import unquote
         email = unquote(email)
     except ImportError:
-        pass
+        # This should never happen in standard Python, but if it does, exit
+        print("Error: urllib.parse.unquote not available. Cannot continue.")
+        sys.exit(1)
+    except Exception as e:
+        # Catch any other unexpected errors during decoding
+        print(f"Error: Failed to decode email '{email}': {e}")
+        sys.exit(1)
 
     # Take last @ if multiple (common in malformed emails)
     if email.count('@') > 1:
@@ -780,7 +787,7 @@ def create_network_graph(state: ProcessingState) -> None:
         console.print("\nCreating network graph from unique connections")
 
     state.dev_to_dev_network.clear()
-    state.dev_to_dev_network.add_edges_from(state.agregated_file_coediting_collaborative_relationships)
+    state.dev_to_dev_network.add_edges_from(state.aggregated_file_coediting_collaborative_relationships)
 
     # Add node attributes
     for node in state.dev_to_dev_network.nodes():
@@ -844,6 +851,10 @@ def _ask_continue():
     response = input("Do you want to continue? (y/n): ").strip().lower()
     return response in ['y', 'yes', 'Y', 'YES']
 
+
+def _ask_inspect_processing_state():
+    response = input("Do you want to inspect processing state ? (y/n): ").strip().lower()
+    return response in ['y', 'yes', 'Y', 'YES']
 
 
 
@@ -1040,18 +1051,36 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     apply_email_filtering(state)
 
 
+
+def _handle_step_completion(state: ProcessingState, step_name: str) -> None:
+        """
+        Handle the completion of a processing step with optional inspection and continuation.
+
+        Args:
+            state: The current processing state
+            step_name: Name of the step being completed (for logging)
+        """
+        # Format a generic success message from the step name
+
+        print_success(f"{step_name} completed successfully ✓")
+
+        if state.debug_mode:
+            if _ask_inspect_processing_state():
+                print_info(f"Inspecting state at stage {step_name}")
+                console.print(f'state={inspect(state)}')
+
+            if not _ask_continue():
+                print_info(f"Aborted by user at stage {step_name}")
+                sys.exit()
+
 def process_aggregation_step(state: ProcessingState) -> None:
     """Aggregate files and contributors."""
     console.print("[blue] Aggregating data:[/blue] For each file, what are the contributors.")
     aggregate_files_and_contributors(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Data aggregated by files and contributors")
 
-    if state.debug_mode:
-        console.print("[bold green] ✓ Data aggregated by files and contributors. Do you wanna inspect state?")
-        _ask_continue()
-        console.print("Do you want to continue?")
-        console.print(f'state={inspect(state)}')
-        _ask_continue()
+    #
+    _handle_step_completion(state, "process_aggregation_step")
 
 
 def process_connections_step(state: ProcessingState) -> None:
@@ -1059,7 +1088,7 @@ def process_connections_step(state: ProcessingState) -> None:
     console.print(
         "[blue] Mapping connections between developers:[/blue] Getting tuples of contributors that coded/contributed on the same file")
     extract_contributor_connections(state)
-    console.print("[bold green]Success:[/bold green]" + "\n✓ Contributor connections extracted as tupples")
+    console.print("[bold green]Success:[/bold green]" + "\n✓ Contributor connections extracted as tuples")
 
     if state.verbose_mode == 2:
         console.print(f'state={inspect(state)}')
@@ -1068,15 +1097,15 @@ def process_connections_step(state: ProcessingState) -> None:
 def process_unique_connections_step(state: ProcessingState) -> None:
     """Get unique connections from tuples list."""
     console.print("[blue] Getting unique connections from tuples list.")
-    state.agregated_file_coediting_collaborative_relationships = get_unique_connections(state.file_coediting_collaborative_relationships)
+    state.aggregated_file_coediting_collaborative_relationships = get_unique_connections(state.file_coediting_collaborative_relationships)
     console.print(
-        "[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.agregated_file_coediting_collaborative_relationships)} unique connections")
+        "[bold green]Success:[/bold green]" + f"\n✓ Extracted {len(state.aggregated_file_coediting_collaborative_relationships)} unique connections")
 
     if state.verbose_mode == 2:
         print(f'state={inspect(state)}')
 
     if state.verbose_mode:
-        print(f"{state.agregated_file_coediting_collaborative_relationships=}")
+        print(f"{state.aggregated_file_coediting_collaborative_relationships=}")
 
 
 def process_network_creation_step(state: ProcessingState) -> None:
@@ -1110,16 +1139,16 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
             graphml_filename = base + ".NetworkFile.graphML"
 
     try:
-        # For temporal networks, ensure complex attributes are stringified for GraphML
+        # For temporal networks, ensure complex attributes are string fied for GraphML
         if state.network_type == 'inter_individual_graph_temporal':
-            # Create a copy with stringified lists for GraphML compatibility
-            G = state.dev_to_dev_network.copy()
-            for u, v, data in G.edges(data=True):
+            # Create a copy with string field lists for GraphML compatibility
+            g = state.dev_to_dev_network.copy()
+            for u, v, data in g.edges(data=True):
                 if 'collaboration_timeline' in data:
                     data['collaboration_timeline'] = str(data['collaboration_timeline'])
                 if 'files_shared' in data:
                     data['files_shared'] = str(data['files_shared'])
-            export_log_data.create_graphml_file(G, graphml_filename)
+            export_log_data.create_graphml_file(g, graphml_filename)
         else:
             export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
 
