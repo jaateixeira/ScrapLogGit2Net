@@ -1,3 +1,8 @@
+Instead of
+state.parsed_change_log_entries.append(((dev_name, dev_email, dev_affiliation), changed_files))
+Information on timestamp should be preserved
+
+
 Make it work for unweighter diagrams ... so it passes acceptance tests
 
 Then make it work for weighted .. write new acceptance tests for weighted networks 

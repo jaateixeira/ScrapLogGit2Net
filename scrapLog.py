@@ -52,25 +52,25 @@ Timestamp = str
 # Type Aliases for Core Data Structures
 # =============================================================================
 
-DeveloperInfo: TypeAlias = tuple[Timestamp, Email, Affiliation]
+DeveloperInfo: TypeAlias = tuple[Email, Affiliation]
 """
 Developer information extracted from a commit header.
 
 Contains:
-    - Timestamp: When the commit was made (e.g., '2023-01-15 14:30:22 -0500')
     - Email: Developer's email (e.g., 'john.doe@company.com')
     - Affiliation: Organization from email domain (e.g., 'company', 'google', 'nvidia')
 """
 
-ChangeLogEntry: TypeAlias = tuple[DeveloperInfo, list[Filename]]
+ChangeLogEntry: TypeAlias = tuple[DeveloperInfo, list[Filename],Timestamp]
 """
 A complete changelog entry representing one commit.
 
 Structure:
     - DeveloperInfo: Who made the commit and when
     - list[Filename]: Files changed in that commit (e.g., ['src/main.py', 'README.md'])
+    - Timestamp: When the commit was made (e.g., '2023-01-15 14:30:22 -0500')
 
-Example: (('2023-01-15...', 'alice@co.com', 'co'), ['file1.py', 'file2.py'])
+Example: ( 'alice@co.com', 'co'), ['file1.py', 'file2.py'],('2023-01-15...'))
 """
 
 EmailAggregationConfig: TypeAlias = dict[str, str]
@@ -133,7 +133,6 @@ class ProcessingState:
     """Parsed changelog entries from git log
 
     Each ChangeLogEntry contains:
-    - commit_hash: str - Unique identifier for the commit
     - author_email: Email - Email of the commit author
     - author_date: DateTime - When the commit was made  
     - files_changed: List[Filename] - Files modified in this commit
@@ -592,6 +591,9 @@ def process_commit_block(
             state.statistics.increment_skipped_blocks()
             return False
         # Store the data
+
+        # tuple[DeveloperInfo, list[Filename],Timestamp]
+        #state.parsed_change_log_entries.append((dev_name, dev_email), changed_files,commit_time)
         state.parsed_change_log_entries.append(((dev_name, dev_email, dev_affiliation), changed_files))
         # NEW: Build file history for temporal analysis
         for filename in changed_files:
@@ -983,7 +985,7 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
 
         if line.startswith('=='):
             if current_block:
-                process_current_block(state, current_block)
+                log_and_validate_current_block_being_processed(state, current_block)
                 process_commit_block(current_block, state, commit_index)
                 commit_index += 1  # Increment after processing
 
@@ -1000,16 +1002,29 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
 #
     # Process final block
     if current_block:
+        log_and_validate_current_block_being_processed(state, current_block)
         process_commit_block(current_block, state, commit_index)
 
 
-def process_current_block(state: ProcessingState, current_block: List[str]) -> None:
+def log_and_validate_current_block_being_processed(state: ProcessingState, current_block: List[str]) -> None:
     """Handle logging for the current block being processed."""
     if state.verbose_mode:
         logger.debug(f"Processing {current_block[0]=}")
-    elif state.very_verbose_mode:
+    elif state.very_verbose_mode or state.debug_mode:
         logger.debug(f"Processing {current_block=}")
 
+    if state.debug_mode:
+        has_valid_format = current_block[0].startswith('==') and ';' in current_block[0]
+        logger.debug(f"  - Valid format: {has_valid_format}")
+        logger.debug(f"  - Block size: {len(current_block)} lines")
+
+    if not current_block[0].startswith('=='):
+        if state.strict_validation:
+            raise ValueError(f"Invalid block header: {current_block[0][:50]}")
+            sys.exit(1)
+        else:
+            logger.warning(f"Block {current_block} has invalid header format")
+            print_warning(f"Block {current_block[0][:50]} has invalid header format")
 
 def save_processed_data(state: ProcessingState, save_path: Path) -> None:
     """Save processed data to a pickle file."""
