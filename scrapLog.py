@@ -675,9 +675,18 @@ def aggregate_files_and_contributors(state: ProcessingState) -> None:
 
     files_visited: Set[Filename] = set()
 
+    # Keep your existing type aliases but add accessor functions
+    def get_email_from_entry(entry: ChangeLogEntry) -> str:
+        """Extract email from a changelog entry tuple."""
+        return entry[0][0]  # DeveloperInfo is at index 0, email at index 0
+
+    def get_files_from_entry(entry: ChangeLogEntry) -> list[Filename]:
+        """Extract files from a changelog entry tuple."""
+        return entry[1]  # files_changed at index 1
+
     for entry in state.parsed_change_log_entries:
-        email = entry[0][1]
-        files = entry[1]
+        email = get_email_from_entry(entry)
+        files = get_files_from_entry(entry)
 
         for filename in files:
             if filename not in files_visited:
@@ -1037,8 +1046,8 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
         if line.startswith('=='):
             if current_block:
                 log_and_validate_current_block_being_processed(state, current_block)
-                #process_commit_block(current_block, state, commit_index)
-                process_commit_block(current_block, state, commit_index, extra_debug=True)
+                process_commit_block(current_block, state, commit_index)
+                #process_commit_block(current_block, state, commit_index, extra_debug=True)
                 commit_index += 1  # Increment after processing
 
             current_block = [line]
@@ -1055,8 +1064,8 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
     # Process final block
     if current_block:
         log_and_validate_current_block_being_processed(state, current_block)
-        #process_commit_block(current_block, state, commit_index)
-        process_commit_block(current_block, state, commit_index, extra_debug=True)
+        process_commit_block(current_block, state, commit_index)
+        #process_commit_block(current_block, state, commit_index, extra_debug=True)
 
 
 def log_and_validate_current_block_being_processed(state: ProcessingState, current_block: List[str]) -> None:
@@ -1149,8 +1158,9 @@ def process_aggregation_step(state: ProcessingState) -> None:
     aggregate_files_and_contributors(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Data aggregated by files and contributors")
 
-    if _ask_yes_or_no_question("Do you want to see state.map_files_to_their_contributors?"):
-        print_info(f"state.map_files_to_their_contributors=")
+    if state.debug_mode and _ask_yes_or_no_question("Do you want to see state.map_files_to_their_contributors?"):
+        print_info(f"]"
+                   f"{state.map_files_to_their_contributors=}")
     _handle_step_completion(state, "process_aggregation_step")
 
 
