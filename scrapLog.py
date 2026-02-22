@@ -552,14 +552,55 @@ def process_commit_block(
         block: List[str],
         state: ProcessingState,
         commit_index: int,
+        extra_debug:bool = False
 ) -> bool:
-    """Process a block of changelog."""
+    """
+    Process a single commit block from the git changelog.
+
+    A commit block consists of a header line (starting with '==') containing author
+    information, followed by lines listing the files changed in that commit and timestamp.
+
+    Args:
+        block: List of strings representing one commit block
+              - First line: Header with format "==name;email;timestamp timezone=="
+              - Subsequent lines: Filenames of changed files
+        state: ProcessingState object containing configuration and accumulators
+        commit_index: Sequential index of this commit (0-based)
+        extra_debug: If True, prints detailed debug information even without verbose mode
+
+    Returns:
+        bool: True if the block was successfully processed, False if it was skipped
+              due to parsing errors, validation failures, or no changed files
+
+    Side Effects:
+        - Updates state.statistics with processing metrics
+        - Appends to state.parsed_change_log_entries if successful
+        - Appends to state.file_history for temporal analysis
+        - May increment validation error or skipped block counters
+
+    Example:
+        >>> block = [
+        ...     "==John Doe;john@company.com;2023-01-15 14:30:22 -0500==",
+        ...     "src/main.py",
+        ...     "README.md"
+        ... ]
+        >>> success = process_commit_block(block, state, 0)
+
+    Notes:
+        - Blocks without any files are skipped (returns False)
+        - Failed header parsing results in skipped block and warning
+        - Files matching filter patterns (if enabled) are excluded
+        - In strict validation mode, some errors may cause early exit
+    """
     if not block:
         return False
 
     first_line = block[0]
+
+    if extra_debug: print_info(f"Processing first line of commit block '{first_line}'")
+
     if not first_line.startswith('=='):
-        console.print(f"ERROR: Invalid block - does not start with '==': {first_line[:50]}...")
+        print_error(f"Invalid block - does not start with '==': {first_line[:50]}...")
 
         console.print(traceback.Traceback(), style="bold red")
 
@@ -570,9 +611,13 @@ def process_commit_block(
         # Parse the commit header
         time_dev_info = parse_time_name_email_affiliation(first_line, state)
 
+        if extra_debug: print_info(f"{time_dev_info=}")
+
         if state.verbose_mode or state.very_verbose_mode:
             logger.debug("Retrieved ")
             logger.debug(f"{time_dev_info=}")
+        if extra_debug:
+            console.print(f"{inspect(time_dev_info)}")
 
         if not time_dev_info:
             print_warning(f"Could not parse commit header: {first_line[:50]}...")
@@ -592,9 +637,15 @@ def process_commit_block(
             return False
         # Store the data
 
-        # tuple[DeveloperInfo, list[Filename],Timestamp]
-        #state.parsed_change_log_entries.append((dev_name, dev_email), changed_files,commit_time)
-        state.parsed_change_log_entries.append(((dev_name, dev_email, dev_affiliation), changed_files))
+        dev_info: DeveloperInfo = (dev_email,dev_affiliation)
+        new_change_log_entry: ChangeLogEntry = (dev_info,changed_files,commit_time)
+
+        if extra_debug or state.very_verbose_mode:
+            print_info(f"Appending parsed_change_log_entries with {new_change_log_entry=}")
+
+        "appending parsed_change_log_entries with the processed commit block"
+        state.parsed_change_log_entries.append(new_change_log_entry)
+
         # NEW: Build file history for temporal analysis
         for filename in changed_files:
             state.file_history[filename].append(
@@ -986,7 +1037,8 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
         if line.startswith('=='):
             if current_block:
                 log_and_validate_current_block_being_processed(state, current_block)
-                process_commit_block(current_block, state, commit_index)
+                #process_commit_block(current_block, state, commit_index)
+                process_commit_block(current_block, state, commit_index, extra_debug=True)
                 commit_index += 1  # Increment after processing
 
             current_block = [line]
@@ -1003,7 +1055,8 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
     # Process final block
     if current_block:
         log_and_validate_current_block_being_processed(state, current_block)
-        process_commit_block(current_block, state, commit_index)
+        #process_commit_block(current_block, state, commit_index)
+        process_commit_block(current_block, state, commit_index, extra_debug=True)
 
 
 def log_and_validate_current_block_being_processed(state: ProcessingState, current_block: List[str]) -> None:
