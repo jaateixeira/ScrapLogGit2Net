@@ -27,6 +27,8 @@ import networkx as nx
 from colorama import Fore, Style
 
 import export_log_data
+from utils.debugging import handle_step_completion, ask_yes_or_no_question
+from utils.strings_cleaners import clean_email
 
 from utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
                                    print_error, print_success)
@@ -292,46 +294,6 @@ def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
         sys.exit(1)
 
 
-def _clean_email(email: str) -> str | None:
-    """
-    Clean an email address by removing common artifacts.
-    Uses email.utils.parseaddr for robust parsing.
-    """
-    if not email or not isinstance(email, str):
-        return None
-
-    # Remove all whitespace first
-    email = ''.join(email.split())
-
-    # Use Python's built-in email parser (handles "Name <email>", quotes, etc.)
-    _, email = parseaddr(email)
-
-    if not email or '@' not in email:
-        return None
-
-    # Remove trailing ? if present
-    email = email.rstrip('?')
-
-    # URL decode %40 to @
-    try:
-        from urllib.parse import unquote
-        email = unquote(email)
-    except ImportError:
-        # This should never happen in standard Python, but if it does, exit
-        print("Error: urllib.parse.unquote not available. Cannot continue.")
-        sys.exit(1)
-    except Exception as e:
-        # Catch any other unexpected errors during decoding
-        print(f"Error: Failed to decode email '{email}': {e}")
-        sys.exit(1)
-
-    # Take last @ if multiple (common in malformed emails)
-    if email.count('@') > 1:
-        parts = email.split('@')
-        email = f"{parts[0]}@{parts[-1]}"
-
-    return email.lower()
-
 
 def extract_affiliation_from_email(
         email: Email,
@@ -347,7 +309,7 @@ def extract_affiliation_from_email(
         return None
 
         # Clean the email
-    cleaned_email = _clean_email(email)
+    cleaned_email = clean_email(email)
     if not cleaned_email:
         return None
     email = cleaned_email.lower()
@@ -752,7 +714,7 @@ def extract_temporal_connections(state: ProcessingState) -> None:
                 state.file_coediting_collaborative_relationships.append(
                     (connection, filename, timestamp)
                 )
-    _handle_step_completion(state, "extract_temporal_connections")
+    handle_step_completion(state, "extract_temporal_connections")
 
 
 def create_temporal_network_graph(state: ProcessingState) -> None:
@@ -867,7 +829,7 @@ def apply_email_filtering(state: ProcessingState) -> None:
             console.print(f"\nRemoving {len(isolates)} isolates that resulted from filtering")
         state.dev_to_dev_network.remove_nodes_from(isolates)
 
-    _handle_step_completion(state, "apply_email_filtering")
+    handle_step_completion(state, "apply_email_filtering")
 
 
 def print_processing_summary(state: ProcessingState, in_work_file: Path, out_graphml_file: Path) -> None:
@@ -892,20 +854,6 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     # console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
     console.print("=" * 60)
 
-
-def _ask_yes_or_no_question(question: str) -> bool:
-    response = input(f"{question} (y/n): ").strip().lower()
-    return response in ['y', 'yes', 'Y', 'YES']
-
-
-def _ask_continue() -> bool:
-    response = input("Do you want to continue? (y/n): ").strip().lower()
-    return response in ['y', 'yes', 'Y', 'YES']
-
-
-def _ask_inspect_processing_state() -> bool:
-    response = input("Do you want to inspect processing state ? (y/n): ").strip().lower()
-    return response in ['y', 'yes', 'Y', 'YES']
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -1016,10 +964,10 @@ def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> 
 
         print_success(f"\n✓ Successfully processed {len(state.parsed_change_log_entries)} commits")
 
-        if state.debug_mode and _ask_yes_or_no_question('do you want to inspect parsed_change_log_entries?'):
+        if state.debug_mode and ask_yes_or_no_question('do you want to inspect parsed_change_log_entries?'):
             console.print(inspect(state.parsed_change_log_entries))
 
-        _handle_step_completion(state, 'parsed_change_log_entries')
+        handle_step_completion(state, 'parsed_change_log_entries')
 
         if args.save:
             save_processed_data(state, args.save)
@@ -1130,26 +1078,7 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     apply_email_filtering(state)
 
 
-def _handle_step_completion(state: ProcessingState, step_name: str) -> None:
-    """
-    Handle the completion of a processing step with optional inspection and continuation.
 
-    Args:
-        state: The current processing state
-        step_name: Name of the step being completed (for logging)
-    """
-    # Format a generic success message from the step name
-
-    print_success(f"{step_name} completed successfully ✓")
-
-    if state.debug_mode:
-        if _ask_inspect_processing_state():
-            print_info(f"Inspecting state at stage {step_name}")
-            console.print(f'state={inspect(state)}')
-
-        if not _ask_continue():
-            print_info(f"Aborted by user at stage {step_name}")
-            sys.exit()
 
 
 def process_aggregation_step(state: ProcessingState) -> None:
@@ -1158,10 +1087,10 @@ def process_aggregation_step(state: ProcessingState) -> None:
     aggregate_files_and_contributors(state)
     console.print("[bold green]Success:[/bold green]" + "\n✓ Data aggregated by files and contributors")
 
-    if state.debug_mode and _ask_yes_or_no_question("Do you want to see state.map_files_to_their_contributors?"):
+    if state.debug_mode and ask_yes_or_no_question("Do you want to see state.map_files_to_their_contributors?"):
         print_info(f"]"
                    f"{state.map_files_to_their_contributors=}")
-    _handle_step_completion(state, "process_aggregation_step")
+    handle_step_completion(state, "process_aggregation_step")
 
 
 def process_connections_step(state: ProcessingState) -> None:
@@ -1174,7 +1103,7 @@ def process_connections_step(state: ProcessingState) -> None:
     if state.very_verbose_mode:
         console.print(f'state={inspect(state)}')
 
-    _handle_step_completion(state, "process_aggregation_step")
+    handle_step_completion(state, "process_aggregation_step")
 
 
 def process_unique_connections_step(state: ProcessingState) -> None:
@@ -1191,7 +1120,7 @@ def process_unique_connections_step(state: ProcessingState) -> None:
     if state.very_verbose_mode:
         print(f'state={inspect(state)}')
 
-    _handle_step_completion(state, "process_unique_connections_step")
+    handle_step_completion(state, "process_unique_connections_step")
 
 
 def process_network_creation_step(state: ProcessingState) -> None:
@@ -1209,7 +1138,7 @@ def process_network_creation_step(state: ProcessingState) -> None:
     if state.very_verbose_mode:
         console.print(f'state={inspect(state)}')
 
-    _handle_step_completion(state, "process_network_creation_step")
+    handle_step_completion(state, "process_network_creation_step")
 
 
 def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
