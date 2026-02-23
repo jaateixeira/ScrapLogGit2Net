@@ -3,7 +3,7 @@ from typing import Tuple, List, Optional
 from email_validator import validate_email, EmailNotValidError
 from dateutil.parser import parse
 from dateutil import tz
-
+from networkx import Graph
 
 # --- Name Validation ---
 def validate_git_name(name: str) -> Tuple[bool, str]:
@@ -141,3 +141,10 @@ def validate_git_commit_block(
             return False, f"Files validation failed: {msg}"
 
     return True, ""
+
+def validate_all_graph_edges_have_weights(wg: Graph) -> bool:
+    """Check all edges have weight attribute."""
+    for u, v, data in wg.edges(data=True):
+        if 'weight' not in data:
+            return False
+    return True

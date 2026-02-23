@@ -1,10 +1,8 @@
-Implement extractions outside 
-
 touch  extractWeightedNetwork.py
 touch  extractUnWeightedNetwork.py
 touch extractTemporalNetwork.py
 
-Information on timestamp should be preserved
+Information on timestamp two developers collaborated should be preserved
 
 
 Make it work for unweighter diagrams ... so it passes acceptance tests

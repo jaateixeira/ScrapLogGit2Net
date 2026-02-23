@@ -641,7 +641,7 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description='Scrap changelog to create networks/graphs for research purposes'
+        description='Scrap git changelog to create networks/graphs for research purposes'
     )
     parser.add_argument('-l', '--load', type=Path,
                         help='loads and processes a serialized changelog')
