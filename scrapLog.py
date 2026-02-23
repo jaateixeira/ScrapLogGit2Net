@@ -1,226 +1,39 @@
 #!/usr/bin/env python3
 """
 Scrap date, authors, affiliations and file changes from a Git Changelog.
+to build networks of who works with who in a
 """
 
-import sys
-import os
-import re
 import argparse
-import pickle
 import atexit
-import time
 import itertools
 import json
-from pathlib import Path
-from datetime import datetime
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, DefaultDict, Tuple
+import os
+import pickle
+import re
+import sys
+import time
 from collections import defaultdict
-from difflib import SequenceMatcher
-from itertools import combinations
-from email.utils import parseaddr
-from urllib.parse import unquote
+from datetime import datetime
+from pathlib import Path
+from typing import List, Optional, Set, Tuple
 
 import networkx as nx
 
-from colorama import Fore, Style
-
 import export_log_data
+
 from core.models import ProcessingState, TimeStampedFileContribution
 from core.types import Filename, EmailAggregationConfig, Email, DeveloperInfo, ChangeLogEntry, ConnectionWithFile, \
     Connection
 from utils.debugging import handle_step_completion, ask_yes_or_no_question
+from utils.string_comparators import find_similar_strings
 from utils.strings_cleaners import clean_email
-
 from utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
                                    print_error, print_success)
 from utils.unified_logger import logger
 
 
-
-from utils.validators import (
-    validate_git_name,
-    validate_git_email,
-    validate_git_time,
-    validate_git_files,
-    validate_git_commit_block
-)
-
-
-
-from typing import TypeAlias
-
-# Type aliases using built-in types
-Email = str
-Affiliation = str
-Filename = str
-Timestamp = str
-
-DeveloperInfo: TypeAlias = tuple[Timestamp, Email, Affiliation]  # Note: lowercase tuple, list, dict
-ChangeLogEntry: TypeAlias = tuple[DeveloperInfo, list[Filename]]
-EmailAggregationConfig: TypeAlias = dict[str, str]
-Connection: TypeAlias = tuple[Email, Email]
-ConnectionWithFile: TypeAlias = tuple[Connection, Filename]
-
-
-
-@dataclass
-class ProcessingStatistics:
-    """Track processing statistics."""
-    n_lines: int = 0
-    n_blocks: int = 0
-    n_blocks_changing_code: int = 0
-    n_blocks_not_changing_code: int = 0
-    n_changed_files: int = 0
-    n_validation_errors: int = 0
-    n_skipped_blocks: int = 0
-
-    def increment_validation_errors(self) -> None:
-        """Increment validation error count."""
-        self.n_validation_errors += 1
-
-    def increment_skipped_blocks(self) -> None:
-        """Increment skipped blocks count."""
-        self.n_skipped_blocks += 1
-
-
-@dataclass
-class ProcessingState:
-    """Container for all processing state."""
-    statistics: ProcessingStatistics = field(default_factory=ProcessingStatistics)
-
-    parsed_change_log_entries: List[ChangeLogEntry] = field(default_factory=list)
-
-    """Parsed changelog entries from git log
-
-    Each ChangeLogEntry contains:
-    - commit_hash: str - Unique identifier for the commit
-    - author_email: Email - Email of the commit author
-    - author_date: DateTime - When the commit was made  
-    - files_changed: List[Filename] - Files modified in this commit
-    - commit_message: str - Description of changes
-
-    This is the raw input data that drives all subsequent processing.
-    
-    Simplified example structure from test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN: 
-    
-    parsed_change_log_entries = [
-    # NVIDIA contributor with multiple files
-    (('Olli Lupton', 'olupton@nvidia.com', 'nvidia'),
-     ['third_party/xla/.../BUILD',
-      'third_party/xla/.../nvtx_utils.cc',
-      'tensorflow/.../array_slice.h']),
-      
-    # Google contributor with fewer files
-    (('Lawrence Wolf-Sonkin', 'lawrencews@google.com', 'google'),
-     ['tensorflow/core/lib/gtl/BUILD',
-      'tensorflow/core/lib/gtl/array_slice.h']),
-      
-    # Another Google contributor with patch files
-    (('Gunhyun Park', 'gunhyun@google.com', 'google'),
-     ['third_party/stablehlo/temporary.patch',
-      'third_party/stablehlo/workspace.bzl',
-      'third_party/xla/xla/mlir_hlo/tests/.../ops.mlir'])
-]                                                                                                                
-    
-    """
-
-    map_files_to_their_contributors: DefaultDict[Filename, List[Email]] = field(
-        default_factory=lambda: defaultdict(list)
-    )
-
-
-    """Inverted index mapping files to their contributors.
-
-        Key: Filename - Path to the file within the repository
-        Value: List[Email] - All contributors who have modified this file
-
-        Built by aggregating parsed_change_log_entries . Used for:
-        - Identifying files with multiple contributors (collaboration points)
-        - Generating per-file contribution statistics
-        - Filtering files based on contributor criteria
-        
-         Simplified example structure from test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN: 
-         
-        
->>> file_contributors = defaultdict(list, {
-...     # NVIDIA contributor's files
-...     'third_party/xla/.../profiler/lib/BUILD': ['olupton@nvidia.com'],
-...     'third_party/xla/.../profiler/lib/nvtx_utils.cc': ['olupton@nvidia.com'],
-...
-...     # Shared file with multiple contributors
-...     'tensorflow/core/lib/gtl/array_slice.h': [
-...         'olupton@nvidia.com',      # NVIDIA contributor
-...         'lawrencews@google.com'     # Google contributor
-...     ],
-...
-...     # Google contributor's files
-...     'tensorflow/core/lib/gtl/BUILD': ['lawrencews@google.com'],
-...
-...     # Another Google contributor's files
-...     'third_party/stablehlo/temporary.patch': ['gunhyun@google.com'],
-...     'third_party/xla/.../mlir_hlo/tests/.../ops.mlir': ['gunhyun@google.com']
-... })
-        """
-
-    file_coediting_collaborative_relationships: List[ConnectionWithFile] = field(default_factory=list)
-
-    """File coediting collaborative relationships between contributor pairs.
-
-        Each ConnectionWithFile represents a collaboration event on a specific file:
-        - email1: Email - First contributor
-        - email2: Email - Second contributor  
-        - filename: Filename - The file where they collaborated
-        - collaboration_count: int - Number of times they worked on this file
-        - first_collaboration: DateTime - Earliest collaboration on this file
-        - last_collaboration: DateTime - Most recent collaboration on this file
-
-        This preserves file context before aggregation into pair-level connections.
-        
-        Example structure from test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN: 
-        file_coediting_collaborative_relationships=[(('olupton@nvidia.com', 'lawrencews@google.com'), 'tensorflow/core/lib/gtl/array_slice.h')]
-        """
-
-    agregated_file_coediting_collaborative_relationships: List[Connection] = field(default_factory=list)
-
-    """Aggregated collaboration relationships between contributor pairs.
-
-        Each Connection represents a unique contributor pair across all files:
-        - email1: Email - First contributor
-        - email2: Email - Second contributor
-        - total_collaborations: int - Total collaborations across all files
-        - files_shared: List[Filename] - Files they've both worked on
-        - first_interaction: DateTime - When they first collaborated
-        - last_interaction: DateTime - Most recent collaboration
-
-        This is the deduplicated view used for network graph construction.
-        Populated by aggregating connections_with_files.
-        
-        Example structure from test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN: 
-        agregated_file_coediting_collaborative_relationships=[('lawrencews@google.com', 'olupton@nvidia.com')]
-        """
-    affiliations: Dict[Email, Affiliation] = field(default_factory=dict)
-    emails_to_filter: Set[Email] = field(default_factory=set)
-    files_to_filter: Set[Filename] = field(default_factory=set)
-    email_aggregation_config: EmailAggregationConfig = field(default_factory=dict)
-
-    # Operational modes
-    verbose_mode: bool = False
-    very_verbose_mode: bool = False
-    debug_mode: bool = False
-    save_mode: bool = False
-    load_mode: bool = False
-    raw_mode: bool = False
-    email_filtering_mode: bool = False
-    file_filtering_mode: bool = False
-    strict_validation: bool = False  # Whether to fail on validation errors
-
-    # Network graph
-    dev_to_dev_network: nx.Graph = field(default_factory=nx.Graph)
-
-
-def print_exit_info(start_time:float) -> None:
+def print_exit_info(start_time: float) -> None:
     """console.print execution summary at exit."""
     execution_time = time.time() - start_time
     table = Table(title="Script Execution Summary")
@@ -229,41 +42,6 @@ def print_exit_info(start_time:float) -> None:
     table.add_row("Total execution time", f"{execution_time:.2f} seconds")
     table.add_row("Script arguments", str(sys.argv[1:]))
     console.print(table)
-
-
-def find_similar_strings(strings: set[str], similarity_threshold: float = 0.8) -> set[Tuple[str, str, float]]:
-    """
-    Find pairs of strings that are at least n% similar to each other.
-
-    Args:
-        strings: List of strings to compare
-        similarity_threshold: Minimum similarity ratio (0.0 to 1.0), e.g., 0.8 for 80%
-
-    Returns:
-        List of tuples (string1, string2, similarity_score) for pairs above threshold
-    """
-    if not strings:
-        console.print()
-        sys.exit()
-
-    similar_pairs = []
-
-    # Generate all unique pairs of strings
-    for str1, str2 in combinations(strings, 2):
-
-        if None in (str1, str2):
-            continue
-
-        # Calculate similarity ratio (0.0 to 1.0)
-        similarity = SequenceMatcher(None, str1, str2).ratio()
-
-        if similarity >= similarity_threshold:
-            similar_pairs.append((str1, str2, similarity))
-
-    # Sort by similarity score (highest first)
-    similar_pairs.sort(key=lambda x: x[2], reverse=True)
-
-    return set(similar_pairs)
 
 
 def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
@@ -298,7 +76,6 @@ def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
     except Exception as e:
         console.print(f"Error loading email aggregation config: {e}")
         sys.exit(1)
-
 
 
 def extract_affiliation_from_email(
@@ -459,7 +236,7 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Deve
             name_part, email, date_str, timezone = match1.groups()
             name = name_part.split()[0] if ' ' in name_part else name_part
             affiliation = extract_affiliation_from_email(email, state)
-            return (date_str, email, affiliation)
+            return email, affiliation
 
         # Pattern 2: Just email before ;;
         pattern2 = re.compile(r'^==(.+?@.+?);;(.+?)\s([+-]\d{4})==$')
@@ -470,7 +247,7 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Deve
             # Extract name from email
             name = email.split('@')[0]
             affiliation = extract_affiliation_from_email(email, state)
-            return (date_str, email, affiliation)
+            return  email, affiliation
 
         # Pattern 3: Launchpad bot
         if "Launchpad" in line:
@@ -480,7 +257,7 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Deve
                 name_part, date_str, timezone = match3.groups()
                 email = "launchpad@bot.bot"
                 affiliation = "bot"
-                return (date_str, email, affiliation)
+                return  email, affiliation
 
         # If nothing matches, return None
         return None
@@ -520,7 +297,7 @@ def process_commit_block(
         block: List[str],
         state: ProcessingState,
         commit_index: int,
-        extra_debug:bool = False
+        extra_debug: bool = False
 ) -> bool:
     """
     Process a single commit block from the git changelog.
@@ -605,8 +382,8 @@ def process_commit_block(
             return False
         # Store the data
 
-        dev_info: DeveloperInfo = (dev_email,dev_affiliation)
-        new_change_log_entry: ChangeLogEntry = (dev_info,changed_files,commit_time)
+        dev_info: DeveloperInfo = (dev_email, dev_affiliation)
+        new_change_log_entry: ChangeLogEntry = (dev_info, changed_files, commit_time)
 
         if extra_debug or state.very_verbose_mode:
             print_info(f"Appending parsed_change_log_entries with {new_change_log_entry=}")
@@ -861,11 +638,10 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     console.print("=" * 60)
 
 
-
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description='Scrap changelog to create networks/graphs for research purposes'
+        description='Scrap git changelog to create networks/graphs for research purposes'
     )
     parser.add_argument('-l', '--load', type=Path,
                         help='loads and processes a serialized changelog')
@@ -983,6 +759,7 @@ def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> 
         sys.exit(1)
     except Exception as e:
         console.print(f"ERROR processing file: {e}")
+        traceback.print_exc()
         sys.exit(1)
 
 
@@ -1001,7 +778,7 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
             if current_block:
                 log_and_validate_current_block_being_processed(state, current_block)
                 process_commit_block(current_block, state, commit_index)
-                #process_commit_block(current_block, state, commit_index, extra_debug=True)
+                # process_commit_block(current_block, state, commit_index, extra_debug=True)
                 commit_index += 1  # Increment after processing
 
             current_block = [line]
@@ -1014,12 +791,12 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
         else:
             if state.verbose_mode:
                 print_warning(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
-#
+    #
     # Process final block
     if current_block:
         log_and_validate_current_block_being_processed(state, current_block)
         process_commit_block(current_block, state, commit_index)
-        #process_commit_block(current_block, state, commit_index, extra_debug=True)
+        # process_commit_block(current_block, state, commit_index, extra_debug=True)
 
 
 def log_and_validate_current_block_being_processed(state: ProcessingState, current_block: List[str]) -> None:
@@ -1041,6 +818,7 @@ def log_and_validate_current_block_being_processed(state: ProcessingState, curre
         else:
             logger.warning(f"Block {current_block} has invalid header format")
             print_warning(f"Block {current_block[0][:50]} has invalid header format")
+
 
 def save_processed_data(state: ProcessingState, save_path: Path) -> None:
     """Save processed data to a pickle file."""
@@ -1082,9 +860,6 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
 
     process_network_creation_step(state)
     apply_email_filtering(state)
-
-
-
 
 
 def process_aggregation_step(state: ProcessingState) -> None:
