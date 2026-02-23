@@ -1,11 +1,8 @@
 #!/bin/bash
 
-#!/bin/bash
-
 
 # ##########################################################
-# 4-transform-noi-2-noo.sh - Transforms network of individuals into networks of firms
-# finds .graphml files then invokes transform-nofi-2-nofo-GraphML.py from the ScrapLogGit2Net project
+# Visualizes inter organizational networks 
 # ##########################################################
 
 if [ ! "$BASH_VERSION" ] ; then
@@ -222,7 +219,10 @@ visualize_files() {
         check_file_exists   $FIRM_COLORS_JSON
 
         # Build the command
-        CMD="$FFV_NO_FO_GRAPHML_SCRIPT --legend --show  --color_map=$FIRM_COLORS_JSON    --filter_by_org=$COMPANIES_TO_IGNORE --top_firms_only=Intel  $network_file"
+        #CMD="$FFV_NO_FO_GRAPHML_SCRIPT --legend --show  --color_map=$FIRM_COLORS_JSON    --filter_by_org=$COMPANIES_TO_IGNORE --top_firms_only=Intel  $network_file"
+
+        CMD="$FFV_NO_FO_GRAPHML_SCRIPT --legend --show  --color_map=$FIRM_COLORS_JSON    --exclude=$COMPANIES_TO_IGNORE -tf=10  $network_file"
+	
         #CMD="$FFV_NO_FO_GRAPHML_SCRIPT -v --legend --show  --color_map=$FIRM_COLORS_JSON    $network_file"
 
         print_info "   Command: $CMD"

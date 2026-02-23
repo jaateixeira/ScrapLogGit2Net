@@ -1,3 +1,26 @@
+Implement extractions outside 
+
+touch  extractWeightedNetwork.py
+touch  extractUnWeightedNetwork.py
+touch extractTemporalNetwork.py
+
+Information on timestamp should be preserved
+
+
+Make it work for unweighter diagrams ... so it passes acceptance tests
+
+Then make it work for weighted .. write new acceptance tests for weighted networks 
+
+Write test
+Then make it work temporal network 
+
+
+add 2 acceptance tests for temporal networks
+
+
+Bring scralLog unittest into test_extration_weightt_networks, test_extraction_temporal_networks, test_unweghted_networks 
+
+
 test --output file
 add output file
 

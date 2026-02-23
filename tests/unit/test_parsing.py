@@ -60,7 +60,7 @@ def test_processing_state_initialization():
     assert len(state.parsed_change_log_entries) == 0
     assert len(state.file_contributors) == 0
     assert len(state.file_coediting_collaborative_relationships) == 0
-    assert len(state.agregated_file_coediting_collaborative_relationships) == 0
+    assert len(state.aggregated_file_coediting_collaborative_relationships) == 0
     assert len(state.affiliations) == 0
     assert len(state.emails_to_filter) == 0
     assert len(state.files_to_filter) == 0
@@ -529,7 +529,7 @@ def test_create_network_graph():
     state = ProcessingState()
 
     # Set up unique connections and affiliations
-    state.agregated_file_coediting_collaborative_relationships = [
+    state.aggregated_file_coediting_collaborative_relationships = [
         ("alice@example.com", "bob@example.com"),
         ("bob@example.com", "charlie@test.com"),
     ]
@@ -698,7 +698,7 @@ def test_full_processing_flow():
 
 
     # Get unique connections
-    state.agregated_file_coediting_collaborative_relationships = get_unique_connections(state.file_coediting_collaborative_relationships)
+    state.aggregated_file_coediting_collaborative_relationships = get_unique_connections(state.file_coediting_collaborative_relationships)
 
 
     # Create network graph
