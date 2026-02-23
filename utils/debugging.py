@@ -1,4 +1,6 @@
-from utils.unified_console import print_success
+import sys
+
+from utils.unified_console import print_success, print_info, console, inspect
 from core.models import ProcessingState
 
 
@@ -30,10 +32,10 @@ def handle_step_completion(state: ProcessingState, step_name: str) -> None:
     print_success(f"{step_name} completed successfully ✓")
 
     if state.debug_mode:
-        if _ask_inspect_processing_state():
+        if ask_inspect_processing_state():
             print_info(f"Inspecting state at stage {step_name}")
             console.print(f'state={inspect(state)}')
 
-        if not _ask_continue():
+        if not ask_continue():
             print_info(f"Aborted by user at stage {step_name}")
             sys.exit()

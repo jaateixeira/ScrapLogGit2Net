@@ -759,6 +759,7 @@ def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> 
         sys.exit(1)
     except Exception as e:
         console.print(f"ERROR processing file: {e}")
+        traceback.print_exc()
         sys.exit(1)
 
 
