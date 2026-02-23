@@ -35,3 +35,4 @@ pip3 install python_dateutil
 sudo apt-get install python3-github
 sudo apt-get install python3-json5
 sudo apt-get install python3-pytest-mock
+pip install networkx-temporal[draw]
