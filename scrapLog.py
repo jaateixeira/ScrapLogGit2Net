@@ -1,43 +1,36 @@
 #!/usr/bin/env python3
 """
 Scrap date, authors, affiliations and file changes from a Git Changelog.
+to build networks of who works with who in a
 """
 
-import sys
-import os
-import re
 import argparse
-import pickle
 import atexit
-import time
 import itertools
 import json
-from pathlib import Path
-from datetime import datetime
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, DefaultDict, Tuple
+import os
+import pickle
+import re
+import sys
+import time
 from collections import defaultdict
-from difflib import SequenceMatcher
-from itertools import combinations
-from email.utils import parseaddr
-from urllib.parse import unquote
+from datetime import datetime
+from pathlib import Path
+from typing import List, Optional, Set, Tuple
 
 import networkx as nx
 
-from colorama import Fore, Style
-
 import export_log_data
+
 from core.models import ProcessingState, TimeStampedFileContribution
 from core.types import Filename, EmailAggregationConfig, Email, DeveloperInfo, ChangeLogEntry, ConnectionWithFile, \
     Connection
 from utils.debugging import handle_step_completion, ask_yes_or_no_question
+from utils.string_comparators import find_similar_strings
 from utils.strings_cleaners import clean_email
-
 from utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
                                    print_error, print_success)
 from utils.unified_logger import logger
-
-
 
 
 def print_exit_info(start_time: float) -> None:
@@ -49,41 +42,6 @@ def print_exit_info(start_time: float) -> None:
     table.add_row("Total execution time", f"{execution_time:.2f} seconds")
     table.add_row("Script arguments", str(sys.argv[1:]))
     console.print(table)
-
-
-def find_similar_strings(strings: set[str], similarity_threshold: float = 0.8) -> set[Tuple[str, str, float]]:
-    """
-    Find pairs of strings that are at least n% similar to each other.
-
-    Args:
-        strings: List of strings to compare
-        similarity_threshold: Minimum similarity ratio (0.0 to 1.0), e.g., 0.8 for 80%
-
-    Returns:
-        List of tuples (string1, string2, similarity_score) for pairs above threshold
-    """
-    if not strings:
-        console.print()
-        sys.exit()
-
-    similar_pairs = []
-
-    # Generate all unique pairs of strings
-    for str1, str2 in combinations(strings, 2):
-
-        if None in (str1, str2):
-            continue
-
-        # Calculate similarity ratio (0.0 to 1.0)
-        similarity = SequenceMatcher(None, str1, str2).ratio()
-
-        if similarity >= similarity_threshold:
-            similar_pairs.append((str1, str2, similarity))
-
-    # Sort by similarity score (highest first)
-    similar_pairs.sort(key=lambda x: x[2], reverse=True)
-
-    return set(similar_pairs)
 
 
 def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
@@ -118,7 +76,6 @@ def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
     except Exception as e:
         console.print(f"Error loading email aggregation config: {e}")
         sys.exit(1)
-
 
 
 def extract_affiliation_from_email(
@@ -279,7 +236,7 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Deve
             name_part, email, date_str, timezone = match1.groups()
             name = name_part.split()[0] if ' ' in name_part else name_part
             affiliation = extract_affiliation_from_email(email, state)
-            return (date_str, email, affiliation)
+            return email, affiliation
 
         # Pattern 2: Just email before ;;
         pattern2 = re.compile(r'^==(.+?@.+?);;(.+?)\s([+-]\d{4})==$')
@@ -290,7 +247,7 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Deve
             # Extract name from email
             name = email.split('@')[0]
             affiliation = extract_affiliation_from_email(email, state)
-            return (date_str, email, affiliation)
+            return  email, affiliation
 
         # Pattern 3: Launchpad bot
         if "Launchpad" in line:
@@ -300,7 +257,7 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Deve
                 name_part, date_str, timezone = match3.groups()
                 email = "launchpad@bot.bot"
                 affiliation = "bot"
-                return (date_str, email, affiliation)
+                return  email, affiliation
 
         # If nothing matches, return None
         return None
@@ -340,7 +297,7 @@ def process_commit_block(
         block: List[str],
         state: ProcessingState,
         commit_index: int,
-        extra_debug:bool = False
+        extra_debug: bool = False
 ) -> bool:
     """
     Process a single commit block from the git changelog.
@@ -425,8 +382,8 @@ def process_commit_block(
             return False
         # Store the data
 
-        dev_info: DeveloperInfo = (dev_email,dev_affiliation)
-        new_change_log_entry: ChangeLogEntry = (dev_info,changed_files,commit_time)
+        dev_info: DeveloperInfo = (dev_email, dev_affiliation)
+        new_change_log_entry: ChangeLogEntry = (dev_info, changed_files, commit_time)
 
         if extra_debug or state.very_verbose_mode:
             print_info(f"Appending parsed_change_log_entries with {new_change_log_entry=}")
@@ -681,7 +638,6 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     console.print("=" * 60)
 
 
-
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
@@ -821,7 +777,7 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
             if current_block:
                 log_and_validate_current_block_being_processed(state, current_block)
                 process_commit_block(current_block, state, commit_index)
-                #process_commit_block(current_block, state, commit_index, extra_debug=True)
+                # process_commit_block(current_block, state, commit_index, extra_debug=True)
                 commit_index += 1  # Increment after processing
 
             current_block = [line]
@@ -834,12 +790,12 @@ def process_file_lines(lines: List[str], state: ProcessingState) -> None:
         else:
             if state.verbose_mode:
                 print_warning(f"WARNING: Unexpected line format at line {line_num}: {line[:50]}...")
-#
+    #
     # Process final block
     if current_block:
         log_and_validate_current_block_being_processed(state, current_block)
         process_commit_block(current_block, state, commit_index)
-        #process_commit_block(current_block, state, commit_index, extra_debug=True)
+        # process_commit_block(current_block, state, commit_index, extra_debug=True)
 
 
 def log_and_validate_current_block_being_processed(state: ProcessingState, current_block: List[str]) -> None:
@@ -861,6 +817,7 @@ def log_and_validate_current_block_being_processed(state: ProcessingState, curre
         else:
             logger.warning(f"Block {current_block} has invalid header format")
             print_warning(f"Block {current_block[0][:50]} has invalid header format")
+
 
 def save_processed_data(state: ProcessingState, save_path: Path) -> None:
     """Save processed data to a pickle file."""
@@ -902,9 +859,6 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
 
     process_network_creation_step(state)
     apply_email_filtering(state)
-
-
-
 
 
 def process_aggregation_step(state: ProcessingState) -> None:
