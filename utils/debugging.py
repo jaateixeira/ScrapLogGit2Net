@@ -1,6 +1,5 @@
-from scrapLog import ProcessingState
 from utils.unified_console import print_success
-
+from core.models import ProcessingState
 
 
 def ask_yes_or_no_question(question: str) -> bool:
