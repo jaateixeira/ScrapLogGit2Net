@@ -1,6 +1,3 @@
-
-Implemnet utils.debug
-
 Implement extractions outside 
 
 touch  extractWeightedNetwork.py

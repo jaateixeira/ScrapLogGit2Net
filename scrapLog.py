@@ -42,57 +42,6 @@ from utils.validators import (
     validate_git_commit_block
 )
 
-from typing import TypeAlias
-
-# Type aliases using built-in types
-Email = str
-Affiliation = str
-Filename = str
-Timestamp = str
-
-# =============================================================================
-# Type Aliases for Core Data Structures
-# =============================================================================
-
-DeveloperInfo: TypeAlias = tuple[Email, Affiliation]
-"""
-Developer information extracted from a commit header.
-
-Contains:
-    - Email: Developer's email (e.g., 'john.doe@company.com')
-    - Affiliation: Organization from email domain (e.g., 'company', 'google', 'nvidia')
-"""
-
-ChangeLogEntry: TypeAlias = tuple[DeveloperInfo, list[Filename],Timestamp]
-"""
-A complete changelog entry representing one commit.
-
-Structure:
-    - DeveloperInfo: Who made the commit and when
-    - list[Filename]: Files changed in that commit (e.g., ['src/main.py', 'README.md'])
-    - Timestamp: When the commit was made (e.g., '2023-01-15 14:30:22 -0500')
-
-Example: ( 'alice@co.com', 'co'), ['file1.py', 'file2.py'],('2023-01-15...'))
-"""
-
-EmailAggregationConfig: TypeAlias = dict[str, str]
-"""
-Configuration for grouping email addresses by domain patterns.
-
-Maps domain prefixes to consolidated affiliation names.
-Example: {'ibm': 'ibm', 'google': 'google', 'gmail': 'personal'}
-"""
-
-Connection: TypeAlias = tuple[Email, Email, Timestamp]  # Or store first/last
-"""
-TODO document
-"""
-
-ConnectionWithFile: TypeAlias = tuple[Connection, Filename, Timestamp]
-
-"""
-TODO document 
-"""
 
 
 @dataclass
