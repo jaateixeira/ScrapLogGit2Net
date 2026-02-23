@@ -1,5 +1,5 @@
 # file to export VCS (CVS,SVN, GIT) SNA data to the graphml format used by visone and gephi
-
+import sys
 #import sys
 
 #from __future__ import absolute_import
