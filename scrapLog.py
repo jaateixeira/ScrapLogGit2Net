@@ -661,6 +661,8 @@ def parse_arguments() -> argparse.Namespace:
                                  'inter_individual_graph_temporal'],
                         default='inter_individual_graph_unweighted',
                         help='Type of network to generate (default: inter_individual_graph_unweighted)')
+    parser.add_argument('-tntr', '--temporal-network-time-resolution', type=int, default=1,
+                        help='Temporal network time resolution (default: 1)')
     parser.add_argument('-o', '--output-file', type=Path,
                         help='creates a network/graph graphml file with the given name')
 
