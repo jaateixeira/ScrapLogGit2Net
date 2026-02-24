@@ -1,6 +1,6 @@
-touch  extractWeightedNetwork.py
-touch  extractUnWeightedNetwork.py
-touch extractTemporalNetwork.py
+Create temporal network data for testing
+Write test cases
+
 
 Information on timestamp two developers collaborated should be preserved
 
