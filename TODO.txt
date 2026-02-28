@@ -1,6 +1,11 @@
 
-Implement the temporal network algorithm
-Implement the visualization for easier debugging 
+
+
+Correct the temporal network algorithm
+Correct  the visualization for easier debugging
+Limit print_network to 1000
+Limit plot to 100
+
 Compare with contributors_by_file data 
 
 
