@@ -1,3 +1,9 @@
+
+Implement the temporal network algorithm
+Implement the visualization for easier debugging 
+Compare with contributors_by_file data 
+
+
 Create temporal network data for testing
 Write test cases
 

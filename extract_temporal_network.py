@@ -17,12 +17,17 @@ Related unit tests at tests/unit/test_extract_temporal_network_from_parsed_chang
 """
 import sys
 
+from datetime import datetime
+
 import networkx_temporal as tx
 from networkx_temporal import TemporalGraph
 
 import random
 from datetime import timedelta, datetime
+
 from typing import Optional, List, Dict, Any
+
+from collections import defaultdict
 from dataclasses import dataclass, field
 
 from utils.unified_console import print_success, print_header, print_info, print_warning, console, print_error
@@ -75,6 +80,14 @@ def extract_temporal_network_from_parsed_change_log_entries(
     very_verbose_mode = state.very_verbose_mode
     debug_mode = state.debug_mode
 
+    # Overide to debug only this function 
+
+    verbose_mode = True 
+    very_verbose_mode = True 
+    debug_mode = True 
+
+
+    # TODO compare to see if is the same by the end of running 
     contributors_by_file=state.map_files_to_their_contributors
 
     # Log entry point in verbose modes
@@ -106,53 +119,47 @@ def extract_temporal_network_from_parsed_change_log_entries(
     try:
         # Create the temporal graph
         graph = tx.temporal_graph()
+        
+        def _get_timestamp_for_sorting(entry):
+            """Extract and parse timestamp from entry"""
+            if hasattr(entry, 'timestamp'):
+                # It's a ChangeLogEntry object
+                return entry.timestamp
+            else:
+                # Assume it's a tuple: ((email, affiliation), [files], timestamp_str)
+                timestamp_str = entry[2]
+                return datetime.strptime(timestamp_str, '%a %b %d %H:%M:%S %Y %z')
+        
+        sorted_entries = sorted(parsed_change_log_entries, key=_get_timestamp_for_sorting)
 
-        # Sort entries by timestamp for processing
-        sorted_entries = sorted(parsed_change_log_entries, key=lambda x: x.timestamp)
-
+ 
         if very_verbose_mode or debug_mode:
             print_info(f"Processing {len(sorted_entries)} entries in chronological order")
             print_info(f"{sorted_entries=}")
             print_info(f"{contributors_by_file=}")
             
-            sys.exit()
 
-        # Group entries into time windows based on resolution
-        time_windows = {}
-        for entry in sorted_entries:
-            # Calculate which time window this entry belongs to
-            window_start = entry.timestamp - timedelta(
-                seconds=entry.timestamp.timestamp() % time_resolution.total_seconds()
-            )
-            window_key = window_start.isoformat()
+        # Track unique contributors per file (automatically handles duplicates)
+        accumulated_history_of_contributors_by_file = defaultdict(set)
 
-            if window_key not in time_windows:
-                time_windows[window_key] = []
-            time_windows[window_key].append(entry)
+        # Example of how to add contributors
+        #file_contributors_unique['src/main.py'].add('alice@example.com')
+            
+        for developer, files, timestamp in sorted_entries:
+            if very_verbose_mode or debug_mode:
+                print_info(f"Checking if event {developer, files, timestamp} relates contributors based on the accumulated history of contributors by file ")
 
-        if very_verbose_mode or debug_mode:
-            print_info(f"Created {len(time_windows)} time windows")
 
-        # Process each time window to create graph snapshots
-        for window_start_str, window_entries in sorted(time_windows.items()):
-            window_start = datetime.fromisoformat(window_start_str)
-            window_end = window_start + time_resolution
 
-            # Create a snapshot for this time window
-            snapshot = tx.temporal_graph()
-
-            # TODO: Implement actual graph construction logic based on your domain
-            # This is where you'd add nodes and edges based on the entries
-            for entry in window_entries:
                 # Example: Add edge between entities based on change
                 # snapshot.add_edge(entry.entity_id, entry.attribute,
                 #                  timestamp=entry.timestamp,
                 #                  old_value=entry.old_value,
                 #                  new_value=entry.new_value)
-                pass
+            
 
-            # Add this snapshot to the temporal graph
-            graph.add_snapshot(snapshot, timestamp=window_start)
+            
+
 
         if very_verbose_mode or debug_mode:
             print_success(f"Successfully created temporal graph with {len(graph)} snapshots")
