@@ -142,12 +142,14 @@ def extract_temporal_network_from_parsed_change_log_entries(
         # Track unique contributors per file (automatically handles duplicates)
         accumulated_history_of_contributors_by_file = defaultdict(set)
 
-        # Example of how to add contributors
-        #file_contributors_unique['src/main.py'].add('alice@example.com')
+        # Example of how to add contributors:
+        # file_contributors_unique['src/main.py'].add('alice@example.com')
             
-        for developer, files, timestamp in sorted_entries:
+        for developer_info, files, timestamp in sorted_entries:
+            developer_email, developer_affiliation = developer_info
+            
             if very_verbose_mode or debug_mode:
-                print_info(f"Checking if event {developer, files, timestamp} relates contributors based on the accumulated history of contributors by file ")
+                print_info(f"Checking if event {developer_email, files, timestamp} relates contributors based on the accumulated history of contributors by file ")
 
 
 
@@ -158,8 +160,10 @@ def extract_temporal_network_from_parsed_change_log_entries(
                 #                  new_value=entry.new_value)
             
 
-            
 
+            for file in files:
+                file_contributors_unique[file].add(developer_email)
+                
 
         if very_verbose_mode or debug_mode:
             print_success(f"Successfully created temporal graph with {len(graph)} snapshots")
