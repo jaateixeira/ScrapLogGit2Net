@@ -456,97 +456,6 @@ def extract_contributor_connections(state: ProcessingState) -> None:
                 state.file_coediting_collaborative_relationships.append((connection, filename))
 
 
-def extract_temporal_connections(state: ProcessingState) -> None:
-    """
-    Extract temporal connections between developers who worked on the same file.
-    Preserves the exact time of each collaboration.
-    """
-    if state.verbose_mode:
-        console.print("[blue] Extracting temporal connections with timestamps[/blue]")
-
-    state.file_coediting_collaborative_relationships.clear()
-
-    # For each file, look at all contributions in chronological order
-    for filename, contributions in state.file_history.items():
-        if len(contributions) < 2:
-            continue  # Need at least 2 contributors for collaboration
-
-        # Sort contributions by timestamp to preserve chronology
-        contributions.sort(key=lambda c: (c.timestamp, c.commit_index))
-
-        # For each pair of contributors to this file
-        # We consider ALL pairs, not just adjacent ones, because
-        # collaboration can happen non-sequentially
-        for i, contrib1 in enumerate(contributions):
-            for contrib2 in contributions[i + 1:]:
-                if contrib1.email == contrib2.email:
-                    continue  # Same contributor
-
-                # Normalize email order for consistent storage
-                if contrib1.email < contrib2.email:
-                    email1, email2 = contrib1.email, contrib2.email
-                    # Store the timestamp of the LATER contribution
-                    # as the collaboration moment
-                    timestamp = contrib2.timestamp
-                else:
-                    email1, email2 = contrib2.email, contrib1.email
-                    timestamp = contrib2.timestamp  # Still use later timestamp
-
-                # Create connection with timestamp
-                connection = (email1, email2, timestamp)
-                state.file_coediting_collaborative_relationships.append(
-                    (connection, filename, timestamp)
-                )
-    handle_step_completion(state, "extract_temporal_connections")
-
-
-def create_temporal_network_graph(state: ProcessingState) -> None:
-    """Create a temporal network graph with time-aware edges."""
-    if state.verbose_mode:
-        console.print("\nCreating temporal network graph")
-
-    state.dev_to_dev_network.clear()
-
-    # Group collaborations by developer pair
-    pair_collaborations = defaultdict(list)
-
-    for (email1, email2, collab_time), filename, timestamp in state.file_coediting_collaborative_relationships:
-        pair = (email1, email2)  # Already normalized
-        pair_collaborations[pair].append({
-            'timestamp': collab_time,
-            'filename': filename,
-            'time': timestamp  # Keep the full timestamp for reference
-        })
-
-    # Add edges with temporal attributes
-    for (email1, email2), collaborations in pair_collaborations.items():
-        # Sort collaborations by timestamp
-        collaborations.sort(key=lambda c: c['timestamp'])
-
-        # Extract temporal metadata
-        first_collab = collaborations[0]['timestamp']
-        last_collab = collaborations[-1]['timestamp']
-        collab_times = [c['timestamp'] for c in collaborations]
-        files = list(set(c['filename'] for c in collaborations))
-
-        # Add edge with temporal attributes
-        state.dev_to_dev_network.add_edge(
-            email1, email2,
-            weight=len(collaborations),  # Number of collaborations
-            first_collaboration=first_collab,
-            last_collaboration=last_collab,
-            collaboration_timeline=collab_times,
-            files_shared=files,
-            collaboration_count=len(collaborations)
-        )
-
-    # Add node attributes (same as before)
-    for node in state.dev_to_dev_network.nodes():
-        node_affiliation = extract_affiliation_from_email(node, state)
-        state.dev_to_dev_network.nodes[node]['email'] = node
-        state.dev_to_dev_network.nodes[node]['affiliation'] = node_affiliation
-        state.affiliations[node] = node_affiliation
-
 
 def get_unique_connections(
         tuples_list: List[ConnectionWithFile]
@@ -852,10 +761,15 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     # Branch based on network type
     if state.network_type == 'inter_individual_graph_temporal':
         # For temporal networks, use the temporal extraction
-        extract_temporal_connections(state)
+        extracted_network=extract_temporal_connections(state)
         # Skip unique connections step - we keep all temporal data
         console.print(
             f"[blue] Extracted {len(state.file_coediting_collaborative_relationships)} temporal connections[/blue]")
+
+        print_warning("Implementation in progress")
+        print_info(f"{extracted_network=}")
+        print_error("better exit before extraction of temporal networks is properly implemented")
+        sys.exit()
     else:
         process_connections_step(state)
         process_unique_connections_step(state)

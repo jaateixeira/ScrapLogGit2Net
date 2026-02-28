@@ -75,6 +75,8 @@ def extract_temporal_network_from_parsed_change_log_entries(
     very_verbose_mode = state.very_verbose_mode
     debug_mode = state.debug_mode
 
+    contributors_by_file=state.map_files_to_their_contributors
+
     # Log entry point in verbose modes
     if very_verbose_mode or debug_mode:
         print_header(f"Extracting temporal network from parsed change log entries")
@@ -110,6 +112,10 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
         if very_verbose_mode or debug_mode:
             print_info(f"Processing {len(sorted_entries)} entries in chronological order")
+            print_info(f"{sorted_entries=}")
+            print_info(f"{contributors_by_file=}")
+            
+            sys.exit()
 
         # Group entries into time windows based on resolution
         time_windows = {}
