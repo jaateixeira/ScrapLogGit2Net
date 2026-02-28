@@ -6,6 +6,14 @@ A temporal network captures how relationships between entities evolve over time.
 
 In action with argument 'inter_individual_graph_temporal'
 from state, mostly parsed_change_log_entries structure, creates a temporal network
+
+Test by running:
+$ ./scrapLog.py -vv --type-of-network=inter_individual_graph_temporal -r test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-same-file.IN
+
+Related unit tests at tests/unit/test_extract_temporal_network_from_parsed_change_log_entries.py
+
+
+
 """
 import sys
 
