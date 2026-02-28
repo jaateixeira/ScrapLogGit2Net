@@ -19,13 +19,18 @@ import sys
 
 from datetime import datetime
 
+import networkx as nx
 import networkx_temporal as tx
+
 from networkx_temporal import TemporalGraph
+
+
+from typing import Optional, Union
+from typing import Optional, List, Dict, Any
 
 import random
 from datetime import timedelta, datetime
 
-from typing import Optional, List, Dict, Any
 
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -149,6 +154,173 @@ def animate_and_save(graph, state, filename='temporal_network.gif'):
     except:
         return anim
 
+
+
+
+
+import networkx_temporal as tx
+import networkx as nx
+from datetime import datetime
+from typing import Union
+
+def print_temporal_network_summary(temporal_graph: Union[tx.TemporalGraph, tx.TemporalMultiGraph, tx.TemporalDiGraph, tx.TemporalMultiDiGraph]) -> None:
+    """
+    Print a rich, formatted summary of a temporal network.
+    
+    Args:
+        temporal_graph: A NetworkX-Temporal graph object
+        
+    Raises:
+        ValueError: If the graph has more than 100 edges
+        TypeError: If input is not a NetworkX-Temporal graph
+    """
+    MAX_EDGES = 100  # Internal constant
+    
+    # Check if it's a temporal graph
+    if not hasattr(temporal_graph, 'slice') and not hasattr(temporal_graph, 'to_static'):
+        if not hasattr(temporal_graph, '__len__') or len(temporal_graph) == 0:
+            raise TypeError("Input must be a NetworkX-Temporal graph or a sliced temporal graph with snapshots")
+    
+    # Calculate total edges across all snapshots if sliced, or in the graph if not
+    if hasattr(temporal_graph, '__len__') and len(temporal_graph) > 1:
+        total_edges = sum(g.number_of_edges() for g in temporal_graph)
+        is_sliced = True
+        num_snapshots = len(temporal_graph)
+        first_graph = temporal_graph[0]
+        graph_type = type(first_graph).__name__
+        is_directed = first_graph.is_directed() if hasattr(first_graph, 'is_directed') else False
+    else:
+        total_edges = temporal_graph.number_of_edges()
+        is_sliced = False
+        num_snapshots = 1
+        graph_type = type(temporal_graph).__name__
+        is_directed = temporal_graph.is_directed() if hasattr(temporal_graph, 'is_directed') else False
+    
+    # Enforce edge limit
+    if total_edges > MAX_EDGES:
+        raise ValueError(
+            f"Graph has {total_edges} edges, which exceeds the maximum of {MAX_EDGES} edges. "
+            f"Please filter your graph to have 100 edges or less."
+        )
+    
+    # Get time range if possible
+    time_min = float('inf')
+    time_max = float('-inf')
+    time_attr_found = False
+    
+    def extract_time_from_edge_data(data):
+        for key in ['time', 'timestamp', 't', 'date', 'datetime']:
+            if key in data:
+                val = data[key]
+                if isinstance(val, (int, float)):
+                    return float(val)
+                elif isinstance(val, datetime):
+                    return val.timestamp()
+        return None
+    
+    if is_sliced:
+        for snapshot in temporal_graph:
+            for _, _, data in snapshot.edges(data=True):
+                t_val = extract_time_from_edge_data(data)
+                if t_val is not None:
+                    time_attr_found = True
+                    time_min = min(time_min, t_val)
+                    time_max = max(time_max, t_val)
+    else:
+        for _, _, data in temporal_graph.edges(data=True):
+            t_val = extract_time_from_edge_data(data)
+            if t_val is not None:
+                time_attr_found = True
+                time_min = min(time_min, t_val)
+                time_max = max(time_max, t_val)
+    
+    # Print header
+    print("=" * 80)
+    print("📊 TEMPORAL NETWORK SUMMARY")
+    print("=" * 80)
+    
+    # Basic info
+    print("\n📈 BASIC STATISTICS:")
+    print(f"  • Graph type:      {graph_type}")
+    print(f"  • Directed:        {is_directed}")
+    print(f"  • Total nodes:     {temporal_graph.temporal_order() if hasattr(temporal_graph, 'temporal_order') else temporal_graph.number_of_nodes()}")
+    print(f"  • Total edges:     {total_edges}")
+    print(f"  • Snapshots:       {num_snapshots}")
+    
+    if time_attr_found:
+        try:
+            time_min_str = datetime.fromtimestamp(time_min).strftime('%Y-%m-%d %H:%M:%S')
+            time_max_str = datetime.fromtimestamp(time_max).strftime('%Y-%m-%d %H:%M:%S')
+            print(f"  • Time span:       {time_min_str} to {time_max_str}")
+            print(f"  • Duration:        {time_max - time_min:.2f} seconds")
+        except:
+            print(f"  • Time range:      {time_min} to {time_max}")
+    else:
+        print(f"  • Time attributes: Not found in edges")
+    
+    # Snapshot details
+    print(f"\n📸 SNAPSHOT DETAILS:")
+    
+    if is_sliced:
+        for i, snapshot in enumerate(temporal_graph):
+            nodes = snapshot.number_of_nodes()
+            edges = snapshot.number_of_edges()
+            
+            snapshot_time = "N/A"
+            for _, _, data in snapshot.edges(data=True):
+                t_val = extract_time_from_edge_data(data)
+                if t_val is not None:
+                    try:
+                        snapshot_time = datetime.fromtimestamp(t_val).strftime('%Y-%m-%d %H:%M:%S')
+                    except:
+                        snapshot_time = str(t_val)
+                    break
+            
+            print(f"\n  Snapshot {i}:")
+            print(f"    • Nodes: {nodes}")
+            print(f"    • Edges: {edges}")
+            print(f"    • Time:  {snapshot_time}")
+            
+            if edges > 0:
+                print(f"    • Sample edges (first 3):")
+                for u, v, data in list(snapshot.edges(data=True))[:3]:
+                    time_val = extract_time_from_edge_data(data)
+                    time_str = f", time={time_val:.2f}" if time_val else ""
+                    attrs = ", ".join(f"{k}={v}" for k, v in data.items() if k not in ['time', 'timestamp'])
+                    attrs_str = f", {attrs}" if attrs else ""
+                    print(f"      - {u} -> {v}{time_str}{attrs_str}")
+                if edges > 3:
+                    print(f"      ... and {edges - 3} more edges")
+    else:
+        nodes = temporal_graph.number_of_nodes()
+        edges = temporal_graph.number_of_edges()
+        
+        print(f"\n  Snapshot (unsliced):")
+        print(f"    • Nodes: {nodes}")
+        print(f"    • Edges: {edges}")
+        
+        if edges > 0:
+            print(f"    • Sample edges (first 3):")
+            for u, v, data in list(temporal_graph.edges(data=True))[:3]:
+                time_val = extract_time_from_edge_data(data)
+                time_str = f", time={time_val:.2f}" if time_val else ""
+                attrs = ", ".join(f"{k}={v}" for k, v in data.items() if k not in ['time', 'timestamp'])
+                attrs_str = f", {attrs}" if attrs else ""
+                print(f"      - {u} -> {v}{time_str}{attrs_str}")
+            if edges > 3:
+                print(f"      ... and {edges - 3} more edges")
+    
+    # Static view
+    try:
+        static_g = temporal_graph.to_static()
+        print(f"\n📋 STATIC VIEW (aggregated):")
+        print(f"  • Nodes: {static_g.number_of_nodes()}")
+        print(f"  • Edges: {static_g.number_of_edges()}")
+        print(f"  • Density: {nx.density(static_g):.6f}")
+    except:
+        pass
+    
+    print("\n" + "=" * 80)
 
 
 
@@ -325,12 +497,15 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
 
 
+
         if debug_mode and ask_yes_or_no_question("Do you want plot the temporal ?"):
 
             
             
             # After building the graph, slice it
             graph_sliced = t_graph.slice(attr='time')
+
+            print_temporal_network_summary(graph_sliced)
 
             plot_format="snapshots"
             #plot_format="animation"
