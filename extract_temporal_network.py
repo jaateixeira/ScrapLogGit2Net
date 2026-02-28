@@ -30,13 +30,154 @@ from typing import Optional, List, Dict, Any
 from collections import defaultdict
 from dataclasses import dataclass, field
 
-from utils.unified_console import print_success, print_header, print_info, print_warning, console, print_error
+from utils.unified_console import print_success, print_header, print_info, print_warning, print_key_action, console, print_error, inspect 
 from utils.unified_logger import logger
 from utils.debugging import  ask_yes_or_no_question
 from core.models import ProcessingState
 
 
 
+def plot_temporal_network_snapshots(graph, state, max_snapshots=6):
+    """Plot temporal network snapshots"""
+    import matplotlib.pyplot as plt
+    
+    n_snapshots = min(len(graph), max_snapshots)
+    fig, axes = plt.subplots(2, (n_snapshots + 1) // 2, 
+                             figsize=(5 * ((n_snapshots + 1) // 2), 8))
+    axes = axes.flatten() if n_snapshots > 1 else [axes]
+    
+    for idx, (t, G) in enumerate(graph.items()):
+        if idx >= n_snapshots:
+            break
+        
+        ax = axes[idx]
+        
+        # Get timestamp info from edges
+        timestamps = []
+        for _, _, data in G.edges(data=True):
+            if 'time' in data:
+                timestamps.append(data['time'])
+        
+        if timestamps:
+            time_str = datetime.fromtimestamp(min(timestamps)).strftime('%Y-%m-%d %H:%M')
+        else:
+            time_str = f"Snapshot {t}"
+        
+        # Draw graph
+        pos = nx.spring_layout(G, seed=42, k=2)
+        nx.draw(G, pos, ax=ax,
+                node_color='lightblue',
+                node_size=300,
+                with_labels=True,
+                font_size=8,
+                edge_color='gray',
+                width=2)
+        
+        ax.set_title(f"t={t}\n{time_str}")
+        ax.axis('off')
+    
+    # Hide unused subplots
+    for idx in range(n_snapshots, len(axes)):
+        axes[idx].axis('off')
+    
+    plt.suptitle("Temporal Network Evolution", fontsize=16)
+    plt.tight_layout()
+    
+    # Save if in debug mode
+    if state.debug_mode:
+        plt.savefig('temporal_network_snapshots.png', dpi=150, bbox_inches='tight')
+        print_info("Saved temporal network snapshots to 'temporal_network_snapshots.png'")
+    
+    plt.show()
+
+def animate_and_save(graph, state, filename='temporal_network.gif'):
+    """Create and save animation"""
+    import matplotlib.animation as animation
+    
+    fig, ax = plt.subplots(figsize=(10, 8))
+    
+    # Precompute positions
+    all_nodes = set()
+    for G in graph:
+        all_nodes.update(G.nodes())
+    
+    combined = nx.Graph()
+    for G in graph:
+        combined.add_edges_from(G.edges())
+    
+    pos = nx.spring_layout(combined, seed=42, k=2)
+    
+    def update(frame):
+        ax.clear()
+        G = graph[frame]
+        
+        # Get timestamp
+        timestamps = [data.get('time', 'N/A') for _, _, data in G.edges(data=True)]
+        if timestamps and timestamps[0] != 'N/A':
+            time_str = datetime.fromtimestamp(min(timestamps)).strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            time_str = f"Snapshot {frame}"
+        
+        # Draw
+        nx.draw(G, pos, ax=ax,
+                node_color='lightblue',
+                node_size=400,
+                with_labels=True,
+                font_size=9,
+                edge_color='darkblue',
+                width=2,
+                arrows=True)
+        
+        ax.set_title(f"Temporal Network Evolution\n{time_str}", fontsize=14)
+        ax.axis('off')
+    
+    anim = animation.FuncAnimation(fig, update, 
+                                 frames=len(graph),
+                                 interval=800,
+                                 repeat=True)
+    
+    # Save
+    anim.save(filename, writer='pillow', dpi=100)
+    print_info(f"Saved animation to '{filename}'")
+    
+    plt.close()
+    
+    # Display in Jupyter if applicable
+    try:
+        from IPython.display import HTML
+        return HTML(anim.to_html5_video())
+    except:
+        return anim
+
+
+
+
+def git_timestamp_to_unix(git_timestamp_str: str) -> float:
+    """
+    Convert Git timestamp string to Unix timestamp.
+    
+    Example: 'Tue Jan 2 11:19:35 2024 -0800' -> 1704213575.0
+    """
+    # Parse Git timestamp format
+    dt = datetime.strptime(git_timestamp_str, '%a %b %d %H:%M:%S %Y %z')
+    # Return Unix timestamp (seconds since epoch)
+    return dt.timestamp()
+
+
+def unix_to_git_timestamp(unix_timestamp: float) -> str:
+    """
+    Convert Unix timestamp to Git timestamp string.
+    
+    Example: 1704213575.0 -> 'Tue Jan 2 11:19:35 2024 -0800'
+    """
+    # Convert Unix timestamp to datetime
+    dt = datetime.fromtimestamp(unix_timestamp)
+    # Format as Git timestamp
+    return dt.strftime('%a %b %d %H:%M:%S %Y %z')
+
+
+
+    
 
 def extract_temporal_network_from_parsed_change_log_entries(
         state: ProcessingState,
@@ -118,7 +259,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
     try:
         # Create the temporal graph
-        graph = tx.temporal_graph()
+        t_graph = tx.temporal_graph()
         
         def _get_timestamp_for_sorting(entry):
             """Extract and parse timestamp from entry"""
@@ -132,18 +273,26 @@ def extract_temporal_network_from_parsed_change_log_entries(
         
         sorted_entries = sorted(parsed_change_log_entries, key=_get_timestamp_for_sorting)
 
+        
  
         if very_verbose_mode or debug_mode:
             print_info(f"Processing {len(sorted_entries)} entries in chronological order")
             print_info(f"{sorted_entries=}")
             print_info(f"{contributors_by_file=}")
-            
+
+
+        if debug_mode and  ask_yes_or_no_question("Do you want to inspect the sorted_entries by time?"):
+            print_info(f"{inspect(sorted_entries)}")
 
         # Track unique contributors per file (automatically handles duplicates)
         accumulated_history_of_contributors_by_file = defaultdict(set)
+        accumulated_history_of_files_by_contributor = defaultdict(set)
 
         # Example of how to add contributors:
-        # file_contributors_unique['src/main.py'].add('alice@example.com')
+        # accumulated_history_of_files_by_contributor['alice@example.com'].add('src/main.py')
+
+        # Example of how to add files:
+        # accumulated_history_of_contributors_by_file['src/main.py'].add('alice@example.com')
             
         for developer_info, files, timestamp in sorted_entries:
             developer_email, developer_affiliation = developer_info
@@ -152,24 +301,53 @@ def extract_temporal_network_from_parsed_change_log_entries(
                 print_info(f"Checking if event {developer_email, files, timestamp} relates contributors based on the accumulated history of contributors by file ")
 
 
-
-                # Example: Add edge between entities based on change
-                # snapshot.add_edge(entry.entity_id, entry.attribute,
-                #                  timestamp=entry.timestamp,
-                #                  old_value=entry.old_value,
-                #                  new_value=entry.new_value)
-            
-
-
             for file in files:
-                file_contributors_unique[file].add(developer_email)
+                print_info(f"checking if {file} was edited before by others in accumulated_history_of_contributors_by_file")
+                if file in accumulated_history_of_contributors_by_file.keys():
+                    print_key_action(f"NEW relational edge between{developer_email} and others {accumulated_history_of_contributors_by_file[file]} with {timestamp=}")
+
+                    for collaborator in accumulated_history_of_contributors_by_file[file]:
+                        t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_unix(timestamp))
+                    
                 
+                accumulated_history_of_contributors_by_file[file].add(developer_email)
+                accumulated_history_of_files_by_contributor[developer_email].add(file)
+            
+        if debug_mode and  ask_yes_or_no_question("Do you want to see accumulated_history_of_contributors_by_file?"):
+            print_info(f"{accumulated_history_of_contributors_by_file=}")
 
+        if debug_mode and  ask_yes_or_no_question("Do you want to see accumulated_history_of_files_by_contributor?"):
+            print_info(f"{accumulated_history_of_files_by_contributor=}")
+        
         if very_verbose_mode or debug_mode:
-            print_success(f"Successfully created temporal graph with {len(graph)} snapshots")
-            logger.info(f"Created temporal graph with {len(graph)} snapshots")
+            print_success(f"Successfully created temporal graph with {len(t_graph)} snapshots")
+            logger.info(f"Created temporal graph with {len(t_graph)} snapshots")
 
-        return graph
+
+
+        if debug_mode and ask_yes_or_no_question("Do you want plot the temporal ?"):
+
+            
+            
+            # After building the graph, slice it
+            graph_sliced = t_graph.slice(attr='time')
+
+            plot_format="snapshots"
+            #plot_format="animation"
+            #plot_format="both":
+            
+            # Plot if requested
+            if graph_sliced and len(graph_sliced) > 0:
+                if plot_format == "snapshots":
+                    plot_temporal_network_snapshots(graph_sliced, state)
+                elif plot_format == "animation":
+                    animate_and_save(t_graph_sliced, state)
+                elif plot_format == "both":
+                    plot_temporal_network_snapshots(graph_sliced, state)
+                    animate_and_save(graph_sliced, state)
+
+
+        return t_graph
 
     except Exception as e:
         # Log any errors that occur during processing
