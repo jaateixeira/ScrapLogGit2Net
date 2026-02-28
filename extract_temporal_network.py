@@ -17,9 +17,12 @@ from datetime import timedelta, datetime
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass, field
 
-from utils.unified_console import print_success, print_header, print_info, print_warning
+from utils.unified_console import print_success, print_header, print_info, print_warning, console, print_error
 from utils.unified_logger import logger
+from utils.debugging import  ask_yes_or_no_question
 from core.models import ProcessingState
+
+
 
 
 def extract_temporal_network_from_parsed_change_log_entries(
@@ -70,11 +73,18 @@ def extract_temporal_network_from_parsed_change_log_entries(
         print_info(f"Processing {len(parsed_change_log_entries) if parsed_change_log_entries else 0} entries")
         print_info(f"Temporal network resolution: {time_resolution}")
 
+    if debug_mode and  ask_yes_or_no_question("Do you want to see the parsed_change_log_entries INPUT"):
+        print_info(f"{parsed_change_log_entries=}")
+
     # Validate input data
     if not parsed_change_log_entries:
         if very_verbose_mode or debug_mode:
             print_warning("No parsed change log entries to process")
             logger.warning("No parsed change log entries to process")
+        if state.strict_validation:
+            print_error("No parsed change log entries to process")
+            logger.error("No parsed change log entries to process")
+            sys.exit()
         return None
 
     # Warn about non-default resolution (performance impact)
@@ -82,7 +92,6 @@ def extract_temporal_network_from_parsed_change_log_entries(
         print_warning(f"Temporal network resolution is not 1 second (using {time_resolution})")
         logger.warning(f"Temporal network resolution is not 1 second (using {time_resolution})")
         raise NotImplementedError("Temporal graph construction not yet implemented for time resolution other than 1 second")
-        sys.exit(1)
 
     try:
         # Create the temporal graph

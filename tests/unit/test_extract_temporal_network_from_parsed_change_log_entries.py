@@ -9,6 +9,28 @@ pytest tests/unit/test_extract_temporal_network_from_parsed_change_log_entries.p
 
 Run pytest with -v or -vv for more verbose output
 Run pytest with  -s to show stdout (pring statements)
+
+Here is a sample data structure for parsed_change_log_entries
+ parsed_change_log_entries =
+[
+  (
+    ('dasenov@google.com', 'google'),
+    ['third_party/xla/xla/tests/BUILD', 'tensorflow/core/kernels/gpu_utils.cc', 'tensorflow/core/platform/logger.h'],
+    'Wed Jan 3 04:05:02 2024 -0800' ),
+  )
+  (
+    ('ddunleavy@google.com', 'google'),
+    ['third_party/xla/xla/tests/BUILD'],
+    'Tue Jan 2 11:19:35 2024 -0800'),
+  ),
+  (
+    ('ddunleavy@google.com', 'google'),
+    ['third_party/xla/xla/tests/BUILD', 'tensorflow/core/kernels/gpu_utils.cc'],
+    'Tue Jan 2 07:34:17 2024 -0800')
+  )
+]                                                         ]
+
+
 """
 
 import pytest
@@ -32,13 +54,16 @@ from extract_temporal_network import extract_temporal_network_from_parsed_change
 
 # Test 1: Empty input returns None
 def test_empty_entries_returns_none():
-    """Test that function returns None when no entries provided"""
+    """Test that function returns None when no entries provided
+     pytest -svv tests/unit/test_extract_temporal_network_from_parsed_change_log_entries.py::test_empty_entries_returns_none
+    """
+
     # Arrange
     state = ProcessingState()
     state.parsed_change_log_entries = []
     state.verbose_mode = False
-    state.very_verbose_mode = False
-    state.debug_mode = False
+    state.very_verbose_mode = True
+    state.debug_mode = True
 
     # Act
     result = extract_temporal_network_from_parsed_change_log_entries(state)
@@ -52,37 +77,32 @@ def test_single_developer_no_edges():
     """
     Test that with one developer editing one file,
     no edges are created in co-editing network
+
+     pytest -svv tests/unit/test_extract_temporal_network_from_parsed_change_log_entries.py::test_single_developer_no_edges
     """
     # Arrange
     now = datetime.now()
     email = Email("alice@example.com")
     filename = Filename("src/main.py")
+    affiliation = Affiliation("Example Corp")
+    timestamp = "Tue Jan 2 11:19:35 2024 -0800"
 
     # Create DeveloperInfo
-    dev_info = DeveloperInfo(
-        email=email,
-        name="Alice",
-        affiliation=Affiliation("Example Corp")
-    )
+    dev_info = ( email, affiliation)
 
     # Create ChangeLogEntry (tuple[DeveloperInfo, list[Filename], Timestamp])
-    entry = ChangeLogEntry(
-        developer_info=dev_info,
-        filenames=[filename],
-        timestamp=Timestamp(now)
-    )
+    entry = (dev_info,[filename],timestamp)
+
 
     state = ProcessingState()
     state.parsed_change_log_entries = [entry, entry]  # Two edits by same developer
     state.verbose_mode = False
-    state.very_verbose_mode = False
-    state.debug_mode = False
+    state.very_verbose_mode = True
+    state.debug_mode = True
 
-    # Act
+    # Act with default window resolution
     result = extract_temporal_network_from_parsed_change_log_entries(
-        state,
-        network_type="developer_coediting",
-        relationship_window=timedelta(hours=1)
+        state
     )
 
     # Assert
