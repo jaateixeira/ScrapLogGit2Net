@@ -662,7 +662,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
                     for collaborator in accumulated_history_of_contributors_by_file[file]:
                         if developer_email != collaborator:
                             print_key_action(
-                                f"NEW relational edge between{developer_email} and others {collaborator} with {timestamp=}")
+                                f"NEW relational edge between{developer_email} and others {collaborator}, on file {file=}with {timestamp=}")
                             t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_unix(timestamp))
                 
                 accumulated_history_of_contributors_by_file[file].add(developer_email)

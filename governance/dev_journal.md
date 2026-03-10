@@ -1,4 +1,4 @@
-10 of March 
+# 10 of March 
 
 Goals: 
 * Fixing the algorithm and visualizations
@@ -25,4 +25,36 @@ T1, Tue Jan 2 11:19:35 2024, no edges because same person
 T2, Wed Jan 3 04:05:02 2024, asenov@google.com -- ddunleavy@google.com
 
 
-# Obsevations 
+# Observation 
+22:13 - For 1 edge visualizations owrk. 
+
+Now other git log 
+```
+./scrapLog.py -r  test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-two-files.IN  --type-of-network=inter_individual_graph_temporal -vv
+```
+
+#### Raw git log
+==Dimitar (Mitko) Asenov;dasenov@google.com;Wed Jan 3 04:05:02 2024 -0800==
+third_party/xla/xla/tests/BUILD
+tensorflow/core/kernels/gpu_utils.cc
+tensorflow/core/platform/logger.h
+
+==David Dunleavy;ddunleavy@google.com;Tue Jan 2 11:19:35 2024 -0800==
+third_party/xla/xla/tests/BUILD
+
+==David Dunleavy;ddunleavy@google.com;Tue Jan 2 07:34:17 2024 -0800==
+third_party/xla/xla/tests/BUILD
+tensorflow/core/kernels/gpu_utils.cc
+
+### Expected output 
+
+T0, Tue Jan 2 07:34:17 2024, No edges 
+T1, Tue Jan 2 11:19:35 2024, No edges, sam developer 
+T2, Wed Jan 3 04:05:02 2024, dasenov@google.com -> ddunleavy@google.com
+
+# Observation 
+We are getting two edges: 
+→ NEW relational edge betweendasenov@google.com and others ddunleavy@google.com with timestamp='Wed Jan 3 04:05:02 2024 -0800'
+→ NEW relational edge betweendasenov@google.com and others ddunleavy@google.com with timestamp='Wed Jan 3 04:05:02 2024 -0800'
+
+# TODO tomorrow. Should be one edge only
