@@ -68,6 +68,7 @@ from datetime import datetime
 
 import networkx as nx
 import networkx_temporal as tx
+from matplotlib import pyplot as plt
 
 from networkx_temporal import TemporalGraph
 
@@ -563,7 +564,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
                 if plot_format == "snapshots":
                     plot_temporal_network_snapshots(graph_sliced, state)
                 elif plot_format == "animation":
-                    animate_and_save(t_graph_sliced, state)
+                    animate_and_save(graph_sliced, state)
                 elif plot_format == "both":
                     plot_temporal_network_snapshots(graph_sliced, state)
                     animate_and_save(graph_sliced, state)
