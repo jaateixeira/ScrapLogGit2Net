@@ -6,6 +6,55 @@ A temporal network captures how relationships between entities evolve over time.
 
 In action with argument 'inter_individual_graph_temporal'
 from state, mostly parsed_change_log_entries structure, creates a temporal network
+
+Example:
+3:20  ┌─────────────────────────────────────────────────────────┐
+      │ [Adrian]─────────────────→[F6] gpu_utils.cc             │
+      │                      (First edit - sets foundation)     │
+23:20 └─────────────────────────────────────────────────────────┘
+
+      │
+      ▼
+
+23:44 ┌─────────────────────────────────────────────────────────┐
+      │ [Adrian]─────────────────→[F2] fusions.cc               │
+      │                      (First edit - introduces changes)  │
+      │                                                          │
+      │ [Adrian]─────────────────→[F3] scatter.cc               │
+      │                      (First edit - introduces changes)  │
+23:44 └─────────────────────────────────────────────────────────┘
+
+      │
+      │  ╔═══════════════════════════════════════════════╗
+      │  ║  HANDOFF PERIOD: 4 hours 19 minutes          ║
+      │  ║  Adrian's code waits for Johannes            ║
+      │  ╚═══════════════════════════════════════════════╝
+      ▼
+
+03:51 ┌─────────────────────────────────────────────────────────┐
+      │ [Dragan]────────────────→[F10] rocm_driver.cc           │
+      │                      (Independent work - no overlap)    │
+03:51 └─────────────────────────────────────────────────────────┘
+
+      │
+      ▼
+
+04:03 ┌─────────────────────────────────────────────────────────┐
+      │ [Johannes]═══════════════→[F2] fusions.cc               │
+      │                      (Refines Adrian's changes)         │
+      │                                                          │
+      │ [Johannes]═══════════════→[F3] scatter.cc               │
+      │                      (Refines Adrian's changes)         │
+      │                                                          │
+      │ [Johannes]───────────────→[F1] fusions/BUILD            │
+      │                      (Build config for fusion files)    │
+04:03 └─────────────────────────────────────────────────────────┘
+
+      │
+
+
+
+
 """
 import sys
 
