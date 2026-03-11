@@ -38,7 +38,7 @@ from rich import box
 from core.models import ProcessingState
 from utils.debugging import ask_yes_or_no_question
 from utils.unified_console import print_success, print_header, print_info, print_warning, print_key_action, console, \
-    print_error, inspect , Table, Text
+    print_error, inspect, Table, Text, print_note
 from utils.unified_logger import logger
 
 
@@ -614,57 +614,39 @@ from typing import Set, Tuple, Dict, Any, Optional
 from datetime import datetime
 
 
-def create_coauthorship_temporal_network(
-        file_collaboration_graph: tx.TemporalMultiGraph
-) -> tx.TemporalGraph:
+def aggregate_to_coauthorship_temporal_network( state: ProcessingState, file_collaboration_graph: tx.TemporalMultiGraph) -> tx.TemporalGraph:
     """
-    Convert a file-level temporal multigraph to a developer co-authorship temporal graph.
+    Convert a temporal multigraph to a developer co-authorship temporal graph.
 
-    This function takes a TemporalMultiGraph where multiple edges between the same
-    developers at the same timestamp represent different files they collaborated on.
-    It creates a new simple TemporalGraph where each (developer1, developer2, timestamp)
+    This function takes a TemporalMultiGraph with time and file as edge attributes.
+    It returns a simpler TemporalGraph where each (developer1, developer2, timestamp)
     combination appears only once, representing a co-authorship relationship.
-
-    Args:
-        file_collaboration_graph: A TemporalMultiGraph instance where:
-            - Nodes represent developer email addresses
-            - Each edge MUST have a 'time' attribute (ISO format timestamp)
-            - Multiple edges between same nodes at same time represent different files
-
-    Returns:
-        A new TemporalGraph instance where:
-            - Nodes are the same developer email addresses
-            - Each (developer1, developer2, timestamp) appears exactly once
-            - Edge attributes only contain the 'time' field
-
-    Raises:
-        TypeError: If input is not a TemporalMultiGraph
-        ValueError: If edges are missing required 'time' attribute
+    It does not matter what files are co-edited, only that they are co-edited and at what time.
 
     Example:
-        >>> # Create a multigraph with file collaborations
-        >>> multi_graph = tx.TemporalMultiGraph()
-        >>> multi_graph.add_edge("alice@example.com", "bob@example.com",
-        ...                      time="2024-01-06T10:15:30-08:00",
-        ...                      file="src/module.py")
-        >>> multi_graph.add_edge("alice@example.com", "bob@example.com",
-        ...                      time="2024-01-06T10:15:30-08:00",
-        ...                      file="tests/test_module.py")
-        >>>
-        >>> # Convert to co-authorship network
-        >>> coauthor_graph = create_coauthorship_temporal_network(multi_graph)
-        >>> print(list(coauthor_graph.temporal_edges(data=True)))
-        [('alice@example.com', 'bob@example.com', {'time': '2024-01-06T10:15:30-08:00'})]
-    """
+        ('jreiffers@google.com', 'akuegel@google.com', {'time': '2024-01-06T04:03:16-08:00', 'file': 'third_party/xla/xla/service/gpu/fusions/fusions.cc'})
+        ('jreiffers@google.com', 'akuegel@google.com', {'time': '2024-01-06T04:03:16-08:00', 'file': 'third_party/xla/xla/service/gpu/fusions/scatter.cc'})
+        ('jreiffers@google.com', 'akuegel@google.com', {'time': '2024-01-08T06:30:42-08:00', 'file': 'third_party/xla/xla/service/gpu/fusions/fusions.cc'})
+        ('jreiffers@google.com', 'akuegel@google.com', {'time': '2024-01-08T06:30:42-08:00', 'file': 'third_party/xla/xla/service/gpu/fusions/scatter.cc'})
+    Should return:
+        ('jreiffers@google.com', 'akuegel@google.com', {'time': '2024-01-06T04:03:16-08:00'})
+        ('jreiffers@google.com', 'akuegel@google.com', {'time': '2024-01-08T06:30:42-08:00'})
+      """
 
-    # Type validation
-    if not isinstance(file_collaboration_graph, tx.TemporalMultiGraph):
-        raise TypeError(
-            f"Expected TemporalMultiGraph, got {type(file_collaboration_graph).__name__}"
-        )
+
+    verbose_mode = state.verbose_mode
+    very_verbose_mode = state.very_verbose_mode
+    debug_mode = state.debug_mode
+
+    # Override to debug only this function
+
+    verbose_mode = True
+    very_verbose_mode = True
+    debug_mode = True
+
 
     # Initialize new simple temporal graph for co-authorships
-    coauthorship_network: tx.TemporalGraph = tx.TemporalGraph()
+    coauthorship_network: tx.TemporalMultiGraph= tx.TemporalMultiGraph()
 
     # Track added (dev1, dev2, time) combinations to avoid duplicates
     # Set elements are tuples with developers sorted lexicographically
@@ -680,6 +662,12 @@ def create_coauthorship_temporal_network(
         developer1: str = str(edge[0])
         developer2: str = str(edge[1])
         attributes: Dict[str, Any] = edge[2]
+
+        if verbose_mode or very_verbose_mode:
+            print_info(f"unpacking temporal edge {edge}")
+            print_info(f"{developer1} -> {developer2}")
+            for i, attribute in enumerate(attributes, 1):  # start counting from 1
+                console.print(f"attribute {i} = {attribute}")
 
         # Extract and validate timestamp
         timestamp: Optional[str] = attributes.get('time')
@@ -712,7 +700,14 @@ def create_coauthorship_temporal_network(
                 time=timestamp  # Only preserve the time attribute
             )
             added_coauthorships.add(coauthorship_key)
+        else:
+            if verbose_mode or very_verbose_mode:
+                console.print(f"{coauthorship_key=} dropped as seen before")
 
+
+    if verbose_mode or very_verbose_mode:
+        console.print(f"{added_coauthorships=}")
+        print_info(f"returning coauthorship network {coauthorship_network=}")
     return coauthorship_network
 
 
@@ -938,10 +933,31 @@ def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
 
     print_info(f"Creating the co-authorship temporal network by aggregating file information")
 
-    coauthorship_temporal_networks: TemporalMultiGraph = create_coauthorship_temporal_network(
+    coauthorship_temporal_networks: TemporalMultiGraph = aggregate_to_coauthorship_temporal_network(state,
         temporal_network_with_time_and_file_attributes)
 
+    if verbose_mode or very_verbose_mode:
+        console.print("")
+
+        print_header(f"Extracted co-authorship temporal network from the temporal network:")
+        print_note("Time preserved, specific files information lost bia aggregation")
+        print_info("t_graph nodes")
+        console.print(coauthorship_temporal_networks.nodes())  # Get all nodes
+        print_info("t_graph edges")
+        for edge in coauthorship_temporal_networks.temporal_edges(data=True):
+            console.print(edge)
+        console.print("")
+        console.rule("")
+
+        # print("Raw edge data:")
+        # print(t_graph_sliced.edges(data=True))
+
+    if debug_mode and ask_yes_or_no_question("Do you want see table with coauthorship temporal network edges ?"):
+        print_temporal_edges_table(coauthorship_temporal_networks)
+
     return     coauthorship_temporal_networks
+
+
 
 
 if __name__ == "__main__":
