@@ -1,10 +1,10 @@
-== 1 Johannes Reifferscheid ;jreiffers@google.com;Tue Jan 7 06:30:42 2024 -0800==
+== 1 Johannes Reifferscheid ;jreiffers@google.com;Tue Jan 8 06:30:42 2024 -0800==
 
 third_party/xla/xla/service/gpu/fusions/BUILD
 third_party/xla/xla/service/gpu/fusions/fusions.cc
 third_party/xla/xla/service/gpu/fusions/scatter.cc
 
-== NA Giulio C.n;57756052+giuliocn@users.noreply.github.com;Tue Jan 2 14:18:00 2024 +0100==
+== NA Giulio C.n;57756052+giuliocn@users.noreply.github.com;Tue Jan 7 14:18:00 2024 +0100==
 
 == 2 Johannes Reifferscheid;jreiffers@google.com;Tue Jan 6 04:03:16 2024 -0800==
 third_party/xla/xla/service/gpu/fusions/BUILD
