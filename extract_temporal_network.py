@@ -20,6 +20,8 @@ import sys
 from collections import defaultdict
 from datetime import timedelta, datetime
 from typing import Optional, Union
+
+
 from matplotlib import pyplot as plt
 from typing_extensions import deprecated
 
@@ -41,157 +43,278 @@ from utils.unified_console import print_success, print_header, print_info, print
     print_error, inspect, Table, Text, print_note
 from utils.unified_logger import logger
 
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from typing import Literal, Optional, Union, List, Any
+import networkx as nx
+from datetime import datetime
+
+PlotFormat = Literal["snapshots", "animation", "both", "interactive"]
 
 
-def plot_temporal_network_snapshots(graph, state, max_snapshots=6):
-    """Plot temporal network snapshots"""
-    import matplotlib.pyplot as plt
+def plot_temporal_network(
+        graph,
+        state,
+        plot_format: PlotFormat = "snapshots",
+        max_snapshots: int = 6,
+        filename: str = 'temporal_network',
+        figsize: tuple = (15, 10),
+        animation_interval: int = 800,
+        layout_algorithm: str = "spring",
+        show_labels: bool = True,
+        node_size: int = 300,
+        node_color: str = 'lightblue',
+        edge_color: str = 'gray',
+        title: str = "Temporal Network Evolution"
+) -> Optional[Any]:
+    """
+    Unified function to plot temporal networks in various formats.
 
-    # Determine the number of snapshots to plot
-    if hasattr(graph, '__len__'):
-        n_total = len(graph)
-    else:
-        n_total = 1
+    Args:
+        graph: Sliced temporal graph (after calling .slice())
+        state: Processing state object with debug_mode and verbose flags
+        plot_format: Type of plot - "snapshots", "animation", "both", or "interactive"
+        max_snapshots: Maximum number of snapshots to show (for snapshots plot)
+        filename: Base filename for saving (without extension)
+        figsize: Figure size as (width, height)
+        animation_interval: Milliseconds between animation frames
+        layout_algorithm: Layout algorithm ('spring', 'kamada_kawai', 'circular', 'random')
+        show_labels: Whether to show node labels
+        node_size: Size of nodes
+        node_color: Color of nodes
+        edge_color: Color of edges
+        title: Plot title
 
-    n_snapshots = min(n_total, max_snapshots)
+    Returns:
+        For "animation" format, returns animation object. For others, returns None.
+    """
 
-    if n_snapshots == 0:
+    # Validate graph has snapshots
+    if not hasattr(graph, '__len__') or len(graph) == 0:
         print_warning("No snapshots to plot")
-        return
+        return None
 
-    # Calculate grid dimensions
-    n_cols = min(3, n_snapshots)  # Max 3 columns
-    n_rows = (n_snapshots + n_cols - 1) // n_cols
+    n_snapshots = len(graph)
 
-    # Create figure and axes
-    fig = plt.figure(figsize=(5 * n_cols, 4 * n_rows))
+    # Get positions once for all snapshots (for consistent layout)
+    combined_pos = _compute_positions(graph, layout_algorithm)
 
-    # Plot each snapshot
-    for idx in range(n_snapshots):
+    if plot_format in ["snapshots", "both"]:
+        _plot_snapshots(
+            graph=graph,
+            state=state,
+            n_snapshots=n_snapshots,
+            max_snapshots=max_snapshots,
+            combined_pos=combined_pos,
+            figsize=figsize,
+            show_labels=show_labels,
+            node_size=node_size,
+            node_color=node_color,
+            edge_color=edge_color,
+            title=title,
+            filename=filename
+        )
+
+    if plot_format in ["animation", "both"]:
+        anim = _create_animation(
+            graph=graph,
+            state=state,
+            n_snapshots=n_snapshots,
+            combined_pos=combined_pos,
+            figsize=figsize,
+            show_labels=show_labels,
+            node_size=node_size,
+            node_color=node_color,
+            edge_color=edge_color,
+            title=title,
+            interval=animation_interval,
+            filename=filename
+        )
+
+        if plot_format == "animation":
+            return anim
+
+    return None
+
+
+def _compute_positions(graph, layout_algorithm: str = "spring") -> dict:
+    """Compute consistent node positions across all snapshots."""
+    # Collect all nodes across all snapshots
+    all_nodes = set()
+    for snapshot in graph:
+        all_nodes.update(snapshot.nodes())
+
+    # Create combined graph for layout
+    combined = nx.Graph()
+    for snapshot in graph:
+        combined.add_edges_from(snapshot.edges())
+
+    # Compute layout
+    if combined.number_of_nodes() == 0:
+        return {}
+
+    if layout_algorithm == "spring":
+        return nx.spring_layout(combined, seed=42, k=2)
+    elif layout_algorithm == "kamada_kawai":
+        return nx.kamada_kawai_layout(combined)
+    elif layout_algorithm == "circular":
+        return nx.circular_layout(combined)
+    elif layout_algorithm == "random":
+        return nx.random_layout(combined, seed=42)
+    else:
+        return nx.spring_layout(combined, seed=42, k=2)
+
+
+def _plot_snapshots(graph, state, n_snapshots, max_snapshots, combined_pos,
+                    figsize, show_labels, node_size, node_color, edge_color,
+                    title, filename):
+    """Plot individual snapshots in a grid."""
+
+    n_to_plot = min(n_snapshots, max_snapshots)
+    n_cols = min(3, n_to_plot)
+    n_rows = (n_to_plot + n_cols - 1) // n_cols
+
+    fig = plt.figure(figsize=figsize)
+
+    for idx in range(n_to_plot):
         ax = fig.add_subplot(n_rows, n_cols, idx + 1)
 
-        # Get the graph for this snapshot
-        if hasattr(graph, 'items') and callable(getattr(graph, 'items')):
-            # Dictionary-like
-            t, G = list(graph.items())[idx]
-            snapshot_label = f"t={t}"
-        elif hasattr(graph, '__getitem__') and not isinstance(graph, dict):
-            # List-like
-            G = graph[idx]
-            snapshot_label = f"Snapshot {idx}"
+        snapshot = graph[idx]
+        time_str = _get_snapshot_time(snapshot, idx)
+
+        if snapshot.number_of_nodes() > 0:
+            # Filter positions to only nodes in this snapshot
+            pos = {node: combined_pos[node] for node in snapshot.nodes()
+                   if node in combined_pos}
+
+            nx.draw(
+                snapshot, pos, ax=ax,
+                node_color=node_color,
+                node_size=node_size,
+                with_labels=show_labels,
+                font_size=8,
+                edge_color=edge_color,
+                width=2
+            )
         else:
-            # Single graph
-            G = graph
-            snapshot_label = "Temporal Network"
+            ax.text(0.5, 0.5, 'Empty Snapshot',
+                    ha='center', va='center', transform=ax.transAxes)
 
-        # Get timestamp info from edges
-        timestamps = []
-        try:
-            for _, _, data in G.edges(data=True):
-                if 'time' in data:
-                    timestamps.append(data['time'])
-        except:
-            # Handle case where edges() returns different format
-            pass
-
-        if timestamps:
-            try:
-                time_str = datetime.fromtimestamp(min(timestamps)).strftime('%Y-%m-%d %H:%M')
-            except:
-                time_str = str(min(timestamps))
-        else:
-            time_str = "No timestamp"
-
-        # Draw graph
-        if G.number_of_nodes() > 0:
-            try:
-                pos = nx.spring_layout(G, seed=42, k=2)
-                nx.draw(G, pos, ax=ax,
-                        node_color='lightblue',
-                        node_size=300,
-                        with_labels=True,
-                        font_size=8,
-                        edge_color='gray',
-                        width=2)
-            except Exception as e:
-                ax.text(0.5, 0.5, f'Error drawing graph: {str(e)[:50]}',
-                        ha='center', va='center', transform=ax.transAxes)
-        else:
-            ax.text(0.5, 0.5, 'Empty Graph', ha='center', va='center', transform=ax.transAxes)
-
-        ax.set_title(f"{snapshot_label}\n{time_str}")
+        ax.set_title(f"Snapshot {idx}\n{time_str}", fontsize=10)
         ax.axis('off')
 
-    plt.suptitle("Temporal Network Evolution", fontsize=16)
+    plt.suptitle(title, fontsize=16)
     plt.tight_layout()
 
     # Save if in debug mode
-    if state.debug_mode:
-        plt.savefig('temporal_network_snapshots.png', dpi=150, bbox_inches='tight')
-        print_info("Saved temporal network snapshots to 'temporal_network_snapshots.png'")
+    if hasattr(state, 'debug_mode') and state.debug_mode:
+        save_path = f'{filename}_snapshots.png'
+        plt.savefig(save_path, dpi=150, bbox_inches='tight')
+        print_info(f"Saved snapshots to '{save_path}'")
 
     plt.show()
 
 
-def animate_and_save(graph, state, filename='temporal_network.gif'):
-    """Create and save animation"""
-    import matplotlib.animation as animation
+def _create_animation(graph, state, n_snapshots, combined_pos,
+                      figsize, show_labels, node_size, node_color, edge_color,
+                      title, interval, filename):
+    """Create animation of temporal evolution."""
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-
-    # Precompute positions
-    all_nodes = set()
-    for G in graph:
-        all_nodes.update(G.nodes())
-
-    combined = nx.Graph()
-    for G in graph:
-        combined.add_edges_from(G.edges())
-
-    pos = nx.spring_layout(combined, seed=42, k=2)
+    fig, ax = plt.subplots(figsize=figsize)
 
     def update(frame):
         ax.clear()
-        G = graph[frame]
+        snapshot = graph[frame]
+        time_str = _get_snapshot_time(snapshot, frame)
 
-        # Get timestamp
-        timestamps = [data.get('time', 'N/A') for _, _, data in G.edges(data=True)]
-        if timestamps and timestamps[0] != 'N/A':
-            time_str = datetime.fromtimestamp(min(timestamps)).strftime('%Y-%m-%d %H:%M:%S')
-        else:
-            time_str = f"Snapshot {frame}"
+        if snapshot.number_of_nodes() > 0:
+            # Filter positions to nodes in this snapshot
+            pos = {node: combined_pos[node] for node in snapshot.nodes()
+                   if node in combined_pos}
 
-        # Draw
-        nx.draw(G, pos, ax=ax,
-                node_color='lightblue',
-                node_size=400,
-                with_labels=True,
+            nx.draw(
+                snapshot, pos, ax=ax,
+                node_color=node_color,
+                node_size=node_size,
+                with_labels=show_labels,
                 font_size=9,
-                edge_color='darkblue',
-                width=2,
-                arrows=True)
+                edge_color=edge_color,
+                width=2
+            )
+        else:
+            ax.text(0.5, 0.5, 'Empty Snapshot',
+                    ha='center', va='center', transform=ax.transAxes)
 
-        ax.set_title(f"Temporal Network Evolution\n{time_str}", fontsize=14)
+        ax.set_title(f"{title}\n{time_str}", fontsize=14)
         ax.axis('off')
 
-    anim = animation.FuncAnimation(fig, update,
-                                   frames=len(graph),
-                                   interval=800,
-                                   repeat=True)
+    anim = animation.FuncAnimation(
+        fig, update,
+        frames=n_snapshots,
+        interval=interval,
+        repeat=True
+    )
 
-    # Save
-    anim.save(filename, writer='pillow', dpi=100)
-    print_info(f"Saved animation to '{filename}'")
+    # Save animation
+    if hasattr(state, 'debug_mode') and state.debug_mode:
+        save_path = f'{filename}_animation.gif'
+        anim.save(save_path, writer='pillow', dpi=100)
+        print_info(f"Saved animation to '{save_path}'")
 
-    plt.close()
+    plt.close(fig)
+    return anim
 
-    # Display in Jupyter if applicable
+
+def _get_snapshot_time(snapshot, default_idx: int) -> str:
+    """Extract time information from a snapshot."""
+    timestamps = []
+
     try:
-        from IPython.display import HTML
-        return HTML(anim.to_html5_video())
+        for _, _, data in snapshot.edges(data=True):
+            if isinstance(data, dict) and 'time' in data:
+                timestamps.append(data['time'])
     except:
-        return anim
+        pass
 
+    if timestamps:
+        try:
+            # Try to parse as datetime
+            time_val = timestamps[0]
+            if isinstance(time_val, (int, float)):
+                return datetime.fromtimestamp(time_val).strftime('%Y-%m-%d %H:%M')
+            elif isinstance(time_val, str):
+                # Try ISO format
+                try:
+                    dt = datetime.fromisoformat(time_val.replace('Z', '+00:00'))
+                    return dt.strftime('%Y-%m-%d %H:%M')
+                except:
+                    return time_val[:16]  # Truncate long strings
+            else:
+                return str(time_val)
+        except:
+            return str(timestamps[0])
+
+    return f"t={default_idx}"
+
+
+# Example usage in your main code:
+"""
+# In your main code, replace the old plotting block with:
+
+t_graph_sliced = t_graph.slice(attr="time")
+plot_format = "snapshots"  # or "animation", "both"
+
+if t_graph_sliced and len(t_graph_sliced) > 0:
+    plot_temporal_network(
+        graph=t_graph_sliced,
+        state=state,
+        plot_format=plot_format,
+        max_snapshots=6,
+        filename='temporal_network',
+        layout_algorithm='spring',
+        show_labels=True
+    )
+"""
 
 from rich.console import Console
 from rich.table import Table
@@ -886,15 +1009,15 @@ def extract_temporal_network_from_parsed_change_log_entries(
             # plot_format="animation"
             # plot_format="both":
 
-            # Plot if requested
-            if t_graph_sliced and len(t_graph_sliced) > 0:
-                if plot_format == "snapshots":
-                    plot_temporal_network_snapshots(t_graph_sliced, state)
-                elif plot_format == "animation":
-                    animate_and_save(t_graph_sliced, state)
-                elif plot_format == "both":
-                    plot_temporal_network_snapshots(t_graph_sliced, state)
-                    animate_and_save(t_graph_sliced, state)
+            plot_temporal_network(
+                graph=t_graph_sliced,
+                state=state,
+                plot_format=plot_format,
+                max_snapshots=6,
+                filename='temporal_network',
+                layout_algorithm='spring',
+                show_labels=True)
+
 
 
         return t_graph
@@ -933,7 +1056,7 @@ def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
 
     print_info(f"Creating the co-authorship temporal network by aggregating file information")
 
-    coauthorship_temporal_networks: TemporalMultiGraph = aggregate_to_coauthorship_temporal_network(state,
+    coauthorship_temporal_network: TemporalMultiGraph = aggregate_to_coauthorship_temporal_network(state,
         temporal_network_with_time_and_file_attributes)
 
     if verbose_mode or very_verbose_mode:
@@ -942,9 +1065,9 @@ def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
         print_header(f"Extracted co-authorship temporal network from the temporal network:")
         print_note("Time preserved, specific files information lost bia aggregation")
         print_info("t_graph nodes")
-        console.print(coauthorship_temporal_networks.nodes())  # Get all nodes
+        console.print(coauthorship_temporal_network.nodes())  # Get all nodes
         print_info("t_graph edges")
-        for edge in coauthorship_temporal_networks.temporal_edges(data=True):
+        for edge in coauthorship_temporal_network.temporal_edges(data=True):
             console.print(edge)
         console.print("")
         console.rule("")
@@ -953,9 +1076,23 @@ def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
         # print(t_graph_sliced.edges(data=True))
 
     if debug_mode and ask_yes_or_no_question("Do you want see table with coauthorship temporal network edges ?"):
-        print_temporal_edges_table(coauthorship_temporal_networks)
+        print_temporal_edges_table(coauthorship_temporal_network)
 
-    return     coauthorship_temporal_networks
+    #tx.draw(coauthorship_temporal_network, layout="kamada_kawai", figsize=(8, 2))
+    #plt.show()
+
+    #plot_format = "snapshots"  # or "animation", "both"
+
+    plot_temporal_network(
+        graph=coauthorship_temporal_network,
+        state=state,
+        plot_format="both",
+        max_snapshots=6,
+        filename='temporal_network',
+        layout_algorithm='spring',
+        show_labels=True)
+
+    return     coauthorship_temporal_network
 
 
 
