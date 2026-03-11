@@ -7,52 +7,6 @@ A temporal network captures how relationships between entities evolve over time.
 In action with argument 'inter_individual_graph_temporal'
 from state, mostly parsed_change_log_entries structure, creates a temporal network
 
-Example:
-3:20  ┌─────────────────────────────────────────────────────────┐
-      │ [Adrian]─────────────────→[F6] gpu_utils.cc             │
-      │                      (First edit - sets foundation)     │
-23:20 └─────────────────────────────────────────────────────────┘
-
-      │
-      ▼
-
-23:44 ┌─────────────────────────────────────────────────────────┐
-      │ [Adrian]─────────────────→[F2] fusions.cc               │
-      │                      (First edit - introduces changes)  │
-      │                                                          │
-      │ [Adrian]─────────────────→[F3] scatter.cc               │
-      │                      (First edit - introduces changes)  │
-23:44 └─────────────────────────────────────────────────────────┘
-
-      │
-      │  ╔═══════════════════════════════════════════════╗
-      │  ║  HANDOFF PERIOD: 4 hours 19 minutes          ║
-      │  ║  Adrian's code waits for Johannes            ║
-      │  ╚═══════════════════════════════════════════════╝
-      ▼
-
-03:51 ┌─────────────────────────────────────────────────────────┐
-      │ [Dragan]────────────────→[F10] rocm_driver.cc           │
-      │                      (Independent work - no overlap)    │
-03:51 └─────────────────────────────────────────────────────────┘
-
-      │
-      ▼
-
-04:03 ┌─────────────────────────────────────────────────────────┐
-      │ [Johannes]═══════════════→[F2] fusions.cc               │
-      │                      (Refines Adrian's changes)         │
-      │                                                          │
-      │ [Johannes]═══════════════→[F3] scatter.cc               │
-      │                      (Refines Adrian's changes)         │
-      │                                                          │
-      │ [Johannes]───────────────→[F1] fusions/BUILD            │
-      │                      (Build config for fusion files)    │
-04:03 └─────────────────────────────────────────────────────────┘
-
-      │
-
-
 Test by running:
 $ ./scrapLog.py -vv --type-of-network=inter_individual_graph_temporal -r test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-same-file.IN
 
@@ -63,38 +17,24 @@ Related unit tests at tests/unit/test_extract_temporal_network_from_parsed_chang
 
 """
 import sys
+from collections import defaultdict
+from datetime import timedelta
+from typing import Optional
 
+from matplotlib import pyplot as plt
+from networkx_temporal import TemporalGraph
 from typing_extensions import deprecated
 
-from datetime import datetime
-
-import networkx as nx
-import networkx_temporal as tx
-from matplotlib import pyplot as plt
-
-from networkx_temporal import TemporalGraph
-
-
-from typing import Optional, Union
-from typing import Optional, List, Dict, Any
-
-import random
-from datetime import timedelta, datetime
-
-
-from collections import defaultdict
-from dataclasses import dataclass, field
-
-from utils.unified_console import print_success, print_header, print_info, print_warning, print_key_action, console, print_error, inspect 
-from utils.unified_logger import logger
-from utils.debugging import  ask_yes_or_no_question
 from core.models import ProcessingState
+from utils.debugging import ask_yes_or_no_question
+from utils.unified_console import print_success, print_header, print_info, print_warning, print_key_action, console, \
+    print_error, inspect
+from utils.unified_logger import logger
 
 
 def plot_temporal_network_snapshots(graph, state, max_snapshots=6):
     """Plot temporal network snapshots"""
     import matplotlib.pyplot as plt
-    import numpy as np
 
     # Determine the number of snapshots to plot
     if hasattr(graph, '__len__'):
@@ -181,34 +121,35 @@ def plot_temporal_network_snapshots(graph, state, max_snapshots=6):
 
     plt.show()
 
+
 def animate_and_save(graph, state, filename='temporal_network.gif'):
     """Create and save animation"""
     import matplotlib.animation as animation
-    
+
     fig, ax = plt.subplots(figsize=(10, 8))
-    
+
     # Precompute positions
     all_nodes = set()
     for G in graph:
         all_nodes.update(G.nodes())
-    
+
     combined = nx.Graph()
     for G in graph:
         combined.add_edges_from(G.edges())
-    
+
     pos = nx.spring_layout(combined, seed=42, k=2)
-    
+
     def update(frame):
         ax.clear()
         G = graph[frame]
-        
+
         # Get timestamp
         timestamps = [data.get('time', 'N/A') for _, _, data in G.edges(data=True)]
         if timestamps and timestamps[0] != 'N/A':
             time_str = datetime.fromtimestamp(min(timestamps)).strftime('%Y-%m-%d %H:%M:%S')
         else:
             time_str = f"Snapshot {frame}"
-        
+
         # Draw
         nx.draw(G, pos, ax=ax,
                 node_color='lightblue',
@@ -218,30 +159,27 @@ def animate_and_save(graph, state, filename='temporal_network.gif'):
                 edge_color='darkblue',
                 width=2,
                 arrows=True)
-        
+
         ax.set_title(f"Temporal Network Evolution\n{time_str}", fontsize=14)
         ax.axis('off')
-    
-    anim = animation.FuncAnimation(fig, update, 
-                                 frames=len(graph),
-                                 interval=800,
-                                 repeat=True)
-    
+
+    anim = animation.FuncAnimation(fig, update,
+                                   frames=len(graph),
+                                   interval=800,
+                                   repeat=True)
+
     # Save
     anim.save(filename, writer='pillow', dpi=100)
     print_info(f"Saved animation to '{filename}'")
-    
+
     plt.close()
-    
+
     # Display in Jupyter if applicable
     try:
         from IPython.display import HTML
         return HTML(anim.to_html5_video())
     except:
         return anim
-
-
-
 
 
 import networkx_temporal as tx
@@ -508,6 +446,7 @@ def print_temporal_network_summary(temporal_graph: Union[
 
     print("\n" + "=" * 80)
 
+
 @deprecated("Use git_timestamp_to_iso() instead which preserves timezone information")
 def git_timestamp_to_unix(git_timestamp_str: str) -> float:
     """
@@ -520,7 +459,8 @@ def git_timestamp_to_unix(git_timestamp_str: str) -> float:
     # Return Unix timestamp (seconds since epoch)
     return dt.timestamp()
 
-@deprecated("Use git_timestamp_to_iso() instead which preserves timezone information")
+
+@deprecated("Use iso_to_git_timestamp instead which preserves timezone information")
 def unix_to_git_timestamp(unix_timestamp: float) -> str:
     """
     Convert Unix timestamp to Git timestamp string.
@@ -537,6 +477,7 @@ def git_timestamp_to_iso(git_timestamp_str: str) -> str:
     """Convert Git timestamp to ISO format with timezone."""
     dt = datetime.strptime(git_timestamp_str, '%a %b %d %H:%M:%S %Y %z')
     return dt.isoformat()  # Preserves timezone!
+
 
 def iso_to_git_timestamp(iso_str: str) -> str:
     """Convert ISO format back to Git timestamp."""
@@ -610,7 +551,7 @@ def temporal_multigraph_to_simple_graph(multigraph):
                 )
 
     return simple_graph
-    
+
 
 def extract_temporal_network_from_parsed_change_log_entries(
         state: ProcessingState,
@@ -654,16 +595,14 @@ def extract_temporal_network_from_parsed_change_log_entries(
     very_verbose_mode = state.very_verbose_mode
     debug_mode = state.debug_mode
 
-    # Overide to debug only this function 
+    # Override to debug only this function
 
-    verbose_mode = True 
-    very_verbose_mode = True 
-    debug_mode = True 
-
+    verbose_mode = True
+    very_verbose_mode = True
+    debug_mode = True
 
     # TODO compare to see if is the same by the end of running 
-    contributors_by_file=state.map_files_to_their_contributors
-
+    contributors_by_file = state.map_files_to_their_contributors
 
     # Log entry point in verbose modes
     if very_verbose_mode or debug_mode:
@@ -671,7 +610,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
         print_info(f"Processing {len(parsed_change_log_entries) if parsed_change_log_entries else 0} entries")
         print_info(f"Temporal network resolution: {time_resolution}")
 
-    if debug_mode and  ask_yes_or_no_question("Do you want to see the parsed_change_log_entries INPUT"):
+    if debug_mode and ask_yes_or_no_question("Do you want to see the parsed_change_log_entries INPUT"):
         print_info(f"{parsed_change_log_entries=}")
 
     # Validate input data
@@ -689,11 +628,13 @@ def extract_temporal_network_from_parsed_change_log_entries(
     if time_resolution != timedelta(seconds=1):
         print_warning(f"Temporal network resolution is not 1 second (using {time_resolution})")
         logger.warning(f"Temporal network resolution is not 1 second (using {time_resolution})")
-        raise NotImplementedError("Temporal graph construction not yet implemented for time resolution other than 1 second")
+        raise NotImplementedError(
+            "Temporal graph construction not yet implemented for time resolution other than 1 second")
 
     try:
         # Create the temporal graph
-        t_graph : tx.TemporalGraph= tx.TemporalGraph()
+        t_graph: tx.TemporalGraph = tx.TemporalGraph()
+
         def _get_timestamp_for_sorting(entry):
             """Extract and parse timestamp from entry"""
             if hasattr(entry, 'timestamp'):
@@ -703,18 +644,15 @@ def extract_temporal_network_from_parsed_change_log_entries(
                 # Assume it's a tuple: ((email, affiliation), [files], timestamp_str)
                 timestamp_str = entry[2]
                 return datetime.strptime(timestamp_str, '%a %b %d %H:%M:%S %Y %z')
-        
+
         sorted_entries = sorted(parsed_change_log_entries, key=_get_timestamp_for_sorting)
 
-        
- 
         if very_verbose_mode or debug_mode:
             print_info(f"Processing {len(sorted_entries)} entries in chronological order")
             print_info(f"{sorted_entries=}")
             print_info(f"{contributors_by_file=}")
 
-
-        if debug_mode and  ask_yes_or_no_question("Do you want to inspect the sorted_entries by time?"):
+        if debug_mode and ask_yes_or_no_question("Do you want to inspect the sorted_entries by time?"):
             print_info(f"{inspect(sorted_entries)}")
 
         # Track unique contributors per file (automatically handles duplicates)
@@ -726,15 +664,17 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
         # Example of how to add files:
         # accumulated_history_of_contributors_by_file['src/main.py'].add('alice@example.com')
-            
+
         for developer_info, files, timestamp in sorted_entries:
             developer_email, developer_affiliation = developer_info
-            
+
             if very_verbose_mode or debug_mode:
-                print_info(f"Checking if event {developer_email, files, timestamp} relates contributors based on the accumulated history of contributors by file ")
+                print_info(
+                    f"Checking if event {developer_email, files, timestamp} relates contributors based on the accumulated history of contributors by file ")
 
             for file in files:
-                print_info(f"checking if {file} was edited before by others in accumulated_history_of_contributors_by_file")
+                print_info(
+                    f"checking if {file} was edited before by others in accumulated_history_of_contributors_by_file")
                 if file in accumulated_history_of_contributors_by_file.keys():
                     for collaborator in accumulated_history_of_contributors_by_file[file]:
                         if developer_email != collaborator:
@@ -744,21 +684,19 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
                 accumulated_history_of_contributors_by_file[file].add(developer_email)
                 accumulated_history_of_files_by_contributor[developer_email].add(file)
-            
-        if debug_mode and  ask_yes_or_no_question("Do you want to see accumulated_history_of_contributors_by_file?"):
+
+        if debug_mode and ask_yes_or_no_question("Do you want to see accumulated_history_of_contributors_by_file?"):
             print_info(f"{accumulated_history_of_contributors_by_file=}")
 
-        if debug_mode and  ask_yes_or_no_question("Do you want to see accumulated_history_of_files_by_contributor?"):
+        if debug_mode and ask_yes_or_no_question("Do you want to see accumulated_history_of_files_by_contributor?"):
             print_info(f"{accumulated_history_of_files_by_contributor=}")
-        
+
         if very_verbose_mode or debug_mode:
             print_success(f"Successfully created temporal graph with {len(t_graph)} snapshots")
             logger.info(f"Created temporal graph with {len(t_graph)} snapshots")
 
-
         if verbose_mode or very_verbose_mode:
             console.print("")
-
 
             print_header(f"Extracted temporal network from parsed change log entries:")
             print_info("t_graph nodes")
@@ -774,18 +712,15 @@ def extract_temporal_network_from_parsed_change_log_entries(
         for t, snap in enumerate(t_graph_sliced):
             print(f"{list(snap.edges(data=True))}, t(git format)={unix_to_git_timestamp(t)}")
 
-
         if debug_mode and ask_yes_or_no_question("Do you want see an summary of the extracted the temporal network ?"):
-
             print_temporal_network_summary(t_graph)
 
         if debug_mode and ask_yes_or_no_question("Do you want plot the temporal network ?"):
 
+            plot_format = "snapshots"
+            # plot_format="animation"
+            # plot_format="both":
 
-            plot_format="snapshots"
-            #plot_format="animation"
-            #plot_format="both":
-            
             # Plot if requested
             if t_graph_sliced and len(t_graph_sliced) > 0:
                 if plot_format == "snapshots":
@@ -796,7 +731,6 @@ def extract_temporal_network_from_parsed_change_log_entries(
                     plot_temporal_network_snapshots(t_graph_sliced, state)
                     animate_and_save(t_graph_sliced, state)
 
-
         return t_graph
 
     except Exception as e:
@@ -806,9 +740,6 @@ def extract_temporal_network_from_parsed_change_log_entries(
             import traceback
             print_warning(f"Error details: {traceback.format_exc()}")
         return None
-
-
-
 
 
 if __name__ == "__main__":
