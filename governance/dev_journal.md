@@ -1,3 +1,33 @@
+# 11 of March 
+
+Goals: 
+* Fixing the algorithm and visualizations
+* Implement export to a file
+* unit test cases 
+* Write acceptance tests
+
+```
+./scrapLog.py -r  test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-two-files.IN  --type-of-network=inter_individual_graph_temporal -vv
+```
+
+
+Gives 
+📈 BASIC STATISTICS:
+  • Graph type:      TemporalMultiGraph
+  • Directed:        False
+  • Total nodes:     2
+  • Total edges:     2
+  • Snapshots:       1
+  • Time attributes: Not found in edges
+
+Should not 
+Graph type 
+Total edges 2 
+
+
+
+
+
 # 10 of March 
 
 Goals: 

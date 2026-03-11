@@ -530,7 +530,72 @@ def unix_to_git_timestamp(unix_timestamp: float) -> str:
     return dt.strftime('%a %b %d %H:%M:%S %Y %z')
 
 
+def temporal_multigraph_to_simple_graph(multigraph):
+    """
+    Convert a TemporalMultiGraph to a simple TemporalGraph by aggregating
+    multiple edges between the same nodes.
 
+    Args:
+        multigraph: The input TemporalMultiGraph object
+
+    Returns:
+        A new simple TemporalGraph
+    """
+    # Create a new simple temporal graph
+    simple_graph = tx.temporal_graph()  # or whatever your library uses
+
+    # Get all unique node pairs
+    edges_seen = set()
+
+    # If your library has a method to get all edges with their temporal data
+    for u, v, data in multigraph.edges(data=True):
+        edge_key = tuple(sorted([u, v]))
+
+        if edge_key not in edges_seen:
+            # First time seeing this edge
+            edges_seen.add(edge_key)
+
+            # Extract temporal information
+            # This depends on how your multigraph stores time data
+            times = data.get('time', [])
+            if not isinstance(times, list):
+                times = [times]
+
+            # Add single edge with aggregated temporal data
+            simple_graph.add_edge(
+                u, v,
+                time=times,  # All timestamps
+                first_seen=min(times) if times else None,
+                last_seen=max(times) if times else None,
+                frequency=len(times)
+            )
+        else:
+            # Edge already exists, aggregate additional temporal data
+            # This depends on whether your library allows updating edges
+            existing_data = simple_graph.get_edge_data(u, v)
+            if existing_data:
+                # Combine timestamps
+                current_times = existing_data.get('time', [])
+                if not isinstance(current_times, list):
+                    current_times = [current_times]
+
+                new_times = data.get('time', [])
+                if not isinstance(new_times, list):
+                    new_times = [new_times]
+
+                all_times = sorted(set(current_times + new_times))
+
+                # Update edge (may require removing and re-adding)
+                simple_graph.remove_edge(u, v)
+                simple_graph.add_edge(
+                    u, v,
+                    time=all_times,
+                    first_seen=min(all_times),
+                    last_seen=max(all_times),
+                    frequency=len(all_times)
+                )
+
+    return simple_graph
     
 
 def extract_temporal_network_from_parsed_change_log_entries(
@@ -678,17 +743,16 @@ def extract_temporal_network_from_parsed_change_log_entries(
             print_success(f"Successfully created temporal graph with {len(t_graph)} snapshots")
             logger.info(f"Created temporal graph with {len(t_graph)} snapshots")
 
-        # After building the graph, slice it
-        graph_sliced = t_graph.slice(attr='time')
+
 
         if debug_mode and ask_yes_or_no_question("Do you want print the temporal network ?"):
-            print_temporal_network_summary(graph_sliced)
+
+            print_temporal_network_summary(t_graph)
 
         if debug_mode and ask_yes_or_no_question("Do you want plot the temporal network ?"):
 
-
-
-
+            # After building the graph, slice it
+            graph_sliced = t_graph.slice(attr='time')
 
             plot_format="snapshots"
             #plot_format="animation"
