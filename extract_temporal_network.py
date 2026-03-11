@@ -18,18 +18,29 @@ Related unit tests at tests/unit/test_extract_temporal_network_from_parsed_chang
 """
 import sys
 from collections import defaultdict
-from datetime import timedelta
-from typing import Optional
-
+from datetime import timedelta, datetime
+from typing import Optional, Union
 from matplotlib import pyplot as plt
-from networkx_temporal import TemporalGraph
 from typing_extensions import deprecated
+
+
+
+import networkx_temporal as tx
+from networkx_temporal import TemporalGraph, TemporalMultiGraph
+import networkx as nx
+
+
+
+
+from rich import box
+
 
 from core.models import ProcessingState
 from utils.debugging import ask_yes_or_no_question
 from utils.unified_console import print_success, print_header, print_info, print_warning, print_key_action, console, \
-    print_error, inspect
+    print_error, inspect , Table, Text
 from utils.unified_logger import logger
+
 
 
 def plot_temporal_network_snapshots(graph, state, max_snapshots=6):
@@ -182,11 +193,69 @@ def animate_and_save(graph, state, filename='temporal_network.gif'):
         return anim
 
 
-import networkx_temporal as tx
-import networkx as nx
-from datetime import datetime
+from rich.console import Console
+from rich.table import Table
 from typing import Union
+import networkx_temporal as tx
 
+
+def print_temporal_edges_table(t_graph: tx.TemporalMultiGraph) -> None:
+    """
+    Print temporal edges from a TemporalMultiGraph in a three-column Rich table.
+
+    Args:
+        t_graph: Unsliced TemporalMultiGraph
+    """
+    console = Console()
+
+    # Create table with three columns
+    table = Table(
+        title="[bold]Temporal Graph Edges[/bold]",
+        title_style="bold cyan",
+        header_style="bold white on blue",
+        show_lines=True
+    )
+
+    # Add three columns
+    table.add_column("Developer 1 (u)", style="green", width=30, overflow="fold")
+    table.add_column("Developer 2 (v)", style="yellow", width=30, overflow="fold")
+    table.add_column("Time", style="magenta", width=25, overflow="fold")
+
+    # Counter for total edges
+    edge_count = 0
+
+    # Use temporal_edges() instead of edges()
+    for edge in t_graph.temporal_edges(data=True):
+        # temporal_edges returns different formats depending on data=True
+        if isinstance(edge, tuple) and len(edge) == 3:
+            # Format: (u, v, data_dict)
+            u, v, data = edge
+            time_str = data.get('time', data.get('timestamp', 'N/A'))
+        elif isinstance(edge, tuple) and len(edge) == 2:
+            # Format: ((u, v), data_dict) or (u, v) without data
+            if isinstance(edge[0], tuple):
+                (u, v), data = edge
+                time_str = data.get('time', data.get('timestamp', 'N/A'))
+            else:
+                u, v = edge
+                time_str = 'N/A'
+        else:
+            # Skip if format is unexpected
+            continue
+
+        # Add row with full emails
+        table.add_row(
+            str(u),
+            str(v),
+            time_str
+        )
+        edge_count += 1
+
+    # Print the table
+    console.print(table)
+
+    # Print summary
+    console.print(f"\n[bold cyan]Total edges displayed:[/bold cyan] [white]{edge_count}[/white]")
 
 def print_temporal_network_summary(temporal_graph: Union[
     tx.TemporalGraph, tx.TemporalMultiGraph, tx.TemporalDiGraph, tx.TemporalMultiDiGraph]) -> None:
@@ -556,7 +625,7 @@ def temporal_multigraph_to_simple_graph(multigraph):
 def extract_temporal_network_from_parsed_change_log_entries(
         state: ProcessingState,
         time_resolution: timedelta = timedelta(seconds=1)
-) -> Optional[TemporalGraph]:
+) -> Optional[TemporalMultiGraph]:
     """
     Extract a temporal network from parsed changelog entries.
 
@@ -633,7 +702,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
     try:
         # Create the temporal graph
-        t_graph: tx.TemporalGraph = tx.TemporalGraph()
+        t_graph: tx.TemporalMultiGraph = tx.TemporalMultiGraph()
 
         def _get_timestamp_for_sorting(entry):
             """Extract and parse timestamp from entry"""
@@ -700,17 +769,20 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
             print_header(f"Extracted temporal network from parsed change log entries:")
             print_info("t_graph nodes")
-            print(t_graph.nodes())  # Get all nodes
+            console.print(t_graph.nodes())  # Get all nodes
             print_info("t_graph edges")
-            print(t_graph.temporal_edges())  # Get temporal edges
-
+            for edge in t_graph.temporal_edges(data=True):
+                console.print(edge)
             console.print("")
+            console.rule("")
 
         t_graph_sliced = t_graph.slice(attr="time")
 
-        print("Raw edge data:")
-        for t, snap in enumerate(t_graph_sliced):
-            print(f"{list(snap.edges(data=True))}, t(git format)={unix_to_git_timestamp(t)}")
+        #print("Raw edge data:")
+        #print(t_graph_sliced.edges(data=True))
+
+        if debug_mode and ask_yes_or_no_question("Do you want see table with extracted the temporal network edges ?"):
+            print_temporal_edges_table(t_graph)
 
         if debug_mode and ask_yes_or_no_question("Do you want see an summary of the extracted the temporal network ?"):
             print_temporal_network_summary(t_graph)

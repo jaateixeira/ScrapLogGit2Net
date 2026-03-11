@@ -1,6 +1,6 @@
 == 1 Johannes Reifferscheid ;jreiffers@google.com;Tue Jan 2 06:30:42 2024 -0800==
 
-ththird_party/xla/xla/service/gpu/fusions/BUILD
+third_party/xla/xla/service/gpu/fusions/BUILD
 third_party/xla/xla/service/gpu/fusions/fusions.cc
 third_party/xla/xla/service/gpu/fusions/scatter.cc
 

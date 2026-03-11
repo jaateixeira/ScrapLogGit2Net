@@ -51,9 +51,9 @@ third_party/xla/xla/stream_executor/rocm/rocm_driver.cc
 
 ### Expected output 
 
-T0, Jan 2 03:51:03 2024 -0800==, no edges 
-T1, Mon Jan 1 23:44:42 2024 -0800==, no edges 
-T2, Mon Jan 1 23:20:59 2024 -0800==, no edges 
+T0, Mon Jan 1 23:44:42 2024 -0800==, no edges 
+T1, Mon Jan 1 23:20:59 2024 -0800==, no edges 
+T2, Jan 2 03:51:03 2024 -0800==, no edges
 T3, Tue Jan 2 04:03:16 2024 -0800==, jreiffers@google.com <-->  akuegel@google.com
 T4, Tue Jan 2 14:18:00 2024, no edges 
 T4, Tue Jan 2 06:30:42 2024 -0800==, jreiffers@google.com <-->  akuegel@google.com
