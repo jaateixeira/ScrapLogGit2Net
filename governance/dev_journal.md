@@ -2,6 +2,7 @@
 
 Goals: 
 * Fixing the algorithm and visualizations
+* Fix the time conversions 
 * Implement export to a file
 * unit test cases 
 * Write acceptance tests
