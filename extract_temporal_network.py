@@ -64,6 +64,8 @@ Related unit tests at tests/unit/test_extract_temporal_network_from_parsed_chang
 """
 import sys
 
+from typing_extensions import deprecated
+
 from datetime import datetime
 
 import networkx as nx
@@ -506,6 +508,7 @@ def print_temporal_network_summary(temporal_graph: Union[
 
     print("\n" + "=" * 80)
 
+@deprecated("Use git_timestamp_to_iso() instead which preserves timezone information")
 def git_timestamp_to_unix(git_timestamp_str: str) -> float:
     """
     Convert Git timestamp string to Unix timestamp.
@@ -517,7 +520,7 @@ def git_timestamp_to_unix(git_timestamp_str: str) -> float:
     # Return Unix timestamp (seconds since epoch)
     return dt.timestamp()
 
-
+@deprecated("Use git_timestamp_to_iso() instead which preserves timezone information")
 def unix_to_git_timestamp(unix_timestamp: float) -> str:
     """
     Convert Unix timestamp to Git timestamp string.
@@ -737,7 +740,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
                         if developer_email != collaborator:
                             print_key_action(
                                 f"NEW relational edge between{developer_email} and others {collaborator}, on file {file=}with {timestamp=}")
-                            t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_unix(timestamp))
+                            t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_iso(timestamp))
 
                 accumulated_history_of_contributors_by_file[file].add(developer_email)
                 accumulated_history_of_files_by_contributor[developer_email].add(file)
