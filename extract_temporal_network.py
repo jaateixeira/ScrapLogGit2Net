@@ -509,7 +509,7 @@ def print_temporal_network_summary(temporal_graph: Union[
 def git_timestamp_to_unix(git_timestamp_str: str) -> float:
     """
     Convert Git timestamp string to Unix timestamp.
-    
+
     Example: 'Tue Jan 2 11:19:35 2024 -0800' -> 1704213575.0
     """
     # Parse Git timestamp format
@@ -521,7 +521,7 @@ def git_timestamp_to_unix(git_timestamp_str: str) -> float:
 def unix_to_git_timestamp(unix_timestamp: float) -> str:
     """
     Convert Unix timestamp to Git timestamp string.
-    
+
     Example: 1704213575.0 -> 'Tue Jan 2 11:19:35 2024 -0800'
     """
     # Convert Unix timestamp to datetime
@@ -679,8 +679,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
     try:
         # Create the temporal graph
-        t_graph = tx.temporal_graph()
-        
+        t_graph : tx.TemporalGraph= tx.TemporalGraph()
         def _get_timestamp_for_sorting(entry):
             """Extract and parse timestamp from entry"""
             if hasattr(entry, 'timestamp'):
@@ -720,7 +719,6 @@ def extract_temporal_network_from_parsed_change_log_entries(
             if very_verbose_mode or debug_mode:
                 print_info(f"Checking if event {developer_email, files, timestamp} relates contributors based on the accumulated history of contributors by file ")
 
-
             for file in files:
                 print_info(f"checking if {file} was edited before by others in accumulated_history_of_contributors_by_file")
                 if file in accumulated_history_of_contributors_by_file.keys():
@@ -729,7 +727,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
                             print_key_action(
                                 f"NEW relational edge between{developer_email} and others {collaborator}, on file {file=}with {timestamp=}")
                             t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_unix(timestamp))
-                
+
                 accumulated_history_of_contributors_by_file[file].add(developer_email)
                 accumulated_history_of_files_by_contributor[developer_email].add(file)
             
@@ -744,32 +742,48 @@ def extract_temporal_network_from_parsed_change_log_entries(
             logger.info(f"Created temporal graph with {len(t_graph)} snapshots")
 
 
+        if verbose_mode or very_verbose_mode:
+            console.print("")
 
-        if debug_mode and ask_yes_or_no_question("Do you want print the temporal network ?"):
-            simple_temporal_graph = tx.from_multigraph(t_graph)
-            print_temporal_network_summary(simple_temporal_graph)
+
+            print_header(f"Extracted temporal network from parsed change log entries:")
+            print_info("t_graph nodes")
+            print(t_graph.nodes())  # Get all nodes
+            print_info("t_graph edges")
+            print(t_graph.temporal_edges())  # Get temporal edges
+
+            console.print("")
+
+        t_graph_sliced = t_graph.slice(attr="time")
+
+        print("Raw edge data:")
+        for t, snap in enumerate(t_graph_sliced):
+            print(f"{list(snap.edges(data=True))}, t(git format)={unix_to_git_timestamp(t)}")
+
+
+        if debug_mode and ask_yes_or_no_question("Do you want see an summary of the extracted the temporal network ?"):
+
+            print_temporal_network_summary(t_graph)
 
         if debug_mode and ask_yes_or_no_question("Do you want plot the temporal network ?"):
 
-            # After building the graph, slice it
-            graph_sliced = simple_temporal_graph.slice(attr='time')
 
             plot_format="snapshots"
             #plot_format="animation"
             #plot_format="both":
             
             # Plot if requested
-            if graph_sliced and len(graph_sliced) > 0:
+            if t_graph_sliced and len(t_graph_sliced) > 0:
                 if plot_format == "snapshots":
-                    plot_temporal_network_snapshots(graph_sliced, state)
+                    plot_temporal_network_snapshots(t_graph_sliced, state)
                 elif plot_format == "animation":
-                    animate_and_save(graph_sliced, state)
+                    animate_and_save(t_graph_sliced, state)
                 elif plot_format == "both":
-                    plot_temporal_network_snapshots(graph_sliced, state)
-                    animate_and_save(graph_sliced, state)
+                    plot_temporal_network_snapshots(t_graph_sliced, state)
+                    animate_and_save(t_graph_sliced, state)
 
 
-        return simple_temporal_graph
+        return t_graph
 
     except Exception as e:
         # Log any errors that occur during processing
