@@ -746,13 +746,13 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
 
         if debug_mode and ask_yes_or_no_question("Do you want print the temporal network ?"):
-
-            print_temporal_network_summary(t_graph)
+            simple_temporal_graph = tx.from_multigraph(t_graph)
+            print_temporal_network_summary(simple_temporal_graph)
 
         if debug_mode and ask_yes_or_no_question("Do you want plot the temporal network ?"):
 
             # After building the graph, slice it
-            graph_sliced = t_graph.slice(attr='time')
+            graph_sliced = simple_temporal_graph.slice(attr='time')
 
             plot_format="snapshots"
             #plot_format="animation"
@@ -769,7 +769,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
                     animate_and_save(graph_sliced, state)
 
 
-        return t_graph
+        return simple_temporal_graph
 
     except Exception as e:
         # Log any errors that occur during processing
