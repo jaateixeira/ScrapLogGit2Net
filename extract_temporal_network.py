@@ -198,17 +198,46 @@ from rich.table import Table
 from typing import Union
 import networkx_temporal as tx
 
+from rich.console import Console
+from rich.table import Table
+import networkx_temporal as tx
+from typing import Dict, Any, List
+
 
 def print_temporal_edges_table(t_graph: tx.TemporalMultiGraph) -> None:
     """
-    Print temporal edges from a TemporalMultiGraph in a three-column Rich table.
+    Print temporal edges from a TemporalMultiGraph in a Rich table.
+
+    Dynamically creates columns for all attributes found in the edges.
+    Always shows 'u' and 'v' as first two columns, followed by all edge attributes.
 
     Args:
         t_graph: Unsliced TemporalMultiGraph
     """
     console = Console()
 
-    # Create table with three columns
+    # Collect all edges and discover all possible attribute keys
+    edges_list: List[tuple] = []
+    all_attr_keys: set = set()
+
+    for edge in t_graph.temporal_edges(data=True):
+        edges_list.append(edge)
+
+        # Extract attribute dictionary based on edge format
+        if isinstance(edge, tuple) and len(edge) >= 3:
+            # Format: (u, v, data_dict) or (u, v, data_dict, key)
+            data = edge[2] if len(edge) >= 3 else {}
+            if isinstance(data, dict):
+                all_attr_keys.update(data.keys())
+        elif isinstance(edge, tuple) and len(edge) == 2 and isinstance(edge[1], dict):
+            # Format: ((u, v), data_dict)
+            data = edge[1]
+            all_attr_keys.update(data.keys())
+
+    # Sort attribute keys for consistent column order
+    sorted_attr_keys: List[str] = sorted(all_attr_keys)
+
+    # Create table with dynamic columns
     table = Table(
         title="[bold]Temporal Graph Edges[/bold]",
         title_style="bold cyan",
@@ -216,39 +245,63 @@ def print_temporal_edges_table(t_graph: tx.TemporalMultiGraph) -> None:
         show_lines=True
     )
 
-    # Add three columns
-    table.add_column("Developer 1 (u)", style="green", width=30, overflow="fold")
-    table.add_column("Developer 2 (v)", style="yellow", width=30, overflow="fold")
-    table.add_column("Time", style="magenta", width=25, overflow="fold")
+    # Always add u and v as first columns
+    table.add_column("u", style="green", width=30, overflow="fold")
+    table.add_column("v", style="yellow", width=30, overflow="fold")
+
+    # Add columns for each attribute
+    attr_colors = ["magenta", "cyan", "blue", "red", "purple", "orange", "pink"]
+    for i, attr_key in enumerate(sorted_attr_keys):
+        color = attr_colors[i % len(attr_colors)]
+        table.add_column(
+            attr_key,
+            style=color,
+            width=25,
+            overflow="fold"
+        )
 
     # Counter for total edges
-    edge_count = 0
+    edge_count: int = 0
 
-    # Use temporal_edges() instead of edges()
-    for edge in t_graph.temporal_edges(data=True):
-        # temporal_edges returns different formats depending on data=True
-        if isinstance(edge, tuple) and len(edge) == 3:
-            # Format: (u, v, data_dict)
-            u, v, data = edge
-            time_str = data.get('time', data.get('timestamp', 'N/A'))
+    # Process each edge and add rows
+    for edge in edges_list:
+        # Extract u, v, and attributes based on format
+        u: str = ""
+        v: str = ""
+        attrs: Dict[str, Any] = {}
+
+        if isinstance(edge, tuple) and len(edge) >= 3:
+            # Format: (u, v, data_dict) or (u, v, data_dict, key)
+            u = str(edge[0])
+            v = str(edge[1])
+            if isinstance(edge[2], dict):
+                attrs = edge[2]
         elif isinstance(edge, tuple) and len(edge) == 2:
-            # Format: ((u, v), data_dict) or (u, v) without data
-            if isinstance(edge[0], tuple):
-                (u, v), data = edge
-                time_str = data.get('time', data.get('timestamp', 'N/A'))
+            if isinstance(edge[0], tuple) and len(edge[0]) == 2:
+                # Format: ((u, v), data_dict)
+                u = str(edge[0][0])
+                v = str(edge[0][1])
+                if isinstance(edge[1], dict):
+                    attrs = edge[1]
             else:
-                u, v = edge
-                time_str = 'N/A'
-        else:
-            # Skip if format is unexpected
-            continue
+                # Format: (u, v) without data
+                u = str(edge[0])
+                v = str(edge[1])
 
-        # Add row with full emails
-        table.add_row(
-            str(u),
-            str(v),
-            time_str
-        )
+        # Build row: start with u and v
+        row = [u, v]
+
+        # Add attribute values in the same order as columns
+        for attr_key in sorted_attr_keys:
+            value = attrs.get(attr_key, "")
+            # Convert to string and handle None
+            if value is None:
+                value = ""
+            elif not isinstance(value, str):
+                value = str(value)
+            row.append(value)
+
+        table.add_row(*row)
         edge_count += 1
 
     # Print the table
@@ -256,6 +309,8 @@ def print_temporal_edges_table(t_graph: tx.TemporalMultiGraph) -> None:
 
     # Print summary
     console.print(f"\n[bold cyan]Total edges displayed:[/bold cyan] [white]{edge_count}[/white]")
+    if sorted_attr_keys:
+        console.print(f"[bold cyan]Attributes shown:[/bold cyan] [white]{', '.join(sorted_attr_keys)}[/white]")
 
 def print_temporal_network_summary(temporal_graph: Union[
     tx.TemporalGraph, tx.TemporalMultiGraph, tx.TemporalDiGraph, tx.TemporalMultiDiGraph]) -> None:
@@ -554,72 +609,114 @@ def iso_to_git_timestamp(iso_str: str) -> str:
     return dt.strftime('%a %b %d %H:%M:%S %Y %z')
 
 
-def temporal_multigraph_to_simple_graph(multigraph):
+import networkx_temporal as tx
+from typing import Set, Tuple, Dict, Any, Optional
+from datetime import datetime
+
+
+def create_coauthorship_temporal_network(
+        file_collaboration_graph: tx.TemporalMultiGraph
+) -> tx.TemporalGraph:
     """
-    Convert a TemporalMultiGraph to a simple TemporalGraph by aggregating
-    multiple edges between the same nodes.
+    Convert a file-level temporal multigraph to a developer co-authorship temporal graph.
+
+    This function takes a TemporalMultiGraph where multiple edges between the same
+    developers at the same timestamp represent different files they collaborated on.
+    It creates a new simple TemporalGraph where each (developer1, developer2, timestamp)
+    combination appears only once, representing a co-authorship relationship.
 
     Args:
-        multigraph: The input TemporalMultiGraph object
+        file_collaboration_graph: A TemporalMultiGraph instance where:
+            - Nodes represent developer email addresses
+            - Each edge MUST have a 'time' attribute (ISO format timestamp)
+            - Multiple edges between same nodes at same time represent different files
 
     Returns:
-        A new simple TemporalGraph
+        A new TemporalGraph instance where:
+            - Nodes are the same developer email addresses
+            - Each (developer1, developer2, timestamp) appears exactly once
+            - Edge attributes only contain the 'time' field
+
+    Raises:
+        TypeError: If input is not a TemporalMultiGraph
+        ValueError: If edges are missing required 'time' attribute
+
+    Example:
+        >>> # Create a multigraph with file collaborations
+        >>> multi_graph = tx.TemporalMultiGraph()
+        >>> multi_graph.add_edge("alice@example.com", "bob@example.com",
+        ...                      time="2024-01-06T10:15:30-08:00",
+        ...                      file="src/module.py")
+        >>> multi_graph.add_edge("alice@example.com", "bob@example.com",
+        ...                      time="2024-01-06T10:15:30-08:00",
+        ...                      file="tests/test_module.py")
+        >>>
+        >>> # Convert to co-authorship network
+        >>> coauthor_graph = create_coauthorship_temporal_network(multi_graph)
+        >>> print(list(coauthor_graph.temporal_edges(data=True)))
+        [('alice@example.com', 'bob@example.com', {'time': '2024-01-06T10:15:30-08:00'})]
     """
-    # Create a new simple temporal graph
-    simple_graph = tx.temporal_graph()  # or whatever your library uses
 
-    # Get all unique node pairs
-    edges_seen = set()
+    # Type validation
+    if not isinstance(file_collaboration_graph, tx.TemporalMultiGraph):
+        raise TypeError(
+            f"Expected TemporalMultiGraph, got {type(file_collaboration_graph).__name__}"
+        )
 
-    # If your library has a method to get all edges with their temporal data
-    for u, v, data in multigraph.edges(data=True):
-        edge_key = tuple(sorted([u, v]))
+    # Initialize new simple temporal graph for co-authorships
+    coauthorship_network: tx.TemporalGraph = tx.TemporalGraph()
 
-        if edge_key not in edges_seen:
-            # First time seeing this edge
-            edges_seen.add(edge_key)
+    # Track added (dev1, dev2, time) combinations to avoid duplicates
+    # Set elements are tuples with developers sorted lexicographically
+    added_coauthorships: Set[Tuple[str, str, str]] = set()
 
-            # Extract temporal information
-            # This depends on how your multigraph stores time data
-            times = data.get('time', [])
-            if not isinstance(times, list):
-                times = [times]
+    # Process all temporal edges from the input multigraph
+    for edge in file_collaboration_graph.temporal_edges(data=True):
 
-            # Add single edge with aggregated temporal data
-            simple_graph.add_edge(
-                u, v,
-                time=times,  # All timestamps
-                first_seen=min(times) if times else None,
-                last_seen=max(times) if times else None,
-                frequency=len(times)
-            )
+        # Unpack edge - TemporalMultiGraph returns (u, v, data_dict)
+        if not isinstance(edge, tuple) or len(edge) != 3:
+            continue  # Skip malformed edges
+
+        developer1: str = str(edge[0])
+        developer2: str = str(edge[1])
+        attributes: Dict[str, Any] = edge[2]
+
+        # Extract and validate timestamp
+        timestamp: Optional[str] = attributes.get('time')
+        if timestamp is None:
+            raise ValueError(f"Edge {developer1} - {developer2} missing required 'time' attribute")
+
+        # Normalize developer order for undirected graph
+        # This ensures (A,B) and (B,A) are treated as the same edge
+        dev1_normalized: str
+        dev2_normalized: str
+        if developer1 < developer2:
+            dev1_normalized = developer1
+            dev2_normalized = developer2
         else:
-            # Edge already exists, aggregate additional temporal data
-            # This depends on whether your library allows updating edges
-            existing_data = simple_graph.get_edge_data(u, v)
-            if existing_data:
-                # Combine timestamps
-                current_times = existing_data.get('time', [])
-                if not isinstance(current_times, list):
-                    current_times = [current_times]
+            dev1_normalized = developer2
+            dev2_normalized = developer1
 
-                new_times = data.get('time', [])
-                if not isinstance(new_times, list):
-                    new_times = [new_times]
+        # Create unique key for this co-authorship
+        coauthorship_key: Tuple[str, str, str] = (
+            dev1_normalized,
+            dev2_normalized,
+            timestamp
+        )
 
-                all_times = sorted(set(current_times + new_times))
+        # Add edge only if this (dev_pair, time) combination hasn't been seen before
+        if coauthorship_key not in added_coauthorships:
+            coauthorship_network.add_edge(
+                dev1_normalized,
+                dev2_normalized,
+                time=timestamp  # Only preserve the time attribute
+            )
+            added_coauthorships.add(coauthorship_key)
 
-                # Update edge (may require removing and re-adding)
-                simple_graph.remove_edge(u, v)
-                simple_graph.add_edge(
-                    u, v,
-                    time=all_times,
-                    first_seen=min(all_times),
-                    last_seen=max(all_times),
-                    frequency=len(all_times)
-                )
+    return coauthorship_network
 
-    return simple_graph
+
+
 
 
 def extract_temporal_network_from_parsed_change_log_entries(
@@ -749,7 +846,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
                         if developer_email != collaborator:
                             print_key_action(
                                 f"NEW relational edge between{developer_email} and others {collaborator}, on file {file=}with {timestamp=}")
-                            t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_iso(timestamp))
+                            t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_iso(timestamp),file=file)
 
                 accumulated_history_of_contributors_by_file[file].add(developer_email)
                 accumulated_history_of_files_by_contributor[developer_email].add(file)
@@ -776,7 +873,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
             console.print("")
             console.rule("")
 
-        t_graph_sliced = t_graph.slice(attr="time")
+
 
         #print("Raw edge data:")
         #print(t_graph_sliced.edges(data=True))
@@ -784,11 +881,12 @@ def extract_temporal_network_from_parsed_change_log_entries(
         if debug_mode and ask_yes_or_no_question("Do you want see table with extracted the temporal network edges ?"):
             print_temporal_edges_table(t_graph)
 
-        if debug_mode and ask_yes_or_no_question("Do you want see an summary of the extracted the temporal network ?"):
+        if debug_mode and ask_yes_or_no_question("Do you want see an summary of the extracted the temporal network (with time and files) ?"):
             print_temporal_network_summary(t_graph)
 
-        if debug_mode and ask_yes_or_no_question("Do you want plot the temporal network ?"):
+        if debug_mode and ask_yes_or_no_question("Do you want plot the temporal network (with time and files) ?"):
 
+            t_graph_sliced = t_graph.slice(attr="time")
             plot_format = "snapshots"
             # plot_format="animation"
             # plot_format="both":
@@ -803,6 +901,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
                     plot_temporal_network_snapshots(t_graph_sliced, state)
                     animate_and_save(t_graph_sliced, state)
 
+
         return t_graph
 
     except Exception as e:
@@ -812,6 +911,37 @@ def extract_temporal_network_from_parsed_change_log_entries(
             import traceback
             print_warning(f"Error details: {traceback.format_exc()}")
         return None
+
+
+def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
+        state: ProcessingState,
+        time_resolution: timedelta = timedelta(seconds=1)
+) -> Optional[TemporalMultiGraph]:
+
+    verbose_mode = state.verbose_mode
+    very_verbose_mode = state.very_verbose_mode
+    debug_mode = state.debug_mode
+
+    # Override to debug only this function
+
+    verbose_mode = True
+    very_verbose_mode = True
+    debug_mode = True
+
+    # Log entry point in verbose modes
+    if very_verbose_mode or debug_mode:
+        print_header(f"Extracting co-authorship temporal network from parsed change log entries")
+
+    print_info(f"Extracting temporal network from parsed change log entries while keeping time and file information")
+
+    temporal_network_with_time_and_file_attributes=extract_temporal_network_from_parsed_change_log_entries(state)
+
+    print_info(f"Creating the co-authorship temporal network by aggregating file information")
+
+    coauthorship_temporal_networks: TemporalMultiGraph = create_coauthorship_temporal_network(
+        temporal_network_with_time_and_file_attributes)
+
+    return     coauthorship_temporal_networks
 
 
 if __name__ == "__main__":

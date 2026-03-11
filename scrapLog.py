@@ -21,7 +21,8 @@ from typing import List, Optional, Set, Tuple
 import networkx as nx
 
 import export_log_data
-from extract_temporal_network import extract_temporal_network_from_parsed_change_log_entries 
+from extract_temporal_network import extract_temporal_network_from_parsed_change_log_entries, \
+    extract_coauthorship_temporal_network_from_parsed_change_log_entries
 
 from core.models import ProcessingState, TimeStampedFileContribution
 from core.types import Filename, EmailAggregationConfig, Email, DeveloperInfo, ChangeLogEntry, ConnectionWithFile, \
@@ -764,7 +765,7 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     # Branch based on network type
     if state.network_type == 'inter_individual_graph_temporal':
         # For temporal networks, use the temporal extraction
-        extracted_network=extract_temporal_network_from_parsed_change_log_entries(state)
+        extract_coauthorship_temporal_network_from_parsed_change_log_entries(state)
         # Skip unique connections step - we keep all temporal data
         console.print(
             f"[blue] Extracted {len(state.file_coediting_collaborative_relationships)} temporal connections[/blue]")
