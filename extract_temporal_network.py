@@ -530,6 +530,17 @@ def unix_to_git_timestamp(unix_timestamp: float) -> str:
     return dt.strftime('%a %b %d %H:%M:%S %Y %z')
 
 
+def git_timestamp_to_iso(git_timestamp_str: str) -> str:
+    """Convert Git timestamp to ISO format with timezone."""
+    dt = datetime.strptime(git_timestamp_str, '%a %b %d %H:%M:%S %Y %z')
+    return dt.isoformat()  # Preserves timezone!
+
+def iso_to_git_timestamp(iso_str: str) -> str:
+    """Convert ISO format back to Git timestamp."""
+    dt = datetime.fromisoformat(iso_str)
+    return dt.strftime('%a %b %d %H:%M:%S %Y %z')
+
+
 def temporal_multigraph_to_simple_graph(multigraph):
     """
     Convert a TemporalMultiGraph to a simple TemporalGraph by aggregating
