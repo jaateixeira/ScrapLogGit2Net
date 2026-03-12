@@ -17,25 +17,20 @@ Related unit tests at tests/unit/test_extract_temporal_network_from_parsed_chang
 
 """
 import sys
+import math
+
 from collections import defaultdict
-from datetime import timedelta, datetime
-from typing import Optional, Union
-
-
-from matplotlib import pyplot as plt
+from typing import Literal, Optional, Any, Union, List
 from typing_extensions import deprecated
 
+from datetime import timedelta
 
-
-import networkx_temporal as tx
-from networkx_temporal import TemporalGraph, TemporalMultiGraph
 import networkx as nx
+import networkx_temporal as tx
+from networkx_temporal import TemporalGraph, TemporalMultiGraph, utils
 
-
-
-
-from rich import box
-
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 from core.models import ProcessingState
 from utils.debugging import ask_yes_or_no_question
@@ -43,11 +38,6 @@ from utils.unified_console import print_success, print_header, print_info, print
     print_error, inspect, Table, Text, print_note
 from utils.unified_logger import logger
 
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from typing import Literal, Optional, Union, List, Any
-import networkx as nx
-from datetime import datetime
 
 PlotFormat = Literal["snapshots", "animation", "both", "interactive"]
 
@@ -316,16 +306,231 @@ if t_graph_sliced and len(t_graph_sliced) > 0:
     )
 """
 
-from rich.console import Console
-from rich.table import Table
-from typing import Union
-import networkx_temporal as tx
 
-from rich.console import Console
-from rich.table import Table
-import networkx_temporal as tx
-from typing import Dict, Any, List
 
+
+
+def print_temporal_graph_stats(tnet: tx.TemporalMultiGraph, graph_name="Temporal Graph", time_attr="time"):
+    """
+    Print 8 basic statistics from a TemporalMultiGraph using utils functions.
+
+    Parameters:
+    -----------
+    tnet : tx.TemporalMultiGraph
+        The temporal graph to analyze
+    graph_name : str
+        Name of the graph for display purposes
+    time_attr : str
+        The edge attribute key that stores the temporal information (default: "time")
+    """
+
+    table = Table(title=f"📊 Statistics for {graph_name}",
+                  title_style="bold cyan",
+                  border_style="blue")
+
+    table.add_column("Statistic", style="cyan", no_wrap=True)
+    table.add_column("Value", style="magenta")
+    table.add_column("Description", style="green")
+
+    # --- 1. Number of Snapshots (Structure) ---
+    n_snapshots = len(tnet)
+    #table.add_row("Snapshots", str(n_snapshots), "Number of graph snapshots in memory")
+
+    # --- 2. Unique Nodes ---
+    total_nodes_unique = tnet.number_of_nodes()
+    table.add_row("Unique Nodes", str(total_nodes_unique), "Nodes appearing in any snapshot")
+
+    # --- 3. Unique Edges (across all time, counting each temporal occurrence as one?) ---
+    # `tnet.number_of_edges()` counts each edge *once*, even if it exists in multiple snapshots.
+    # To get total *temporal* edges (each time-stamped edge instance), you'd need to sum over snapshots.
+    total_edges_unique = tnet.number_of_edges() # This counts unique (u,v) pairs across all time
+    table.add_row("Unique Edges (Pairs)", str(total_edges_unique), "Unique node pairs connected at any time")
+
+    # Alternative: Total Temporal Edge Occurrences
+    total_temporal_edges = sum(g.number_of_edges() for g in tnet)
+    #table.add_row("Total Edge Occurrences", str(total_temporal_edges), "Sum of edges across all snapshots")
+
+    # --- 4. Average Nodes per Snapshot ---
+    avg_nodes = sum(g.number_of_nodes() for g in tnet) / n_snapshots if n_snapshots > 0 else 0
+    #table.add_row("Avg Nodes/Snapshot", f"{avg_nodes:.2f}", "Average nodes per snapshot")
+
+    # --- 5. Average Edges per Snapshot ---
+    avg_edges = sum(g.number_of_edges() for g in tnet) / n_snapshots if n_snapshots > 0 else 0
+    #table.add_row("Avg Edges/Snapshot", f"{avg_edges:.2f}", "Average edges per snapshot")
+
+    # --- 6. True Time Span (from edge attributes) ---
+    try:
+        # Get all unique time values from the specified edge attribute
+        unique_times = utils.get_unique_edge_attributes(tnet, attr=time_attr)
+
+        if unique_times:
+            # Assuming times are numeric or sortable
+            sorted_times = sorted([t for t in unique_times if t is not None and not (isinstance(t, float) and math.isnan(t))])
+            if sorted_times:
+                time_range = f"{min(sorted_times)} → {max(sorted_times)}"
+                table.add_row("Time Span (Events)", time_range, f"First to last unique '{time_attr}' value")
+            else:
+                table.add_row("Time Span (Events)", "N/A", f"No valid '{time_attr}' values found")
+        else:
+            # Fallback: use snapshot indices
+            time_range = f"0 → {n_snapshots - 1}"
+            table.add_row("Time Span (Estimate)", time_range, f"Based on snapshot indices (no '{time_attr}' attr)")
+
+    except Exception as e:
+        table.add_row("Time Span", f"Error: {e}", "Could not extract time attribute")
+
+    # --- 7. Average Graph Density Across Snapshots ---
+    densities = []
+    for g in tnet:
+        n = g.number_of_nodes()
+        if n > 1:
+            densities.append(2 * g.number_of_edges() / (n * (n - 1)))
+    avg_density = sum(densities) / len(densities) if densities else 0
+    #table.add_row("Avg Density (per snapshot)", f"{avg_density:.6f}", "Average graph density across snapshots")
+
+    # --- 8. Node Persistence (How many snapshots each node appears in) ---
+    node_appearances = {}
+    for g in tnet:
+        for node in g.nodes():
+            node_appearances[node] = node_appearances.get(node, 0) + 1
+
+    if node_appearances:
+        avg_persistence = sum(node_appearances.values()) / len(node_appearances)
+        max_persistence = max(node_appearances.values())
+        persistence_str = f"Avg: {avg_persistence:.2f} | Max: {max_persistence}"
+    else:
+        persistence_str = "No nodes found"
+
+    #table.add_row("Node Persistence", persistence_str, "Avg/Max snapshots per node")
+
+    console.print(table)
+
+
+def print_first_n_temporal_edges(t_graph: tx.TemporalMultiGraph, n: int = 10) -> None:
+    """
+    Print the first N temporal edges from a TemporalMultiGraph in a Rich table.
+
+    Dynamically creates columns for all attributes found in the first N edges.
+    Always shows 'u' and 'v' as first two columns, followed by all edge attributes.
+
+    Args:
+        t_graph: Unsliced TemporalMultiGraph
+        n: Number of edges to display (default: 10)
+    """
+
+    # Collect first N edges and discover all possible attribute keys
+    edges_list: List[tuple] = []
+    all_attr_keys: set = set()
+    edge_count: int = 0
+
+    for edge in t_graph.temporal_edges(data=True):
+        if edge_count >= n:
+            break
+
+        edges_list.append(edge)
+
+        # Extract attribute dictionary based on edge format
+        if isinstance(edge, tuple) and len(edge) >= 3:
+            # Format: (u, v, data_dict) or (u, v, data_dict, key)
+            data = edge[2] if len(edge) >= 3 else {}
+            if isinstance(data, dict):
+                all_attr_keys.update(data.keys())
+        elif isinstance(edge, tuple) and len(edge) == 2 and isinstance(edge[1], dict):
+            # Format: ((u, v), data_dict)
+            data = edge[1]
+            all_attr_keys.update(data.keys())
+
+        edge_count += 1
+
+    # If no edges found, show message and return
+    if not edges_list:
+        console.print("[yellow]No edges found in the temporal graph.[/yellow]")
+        return
+
+    # Sort attribute keys for consistent column order
+    sorted_attr_keys: List[str] = sorted(all_attr_keys)
+
+    # Create table with dynamic columns
+    table = Table(
+        title=f"[bold]First {len(edges_list)} Temporal Graph Edges[/bold]",
+        title_style="bold cyan",
+        header_style="bold white on blue",
+        show_lines=True,
+        title_justify="center"
+    )
+
+    # Always add u and v as first columns
+    table.add_column("u", style="green", width=30, overflow="fold")
+    table.add_column("v", style="yellow", width=30, overflow="fold")
+
+    # Add columns for each attribute
+    attr_colors = ["magenta", "cyan", "blue", "red", "purple", "orange", "pink"]
+    for i, attr_key in enumerate(sorted_attr_keys):
+        color = attr_colors[i % len(attr_colors)]
+        table.add_column(
+            attr_key,
+            style=color,
+            width=25,
+            overflow="fold"
+        )
+
+    # Reset counter for adding rows
+    edges_processed: int = 0
+
+    # Process each edge and add rows
+    for edge in edges_list:
+        # Extract u, v, and attributes based on format
+        u: str = ""
+        v: str = ""
+        attrs: Dict[str, Any] = {}
+
+        if isinstance(edge, tuple) and len(edge) >= 3:
+            # Format: (u, v, data_dict) or (u, v, data_dict, key)
+            u = str(edge[0])
+            v = str(edge[1])
+            if isinstance(edge[2], dict):
+                attrs = edge[2]
+        elif isinstance(edge, tuple) and len(edge) == 2:
+            if isinstance(edge[0], tuple) and len(edge[0]) == 2:
+                # Format: ((u, v), data_dict)
+                u = str(edge[0][0])
+                v = str(edge[0][1])
+                if isinstance(edge[1], dict):
+                    attrs = edge[1]
+            else:
+                # Format: (u, v) without data
+                u = str(edge[0])
+                v = str(edge[1])
+
+        # Build row: start with u and v
+        row = [u, v]
+
+        # Add attribute values in the same order as columns
+        for attr_key in sorted_attr_keys:
+            value = attrs.get(attr_key, "")
+            # Convert to string and handle None
+            if value is None:
+                value = ""
+            elif not isinstance(value, str):
+                value = str(value)
+            row.append(value)
+
+        table.add_row(*row)
+        edges_processed += 1
+
+    # Print the table
+    console.print(table)
+
+    # Print summary with additional info
+    total_edges = sum(1 for _ in t_graph.temporal_edges())
+    console.print(
+        f"\n[bold cyan]Showing:[/bold cyan] [white]{edges_processed}[/white] of [white]{total_edges}[/white] total edges")
+
+    if edges_processed < total_edges:
+        console.print(f"[dim](Limited to first {n} edges. Total edges: {total_edges})[/dim]")
+
+    if sorted_attr_keys:
+        console.print(f"[bold cyan]Attributes shown:[/bold cyan] [white]{', '.join(sorted_attr_keys)}[/white]")
 
 def print_temporal_edges_table(t_graph: tx.TemporalMultiGraph) -> None:
     """
@@ -337,7 +542,6 @@ def print_temporal_edges_table(t_graph: tx.TemporalMultiGraph) -> None:
     Args:
         t_graph: Unsliced TemporalMultiGraph
     """
-    console = Console()
 
     # Collect all edges and discover all possible attribute keys
     edges_list: List[tuple] = []
@@ -763,9 +967,9 @@ def aggregate_to_coauthorship_temporal_network( state: ProcessingState, file_col
 
     # Override to debug only this function
 
-    verbose_mode = True
-    very_verbose_mode = True
-    debug_mode = True
+    #verbose_mode = True
+    #very_verbose_mode = True
+    #debug_mode = True
 
 
     # Initialize new simple temporal graph for co-authorships
@@ -881,9 +1085,9 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
     # Override to debug only this function
 
-    verbose_mode = True
-    very_verbose_mode = True
-    debug_mode = True
+    #verbose_mode = True
+    #very_verbose_mode = True
+    #debug_mode = True
 
     # TODO compare to see if is the same by the end of running 
     contributors_by_file = state.map_files_to_their_contributors
@@ -957,13 +1161,15 @@ def extract_temporal_network_from_parsed_change_log_entries(
                     f"Checking if event {developer_email, files, timestamp} relates contributors based on the accumulated history of contributors by file ")
 
             for file in files:
-                print_info(
-                    f"checking if {file} was edited before by others in accumulated_history_of_contributors_by_file")
+                if very_verbose_mode or debug_mode:
+                    print_info(
+                        f"checking if {file} was edited before by others in accumulated_history_of_contributors_by_file")
                 if file in accumulated_history_of_contributors_by_file.keys():
                     for collaborator in accumulated_history_of_contributors_by_file[file]:
                         if developer_email != collaborator:
-                            print_key_action(
-                                f"NEW relational edge between{developer_email} and others {collaborator}, on file {file=}with {timestamp=}")
+                            if verbose_mode or very_verbose_mode or debug_mode:
+                                print_key_action(
+                                    f"NEW relational edge u={developer_email} and v= {collaborator}, on {file=} with {timestamp=}")
                             t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_iso(timestamp),file=file)
 
                 accumulated_history_of_contributors_by_file[file].add(developer_email)
@@ -1005,14 +1211,12 @@ def extract_temporal_network_from_parsed_change_log_entries(
         if debug_mode and ask_yes_or_no_question("Do you want plot the temporal network (with time and files) ?"):
 
             t_graph_sliced = t_graph.slice(attr="time")
-            plot_format = "snapshots"
-            # plot_format="animation"
-            # plot_format="both":
+
 
             plot_temporal_network(
                 graph=t_graph_sliced,
                 state=state,
-                plot_format=plot_format,
+                plot_format="snapshots",
                 max_snapshots=6,
                 filename='temporal_network',
                 layout_algorithm='spring',
@@ -1042,22 +1246,39 @@ def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
 
     # Override to debug only this function
 
-    verbose_mode = True
-    very_verbose_mode = True
-    debug_mode = True
+    #verbose_mode = True
+    #very_verbose_mode = True
+    #debug_mode = True
 
     # Log entry point in verbose modes
     if very_verbose_mode or debug_mode:
         print_header(f"Extracting co-authorship temporal network from parsed change log entries")
 
+    console.rule("\n")
     print_info(f"Extracting temporal network from parsed change log entries while keeping time and file information")
 
     temporal_network_with_time_and_file_attributes=extract_temporal_network_from_parsed_change_log_entries(state)
+
+    print_success(f"Extracted temporal network with (u, v, time, file) edges:")
+
+    console.print("\n")
+    print_temporal_graph_stats(temporal_network_with_time_and_file_attributes, "(u, v, time, file) temporal network " )
+    print_first_n_temporal_edges(temporal_network_with_time_and_file_attributes,10)
+
+    console.rule("")
 
     print_info(f"Creating the co-authorship temporal network by aggregating file information")
 
     coauthorship_temporal_network: TemporalMultiGraph = aggregate_to_coauthorship_temporal_network(state,
         temporal_network_with_time_and_file_attributes)
+
+    print_success(f"Aggregated temporal network with (u, v, time) edges:")
+    console.print("\n")
+    print_temporal_graph_stats(coauthorship_temporal_network, "(u, v, time) temporal network ")
+    print_first_n_temporal_edges(coauthorship_temporal_network, 10)
+
+
+    console.rule("")
 
     if verbose_mode or very_verbose_mode:
         console.print("")
@@ -1078,19 +1299,18 @@ def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
     if debug_mode and ask_yes_or_no_question("Do you want see table with coauthorship temporal network edges ?"):
         print_temporal_edges_table(coauthorship_temporal_network)
 
-    #tx.draw(coauthorship_temporal_network, layout="kamada_kawai", figsize=(8, 2))
-    #plt.show()
 
     #plot_format = "snapshots"  # or "animation", "both"
 
-    plot_temporal_network(
-        graph=coauthorship_temporal_network,
-        state=state,
-        plot_format="both",
-        max_snapshots=6,
-        filename='temporal_network',
-        layout_algorithm='spring',
-        show_labels=True)
+    if debug_mode and ask_yes_or_no_question("Do you want plot the temporal network (with u,v, time) ?"):
+        plot_temporal_network(
+            graph=coauthorship_temporal_network.slice(attr="time"),
+            state=state,
+            plot_format="snapshots",
+            max_snapshots=6,
+            filename='temporal_network',
+            layout_algorithm='spring',
+            show_labels=True)
 
     return     coauthorship_temporal_network
 

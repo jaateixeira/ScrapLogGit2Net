@@ -8,6 +8,10 @@ Goals:
 * Write acceptance tests
 
 
+Achievements: 
+* One more test file 
+
+
 === New RAW log 
 ==Henning Becker;hebecker@google.com;Thu Apr 11 12:29:17 2024 -0700==
 third_party/xla/xla/service/gpu/llvm_gpu_backend/BUILD
@@ -311,8 +315,8 @@ third_party/xla/xla/service/shape_inference_test.cc
 bash-3.2$ ./scrapLog.py -r  test-data/TensorFlow/tensorFlowGitLog-temporal-10-developers-coediting-the-same-files.IN    --type-of-network=inter_individual_graph_temporal 
 ```
 
-=== Juxtapose between  Raw log and Table with edges
-
+=== Juxtapose between Raw log and Table with edges
+All seem right.
 
 DONE: 
 New test files test-data/TensorFlow/tensorFlowGitLog-temporal-10-developers-coediting-the-same-files.IN
