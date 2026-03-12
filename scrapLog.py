@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import List, Optional, Set, Tuple
 
 import networkx as nx
+import networkx_temporal as tx
 
 import export_log_data
 from extract_temporal_network import extract_temporal_network_from_parsed_change_log_entries, \
@@ -765,15 +766,11 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     # Branch based on network type
     if state.network_type == 'inter_individual_graph_temporal':
         # For temporal networks, use the temporal extraction
-        extract_coauthorship_temporal_network_from_parsed_change_log_entries(state)
-        # Skip unique connections step - we keep all temporal data
-        console.print(
-            f"[blue] Extracted {len(state.file_coediting_collaborative_relationships)} temporal connections[/blue]")
+        extracted_temporal_network= extract_coauthorship_temporal_network_from_parsed_change_log_entries(state)
+        print_info(f"{extracted_temporal_network=}")
 
-        print_warning("Implementation in progress")
-        print_info(f"{extracted_network=}")
-        print_error("better exit before extraction of temporal networks is properly implemented")
-        sys.exit()
+        state.coauthorship_temporal_network= extracted_temporal_network
+
     else:
         process_connections_step(state)
         process_unique_connections_step(state)
@@ -829,7 +826,9 @@ def process_network_creation_step(state: ProcessingState) -> None:
     console.print(f"[blue] Creating {state.network_type} network using NetworkX.[/blue]")
 
     if state.network_type == 'inter_individual_graph_temporal':
-        create_temporal_network_graph(state)
+        print ("network already created with:")
+        print( "extracted_temporal_network= extract_coauthorship_temporal_network_from_parsed_change_log_entries(state)")
+        return None
     else:
         # Your existing create_network_graph function for unweighted/weighted
         create_network_graph(state)
@@ -850,7 +849,8 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     else:
         base = Path(args.raw).stem
         if state.network_type == 'inter_individual_graph_temporal':
-            graphml_filename = base + ".TemporalNetwork.graphML"
+            graphml_filename = base + ".temporal.graphml.zip"
+
         elif state.network_type == 'inter_individual_multigraph_weighted':
             graphml_filename = base + ".WeightedNetwork.graphML"
         else:
@@ -859,14 +859,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     try:
         # For temporal networks, ensure complex attributes are string fied for GraphML
         if state.network_type == 'inter_individual_graph_temporal':
-            # Create a copy with string field lists for GraphML compatibility
-            g = state.dev_to_dev_network.copy()
-            for u, v, data in g.edges(data=True):
-                if 'collaboration_timeline' in data:
-                    data['collaboration_timeline'] = str(data['collaboration_timeline'])
-                if 'files_shared' in data:
-                    data['files_shared'] = str(data['files_shared'])
-            export_log_data.create_graphml_file(g, graphml_filename)
+            tx.write_graph(state.coauthorship_temporal_network, graphml_filename)
         else:
             export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
 

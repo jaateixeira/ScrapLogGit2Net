@@ -1,16 +1,10 @@
 
-
-
-Correct the temporal network algorithm
-Correct  the visualization for easier debugging
-Limit print_network to 1000
-Limit plot to 100
-
 Compare with contributors_by_file data 
 
-
-Create temporal network data for testing
-Write test cases
+Write acceptance test cases as it is working now for temporal networks 
+Move from temporal networks to weighted networks
+move from weighted networks to unweighted networks
+delete lecacy code .. use vulture 
 
 
 Information on timestamp two developers collaborated should be preserved

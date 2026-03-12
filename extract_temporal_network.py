@@ -1222,8 +1222,8 @@ def extract_temporal_network_from_parsed_change_log_entries(
                 layout_algorithm='spring',
                 show_labels=True)
 
-
-
+        state.accumulated_history_of_contributors_by_file=accumulated_history_of_contributors_by_file
+        state.accumulated_history_of_files_by_contributor=accumulated_history_of_files_by_contributor
         return t_graph
 
     except Exception as e:

@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from typing import List, DefaultDict, Dict, Set
 
 import networkx as nx
+import networkx_temporal as tx
 
 """ Import the more simple str based types"""
 from core.types import Email, Affiliation, Filename, Timestamp
@@ -106,6 +107,16 @@ class ProcessingState:
         This is the deduplicated view used for network graph construction.
         Populated by aggregating connections_with_files.
         """
+
+    # Structures added by extract_temporal_network.py
+    # Temporal network with u,v, time
+    coauthorship_temporal_network: tx.TemporalMultiGraph = tx.TemporalMultiGraph()
+
+    # Track unique contributors per file (automatically handles duplicates)
+    accumulated_history_of_contributors_by_file = defaultdict(set)
+    # Track unique files per contributor (automatically handles duplicates)
+    accumulated_history_of_files_by_contributor = defaultdict(set)
+
 
     # Add to ProcessingState:
     file_history: DefaultDict[Filename, List[TimeStampedFileContribution]] = field(

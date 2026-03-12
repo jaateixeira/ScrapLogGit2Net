@@ -10,6 +10,7 @@ Goals:
 
 Achievements: 
 * One more test file 
+* Implemented export to file 
 
 
 === New RAW log 
