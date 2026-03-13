@@ -50,7 +50,7 @@ EOF
 echo "expected_pattern=\"$expected_pattern\""
 
 # Unzip and test with regular grep
-if gunzip -c "$TC1_output_file" | grep -q -F "$expected_pattern"; then
+if unzip -p "$TC1_output_file" | grep -q -F "$expected_pattern"; then
      echo "Success: exported graphML.zip file had expected content"
         echo "${GREEN}TESTCASE 1 passed${NC}"
 else
@@ -101,7 +101,7 @@ EOF
 echo "expected_pattern=\"$expected_pattern\""
 
 # Unzip and test with regular grep
-if gunzip -c "$TC2_output_file" | grep -q -F "$expected_pattern"; then
+if unzip -p "$TC2_output_file" | grep -q -F "$expected_pattern"; then
      echo "Success: exported graphML.zip file had expected content"
         echo "${GREEN}TESTCASE 2 passed${NC}"
 else
@@ -156,7 +156,7 @@ EOF
 echo "expected_pattern=\"$expected_pattern\""
 
 # Unzip and test with regular grep
-if gunzip -c "$TC3_output_file" | grep -q -F "$expected_pattern"; then
+if unzip -p "$TC3_output_file" | grep -q -F "$expected_pattern"; then
      echo "Success: exported graphML.zip file had expected content"
         echo "${GREEN}TESTCASE 3 passed${NC}"
 else
@@ -243,7 +243,7 @@ EOF
 echo "expected_pattern=\"$expected_pattern\""
 
 # Unzip and test with regular grep
-if gunzip -c "$TC4_output_file" | grep -q -F "$expected_pattern"; then
+if unzip -p "$TC4_output_file" | grep -q -F "$expected_pattern"; then
      echo "Success: exported graphML.zip file had expected content"
         echo "${GREEN}TESTCASE 4 passed${NC}"
 else
