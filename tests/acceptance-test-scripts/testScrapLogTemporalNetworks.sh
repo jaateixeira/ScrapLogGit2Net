@@ -53,6 +53,13 @@ expected_pattern='<graph edgedefault="undirected">
 
 echo expected_pattern=$expected_pattern
 
+if zgrep -z -q -F "$expected_pattern" $TC1_output_file; then
+    echo "Found"
+else
+    echo "Not found"
+fi
+
+
 exit
 
 # Define the file to read
