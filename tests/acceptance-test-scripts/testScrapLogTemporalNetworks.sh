@@ -1,6 +1,8 @@
 #!/bin/bash
-echo "Is scrapLog.py doing what is suposed to do?"
-echo "This tests scrapLog.py by executing it againt input files in ./test-data/"
+echo "Is scrapLogTemporalNetworks.py doing what is supposed to do in temporal networks mode?"
+echo "This tests scrapLog.py by executing it against input files in ./test-data/"
+echo "The input test files are:"
+ls --color "test-data/TensorFlow/tensorFlowGitLog-temporal"*
 echo "part of the ScrapLogGit2Net open-source project"
 echo "Developed by Jose Teixeira <jose.teixeira@abo.fi> "
 
@@ -25,18 +27,33 @@ assert_str_in_file() {
 
 
 # TEST CASE 1
-# Input with 3 commits but not edges associating developers
+# Input with 2 developers all commiting the same file.
+# Should result in only one edge
+
+TC1_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-same-file.IN"
+TC1_command="./scrapLog.py -r  $TC1_input_file --type-of-network=inter_individual_graph_temporal"
 
 
 echo "" 
-echo "Testing with test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN"
-echo "./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp"
+echo "Testing with $TC1_input_file"
+echo "$TC1_command"
 
 
-./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp
-#echo "Output should contain ERROR collaboration tuplesList is empty !!"
-#expectedLastLine="ERROR collaboration tuplesList is empty"
-expectedLastLine="FATAL ERROR: Network have less than two nodes"
+$TC1_command
+
+TC1_output_file="tensorFlowGitLog-temporal-2-developers-3-commits-same-file.temporal.graphml.zip"
+
+expected_pattern='<graph edgedefault="undirected">
+    <node id="dasenov@google.com" />
+    <node id="ddunleavy@google.com" />
+    <edge source="dasenov@google.com" target="ddunleavy@google.com" id="0">
+      <data key="d0">2024-01-03T04:05:02-08:00</data>
+    </edge>
+  </graph>'
+
+echo expected_pattern=$expected_pattern
+
+exit
 
 # Define the file to read
 file="testResults.tmp"
