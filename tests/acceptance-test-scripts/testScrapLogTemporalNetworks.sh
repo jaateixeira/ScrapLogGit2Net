@@ -10,21 +10,21 @@ GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 NC=$(tput sgr0)
 
+# Create a temporary directory for extracted XML files
+TEMP_DIR=$(mktemp -d)
+trap "rm -rf $TEMP_DIR" EXIT
 
-
+# Track test failures
+TESTS_FAILED=0
+FAILED_TESTS=()
 
 # TEST CASE 1
-# Input with 2 developers all commiting the same file.
-# Should result in only one edge
-
 TC1_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-same-file.IN"
 TC1_command="./scrapLog.py -r  $TC1_input_file --type-of-network=inter_individual_graph_temporal"
-
 
 echo ""
 echo "Testing with $TC1_input_file"
 echo "$TC1_command"
-
 
 $TC1_command
 
@@ -32,11 +32,18 @@ TC1_output_file="tensorFlowGitLog-temporal-2-developers-3-commits-same-file.temp
 
 # Check if the file exists
 if [ ! -f "$TC1_output_file" ]; then
-    echo "Error: File $TC1_output_file not found."
-    exit 1
-fi
+    echo "${RED}Error: File $TC1_output_file not found.${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+    FAILED_TESTS+=("TESTCASE 1")
+else
+    # Extract XML from zip
+    XML_FILE="$TEMP_DIR/test1.xml"
+    unzip -p "$TC1_output_file" > "$XML_FILE"
 
-expected_pattern=$(cat << 'EOF'
+    # Read the whole XML file into a variable
+    content=$(<"$XML_FILE")
+
+    expected_pattern=$(cat << 'EOF'
 <graph edgedefault="undirected">
     <node id="dasenov@google.com" />
     <node id="ddunleavy@google.com" />
@@ -47,35 +54,31 @@ expected_pattern=$(cat << 'EOF'
 EOF
 )
 
-echo "expected_pattern=\"$expected_pattern\""
+    # Try to remove the pattern from content
+    repr="${content/${expected_pattern}}"
 
-# Unzip and test with regular grep
-if unzip -p "$TC1_output_file" | grep -q -F "$expected_pattern"; then
-     echo "Success: exported graphML.zip file had expected content"
+    # If they're different, pattern was found and removed
+    if [[ "$content" != "$repr" ]]; then
         echo "${GREEN}TESTCASE 1 passed${NC}"
-else
-     echo "${RED}TESTCASE 1 did not pass${NC}"
-    echo "ScrapLog should result in: $expected_pattern"
-fi
+    else
+        echo "${RED}TESTCASE 1 did not pass${NC}"
+        TESTS_FAILED=$((TESTS_FAILED + 1))
+        FAILED_TESTS+=("TESTCASE 1")
+    fi
 
-rm -v "$TC1_output_file"
+    rm -v "$TC1_output_file"
+fi
 
 echo
 echo
 
 # TEST CASE 2
-# Input with 2 developers all commiting the same file.
-# Should result in only one edge
-
-TC2_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-two-files.IN
-"
+TC2_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-two-files.IN"
 TC2_command="./scrapLog.py -r  $TC2_input_file --type-of-network=inter_individual_graph_temporal"
-
 
 echo ""
 echo "Testing with $TC2_input_file"
 echo "$TC2_command"
-
 
 $TC2_command
 
@@ -83,11 +86,18 @@ TC2_output_file="tensorFlowGitLog-temporal-2-developers-3-commits-two-files.temp
 
 # Check if the file exists
 if [ ! -f "$TC2_output_file" ]; then
-    echo "Error: File $TC2_output_file not found."
-    exit 1
-fi
+    echo "${RED}Error: File $TC2_output_file not found.${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+    FAILED_TESTS+=("TESTCASE 2")
+else
+    # Extract XML from zip
+    XML_FILE="$TEMP_DIR/test2.xml"
+    unzip -p "$TC2_output_file" > "$XML_FILE"
 
-expected_pattern=$(cat << 'EOF'
+    # Read the whole XML file into a variable
+    content=$(<"$XML_FILE")
+
+    expected_pattern=$(cat << 'EOF'
 <graph edgedefault="undirected">
     <node id="dasenov@google.com" />
     <node id="ddunleavy@google.com" />
@@ -98,36 +108,31 @@ expected_pattern=$(cat << 'EOF'
 EOF
 )
 
-echo "expected_pattern=\"$expected_pattern\""
+    # Try to remove the pattern from content
+    repr="${content/${expected_pattern}}"
 
-# Unzip and test with regular grep
-if unzip -p "$TC2_output_file" | grep -q -F "$expected_pattern"; then
-     echo "Success: exported graphML.zip file had expected content"
+    # If they're different, pattern was found and removed
+    if [[ "$content" != "$repr" ]]; then
         echo "${GREEN}TESTCASE 2 passed${NC}"
-else
-     echo "${RED}TESTCASE 2 did not pass${NC}"
-    echo "ScrapLog should result in: $expected_pattern"
+    else
+        echo "${RED}TESTCASE 2 did not pass${NC}"
+        TESTS_FAILED=$((TESTS_FAILED + 1))
+        FAILED_TESTS+=("TESTCASE 2")
+    fi
+
+    rm -v "$TC2_output_file"
 fi
-
-rm -v "$TC2_output_file"
-
 
 echo
 echo
 
 # TEST CASE 3
-# Input with 3 developers with two of them commiting the same files.
-# Should result in only two edges
-
 TC3_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-3-developers-6-commits-thee-files.IN"
-
 TC3_command="./scrapLog.py -r  $TC3_input_file --type-of-network=inter_individual_graph_temporal"
-
 
 echo ""
 echo "Testing with $TC3_input_file"
 echo "$TC3_command"
-
 
 $TC3_command
 
@@ -135,11 +140,18 @@ TC3_output_file="tensorFlowGitLog-temporal-3-developers-6-commits-thee-files.tem
 
 # Check if the file exists
 if [ ! -f "$TC3_output_file" ]; then
-    echo "Error: File $TC3_output_file not found."
-    exit 1
-fi
+    echo "${RED}Error: File $TC3_output_file not found.${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+    FAILED_TESTS+=("TESTCASE 3")
+else
+    # Extract XML from zip
+    XML_FILE="$TEMP_DIR/test3.xml"
+    unzip -p "$TC3_output_file" > "$XML_FILE"
 
-expected_pattern=$(cat << 'EOF'
+    # Read the whole XML file into a variable
+    content=$(<"$XML_FILE")
+
+    expected_pattern=$(cat << 'EOF'
 <graph edgedefault="undirected">
     <node id="akuegel@google.com" />
     <node id="jreiffers@google.com" />
@@ -153,36 +165,31 @@ expected_pattern=$(cat << 'EOF'
 EOF
 )
 
-echo "expected_pattern=\"$expected_pattern\""
+    # Try to remove the pattern from content
+    repr="${content/${expected_pattern}}"
 
-# Unzip and test with regular grep
-if unzip -p "$TC3_output_file" | grep -q -F "$expected_pattern"; then
-     echo "Success: exported graphML.zip file had expected content"
+    # If they're different, pattern was found and removed
+    if [[ "$content" != "$repr" ]]; then
         echo "${GREEN}TESTCASE 3 passed${NC}"
-else
-     echo "${RED}TESTCASE 3 did not pass${NC}"
-    echo "ScrapLog should result in: $expected_pattern"
-fi
+    else
+        echo "${RED}TESTCASE 3 did not pass${NC}"
+        TESTS_FAILED=$((TESTS_FAILED + 1))
+        FAILED_TESTS+=("TESTCASE 3")
+    fi
 
-rm -v "$TC3_output_file"
+    rm -v "$TC3_output_file"
+fi
 
 echo
 echo
 
 # TEST CASE 4
-# Input with circa 10  developers all commiting many files
-# Should result in only one edge
-
-TC4_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-10-developers-coediting-the-same-files.IN
-"
-
+TC4_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-10-developers-coediting-the-same-files.IN"
 TC4_command="./scrapLog.py -r  $TC4_input_file --type-of-network=inter_individual_graph_temporal"
-
 
 echo ""
 echo "Testing with $TC4_input_file"
 echo "$TC4_command"
-
 
 $TC4_command
 
@@ -190,11 +197,18 @@ TC4_output_file="tensorFlowGitLog-temporal-10-developers-coediting-the-same-file
 
 # Check if the file exists
 if [ ! -f "$TC4_output_file" ]; then
-    echo "Error: File $TC4_output_file not found."
-    exit 1
-fi
+    echo "${RED}Error: File $TC4_output_file not found.${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+    FAILED_TESTS+=("TESTCASE 4")
+else
+    # Extract XML from zip
+    XML_FILE="$TEMP_DIR/test4.xml"
+    unzip -p "$TC4_output_file" > "$XML_FILE"
 
-expected_pattern=$(cat << 'EOF'
+    # Read the whole XML file into a variable
+    content=$(<"$XML_FILE")
+
+    expected_pattern=$(cat << 'EOF'
 <graph edgedefault="undirected">
     <node id="yunlongl@google.com" />
     <node id="zce@google.com" />
@@ -240,18 +254,29 @@ expected_pattern=$(cat << 'EOF'
 EOF
 )
 
-echo "expected_pattern=\"$expected_pattern\""
+    # Try to remove the pattern from content
+    repr="${content/${expected_pattern}}"
 
-# Unzip and test with regular grep
-if unzip -p "$TC4_output_file" | grep -q -F "$expected_pattern"; then
-     echo "Success: exported graphML.zip file had expected content"
+    # If they're different, pattern was found and removed
+    if [[ "$content" != "$repr" ]]; then
         echo "${GREEN}TESTCASE 4 passed${NC}"
-else
-     echo "${RED}TESTCASE 4 did not pass${NC}"
-    echo "ScrapLog should result in: $expected_pattern"
+    else
+        echo "${RED}TESTCASE 4 did not pass${NC}"
+        TESTS_FAILED=$((TESTS_FAILED + 1))
+        FAILED_TESTS+=("TESTCASE 4")
+    fi
+
+    rm -v "$TC4_output_file"
 fi
 
-rm -v "$TC4_output_file"
+echo
+echo
 
-echo
-echo
+# Summary
+if [ $TESTS_FAILED -eq 0 ]; then
+    echo "${GREEN}ALL TESTS PASSED${NC}"
+    exit 0
+else
+    echo "${RED}FAILED TESTS: ${FAILED_TESTS[*]}${NC}"
+    exit 1
+fi
