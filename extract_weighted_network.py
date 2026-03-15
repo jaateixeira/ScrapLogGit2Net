@@ -21,14 +21,18 @@ import networkx as nx
 import networkx_temporal as tx
 from networkx_temporal import TemporalGraph
 from networkx import Graph
-
-from utils.unified_console import  console, Table, inspect
-from core.models import ProcessingState
-from utils.validators import validate_all_graph_edges_have_weights
-
 import matplotlib.pyplot as plt
 import networkx as nx
 from typing import Optional, Dict, Any
+
+
+from extract_temporal_network import print_first_n_temporal_edges
+
+from utils.unified_console import  console, Table, inspect,print_info, print_error, print_success
+from core.models import ProcessingState
+from utils.validators import validate_all_graph_edges_have_weights
+
+
 
 
 def show_weighted_edges(G: nx.Graph, max_edges: int = 10, title: str = "Weighted Graph Edges"):
@@ -199,24 +203,39 @@ def extract_weighted_from_extracted_temporal_network(state:ProcessingState, extr
     #    console.error("No temporal network data available - Can't transform to weighted network")
     #    return None
 
+    console.rule("\n")
+    print_info(f"Extracting weighted network from extracted temporal network {extracted_temporal_network=}")
+
+    if state.verbose_mode or state.very_verbose_mode or state.very_verbose_mode:
+        print_first_n_temporal_edges(extracted_temporal_network)
+
+
     G = nx.Graph()
 
 
     weighted_temporal_graph: tx.TemporalGraph = tx.from_multigraph(extracted_temporal_network)
 
-
-
-    #print(f"{weighted_temporal_graph.edges(data=True)=}")
+    if state.verbose_mode or state.very_verbose_mode or state.very_verbose_mode:
+        console.print(f"{weighted_temporal_graph.edges()=}")
 
 
     static_weighted_graph: nx.Graph = weighted_temporal_graph.to_static()
+
+    if state.verbose_mode or state.very_verbose_mode or state.very_verbose_mode:
+        console.print(f"{static_weighted_graph.edges()}")
+        show_weighted_edges(static_weighted_graph,title="static_weighted_graph from weighted_temporal_graph.to_static()")
 
 
     console.print(f"{ static_weighted_graph=}")
 
 
     for u, v, data in static_weighted_graph.edges(data=True):
-        G.add_edge(u,v, weight=data["weight"])
+        try:
+            edge_weight= data["weight"]
+        except KeyError:
+            print(f"Warning: No weight attribute for edge {u}-{v}, using default weight=1")
+            edge_weight = 1
+        G.add_edge(u,v, weight=edge_weight)
 
 
 
