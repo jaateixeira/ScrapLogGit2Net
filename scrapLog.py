@@ -352,7 +352,7 @@ def process_commit_block(
     if not first_line.startswith('=='):
         print_error(f"Invalid block - does not start with '==': {first_line[:50]}...")
 
-        console.print(traceback.Traceback(), style="bold red")
+        console.print(traceback.format_exc(), style="bold red")
 
         console.print("[bold red]Error:[/bold red] Processing a block not starting with '=='...")
         sys.exit(1)
@@ -413,7 +413,7 @@ def process_commit_block(
         if state.verbose_mode:
             logger.debug(f"ERROR processing commit block:")
             logger.debug(f"{block=}")
-            console.print(traceback.Traceback(), style="bold red")
+            console.print(traceback.format_exc(), style="bold red")
         state.statistics.increment_skipped_blocks()
         return False
 
@@ -770,6 +770,31 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
         print_info(f"{extracted_temporal_network=}")
 
         state.coauthorship_temporal_network= extracted_temporal_network
+
+        #console.print(f"{state.map_files_to_their_contributors=}")
+        #console.print(f"{state.accumulated_history_of_contributors_by_file =}")
+
+        def quick_compare(map_files_to_contributors, accumulated_history):
+            """
+            Quick boolean comparison for assertions.
+            """
+            # Convert to comparable format: frozenset of (file, frozenset(contributors)) items
+            norm1 = frozenset(
+                (file, frozenset(contribs))
+                for file, contribs in map_files_to_contributors.items()
+            )
+            norm2 = frozenset(
+                (file, frozenset(contribs))
+                for file, contribs in accumulated_history.items()
+            )
+
+            return norm1 == norm2
+
+        # In your test script
+        assert quick_compare(state.map_files_to_their_contributors,
+                             state.accumulated_history_of_contributors_by_file), \
+            "Contributor maps don't match!"
+
 
     else:
         process_connections_step(state)

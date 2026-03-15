@@ -35,7 +35,7 @@ import matplotlib.animation as animation
 from core.models import ProcessingState
 from utils.debugging import ask_yes_or_no_question
 from utils.unified_console import print_success, print_header, print_info, print_warning, print_key_action, console, \
-    print_error, inspect, Table, Text, print_note
+    print_error, inspect, Table, print_note
 from utils.unified_logger import logger
 
 
@@ -264,6 +264,7 @@ def _get_snapshot_time(snapshot, default_idx: int) -> str:
             if isinstance(data, dict) and 'time' in data:
                 timestamps.append(data['time'])
     except:
+        console.warn("Could not extract time information from snapshot.")
         pass
 
     if timestamps:
@@ -346,17 +347,6 @@ def print_temporal_graph_stats(tnet: tx.TemporalMultiGraph, graph_name="Temporal
     total_edges_unique = tnet.number_of_edges() # This counts unique (u,v) pairs across all time
     table.add_row("Unique Edges (Pairs)", str(total_edges_unique), "Unique node pairs connected at any time")
 
-    # Alternative: Total Temporal Edge Occurrences
-    total_temporal_edges = sum(g.number_of_edges() for g in tnet)
-    #table.add_row("Total Edge Occurrences", str(total_temporal_edges), "Sum of edges across all snapshots")
-
-    # --- 4. Average Nodes per Snapshot ---
-    avg_nodes = sum(g.number_of_nodes() for g in tnet) / n_snapshots if n_snapshots > 0 else 0
-    #table.add_row("Avg Nodes/Snapshot", f"{avg_nodes:.2f}", "Average nodes per snapshot")
-
-    # --- 5. Average Edges per Snapshot ---
-    avg_edges = sum(g.number_of_edges() for g in tnet) / n_snapshots if n_snapshots > 0 else 0
-    #table.add_row("Avg Edges/Snapshot", f"{avg_edges:.2f}", "Average edges per snapshot")
 
     # --- 6. True Time Span (from edge attributes) ---
     try:
@@ -379,27 +369,7 @@ def print_temporal_graph_stats(tnet: tx.TemporalMultiGraph, graph_name="Temporal
     except Exception as e:
         table.add_row("Time Span", f"Error: {e}", "Could not extract time attribute")
 
-    # --- 7. Average Graph Density Across Snapshots ---
-    densities = []
-    for g in tnet:
-        n = g.number_of_nodes()
-        if n > 1:
-            densities.append(2 * g.number_of_edges() / (n * (n - 1)))
-    avg_density = sum(densities) / len(densities) if densities else 0
-    #table.add_row("Avg Density (per snapshot)", f"{avg_density:.6f}", "Average graph density across snapshots")
 
-    # --- 8. Node Persistence (How many snapshots each node appears in) ---
-    node_appearances = {}
-    for g in tnet:
-        for node in g.nodes():
-            node_appearances[node] = node_appearances.get(node, 0) + 1
-
-    if node_appearances:
-        avg_persistence = sum(node_appearances.values()) / len(node_appearances)
-        max_persistence = max(node_appearances.values())
-        persistence_str = f"Avg: {avg_persistence:.2f} | Max: {max_persistence}"
-    else:
-        persistence_str = "No nodes found"
 
     #table.add_row("Node Persistence", persistence_str, "Avg/Max snapshots per node")
 
@@ -661,10 +631,10 @@ def print_temporal_network_summary(temporal_graph: Union[
     # Helper function to safely get edge count
     def safe_edge_count(graph_obj) -> int:
         """Get edge count, handling both int and list returns"""
-        edges = graph_obj.number_of_edges()
-        if isinstance(edges, list):
-            return sum(edges)
-        return edges
+        n_edges = graph_obj.number_of_edges()
+        if isinstance(n_edges, list):
+            return sum(n_edges)
+        return n_edges
 
     # Helper function to safely iterate through edges
     def safe_edge_iter(graph_obj):
@@ -874,6 +844,7 @@ def print_temporal_network_summary(temporal_graph: Union[
             print(f"  • Edges: {static_g.number_of_edges()}")
             print(f"  • Density: {nx.density(static_g):.6f}")
     except Exception as e:
+        console.warning(f"{e}")
         if hasattr(temporal_graph, '__len__') and len(temporal_graph) > 0:
             try:
                 # Try to create static view by combining snapshots
@@ -1089,8 +1060,6 @@ def extract_temporal_network_from_parsed_change_log_entries(
     #very_verbose_mode = True
     #debug_mode = True
 
-    # TODO compare to see if is the same by the end of running 
-    contributors_by_file = state.map_files_to_their_contributors
 
     # Log entry point in verbose modes
     if very_verbose_mode or debug_mode:
@@ -1138,7 +1107,6 @@ def extract_temporal_network_from_parsed_change_log_entries(
         if very_verbose_mode or debug_mode:
             print_info(f"Processing {len(sorted_entries)} entries in chronological order")
             print_info(f"{sorted_entries=}")
-            print_info(f"{contributors_by_file=}")
 
         if debug_mode and ask_yes_or_no_question("Do you want to inspect the sorted_entries by time?"):
             print_info(f"{inspect(sorted_entries)}")

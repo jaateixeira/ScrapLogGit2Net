@@ -1,3 +1,18 @@
+# 15 of March 
+Goals: 
+* Add jhistory 
+* Compare agregated with legacy 
+* Implement weighted static networks 
+* Implement unweighted networks 
+* Compare legacy 
+
+```
+./scrapLog.py -r  test-data/TensorFlow/tensorFlowGitLog-temporal-3-developers-6-commits-thee-files.IN   --type-of-network=inter_individual_graph_temporal -vv -d 
+
+```
+Done: 
+* Acceptance tests for temporal networks 
+
 # 12 of March 
 
 Goals: 
