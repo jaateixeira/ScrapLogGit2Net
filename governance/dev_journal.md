@@ -7,11 +7,19 @@ Goals:
 * Compare legacy 
 
 ```
-./scrapLog.py -r  test-data/TensorFlow/tensorFlowGitLog-temporal-3-developers-6-commits-thee-files.IN   --type-of-network=inter_individual_graph_temporal -vv -d 
+./scrapLog.py -r  test-data/TensorFlow/tensorFlowGitLog-temporal-3-developers-6-commits-thee-files.IN   --type-of-network=inter_individual_graph_temporal -vv 
 
 ```
+
+
+```bash 
+./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.IN --type-of-network=inter_individual_graph_temporal -vv 
+```
+Should return  static hedge 
+
 Done: 
 * Acceptance tests for temporal networks 
+* Compared agreegated with legacy and it works 
 
 # 12 of March 
 

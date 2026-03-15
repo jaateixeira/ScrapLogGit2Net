@@ -62,6 +62,20 @@ class ProcessingState:
     This is the raw input data that drives all subsequent processing.
     """
 
+    map_files_to_their_contributors: DefaultDict[Filename, List[Email]] = field(
+        default_factory=lambda: defaultdict(list)
+    )
+
+    """Inverted index mapping files to their contributors.
+
+        Key: Filename - Path to the file within the repository
+        Value: List[Email] - All contributors who have modified this file
+
+        Built by aggregating parsed_change_log_entries . Used for:
+        - Identifying files with multiple contributors (collaboration points)
+        - Generating per-file contribution statistics
+        - Filtering files based on contributor criteria
+        """
 
     file_coediting_collaborative_relationships: List[ConnectionWithFile] = field(default_factory=list)
 

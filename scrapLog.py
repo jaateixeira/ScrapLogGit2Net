@@ -28,6 +28,7 @@ from extract_temporal_network import extract_temporal_network_from_parsed_change
 from core.models import ProcessingState, TimeStampedFileContribution
 from core.types import Filename, EmailAggregationConfig, Email, DeveloperInfo, ChangeLogEntry, ConnectionWithFile, \
     Connection
+from extract_weighted_network import extract_weighted_from_extracted_temporal_network
 from utils.debugging import handle_step_completion, ask_yes_or_no_question
 from utils.string_comparators import find_similar_strings
 from utils.strings_cleaners import clean_email
@@ -795,10 +796,19 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
                              state.accumulated_history_of_contributors_by_file), \
             "Contributor maps don't match!"
 
+        "Converting a multigraph to a graph object"
+
+        "Converting a multigraph to a graph object may result in data loss: multiple pairwise edges are merged, with later attributes other than weight taking precedence over earlier ones,"
+
+        extract_weighted_from_extracted_temporal_network(state,extracted_temporal_network)
+
 
     else:
         process_connections_step(state)
         process_unique_connections_step(state)
+
+
+
 
     process_network_creation_step(state)
     apply_email_filtering(state)

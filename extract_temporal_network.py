@@ -631,10 +631,10 @@ def print_temporal_network_summary(temporal_graph: Union[
     # Helper function to safely get edge count
     def safe_edge_count(graph_obj) -> int:
         """Get edge count, handling both int and list returns"""
-        n_edges = graph_obj.number_of_edges()
-        if isinstance(n_edges, list):
-            return sum(n_edges)
-        return n_edges
+        edges = graph_obj.number_of_edges()
+        if isinstance(edges, list):
+            return sum(edges)
+        return edges
 
     # Helper function to safely iterate through edges
     def safe_edge_iter(graph_obj):
@@ -844,7 +844,6 @@ def print_temporal_network_summary(temporal_graph: Union[
             print(f"  • Edges: {static_g.number_of_edges()}")
             print(f"  • Density: {nx.density(static_g):.6f}")
     except Exception as e:
-        console.warning(f"{e}")
         if hasattr(temporal_graph, '__len__') and len(temporal_graph) > 0:
             try:
                 # Try to create static view by combining snapshots
@@ -1252,7 +1251,7 @@ def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
         console.print("")
 
         print_header(f"Extracted co-authorship temporal network from the temporal network:")
-        print_note("Time preserved, specific files information lost bia aggregation")
+        print_note("Time preserved, specific files information lost --type-of-network=inter_individual_graph_temporal -vv -d ia aggregation")
         print_info("t_graph nodes")
         console.print(coauthorship_temporal_network.nodes())  # Get all nodes
         print_info("t_graph edges")
