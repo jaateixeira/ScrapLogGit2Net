@@ -139,5 +139,76 @@ class ProcessingState:
     file_filtering_mode: bool = False
     strict_validation: bool = False  # Whether to fail on validation errors
 
-    # Network graph
-    dev_to_dev_network: nx.Graph = field(default_factory=nx.Graph)
+
+
+
+@dataclass
+class NetworkContainer:
+    """Container for temporal and static network representations of developer collaboration."""
+
+    # Temporal networks
+    temporal_network_with_time_and_file_attributes: tx.TemporalMultiGraph = field(
+        default_factory=tx.TemporalMultiGraph
+    )
+    """Temporal multi-graph capturing developer-file interactions over time.
+
+    This network preserves the temporal dimension of developer collaborations on files.
+    Each edge represents a co-editing event and includes:
+    - Timestamp: When the collaboration occurred
+    - File path: Which file was being edited
+
+    Use for:
+    - Analyzing how collaboration patterns evolve
+    - Identifying temporal communities
+    - Studying developer specialization over time
+    """
+
+    coauthorship_temporal_network_with_time_attributes: tx.TemporalMultiGraph = field(
+        default_factory=tx.TemporalMultiGraph
+    )
+    """Temporal co-authorship network from commit history.
+
+    Captures when developers commit together, creating temporal collaboration edges.
+    Each edge includes timestamp attributes. 
+    
+    In this data structure. Developers commiting at the same time one or more files, does not matter. 
+    At least one is enough to assume collaboration . 
+
+    Use for:
+    - Studying team formation dynamics
+    - Analyzing collaboration bursts
+    - Temporal community evolution
+    """
+
+    # Static network graphs
+    dev_to_dev_weighted_network: nx.Graph = field(default_factory=nx.Graph)
+    """Weighted static collaboration graph.
+
+    Aggregates all collaboration events into edge weights.
+    Edge weight = total collaboration frequency (e.g., number of shared commits).
+
+    Use for:
+    - Community detection algorithms
+    - Weighted centrality measures
+    - Identifying key collaborators
+    - Strength of ties analysis
+    
+    Used by Cailean Osborne, Farbod Daneshyan, Runzhi He, Hengzhi Ye, Yuxia Zhang, and Minghui Zhou. 2025. Characterising Open Source Co-opetition in Company-hosted Open Source Software Projects: The Cases of PyTorch, TensorFlow, and Transformers. Proc. ACM Hum.-Comput. Interact. 9, 2, Article CSCW046 (May 2025), 30 pages. https://doi.org/10.1145/3710944
+    
+    """
+
+    dev_to_dev_unweighted_network: nx.Graph = field(default_factory=nx.Graph)
+    """Unweighted static collaboration graph.
+
+    Binary version showing if any collaboration exists between developers.
+    Typically derived by thresholding the weighted network (weight >= 1).
+
+    Use for:
+    - Connectivity analysis
+    - Component detection
+    - Algorithms requiring unweighted inputs
+    - Basic network visualization
+    
+    Used by Teixeira, J., Robles, G. & González-Barahona, J.M. Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. J Internet Serv Appl 6, 14 (2015). https://doi.org/10.1186/s13174-015-0028-2
+    
+    """
