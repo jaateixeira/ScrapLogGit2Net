@@ -1,3 +1,13 @@
+# 16 of March 
+Goals:
+* Compare legacy 
+
+```
+./scrapLog.py -r  test-data/TensorFlow/tensorFlowGitLog-temporal-3-developers-6-commits-thee-files.IN   --type-of-network=inter_individual_graph_temporal -vv 
+
+```
+
+
 # 15 of March 
 Goals: 
 * Add jhistory 

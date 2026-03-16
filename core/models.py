@@ -181,9 +181,6 @@ class ProcessingState:
         Populated by aggregating connections_with_files.
         """
 
-    # Structures added by extract_temporal_network.py
-    # Temporal network with u,v, time
-    coauthorship_temporal_network: tx.TemporalMultiGraph = tx.TemporalMultiGraph()
 
     container_of_extracted_networks: NetworkContainer = field(default_factory=NetworkContainer)
 

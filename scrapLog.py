@@ -22,8 +22,10 @@ import networkx as nx
 import networkx_temporal as tx
 
 import export_log_data
+
 from extract_temporal_network import extract_temporal_network_from_parsed_change_log_entries, \
     extract_coauthorship_temporal_network_from_parsed_change_log_entries
+from extract_unweighted_network import extract_unweighted_from_weighted_network
 
 from core.models import ProcessingState, TimeStampedFileContribution
 from core.types import Filename, EmailAggregationConfig, Email, DeveloperInfo, ChangeLogEntry, ConnectionWithFile, \
@@ -764,51 +766,30 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     """Execute the main data processing pipeline."""
     process_aggregation_step(state)
 
-    # Branch based on network type
-    if state.network_type == 'inter_individual_graph_temporal':
-        # For temporal networks, use the temporal extraction
-        extracted_temporal_network= extract_coauthorship_temporal_network_from_parsed_change_log_entries(state)
-        print_info(f"{extracted_temporal_network=}")
+    print_info(f"Pipeline stage extract_coauthorship_temporal_network_from_parsed_change_log_entries")
 
-        state.coauthorship_temporal_network= extracted_temporal_network
-
-        #console.print(f"{state.map_files_to_their_contributors=}")
-        #console.print(f"{state.accumulated_history_of_contributors_by_file =}")
-
-        def quick_compare(map_files_to_contributors, accumulated_history):
-            """
-            Quick boolean comparison for assertions.
-            """
-            # Convert to comparable format: frozenset of (file, frozenset(contributors)) items
-            norm1 = frozenset(
-                (file, frozenset(contribs))
-                for file, contribs in map_files_to_contributors.items()
-            )
-            norm2 = frozenset(
-                (file, frozenset(contribs))
-                for file, contribs in accumulated_history.items()
-            )
-
-            return norm1 == norm2
-
-        # In your test script
-        assert quick_compare(state.map_files_to_their_contributors,
-                             state.accumulated_history_of_contributors_by_file), \
-            "Contributor maps don't match!"
-
-        "Converting a multigraph to a graph object"
-
-        "Converting a multigraph to a graph object may result in data loss: multiple pairwise edges are merged, with later attributes other than weight taking precedence over earlier ones,"
-
-        extract_weighted_from_extracted_temporal_network(state,extracted_temporal_network)
+    # Temporal network MultiGraph with u,v, time
+    dev_to_dev_temporal_graph= extract_coauthorship_temporal_network_from_parsed_change_log_entries(state)
+    print_info(f"{dev_to_dev_temporal_graph=}")
+    state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes=dev_to_dev_temporal_graph
 
 
-    else:
-        process_connections_step(state)
-        process_unique_connections_step(state)
+    #console.print(f"{state.map_files_to_their_contributors=}")
+    #console.print(f"{state.accumulated_history_of_contributors_by_file =}")
+
+    print_info(f"Pipeline stage extract_weighted_from_extracted_temporal_network")
+    dev_to_dev_weighted_graph = extract_weighted_from_extracted_temporal_network(state,dev_to_dev_temporal_graph)
+    print_info(f"{dev_to_dev_weighted_graph=}")
+    state.container_of_extracted_networks.dev_to_dev_weighted_network = dev_to_dev_weighted_graph
+
+    print_info(f"Pipeline stage xtract_weighted_from_extracted_temporal_network")
+    dev_to_dev_unweighted_graph =  extract_unweighted_from_weighted_network(state,  dev_to_dev_weighted_graph)
+    print_info(f"{dev_to_dev_unweighted_graph=}")
+    state.container_of_extracted_networks.dev_to_dev_weighted_network = dev_to_dev_unweighted_graph
 
 
-
+    process_connections_step(state)
+    process_unique_connections_step(state)
 
     process_network_creation_step(state)
     apply_email_filtering(state)
