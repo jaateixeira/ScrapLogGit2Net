@@ -190,6 +190,11 @@ if __name__ == "__main__":
     # Or customize:
     # draw_weighted_network(G, threshold=0.4, node_size=500, font_size=16, figsize=(12, 8))
 
+
+def extract_weighted_from_parsed_change_log_entries(state:ProcessingState) -> Graph | None:
+    return NotImplemented
+
+
 def extract_weighted_from_extracted_temporal_network(state:ProcessingState, extracted_temporal_network:TemporalGraph) -> Graph | None:
     """Extract weighted network from parsed changelog entries.
 
