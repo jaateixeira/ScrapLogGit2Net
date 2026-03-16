@@ -875,7 +875,8 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     try:
         # For temporal networks, ensure complex attributes are string fied for GraphML
         if state.network_type == 'inter_individual_graph_temporal':
-            tx.write_graph(state.coauthorship_temporal_network, graphml_filename)
+            output_temporal_graph= state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
+            tx.write_graph(output_temporal_graph, graphml_filename)
         else:
             export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
 
@@ -883,6 +884,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
         console.print()
     except Exception as e:
         console.print(f"ERROR exporting to GraphML: {e}")
+        traceback.print_exc()
 
     print_processing_summary(state, args.raw, args.output_file)
 
