@@ -10,27 +10,48 @@ GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 NC=$(tput sgr0)
 
-
-
-
-
-# Temporary dir that needs to be manually removed for debug purposes
-#mkdir temp_dir_for_scrapLogTemporalNetworks_acceptance_tests
-#TEMP_DIR=temp_dir_for_scrapLogTemporalNetworks_acceptance_tests
-
 # Create a temporary directory for extracted XML files
 TEMP_DIR=$(mktemp -d)
 trap "rm -rf $TEMP_DIR" EXIT
 
 echo TEMP_DIR=$TEMP_DIR
-#
+
 # Track test failures
 TESTS_FAILED=0
 FAILED_TESTS=()
 
+# Function to validate XML content using xmllint
+validate_xml() {
+    local xml_file=$1
+    local expected_pattern=$2
+
+    # Save expected pattern to a temporary file
+    EXPECTED_PATTERN_FILE="$TEMP_DIR/expected_pattern.xml"
+    echo "$expected_pattern" > "$EXPECTED_PATTERN_FILE"
+
+    # Use xmllint to validate the XML structure
+    if ! xmllint --noout "$xml_file" 2>/dev/null; then
+        echo "${RED}Error: Invalid XML in $xml_file${NC}"
+        return 1
+    fi
+
+    # Use xmllint to check if the expected pattern exists in the XML
+    # Note: xmllint --xpath is limited for complex patterns, so we use grep as a fallback
+    if ! grep -q -F "$(echo "$expected_pattern" | tr -d '[:space:]')" <(tr -d '[:space:]' < "$xml_file"); then
+        echo "${RED}Error: Expected XML pattern not found in $xml_file${NC}"
+        echo "Debug: Expected pattern:"
+        echo "$expected_pattern"
+        echo "Debug: Actual XML content:"
+        cat "$xml_file"
+        return 1
+    fi
+
+    return 0
+}
+
 # TEST CASE 1
 TC1_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-same-file.IN"
-TC1_command="./scrapLog.py -r  $TC1_input_file --type-of-network=inter_individual_graph_temporal"
+TC1_command="./scrapLog.py -r $TC1_input_file --type-of-network=inter_individual_graph_temporal"
 
 echo ""
 echo "Testing with $TC1_input_file"
@@ -50,9 +71,6 @@ else
     XML_FILE="$TEMP_DIR/test1.xml"
     unzip -p "$TC1_output_file" > "$XML_FILE"
 
-    # Read the whole XML file into a variable
-    content=$(<"$XML_FILE")
-
     expected_pattern=$(cat << 'EOF'
 <graph edgedefault="undirected">
     <node id="dasenov@google.com" />
@@ -64,39 +82,14 @@ else
 EOF
 )
 
-
-  # Remove all whitespace for comparison
-normalized_content=$(echo "$content" | tr -d '[:space:]')
-normalized_pattern=$(echo "$expected_pattern" | tr -d '[:space:]')
-
-
-# Compare normalized versions
-if [[ -n "$extracted_graph" ]]; then
-    echo "${GREEN}TESTCASE 1 passed${NC}"
-fi
-
-
-
-    # Try to remove the pattern from content
-    #repr="${content/${expected_pattern}}"
-   repr="${normalized_content/${normalized_pattern}}"
-
-
-
-    # If they're different, pattern was found and removed
-    if [[ "$content" != "$repr" ]]; then
+    if validate_xml "$XML_FILE" "$expected_pattern"; then
         echo "${GREEN}TESTCASE 1 passed${NC}"
     else
-        echo "${RED}TESTCASE 1 did not pass${NC}"
         TESTS_FAILED=$((TESTS_FAILED + 1))
         FAILED_TESTS+=("TESTCASE 1")
-        echo -e "content=$content"
-        echo -e "repr=$repr"
-        exit 1
     fi
 
-    rm -i "$TC1_output_file"
-    #rm -v "$TC1_output_file"
+    rm -v "$TC1_output_file"
 fi
 
 echo
@@ -104,7 +97,7 @@ echo
 
 # TEST CASE 2
 TC2_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-two-files.IN"
-TC2_command="./scrapLog.py -r  $TC2_input_file --type-of-network=inter_individual_graph_temporal"
+TC2_command="./scrapLog.py -r $TC2_input_file --type-of-network=inter_individual_graph_temporal"
 
 echo ""
 echo "Testing with $TC2_input_file"
@@ -124,9 +117,6 @@ else
     XML_FILE="$TEMP_DIR/test2.xml"
     unzip -p "$TC2_output_file" > "$XML_FILE"
 
-    # Read the whole XML file into a variable
-    content=$(<"$XML_FILE")
-
     expected_pattern=$(cat << 'EOF'
 <graph edgedefault="undirected">
     <node id="dasenov@google.com" />
@@ -138,14 +128,9 @@ else
 EOF
 )
 
-    # Try to remove the pattern from content
-    repr="${content/${expected_pattern}}"
-
-    # If they're different, pattern was found and removed
-    if [[ "$content" != "$repr" ]]; then
+    if validate_xml "$XML_FILE" "$expected_pattern"; then
         echo "${GREEN}TESTCASE 2 passed${NC}"
     else
-        echo "${RED}TESTCASE 2 did not pass${NC}"
         TESTS_FAILED=$((TESTS_FAILED + 1))
         FAILED_TESTS+=("TESTCASE 2")
     fi
@@ -158,7 +143,7 @@ echo
 
 # TEST CASE 3
 TC3_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-3-developers-6-commits-thee-files.IN"
-TC3_command="./scrapLog.py -r  $TC3_input_file --type-of-network=inter_individual_graph_temporal"
+TC3_command="./scrapLog.py -r $TC3_input_file --type-of-network=inter_individual_graph_temporal"
 
 echo ""
 echo "Testing with $TC3_input_file"
@@ -178,9 +163,6 @@ else
     XML_FILE="$TEMP_DIR/test3.xml"
     unzip -p "$TC3_output_file" > "$XML_FILE"
 
-    # Read the whole XML file into a variable
-    content=$(<"$XML_FILE")
-
     expected_pattern=$(cat << 'EOF'
 <graph edgedefault="undirected">
     <node id="akuegel@google.com" />
@@ -195,14 +177,9 @@ else
 EOF
 )
 
-    # Try to remove the pattern from content
-    repr="${content/${expected_pattern}}"
-
-    # If they're different, pattern was found and removed
-    if [[ "$content" != "$repr" ]]; then
+    if validate_xml "$XML_FILE" "$expected_pattern"; then
         echo "${GREEN}TESTCASE 3 passed${NC}"
     else
-        echo "${RED}TESTCASE 3 did not pass${NC}"
         TESTS_FAILED=$((TESTS_FAILED + 1))
         FAILED_TESTS+=("TESTCASE 3")
     fi
@@ -215,7 +192,7 @@ echo
 
 # TEST CASE 4
 TC4_input_file="test-data/TensorFlow/tensorFlowGitLog-temporal-10-developers-coediting-the-same-files.IN"
-TC4_command="./scrapLog.py -r  $TC4_input_file --type-of-network=inter_individual_graph_temporal"
+TC4_command="./scrapLog.py -r $TC4_input_file --type-of-network=inter_individual_graph_temporal"
 
 echo ""
 echo "Testing with $TC4_input_file"
@@ -234,9 +211,6 @@ else
     # Extract XML from zip
     XML_FILE="$TEMP_DIR/test4.xml"
     unzip -p "$TC4_output_file" > "$XML_FILE"
-
-    # Read the whole XML file into a variable
-    content=$(<"$XML_FILE")
 
     expected_pattern=$(cat << 'EOF'
 <graph edgedefault="undirected">
@@ -284,16 +258,12 @@ else
 EOF
 )
 
-    # Try to remove the pattern from content
-    repr="${content/${expected_pattern}}"
-
-    # If they're different, pattern was found and removed
-    if [[ "$content" != "$repr" ]]; then
+    if validate_xml "$XML_FILE" "$expected_pattern"; then
         echo "${GREEN}TESTCASE 4 passed${NC}"
     else
-        echo "${RED}TESTCASE 4 did not pass${NC}"
         TESTS_FAILED=$((TESTS_FAILED + 1))
         FAILED_TESTS+=("TESTCASE 4")
+
     fi
 
     rm -v "$TC4_output_file"
