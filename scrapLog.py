@@ -786,9 +786,9 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     if state.network_type == "inter_individual_graph_unweighted":
         print_info(f"Pipeline stage extract_weighted_from_extracted_temporal_network")
         print_info(f"Pipeline stage extract_unweighted_from_weighted_network")
-        dev_to_dev_unweighted_graph =  extract_unweighted_from_weighted_network(state,  state.dev_to_dev_weighted_graph )
+        dev_to_dev_unweighted_graph =  extract_unweighted_from_weighted_network(state,  dev_to_dev_weighted_graph )
         print_info(f"{dev_to_dev_unweighted_graph=}")
-        state.container_of_extracted_networks.dev_to_dev_weighted_network = dev_to_dev_unweighted_graph
+        state.container_of_extracted_networks.dev_to_dev_unweighted_network = dev_to_dev_unweighted_graph
 
 
     process_connections_step(state)
@@ -900,7 +900,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
 
         elif state.network_type == 'inter_individual_graph_unweighted':
-            output_static_uw_graph = state.container_of_extracted_networks.dev_to_dev_unweighted_network
+            output_static_uw_graph : nx.Graph = state.container_of_extracted_networks.dev_to_dev_unweighted_network
             export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
         else:
             print_error("Unknown network type at writing graphml files")
