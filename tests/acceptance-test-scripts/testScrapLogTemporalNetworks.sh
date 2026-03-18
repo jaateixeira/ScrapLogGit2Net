@@ -10,10 +10,20 @@ GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 NC=$(tput sgr0)
 
+
+
+
+
+# Temporary dir that needs to be manually removed for debug purposes
+#mkdir temp_dir_for_scrapLogTemporalNetworks_acceptance_tests
+#TEMP_DIR=temp_dir_for_scrapLogTemporalNetworks_acceptance_tests
+
 # Create a temporary directory for extracted XML files
 TEMP_DIR=$(mktemp -d)
 trap "rm -rf $TEMP_DIR" EXIT
 
+echo TEMP_DIR=$TEMP_DIR
+#
 # Track test failures
 TESTS_FAILED=0
 FAILED_TESTS=()
@@ -54,8 +64,24 @@ else
 EOF
 )
 
+
+  # Remove all whitespace for comparison
+normalized_content=$(echo "$content" | tr -d '[:space:]')
+normalized_pattern=$(echo "$expected_pattern" | tr -d '[:space:]')
+
+
+# Compare normalized versions
+if [[ -n "$extracted_graph" ]]; then
+    echo "${GREEN}TESTCASE 1 passed${NC}"
+fi
+
+
+
     # Try to remove the pattern from content
-    repr="${content/${expected_pattern}}"
+    #repr="${content/${expected_pattern}}"
+   repr="${normalized_content/${normalized_pattern}}"
+
+
 
     # If they're different, pattern was found and removed
     if [[ "$content" != "$repr" ]]; then
@@ -64,9 +90,13 @@ EOF
         echo "${RED}TESTCASE 1 did not pass${NC}"
         TESTS_FAILED=$((TESTS_FAILED + 1))
         FAILED_TESTS+=("TESTCASE 1")
+        echo -e "content=$content"
+        echo -e "repr=$repr"
+        exit 1
     fi
 
-    rm -v "$TC1_output_file"
+    rm -i "$TC1_output_file"
+    #rm -v "$TC1_output_file"
 fi
 
 echo

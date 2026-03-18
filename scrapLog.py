@@ -768,25 +768,26 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
 
     print_info(f"Pipeline stage extract_coauthorship_temporal_network_from_parsed_change_log_entries")
 
+    "inter_individual_graph_temporal networks are always extracted "
     # Temporal network MultiGraph with u,v, time
     dev_to_dev_temporal_graph= extract_coauthorship_temporal_network_from_parsed_change_log_entries(state)
     print_info(f"{dev_to_dev_temporal_graph=}")
     state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes=dev_to_dev_temporal_graph
 
 
+
     #console.print(f"{state.map_files_to_their_contributors=}")
     #console.print(f"{state.accumulated_history_of_contributors_by_file =}")
 
-    if state.network_type == "inter_individual_graph_weighted" or "inter_individual_graph_unweighted":
+    if state.network_type in ("inter_individual_graph_weighted", "inter_individual_graph_unweighted"):
         print_info(f"Pipeline stage extract_weighted_from_extracted_temporal_network")
         dev_to_dev_weighted_graph = extract_weighted_from_extracted_temporal_network(state,dev_to_dev_temporal_graph)
         print_info(f"{dev_to_dev_weighted_graph=}")
         state.container_of_extracted_networks.dev_to_dev_weighted_network = dev_to_dev_weighted_graph
 
     if state.network_type == "inter_individual_graph_unweighted":
-        print_info(f"Pipeline stage extract_weighted_from_extracted_temporal_network")
         print_info(f"Pipeline stage extract_unweighted_from_weighted_network")
-        dev_to_dev_unweighted_graph =  extract_unweighted_from_weighted_network(state,  dev_to_dev_weighted_graph )
+        dev_to_dev_unweighted_graph =  extract_unweighted_from_weighted_network(state,   state.container_of_extracted_networks.dev_to_dev_weighted_network )
         print_info(f"{dev_to_dev_unweighted_graph=}")
         state.container_of_extracted_networks.dev_to_dev_unweighted_network = dev_to_dev_unweighted_graph
 
@@ -901,7 +902,9 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
         elif state.network_type == 'inter_individual_graph_unweighted':
             output_static_uw_graph : nx.Graph = state.container_of_extracted_networks.dev_to_dev_unweighted_network
-            export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
+            #export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
+            export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
+
         else:
             print_error("Unknown network type at writing graphml files")
             print_info(f"{state.network_type=}")
