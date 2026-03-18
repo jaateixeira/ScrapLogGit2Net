@@ -25,7 +25,7 @@ assert_str_in_file() {
 
 
 # TEST CASE 1
-# Input with 3 commits but not edges associating developers 
+# Input with 3 commits but not edges associating developers
 
 
 echo "" 

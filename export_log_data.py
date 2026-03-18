@@ -232,7 +232,6 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     ## verify affiliations 
 
     "verify every node as affiliation data"
-
     for node, data in network_with_affiliation_atributes.nodes(data=True):
         #console.print(f"{node}: {data['affiliation']}")
 
@@ -291,10 +290,7 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     # store the nodes id for each email/contributor
     tmpNodeId = {} 
 
-
     "for now all colors are turquoise"
-    
-
 
     print ()
     print ("\t\tWriting nodes in graphML file")

@@ -1,6 +1,16 @@
-touch  extractWeightedNetwork.py
-touch  extractUnWeightedNetwork.py
-touch extractTemporalNetwork.py
+These two are not the same, because, they don't have affiliation atributes
+
+# export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
+# export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
+
+
+Compare with contributors_by_file data 
+
+Write acceptance test cases as it is working now for temporal networks 
+Move from temporal networks to weighted networks
+move from weighted networks to unweighted networks
+delete lecacy code .. use vulture 
+
 
 Information on timestamp two developers collaborated should be preserved
 
