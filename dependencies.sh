@@ -36,3 +36,4 @@ sudo apt-get install python3-github
 sudo apt-get install python3-json5
 sudo apt-get install python3-pytest-mock
 pip install networkx-temporal[draw]
+pip3 install lxml
