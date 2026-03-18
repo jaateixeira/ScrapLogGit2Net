@@ -30,7 +30,7 @@ from extract_unweighted_network import extract_unweighted_from_weighted_network
 from core.models import ProcessingState, TimeStampedFileContribution
 from core.types import Filename, EmailAggregationConfig, Email, DeveloperInfo, ChangeLogEntry, ConnectionWithFile, \
     Connection
-from extract_weighted_network import extract_weighted_from_extracted_temporal_network
+from extract_weighted_network import extract_weighted_from_extracted_temporal_network, show_weighted_edges
 from utils.debugging import handle_step_completion, ask_yes_or_no_question
 from utils.string_comparators import find_similar_strings
 from utils.strings_cleaners import clean_email
@@ -574,7 +574,7 @@ def parse_arguments() -> argparse.Namespace:
                         help='JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})')
     parser.add_argument('-t', '--type-of-network',
                         choices=['inter_individual_graph_unweighted',
-                                 'inter_individual_multigraph_weighted',
+                                 'inter_individual_graph_weighted',
                                  'inter_individual_graph_temporal'],
                         default='inter_individual_graph_unweighted',
                         help='Type of network to generate (default: inter_individual_graph_unweighted)')
@@ -777,15 +777,18 @@ def execute_data_processing_pipeline(state: ProcessingState) -> None:
     #console.print(f"{state.map_files_to_their_contributors=}")
     #console.print(f"{state.accumulated_history_of_contributors_by_file =}")
 
-    print_info(f"Pipeline stage extract_weighted_from_extracted_temporal_network")
-    dev_to_dev_weighted_graph = extract_weighted_from_extracted_temporal_network(state,dev_to_dev_temporal_graph)
-    print_info(f"{dev_to_dev_weighted_graph=}")
-    state.container_of_extracted_networks.dev_to_dev_weighted_network = dev_to_dev_weighted_graph
+    if state.network_type == "inter_individual_graph_weighted" or "inter_individual_graph_unweighted":
+        print_info(f"Pipeline stage extract_weighted_from_extracted_temporal_network")
+        dev_to_dev_weighted_graph = extract_weighted_from_extracted_temporal_network(state,dev_to_dev_temporal_graph)
+        print_info(f"{dev_to_dev_weighted_graph=}")
+        state.container_of_extracted_networks.dev_to_dev_weighted_network = dev_to_dev_weighted_graph
 
-    print_info(f"Pipeline stage xtract_weighted_from_extracted_temporal_network")
-    dev_to_dev_unweighted_graph =  extract_unweighted_from_weighted_network(state,  dev_to_dev_weighted_graph)
-    print_info(f"{dev_to_dev_unweighted_graph=}")
-    state.container_of_extracted_networks.dev_to_dev_weighted_network = dev_to_dev_unweighted_graph
+    if state.network_type == "inter_individual_graph_unweighted":
+        print_info(f"Pipeline stage extract_weighted_from_extracted_temporal_network")
+        print_info(f"Pipeline stage extract_unweighted_from_weighted_network")
+        dev_to_dev_unweighted_graph =  extract_unweighted_from_weighted_network(state,  state.dev_to_dev_weighted_graph )
+        print_info(f"{dev_to_dev_unweighted_graph=}")
+        state.container_of_extracted_networks.dev_to_dev_weighted_network = dev_to_dev_unweighted_graph
 
 
     process_connections_step(state)
@@ -867,26 +870,52 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
         if state.network_type == 'inter_individual_graph_temporal':
             graphml_filename = base + ".temporal.graphml.zip"
 
-        elif state.network_type == 'inter_individual_multigraph_weighted':
+        elif state.network_type == 'inter_individual_graph_weighted':
             graphml_filename = base + ".WeightedNetwork.graphML"
-        else:
+        elif state.network_type == 'inter_individual_graph_unweighted':
             graphml_filename = base + ".NetworkFile.graphML"
-
+        else:
+            print_error("Unknown network type")
+            print_info(f"{state.network_type=}")
+            sys.exit(1)
     try:
         # For temporal networks, ensure complex attributes are string fied for GraphML
         if state.network_type == 'inter_individual_graph_temporal':
-            output_temporal_graph= state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
-            tx.write_graph(output_temporal_graph, graphml_filename)
+            output_static_w_graph : tx.TemporalGraph = state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
+            tx.write_graph(output_static_w_graph, graphml_filename)
+        elif state.network_type == 'inter_individual_graph_weighted':
+            output_static_w_graph: nx.Graph= state.container_of_extracted_networks.dev_to_dev_weighted_network
+            #nx.write_graphml(output_temporal_graph, graphml_filename,  named_key_ids='email')
+
+            if state.verbose_mode:
+                console.print(f"Exporting{output_static_w_graph=}")
+                console.print(f"to file{graphml_filename=}")
+
+            if state.debug_mode and ask_yes_or_no_question("Do you want to inspect output_temporal_graph?"):
+                inspect(output_static_w_graph)
+                show_weighted_edges(output_static_w_graph)
+
+            #nx.write_graphml(output_static_w_graph, graphml_filename)
+            nx.write_graphml(output_static_w_graph, graphml_filename,edge_id_from_attribute='weight')
+
+
+        elif state.network_type == 'inter_individual_graph_unweighted':
+            output_static_uw_graph = state.container_of_extracted_networks.dev_to_dev_unweighted_network
+            export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
         else:
-            export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
+            print_error("Unknown network type at writing graphml files")
+            print_info(f"{state.network_type=}")
+            sys.exit(1)
+
 
         console.print(f"\n✓ Network exported to GraphML file: {graphml_filename}")
         console.print()
     except Exception as e:
         console.print(f"ERROR exporting to GraphML: {e}")
         traceback.print_exc()
+        sys.exit(1)
 
-    print_processing_summary(state, args.raw, args.output_file)
+    print_processing_summary(state, args.raw, graphml_filename )
 
 
 def main() -> None:

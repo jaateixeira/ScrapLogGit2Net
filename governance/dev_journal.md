@@ -1,5 +1,42 @@
 # 16 of March 
 Goals:
+* Implement --inter_individual_multigraph_weighted
+* Implement acceptance test 
+
+
+### Command 
+
+```
+./scrapLog.py -r  test-data/TensorFlow/tensorFlowGitLog-temporal-2-developers-3-commits-two-files.IN  --type-of-network=inter_individual_graph_weighted
+```
+
+
+#### Raw git log
+==Dimitar (Mitko) Asenov;dasenov@google.com;Wed Jan 3 04:05:02 2024 -0800==
+third_party/xla/xla/tests/BUILD
+tensorflow/core/kernels/gpu_utils.cc
+tensorflow/core/platform/logger.h
+
+==David Dunleavy;ddunleavy@google.com;Tue Jan 2 11:19:35 2024 -0800==
+third_party/xla/xla/tests/BUILD
+
+==David Dunleavy;ddunleavy@google.com;Tue Jan 2 07:34:17 2024 -0800==
+third_party/xla/xla/tests/BUILD
+tensorflow/core/kernels/gpu_utils.cc
+
+
+### Expected output 
+
+T0, Tue Jan 2 07:34:17 2024, No edges 
+T1, Tue Jan 2 11:19:35 2024, No edges, sam developer 
+T2, Wed Jan 3 04:05:02 2024, dasenov@google.com -> ddunleavy@google.com
+
+1 edge with weight 1
+
+
+
+# 16 of March 
+Goals:
 * Compare legacy 
 
 ```
