@@ -11,8 +11,13 @@ RED=$(tput setaf 1)
 NC=$(tput sgr0)
 
 # Create a temporary directory for extracted XML files
-TEMP_DIR=$(mktemp -d)
-trap "rm -rf $TEMP_DIR" EXIT
+#TEMP_DIR=$(mktemp -d)
+#trap "rm -rf $TEMP_DIR" EXIT
+
+# Create a temporary directory for extracted XML files
+mkdir temp_dir_testStrapLogTemporalNetworks
+TEMP_DIR=temp_dir_testStrapLogTemporalNetworks
+#trap "rm -rf $TEMP_DIR" EXIT
 
 echo TEMP_DIR=$TEMP_DIR
 
@@ -20,18 +25,60 @@ echo TEMP_DIR=$TEMP_DIR
 TESTS_FAILED=0
 FAILED_TESTS=()
 
+# Function to compare XML files using xmlstarlet method 1
+compare_xml_structure() {
+    local actual_file=$1
+    local expected_pattern=$2
+    local test_name=$3
+
+    # Save expected pattern to a temporary file
+    EXPECTED_FILE="$TEMP_DIR/${test_name}_expected.xml"
+    echo "$expected_pattern" > "$EXPECTED_FILE"
+
+    # Create structure files for comparison
+    ACTUAL_STRUCTURE="$TEMP_DIR/${test_name}_actual_structure.txt"
+    EXPECTED_STRUCTURE="$TEMP_DIR/${test_name}_expected_structure.txt"
+
+    # Extract element paths using xmlstarlet (method 1)
+    if command -v xmlstarlet &> /dev/null; then
+        xmlstarlet el "$actual_file" | sort > "$ACTUAL_STRUCTURE"
+        xmlstarlet el "$EXPECTED_FILE" | sort > "$EXPECTED_STRUCTURE"
+    else
+        echo "${RED}Warning: xmlstarlet not found. Falling back to basic diff.${NC}"
+        # Fallback: use grep to extract tags (simplified)
+        grep -o '<[^>]*>' "$actual_file" | sort -u > "$ACTUAL_STRUCTURE"
+        grep -o '<[^>]*>' "$EXPECTED_FILE" | sort -u > "$EXPECTED_STRUCTURE"
+    fi
+
+    echo "${RED}XML Structure Comparison for $test_name:${NC}"
+    echo "Expected structure vs Actual structure:"
+    diff -u "$EXPECTED_STRUCTURE" "$ACTUAL_STRUCTURE" || true
+
+    echo
+    echo "${RED}Full XML files for $test_name saved to:${NC}"
+    echo "  Expected: $EXPECTED_FILE"
+    echo "  Actual: $actual_file"
+    echo
+
+    echo "${RED}To compare these files manually, you can use:${NC}"
+    echo "  xmldiff   xmldiff --formatter diff $EXPECTED_FILE $actual_file"
+    echo "  colordiff -y $EXPECTED_FILE $actual_file"
+}
+
 # Function to validate XML content using xmllint
 validate_xml() {
     local xml_file=$1
     local expected_pattern=$2
+    local test_name=$3
 
     # Save expected pattern to a temporary file
-    EXPECTED_PATTERN_FILE="$TEMP_DIR/expected_pattern.xml"
+    EXPECTED_PATTERN_FILE="$TEMP_DIR/${test_name}_expected_pattern.xml"
     echo "$expected_pattern" > "$EXPECTED_PATTERN_FILE"
 
     # Use xmllint to validate the XML structure
     if ! xmllint --noout "$xml_file" 2>/dev/null; then
         echo "${RED}Error: Invalid XML in $xml_file${NC}"
+        compare_xml_structure "$xml_file" "$expected_pattern" "$test_name"
         return 1
     fi
 
@@ -43,6 +90,7 @@ validate_xml() {
         echo "$expected_pattern"
         echo "Debug: Actual XML content:"
         cat "$xml_file"
+        compare_xml_structure "$xml_file" "$expected_pattern" "$test_name"
         return 1
     fi
 
@@ -82,7 +130,7 @@ else
 EOF
 )
 
-    if validate_xml "$XML_FILE" "$expected_pattern"; then
+    if validate_xml "$XML_FILE" "$expected_pattern" "TESTCASE1"; then
         echo "${GREEN}TESTCASE 1 passed${NC}"
     else
         TESTS_FAILED=$((TESTS_FAILED + 1))
@@ -128,7 +176,7 @@ else
 EOF
 )
 
-    if validate_xml "$XML_FILE" "$expected_pattern"; then
+    if validate_xml "$XML_FILE" "$expected_pattern" "TESTCASE2"; then
         echo "${GREEN}TESTCASE 2 passed${NC}"
     else
         TESTS_FAILED=$((TESTS_FAILED + 1))
@@ -177,7 +225,7 @@ else
 EOF
 )
 
-    if validate_xml "$XML_FILE" "$expected_pattern"; then
+    if validate_xml "$XML_FILE" "$expected_pattern" "TESTCASE3"; then
         echo "${GREEN}TESTCASE 3 passed${NC}"
     else
         TESTS_FAILED=$((TESTS_FAILED + 1))
@@ -258,12 +306,11 @@ else
 EOF
 )
 
-    if validate_xml "$XML_FILE" "$expected_pattern"; then
+    if validate_xml "$XML_FILE" "$expected_pattern" "TESTCASE4"; then
         echo "${GREEN}TESTCASE 4 passed${NC}"
     else
         TESTS_FAILED=$((TESTS_FAILED + 1))
         FAILED_TESTS+=("TESTCASE 4")
-
     fi
 
     rm -v "$TC4_output_file"
@@ -278,5 +325,8 @@ if [ $TESTS_FAILED -eq 0 ]; then
     exit 0
 else
     echo "${RED}FAILED TESTS: ${FAILED_TESTS[*]}${NC}"
+    echo
+    echo "${RED}XML comparison files are available in: $TEMP_DIR${NC}"
+    echo "To inspect failed tests manually, check the files with _expected.xml and test*.xml"
     exit 1
 fi
