@@ -575,7 +575,9 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('-t', '--type-of-network',
                         choices=['inter_individual_graph_unweighted',
                                  'inter_individual_graph_weighted',
-                                 'inter_individual_graph_temporal'],
+                                 'inter_individual_graph_temporal',
+                                 'inter_individual_weighted_LOC_temporal',
+                                 'inter_individual_graph_weighted_SUM_LOC'],
                         default='inter_individual_graph_unweighted',
                         help='Type of network to generate (default: inter_individual_graph_unweighted)')
     parser.add_argument('-tntr', '--temporal-network-time-resolution', type=int, default=1,
