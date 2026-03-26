@@ -1,0 +1,13 @@
+==Thai Nguyen;thaink@google.com;Thu Mar 28 04:29:52 2024 -0700==
+tensorflow/compiler/mlir/quantization/tensorflow/python/quantize_model.py
+
+==A. Unique TensorFlower;gardener@tensorflow.org;Wed Mar 27 11:33:34 2024 -0700==
+tensorflow/compiler/mlir/quantization/stablehlo/python/integration_test/quantize_model_test.py
+
+==Dan Suh;dansuh@google.com;Thu Mar 28 07:54:27 2024 -0700==
+tensorflow/compiler/mlir/quantization/common/attrs_and_constraints.h
+tensorflow/compiler/mlir/quantization/stablehlo/passes/nchw_convolution_to_nhwc.cc
+
+==Matt Callanan;mpcallanan@google.com;Thu Mar 28 08:12:15 2024 -0700==
+tensorflow/core/data/service/client/data_service_client.cc
+
