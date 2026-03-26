@@ -219,6 +219,11 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     # verify arguments data
     ## verify graph/network 
 
+    if network_with_affiliation_atributes is None:
+        print_fatal_error("The network to export is None")
+        print_fatal_error("The input did not led to the creation of a valid network ")
+        console.print(f"Attempting to export {network_with_affiliation_atributes=}")
+        exit(1)
     
     if network_with_affiliation_atributes.order() < 2:
         print_fatal_error("Network have less than two nodes !")

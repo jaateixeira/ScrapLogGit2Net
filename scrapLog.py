@@ -894,7 +894,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
                 console.print(f"Exporting{output_static_w_graph=}")
                 console.print(f"to file{graphml_filename=}")
 
-            if state.debug_mode and ask_yes_or_no_question("Do you want to inspect output_temporal_graph?"):
+            if state.debug_mode and ask_yes_or_no_question("Do you want to inspect output_weighted_graph?"):
                 inspect(output_static_w_graph)
                 show_weighted_edges(output_static_w_graph)
 
@@ -904,8 +904,20 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
         elif state.network_type == 'inter_individual_graph_unweighted':
             output_static_uw_graph : nx.Graph = state.container_of_extracted_networks.dev_to_dev_unweighted_network
-            #export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
-            export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
+
+            if state.verbose_mode:
+                console.print(f"Exporting{output_static_uw_graph=}")
+                console.print(f"to file{graphml_filename=}")
+
+            if state.debug_mode and ask_yes_or_no_question("Do you want to inspect output_unweighted_graph?"):
+                inspect(output_static_uw_graph)
+                show_weighted_edges(output_static_uw_graph)
+
+            if  output_static_uw_graph  is None :
+                print_warning(f"No unweighted graph found for {state.network_type=}, {output_static_uw_graph=}")
+
+            export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
+            #export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
 
         else:
             print_error("Unknown network type at writing graphml files")

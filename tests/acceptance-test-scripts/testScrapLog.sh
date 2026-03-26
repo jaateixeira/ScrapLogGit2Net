@@ -36,7 +36,8 @@ echo "./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.
 ./scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN > testResults.tmp
 #echo "Output should contain ERROR collaboration tuplesList is empty !!"
 #expectedLastLine="ERROR collaboration tuplesList is empty"
-expectedLastLine="FATAL ERROR: Network have less than two nodes"
+# expectedLastLine="FATAL ERROR: Network have less than two nodes"
+expectedLastLine="input did not led to the creation of a valid network"
 
 # Define the file to read
 file="testResults.tmp"
@@ -61,6 +62,7 @@ fi
 
 
 echo 
+#rm -i testResults.tmp
 rm testResults.tmp
 
 
