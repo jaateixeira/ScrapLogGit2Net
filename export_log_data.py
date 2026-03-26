@@ -213,7 +213,6 @@ def createAtributesByCoreFileCSV(logData , outFileName):
 # export the graph node and edges to GraphML format
 # Must be readable by Visone
 def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
-                        affiliation_by_email : Dict[Email, Affiliation] | None ,
                         out_file_name: Path,
                         verbose=True) -> None:
     # iterator for nAf  
@@ -226,7 +225,6 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
 
     if verbose:
             console.print(f"Exporting graph to file (.graphml): {out_file_name=}")
-            console.print(f"Affiliation Dict=: {affiliation_by_email=}")
     
     # verify arguments data
     ## verify graph/network 
