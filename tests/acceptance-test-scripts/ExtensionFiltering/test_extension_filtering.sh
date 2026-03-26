@@ -183,6 +183,7 @@ if [ ! -f "$TC1_output" ]; then
     echo "${RED}Error: output file $TC1_output not found.${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
     FAILED_TESTS+=("TC1")
+    exit
 else
     TC1_xml="$TEMP_DIR/tc1.xml"
     cp "$TC1_output" "$TC1_xml"
