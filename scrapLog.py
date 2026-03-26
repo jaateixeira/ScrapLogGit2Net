@@ -288,9 +288,18 @@ def extract_files_from_block(
 
         filename = line.rstrip('\n')
 
-        # Skip files in filter list
+        # Skip files in the explicit filter list (existing behaviour)
         if state.file_filtering_mode and filename in state.files_to_filter:
             continue
+
+        # NEW: extension-based filtering
+        ext = Path(filename).suffix.lower()
+
+        if state.include_extensions and ext not in state.include_extensions:
+            continue  # not in the allowlist — skip
+
+        if state.exclude_extensions and ext in state.exclude_extensions:
+            continue  # explicitly excluded — skip
 
         # Basic validation: file should not be empty
         if filename.strip():
@@ -569,6 +578,19 @@ def parse_arguments() -> argparse.Namespace:
                         help='ignores the emails listed in a text file (one email per line)')
     parser.add_argument('-ff', '--filter-files', type=Path,
                         help='ignores the files listed in a text file (one file per line)')
+    # after the existing -ff / --filter-files argument:
+    parser.add_argument(
+        '-ie', '--include-extensions',
+        nargs='+',
+        metavar='EXT',
+        help='only process files with these extensions (e.g. -ie .py .cpp .cu)'
+    )
+    parser.add_argument(
+        '-xe', '--exclude-extensions',
+        nargs='+',
+        metavar='EXT',
+        help='skip files with these extensions (e.g. -xe .json .html .php)'
+    )
     parser.add_argument('-a', '--aggregate-email-prefixes', type=Path,
                         help='JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})')
     parser.add_argument('-t', '--type-of-network',
@@ -634,10 +656,25 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
         state.file_filtering_mode = True
         console.print("\nFile filtering turned on")
 
-    # Load filter files
+    # Load specific filter files
     if state.email_filtering_mode and args.filter_emails:
         load_email_filter_file(state, args.filter_emails)
 
+
+    # Lot file extensions to be filtered
+    if args.include_extensions:
+        state.include_extensions = {
+            ext if ext.startswith('.') else f'.{ext}'
+            for ext in args.include_extensions
+        }
+        print_info(f"Include-extensions filter active: {sorted(state.include_extensions)}")
+
+    if args.exclude_extensions:
+        state.exclude_extensions = {
+            ext if ext.startswith('.') else f'.{ext}'
+            for ext in args.exclude_extensions
+        }
+        print_info(f"Exclude-extensions filter active: {sorted(state.exclude_extensions)}")
 
 def load_email_filter_file(state: ProcessingState, filter_file_path: str) -> None:
     """Load email filter list from file."""
