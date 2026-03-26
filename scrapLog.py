@@ -593,13 +593,13 @@ def parse_arguments() -> argparse.Namespace:
                         help='ignores the files listed in a text file (one file per line)')
     # after the existing -ff / --filter-files argument:
     parser.add_argument(
-        '-ie', '--include-extensions',
+        '-ie', '--include-only-with-file-extensions',
         nargs='+',
         metavar='EXT',
         help='only process files with these extensions (e.g. -ie .py .cpp .cu)'
     )
     parser.add_argument(
-        '-xe', '--exclude-extensions',
+        '-xe', '--exclude-all-with-file-extensions',
         nargs='+',
         metavar='EXT',
         help='skip files with these extensions (e.g. -xe .json .html .php)'
@@ -675,17 +675,17 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
 
 
     # Lot file extensions to be filtered
-    if args.include_extensions:
+    if args.include_only_with_file_extensions:
         state.include_extensions = {
             ext if ext.startswith('.') else f'.{ext}'
-            for ext in args.include_extensions
+            for ext in args.include_only_with_file_extensions
         }
         print_info(f"Include-extensions filter active: {sorted(state.include_extensions)}")
 
-    if args.exclude_extensions:
+    if args.exclude_all_with_file_extensions:
         state.exclude_extensions = {
             ext if ext.startswith('.') else f'.{ext}'
-            for ext in args.exclude_extensions
+            for ext in args.exclude_all_with_file_extensions
         }
         print_info(f"Exclude-extensions filter active: {sorted(state.exclude_extensions)}")
 

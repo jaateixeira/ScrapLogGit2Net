@@ -3,6 +3,7 @@ tensorflow/compiler/mlir/quantization/tensorflow/python/quantize_model.py
 
 ==A. Unique TensorFlower;gardener@tensorflow.org;Wed Mar 27 11:33:34 2024 -0700==
 tensorflow/compiler/mlir/quantization/stablehlo/python/integration_test/quantize_model_test.py
+tensorflow/compiler/mlir/quantization/tensorflow/python/quantize_model.py
 
 ==Dan Suh;dansuh@google.com;Thu Mar 28 07:54:27 2024 -0700==
 tensorflow/compiler/mlir/quantization/common/attrs_and_constraints.h

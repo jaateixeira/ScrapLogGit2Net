@@ -174,7 +174,7 @@ echo "TESTCASE 1 — include only .py"
 
 TC1_input="test-data/ExtensionFiltering/extfilter-tc1-include-py-only.IN"
 TC1_output="extfilter-tc1-include-py-only.NetworkFile.graphML"
-TC1_cmd="./scrapLog.py -r $TC1_input -t inter_individual_graph_unweighted -ie .py"
+TC1_cmd="./scrapLog.py -r $TC1_input -t inter_individual_graph_unweighted --include-only-with-file-extensions .py"
 
 echo "Command: $TC1_cmd"
 $TC1_cmd
@@ -183,7 +183,7 @@ if [ ! -f "$TC1_output" ]; then
     echo "${RED}Error: output file $TC1_output not found.${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
     FAILED_TESTS+=("TC1")
-    #exit
+    exit
 else
     TC1_xml="$TEMP_DIR/tc1.xml"
     cp "$TC1_output" "$TC1_xml"
@@ -208,6 +208,8 @@ fi
 
 echo
 echo
+
+exit
 
 # =============================================================================
 # TC2 — include .py and .cc
