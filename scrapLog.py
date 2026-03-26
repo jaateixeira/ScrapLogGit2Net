@@ -861,6 +861,24 @@ def process_network_creation_step(state: ProcessingState) -> None:
 
     handle_step_completion(state, "process_network_creation_step")
 
+
+def enrich_graph_with_names_used_by_each_developer(
+        graph: nx.Graph,
+        affiliation_map: dict[str, str],
+) -> nx.Graph:
+    raise NotImplementedError
+
+
+def enrich_graph_with_files_edited_by_each_developer(
+        graph: nx.Graph,
+        affiliation_map: dict[str, str],
+) -> nx.Graph:
+    raise NotImplementedError
+
+
+
+
+
 def enrich_graph_with_affiliation(
         graph: nx.Graph,
         affiliation_map: dict[str, str],

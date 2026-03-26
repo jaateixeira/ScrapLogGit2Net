@@ -1,3 +1,16 @@
+
+def enrich_graph_with_names_used_by_each_developer(
+        graph: nx.Graph,
+        affiliation_map: dict[str, str],
+) -> nx.Graph:
+    raise NotImplementedError
+
+
+def enrich_graph_with_files_edited_by_each_developer(
+        graph: nx.Graph,
+
+Implement
+
 These two are not the same, because, they don't have affiliation atributes
 
 # export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
