@@ -35,10 +35,9 @@ from utils.debugging import handle_step_completion, ask_yes_or_no_question
 from utils.string_comparators import find_similar_strings
 from utils.strings_cleaners import clean_email
 from utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
-                                   print_error, print_success)
+                                   print_error, print_success, print_fatal_error)
 from utils.unified_logger import logger
-
-
+from utils.validators import AffiliationValidationError
 
 
 def print_exit_info(start_time: float) -> None:
@@ -862,6 +861,40 @@ def process_network_creation_step(state: ProcessingState) -> None:
 
     handle_step_completion(state, "process_network_creation_step")
 
+def enrich_graph_with_affiliation(
+        graph: nx.Graph,
+        affiliation_map: dict[str, str],
+) -> nx.Graph:
+    """
+    Set the 'affiliation' attribute on every node in graph
+    using a pre-built {node_id: affiliation} mapping.
+
+    Args:
+        graph:           NetworkX graph to enrich (mutated in place).
+        affiliation_map: Dict mapping node ID (email) to affiliation string.
+
+    Returns:
+        The same graph object with affiliation attributes set.
+
+    Raises:
+        AffiliationValidationError: If any node has no entry in affiliation_map.
+    """
+
+    if graph is None:
+        print_fatal_error("The input did not led to the creation of a valid network ")
+        sys.exit()
+
+    missing = [node for node in graph.nodes() if node not in affiliation_map]
+    if missing:
+        raise AffiliationValidationError(
+            f"{len(missing)} node(s) have no entry in affiliation_map: {missing}"
+        )
+
+    for node, affiliation in affiliation_map.items():
+        if graph.has_node(node):
+            graph.nodes[node]["affiliation"] = affiliation
+
+    return graph
 
 def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     """Export results to GraphML and print summary."""
@@ -916,7 +949,11 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
             if  output_static_uw_graph  is None :
                 print_warning(f"No unweighted graph found for {state.network_type=}, {output_static_uw_graph=}")
 
-            export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
+            "add the affiliation attributes back"
+
+            output_static_uw_graph_with_affiliation = enrich_graph_with_affiliation(output_static_uw_graph,state.affiliations)
+
+            export_log_data.create_graphml_file(output_static_uw_graph_with_affiliation, state.affiliations, graphml_filename)
             #export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
 
         else:

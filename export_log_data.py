@@ -19,6 +19,8 @@ from rich import inspect
 
 from utils.validators import validate_all_graph_nodes_have_affiliation_attributes, AffiliationValidationError
 
+from typing import Dict
+from core.types import Email, Affiliation
 
 # Replace '@' and '.' by "AT" and "DOT"
 def clearDotsAndAts(contribEmail):
@@ -207,9 +209,13 @@ def createAtributesByCoreFileCSV(logData , outFileName):
     csvfile.close()
 
 
+
 # export the graph node and edges to GraphML format
 # Must be readable by Visone
-def create_graphml_file(network_with_affiliation_attributes :nx.Graph, out_file_name: Path) -> None:
+def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
+                        affiliation_by_email : Dict[Email, Affiliation] | None ,
+                        out_file_name: Path,
+                        verbose=True) -> None:
     # iterator for nAf  
 
     # Accept both string and Path
@@ -218,7 +224,9 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph, out_file_
     elif not isinstance(out_file_name, Path):
         raise TypeError(f"{out_file_name} must be a string or Path object")
 
-    print_info(f"Exporting graph to file (.graphml): {out_file_name=}  ")
+    if verbose:
+            console.print(f"Exporting graph to file (.graphml): {out_file_name=}")
+            console.print(f"Affiliation Dict=: {affiliation_by_email=}")
     
     # verify arguments data
     ## verify graph/network 
@@ -243,11 +251,11 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph, out_file_
 
     console.print(f"{valid_graph_with_affiliations=},{ mising_nodes=}")
 
-    if not valid_graph_with_affiliations:
+    if not valid_graph_with_affiliations :
         print_fatal_error("Not all nodes have affiliation attributes !")
         print_info(f"Attempting to export {network_with_affiliation_attributes=} failed" )
         raise (AffiliationValidationError(
-            f"{len(valid_graph_with_affiliations)}/{mising_nodes.number_of_nodes()} node(s) missing 'affiliation' "
+            f"{len(network_with_affiliation_attributes)}/{network_with_affiliation_attributes.number_of_nodes()} node(s) missing 'affiliation' "
             f"— cannot export to GraphML. First 5: {mising_nodes[:5]}"
         ))
 
