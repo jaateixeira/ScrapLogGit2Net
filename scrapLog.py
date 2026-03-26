@@ -279,32 +279,45 @@ def extract_files_from_block(
         block: List[str],
         state: ProcessingState
 ) -> List[Filename]:
-    """Extract list of files from a block."""
     files: List[Filename] = []
+    n_filtered_by_name = 0
+    n_filtered_by_include_ext = 0
+    n_filtered_by_exclude_ext = 0
 
     for line in block:
         if not line or line == '\n':
             break
 
         filename = line.rstrip('\n')
-
-        # Skip files in the explicit filter list (existing behaviour)
-        if state.file_filtering_mode and filename in state.files_to_filter:
-            continue
-
-        # NEW: extension-based filtering
         ext = Path(filename).suffix.lower()
 
+        if state.file_filtering_mode and filename in state.files_to_filter:
+            n_filtered_by_name += 1
+            continue
+
         if state.include_extensions and ext not in state.include_extensions:
-            continue  # not in the allowlist — skip
+            n_filtered_by_include_ext += 1
+            continue
 
         if state.exclude_extensions and ext in state.exclude_extensions:
-            continue  # explicitly excluded — skip
+            n_filtered_by_exclude_ext += 1
+            continue
 
-        # Basic validation: file should not be empty
         if filename.strip():
             files.append(filename)
             state.statistics.n_blocks_changing_code += 1
+
+    # Distinguish between truly empty commits and filtered-to-empty commits
+    if not files and state.verbose_mode:
+        if n_filtered_by_include_ext + n_filtered_by_exclude_ext + n_filtered_by_name > 0:
+            print_info(
+                f"Commit skipped after filtering — "
+                f"{n_filtered_by_include_ext} excluded by include-ext, "
+                f"{n_filtered_by_exclude_ext} excluded by exclude-ext, "
+                f"{n_filtered_by_name} excluded by name filter."
+            )
+        else:
+            print_warning("Commit has no files at all — likely a merge, empty, or submodule-only commit.")
 
     return files
 
