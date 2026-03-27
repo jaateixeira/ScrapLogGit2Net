@@ -1,0 +1,17 @@
+==Thai Nguyen;thaink@google.com;Thu Mar 28 08:07:34 2024 -0700==
+tensorflow/compiler/mlir/quantization/tensorflow/python/quantize_model.cc
+tensorflow/compiler/mlir/quantization/tensorflow/python/quantize_model.h
+
+==Thai Nguyen;thaink@google.com;Thu Mar 28 04:29:52 2024 -0700==
+tensorflow/compiler/mlir/quantization/tensorflow/python/quantize_model.py
+
+==Benjamin Kramer;kramerb@google.com;Wed Mar 27 12:34:46 2024 -0700==
+tensorflow/compiler/mlir/tensorflow/BUILD
+tensorflow/compiler/mlir/quantization/tensorflow/python/quantize_model.py
+
+==Matt Callanan;mpcallanan@google.com;Thu Mar 28 08:12:15 2024 -0700==
+tensorflow/core/data/service/client/data_service_client.cc
+
+==Dmitri Gribenko;dmitrig@google.com;Thu Mar 28 06:49:50 2024 -0700==
+third_party/llvm/workspace.bzl
+

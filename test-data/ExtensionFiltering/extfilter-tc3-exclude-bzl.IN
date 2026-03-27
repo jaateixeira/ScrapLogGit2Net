@@ -1,0 +1,31 @@
+==Peter Hawkins;phawkins@google.com;Thu Mar 28 07:13:53 2024 -0700==
+third_party/xla/xla/python/jax_jit.cc
+third_party/implib_so/workspace.bzl
+third_party/xla/third_party/implib_so/workspace.bzl
+third_party/xla/third_party/tsl/third_party/implib_so/workspace.bzl
+third_party/xla/xla/tsl/cuda/stub.bzl
+
+
+==Annyu polive;polive@google.com;Thu Mar 28 05:36:09 2024 -0700==
+third_party/xla/third_party/implib_so/workspace.bzl
+third_party/xla/xla/python/BUILD
+third_party/xla/xla/python/jax_jit.cc
+third_party/xla/xla/python/jax_jit.h
+third_party/xla/xla/python/pjit.cc
+third_party/xla/xla/python/pmap_lib.cc
+
+==Dmitri Gribenko;dmitrig@google.com;Thu Mar 28 06:49:50 2024 -0700==
+third_party/llvm/workspace.bzl
+third_party/xla/third_party/implib_so/workspace.bzl
+
+==Sergei Lebedev;slebedev@google.com;Wed Mar 27 12:14:15 2024 -0700==
+third_party/xla/xla/service/gpu/ir_emitter_unnested.cc
+third_party/xla/xla/service/gpu/kernel_arguments.cc
+third_party/xla/xla/service/gpu/kernel_arguments.h
+third_party/xla/third_party/implib_so/workspace.bzl
+==Gunhyun Park;gunhyun@google.com;Wed Mar 27 15:01:41 2024 -0700==
+third_party/stablehlo/temporary.patch
+third_party/stablehlo/workspace.bzl
+third_party/xla/xla/mlir_hlo/tests/Dialect/mhlo/ops.mlir
+third_party/xla/xla/mlir_hlo/tests/Dialect/mhlo/verifier_reduce_op.mlir
+third_party/xla/third_party/implib_so/workspace.bzl

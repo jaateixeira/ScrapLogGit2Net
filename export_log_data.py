@@ -4,6 +4,7 @@
 
 
 import sys
+import argparse
 import re
 import csv
 from datetime import *
@@ -16,7 +17,12 @@ from utils.unified_console import console
 from utils.unified_console import print_fatal_error , print_warning , print_error, print_success, print_info
 from rich import inspect
 
-# Replace '@' and '.' by "AT" and "DOT" 
+from utils.validators import validate_all_graph_nodes_have_affiliation_attributes, AffiliationValidationError
+
+from typing import Dict
+from core.types import Email, Affiliation
+
+# Replace '@' and '.' by "AT" and "DOT"
 def clearDotsAndAts(contribEmail):
 
     #print ("clearing Strings From Dots and Ats from: [" + contribEmail+ "]")
@@ -203,9 +209,12 @@ def createAtributesByCoreFileCSV(logData , outFileName):
     csvfile.close()
 
 
+
 # export the graph node and edges to GraphML format
 # Must be readable by Visone
-def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_name: Path):
+def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
+                        out_file_name: Path,
+                        verbose=True) -> None:
     # iterator for nAf  
 
     # Accept both string and Path
@@ -214,25 +223,42 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     elif not isinstance(out_file_name, Path):
         raise TypeError(f"{out_file_name} must be a string or Path object")
 
-    print_info(f"Exporting graph to file (.graphml): {out_file_name=}  ")
+    if verbose:
+            console.print(f"Exporting graph to file (.graphml): {out_file_name=}")
     
     # verify arguments data
     ## verify graph/network 
 
+    if network_with_affiliation_attributes is None:
+        print_fatal_error("The network to export is None")
+        print_fatal_error("The input did not led to the creation of a valid network ")
+        console.print(f"Attempting to export {network_with_affiliation_attributes=}")
+        exit(1)
     
-    if network_with_affiliation_atributes.order() < 2:
+    if network_with_affiliation_attributes.order() < 2:
         print_fatal_error("Network have less than two nodes !")
         exit(1)
 
-    if network_with_affiliation_atributes.size() < 1:
+    if network_with_affiliation_attributes.size() < 1:
         print_fatal_error("Network have less than one edge !!")
         exit(1)
 
         
-    ## verify affiliations 
+    ## verify affiliations
+    (valid_graph_with_affiliations, mising_nodes) = validate_all_graph_nodes_have_affiliation_attributes(network_with_affiliation_attributes)
+
+    console.print(f"{valid_graph_with_affiliations=},{ mising_nodes=}")
+
+    if not valid_graph_with_affiliations :
+        print_fatal_error("Not all nodes have affiliation attributes !")
+        print_info(f"Attempting to export {network_with_affiliation_attributes=} failed" )
+        raise (AffiliationValidationError(
+            f"{len(network_with_affiliation_attributes)}/{network_with_affiliation_attributes.number_of_nodes()} node(s) missing 'affiliation' "
+            f"— cannot export to GraphML. First 5: {mising_nodes[:5]}"
+        ))
 
     "verify every node as affiliation data"
-    for node, data in network_with_affiliation_atributes.nodes(data=True):
+    for node, data in network_with_affiliation_attributes.nodes(data=True):
         #console.print(f"{node}: {data['affiliation']}")
 
         if None == data['affiliation']:
@@ -295,7 +321,7 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     print ()
     print ("\t\tWriting nodes in graphML file")
     node_id = 0
-    for node, data in network_with_affiliation_atributes.nodes(data=True):
+    for node, data in network_with_affiliation_attributes.nodes(data=True):
         email=node
         afl= data['affiliation']
         #print(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
@@ -305,7 +331,7 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
         else:
             gfile.writelines(export_graphml_format.addNode(node_id,[(0,email),(1,"turquoise"),(2,afl)]))
         # Give a each node and numeric id atribute data as well 
-        network_with_affiliation_atributes.nodes[node]['id']= node_id
+        network_with_affiliation_attributes.nodes[node]['id']= node_id
         node_id+=1
 
 
@@ -313,9 +339,9 @@ def create_graphml_file(network_with_affiliation_atributes :nx.Graph, out_file_n
     print ("\t\tWriting edges in graphML file")
     
     nTup=0
-    for edge in network_with_affiliation_atributes.edges():
-        nodeIdFrom = network_with_affiliation_atributes.nodes[edge[0]]['id']
-        nodeIdTo = network_with_affiliation_atributes.nodes[edge[1]]['id']
+    for edge in network_with_affiliation_attributes.edges():
+        nodeIdFrom = network_with_affiliation_attributes.nodes[edge[0]]['id']
+        nodeIdTo = network_with_affiliation_attributes.nodes[edge[1]]['id']
         #print("edge=",edge)
         #print("edge via id=",nodeIdFrom,nodeIdTo)
         

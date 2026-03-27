@@ -1,0 +1,20 @@
+==Henning Becker;hebecker@google.com;Wed Mar 27 23:18:47 2024 -0700==
+third_party/xla/xla/service/gpu/fusions/fusion_emitter.cc
+third_party/xla/xla/service/gpu/model/indexing_map.cc
+third_party/xla/xla/service/gpu/model/indexing_map.h
+third_party/xla/xla/service/gpu/ir_emitter_triton.cc
+
+==Benjamin Chetioui;bchetioui@google.com;Thu Mar 28 05:55:20 2024 -0700==
+third_party/xla/xla/service/gpu/gemm_fusion.cc
+third_party/xla/xla/service/gpu/ir_emitter_triton.cc
+third_party/xla/xla/service/gpu/softmax_rewriter_triton.cc
+
+==Vladyslav Tsilytskyi;tsilytskyi@google.com;Thu Mar 28 04:26:54 2024 -0700==
+third_party/xla/xla/stream_executor/kernel.h
+third_party/xla/xla/stream_executor/kernel_spec.cc
+third_party/xla/xla/stream_executor/kernel_spec.h
+
+==Kanvi Khanna;kanvi.khanna@intel.com;Wed Mar 27 18:18:51 2024 -0700==
+third_party/xla/xla/service/change_op_data_type.cc
+third_party/xla/xla/service/cpu/onednn_matmul_rewriter.cc
+

@@ -197,7 +197,7 @@ class ProcessingState:
 
     affiliations: Dict[Email, Affiliation] = field(default_factory=dict)
     emails_to_filter: Set[Email] = field(default_factory=set)
-    files_to_filter: Set[Filename] = field(default_factory=set)
+
     email_aggregation_config: EmailAggregationConfig = field(default_factory=dict)
 
     # Operational modes
@@ -208,7 +208,13 @@ class ProcessingState:
     load_mode: bool = False
     raw_mode: bool = False
     email_filtering_mode: bool = False
+    # existing fields for reference
     file_filtering_mode: bool = False
+    files_to_filter: set[str] = field(default_factory=set)
+
+    # NEW
+    include_extensions: set[str] = field(default_factory=set)  # e.g. {'.py', '.cpp'}
+    exclude_extensions: set[str] = field(default_factory=set)  # e.g. {'.json', '.html'}
     strict_validation: bool = False  # Whether to fail on validation errors
 
     # Network graph
