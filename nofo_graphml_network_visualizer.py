@@ -11,12 +11,11 @@ import random
 import argparse
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-
 
 from utils.unified_logger import logger
 from utils.unified_console import (console,
@@ -27,7 +26,7 @@ from utils.unified_console import (console,
                                    print_fatal_error,
                                    print_header)
 
-#from rich import traceback
+# from rich import traceback
 import traceback
 
 
@@ -49,6 +48,8 @@ class NetworkConfig:
     # Add organization filtering fields
     include_only_orgs: Optional[List[str]] = None
     exclude_orgs: Optional[List[str]] = None
+    # Add legend info data file
+    legend_info_file: Optional[str] = None
 
 
 class NetworkVisualizer:
@@ -60,6 +61,7 @@ class NetworkVisualizer:
         self.pos: Optional[Dict[str, Tuple[float, float]]] = None
         self.known_org_node_colors: Dict[str, Any] = {}
         self.degree_centrality: Optional[Dict[str, float]] = None
+        self.legend_info: Dict[str, Dict[str, Any]] = {}  # Store legend info by organization_id
 
     def load_graph(self) -> None:
         """Load GraphML file from string or Path object."""
@@ -71,11 +73,49 @@ class NetworkVisualizer:
         self.graph = nx.read_graphml(input_path)
 
         logger.info(f"Number of nodes: {self.graph.number_of_nodes()}")
-        logger.info(f"Number of edges: {self.graph.number_of_edges()}")
-        logger.info(f"Number of isolates: {nx.number_of_isolates(self.graph)}")
-
         if self.config.verbose:
             self._print_graph_details()
+
+    def load_legend_info(self) -> None:
+        """Load legend information from JSON file."""
+        if not self.config.legend_info_file:
+            # Check for default labels.json in current directory
+            default_path = Path("labels.json")
+            if default_path.exists():
+                self.config.legend_info_file = str(default_path)
+                logger.info(f"Using default legend info file: {default_path}")
+            else:
+                logger.info("No legend info file provided, using node IDs only")
+                return
+
+        try:
+            with open(self.config.legend_info_file, 'r') as file:
+                data = json.load(file)
+
+            # Extract organizations from the expected JSON structure
+            organizations = data.get("organizations", [])
+
+            # Create a lookup dictionary keyed by organization_id
+            for org in organizations:
+                org_id = org.get("organization_id")
+                if org_id:
+                    self.legend_info[org_id] = {
+                        "full_name": org.get("organization", org_id),
+                        "contributors": org.get("number_of_contributors", 0)
+                    }
+
+            logger.info(
+                f"Loaded legend info for {len(self.legend_info)} organizations from {self.config.legend_info_file}")
+
+            if self.config.verbose:
+                logger.debug(f"Legend info: {json.dumps(self.legend_info, indent=2)}")
+
+        except FileNotFoundError:
+            logger.warning(f"Legend info file not found: {self.config.legend_info_file}")
+        except json.JSONDecodeError:
+            logger.error(f"Invalid JSON in legend info file: {self.config.legend_info_file}")
+        except Exception as e:
+            logger.error(f"Error loading legend info: {e}")
 
     def filter_by_organization_names(self) -> None:
         """Filter graph by organization names using include/exclude lists."""
@@ -158,11 +198,17 @@ class NetworkVisualizer:
             logger.error(f"No nodes remain after organization filtering. Filters: {error_msg}")
             raise ValueError(error_msg)
 
-
         # Update color map to only include remaining nodes
         if self.known_org_node_colors:
             self.known_org_node_colors = {
                 node: color for node, color in self.known_org_node_colors.items()
+                if node in nodes_to_keep
+            }
+
+        # Update legend info to only include remaining nodes
+        if self.legend_info:
+            self.legend_info = {
+                node: info for node, info in self.legend_info.items()
                 if node in nodes_to_keep
             }
 
@@ -209,6 +255,12 @@ class NetworkVisualizer:
         # Also filter known_org_node_colors to only include remaining nodes
         self.known_org_node_colors = {
             node: color for node, color in self.known_org_node_colors.items()
+            if node in top_n_nodes
+        }
+
+        # Also filter legend_info to only include remaining nodes
+        self.legend_info = {
+            node: info for node, info in self.legend_info.items()
             if node in top_n_nodes
         }
 
@@ -339,20 +391,55 @@ class NetworkVisualizer:
             return nx.spring_layout(self.graph, seed=42)
 
     def get_legend_elements(self) -> List[Line2D]:
-        """Create legend elements for the plot."""
+        """Create legend elements for the plot with enhanced information, sorted by number of contributors."""
         elements = []
 
-        for org in self.graph.nodes() if self.graph else []:
-            color = self.known_org_node_colors.get(org, 'gray')
+        if not self.graph:
+            return elements
+
+        # Create a list of tuples (org_id, contributor_count, display_label, color)
+        legend_data = []
+
+        for org_id in self.graph.nodes():
+            color = self.known_org_node_colors.get(org_id, 'gray')
+
+            # Check if we have enhanced legend info for this organization
+            if org_id in self.legend_info:
+                info = self.legend_info[org_id]
+                full_name = info.get("full_name", org_id)
+                contributors = info.get("contributors", 0)
+
+                # Create label with full name and contributor count
+                if contributors > 0:
+                    label = f"{full_name} (n={contributors})"
+                else:
+                    label = full_name
+            else:
+                # Fall back to just the node ID if no legend info
+                label = org_id
+                # Try to get contributor count from node attributes if available
+                contributors = 0
+                if self.graph and org_id in self.graph.nodes:
+                    # You might have contributor data stored in node attributes
+                    contributors = self.graph.nodes[org_id].get('contributors', 0)
+
+            legend_data.append((org_id, contributors, label, color))
+
+        # Sort by contributor count (descending)
+        # Organizations with no contributor data (0) will appear at the end
+        legend_data.sort(key=lambda x: x[1], reverse=True)
+
+        # Create legend elements in sorted order
+        for org_id, contributors, label, color in legend_data:
             elements.append(
                 Line2D(
                     [0], [0],
                     marker='o',
                     color=color,
-                    label=org,
+                    label=label,
                     lw=0,
                     markerfacecolor=color,
-                    markersize=5
+                    markersize=8  # Slightly larger for better visibility
                 )
             )
 
@@ -390,11 +477,26 @@ class NetworkVisualizer:
 
         logger.info("Creating visualization...")
 
+        # Set Georgia font for all text elements
+        plt.rcParams.update({
+            'font.family': 'serif',
+            'font.serif': ['Georgia'],
+            'text.usetex': False,  # Set to True if you have LaTeX installed
+            #'text.usetex': True,  # Set to True if you have LaTeX installed
+            'pgf.rcfonts': False,  # Disable if using pgf backend
+        })
+
+        """
+        # Set Times New Roman as the primary font
+        plt.rcParams['font.family'] = 'serif'
+        plt.rcParams['font.serif'] = ['Times New Roman', 'Times', 'DejaVu Serif']
+        """
+
         # Calculate positions
         self.pos = self.get_layout_positions()
 
         # Create figure
-        plt.figure(figsize=(12, 10))
+        plt.figure(figsize=(14, 12))  # Slightly larger to accommodate enhanced legend
 
         # Get visualization parameters
         node_colors = self.get_node_colors()
@@ -431,19 +533,31 @@ class NetworkVisualizer:
 
         # Draw edge labels
         weight_labels = nx.get_edge_attributes(self.graph, name='weight')
-        nx.draw_networkx_edge_labels(self.graph, self.pos, edge_labels=weight_labels)
+        #nx.draw_networkx_edge_labels(self.graph, self.pos, edge_labels=weight_labels)
+        nx.draw_networkx_edge_labels(
+            self.graph,
+            self.pos,
+            edge_labels=weight_labels,
+            font_size=8,
+            font_family="sans-serif",
+            font_weight="bold",
+            font_color='black'
+        )
 
         # Add legend if requested
         if self.config.show_legend:
             legend_elements = self.get_legend_elements()
-            plt.legend(
-                handles=legend_elements,
-                loc='center left',
-                bbox_to_anchor=(0.95, 0.5),
-                frameon=False,
-                prop={'weight': 'bold', 'size': 10, 'family': 'sans-serif'}
-            )
 
+            # Create legend with better formatting
+            plt.legend(
+            handles=legend_elements,
+            loc='center left',
+            bbox_to_anchor=(1.02, 0.5),  # Position outside the plot
+            frameon=True,
+            framealpha=0.9,
+            #prop={'weight': 'normal', 'size': 9, 'family': 'sans-serif'}
+            #prop={'weight': 'normal', 'size': 9, 'family': 'Georgia'}  # Explicitly Georgia
+            )
         # Add focal firm highlight
         ax = plt.gca()
         self.add_focal_firm_highlight(ax)
@@ -504,7 +618,7 @@ class NetworkVisualizer:
 
         if self.config.show_webpage:
             logger.info(f"built and displaying HTML with {png_path=}")
-            create_webpage(self.config.input_file,png_path,str(sys.argv))
+            create_webpage(self.config.input_file, png_path, str(sys.argv))
 
 
 def create_webpage(input_file: Path, png_path: Path, caption: str):
@@ -631,6 +745,13 @@ def parse_arguments() -> NetworkConfig:
         help="Comma-separated list of organizations to exclude (e.g., 'user,test,unknown')"
     )
 
+    # Add legend info data file argument
+    parser.add_argument(
+        "--legend-info-data",
+        type=str,
+        help="JSON file with organization information for enhanced legend display (default: looks for labels.json in current directory)"
+    )
+
     # Single argument with multiple option strings
     parser.add_argument(
         "-s", "--show", "-p", "--plot",  # All four are valid
@@ -669,6 +790,7 @@ def parse_arguments() -> NetworkConfig:
         # Convert empty lists to None for consistency
         include_only_orgs=args.include_only if args.include_only else None,
         exclude_orgs=args.exclude if args.exclude else None,
+        legend_info_file=args.legend_info_data,
     )
 
 
@@ -703,6 +825,11 @@ def main() -> None:
         console.print(f"[bold blue] loading the graph {config.input_file=}\n")
         visualizer.load_graph()
         console.print("[bold green] Success:[/bold green] Graph loaded 😀\n")
+
+        # Load legend info data if available (do this early so it's available for filtering)
+        console.print(f"[bold blue] Loading legend information\n")
+        visualizer.load_legend_info()
+        console.print("[bold green] Success:[/bold green] Legend information loaded 😀\n")
 
         # Apply organization name filtering IMMEDIATELY (removes nodes and their edges)
         if config.include_only_orgs or config.exclude_orgs:
@@ -747,7 +874,7 @@ def main() -> None:
         logger.error(f"NetworkX error: {e}")
         sys.exit(1)
     except Exception as e:
-        #logger.exception(f"Unexpected error: {e}")
+        # logger.exception(f"Unexpected error: {e}")
         logger.error(f"Unexpected error: {e}", exc_info=True)
         traceback.print_exc()
         sys.exit(1)

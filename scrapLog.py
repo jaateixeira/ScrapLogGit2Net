@@ -35,10 +35,9 @@ from utils.debugging import handle_step_completion, ask_yes_or_no_question
 from utils.string_comparators import find_similar_strings
 from utils.strings_cleaners import clean_email
 from utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
-                                   print_error, print_success)
+                                   print_error, print_success, print_fatal_error)
 from utils.unified_logger import logger
-
-
+from utils.validators import AffiliationValidationError
 
 
 def print_exit_info(start_time: float) -> None:
@@ -280,23 +279,45 @@ def extract_files_from_block(
         block: List[str],
         state: ProcessingState
 ) -> List[Filename]:
-    """Extract list of files from a block."""
     files: List[Filename] = []
+    n_filtered_by_name = 0
+    n_filtered_by_include_ext = 0
+    n_filtered_by_exclude_ext = 0
 
     for line in block:
         if not line or line == '\n':
             break
 
         filename = line.rstrip('\n')
+        ext = Path(filename).suffix.lower()
 
-        # Skip files in filter list
         if state.file_filtering_mode and filename in state.files_to_filter:
+            n_filtered_by_name += 1
             continue
 
-        # Basic validation: file should not be empty
+        if state.include_extensions and ext not in state.include_extensions:
+            n_filtered_by_include_ext += 1
+            continue
+
+        if state.exclude_extensions and ext in state.exclude_extensions:
+            n_filtered_by_exclude_ext += 1
+            continue
+
         if filename.strip():
             files.append(filename)
             state.statistics.n_blocks_changing_code += 1
+
+    # Distinguish between truly empty commits and filtered-to-empty commits
+    if not files and state.verbose_mode:
+        if n_filtered_by_include_ext + n_filtered_by_exclude_ext + n_filtered_by_name > 0:
+            print_info(
+                f"Commit skipped after filtering — "
+                f"{n_filtered_by_include_ext} excluded by include-ext, "
+                f"{n_filtered_by_exclude_ext} excluded by exclude-ext, "
+                f"{n_filtered_by_name} excluded by name filter."
+            )
+        else:
+            print_warning("Commit has no files at all — likely a merge, empty, or submodule-only commit.")
 
     return files
 
@@ -570,12 +591,27 @@ def parse_arguments() -> argparse.Namespace:
                         help='ignores the emails listed in a text file (one email per line)')
     parser.add_argument('-ff', '--filter-files', type=Path,
                         help='ignores the files listed in a text file (one file per line)')
+    # after the existing -ff / --filter-files argument:
+    parser.add_argument(
+        '-ie', '--include-only-with-file-extensions',
+        nargs='+',
+        metavar='EXT',
+        help='only process files with these extensions (e.g. -ie .py .cpp .cu)'
+    )
+    parser.add_argument(
+        '-xe', '--exclude-all-with-file-extensions',
+        nargs='+',
+        metavar='EXT',
+        help='skip files with these extensions (e.g. -xe .json .html .php)'
+    )
     parser.add_argument('-a', '--aggregate-email-prefixes', type=Path,
                         help='JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})')
     parser.add_argument('-t', '--type-of-network',
                         choices=['inter_individual_graph_unweighted',
                                  'inter_individual_graph_weighted',
-                                 'inter_individual_graph_temporal'],
+                                 'inter_individual_graph_temporal',
+                                 'inter_individual_weighted_LOC_temporal',
+                                 'inter_individual_graph_weighted_SUM_LOC'],
                         default='inter_individual_graph_unweighted',
                         help='Type of network to generate (default: inter_individual_graph_unweighted)')
     parser.add_argument('-tntr', '--temporal-network-time-resolution', type=int, default=1,
@@ -633,10 +669,34 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
         state.file_filtering_mode = True
         console.print("\nFile filtering turned on")
 
-    # Load filter files
+    # Load specific filter files
     if state.email_filtering_mode and args.filter_emails:
         load_email_filter_file(state, args.filter_emails)
 
+
+    # Lot file extensions to be filtered
+    if args.include_only_with_file_extensions:
+        state.include_extensions = {
+            ext if ext.startswith('.') else f'.{ext}'
+            for ext in args.include_only_with_file_extensions
+        }
+        print_info(f"Include-extensions filter active: {sorted(state.include_extensions)}")
+
+    if args.exclude_all_with_file_extensions:
+        state.exclude_extensions = {
+            ext if ext.startswith('.') else f'.{ext}'
+            for ext in args.exclude_all_with_file_extensions
+        }
+        print_info(f"Exclude-extensions filter active: {sorted(state.exclude_extensions)}")
+
+    if state.include_extensions and state.exclude_extensions:
+        overlap = state.include_extensions & state.exclude_extensions
+        if overlap:
+            print_fatal_error(
+                f"Conflicting extension filters: {sorted(overlap)} appear in both "
+                f"-ie and -xe. Remove them from one of the two arguments."
+            )
+            sys.exit(1)
 
 def load_email_filter_file(state: ProcessingState, filter_file_path: str) -> None:
     """Load email filter list from file."""
@@ -861,6 +921,58 @@ def process_network_creation_step(state: ProcessingState) -> None:
     handle_step_completion(state, "process_network_creation_step")
 
 
+def enrich_graph_with_names_used_by_each_developer(
+        graph: nx.Graph,
+        affiliation_map: dict[str, str],
+) -> nx.Graph:
+    raise NotImplementedError
+
+
+def enrich_graph_with_files_edited_by_each_developer(
+        graph: nx.Graph,
+        affiliation_map: dict[str, str],
+) -> nx.Graph:
+    raise NotImplementedError
+
+
+
+
+
+def enrich_graph_with_affiliation(
+        graph: nx.Graph,
+        affiliation_map: dict[str, str],
+) -> nx.Graph:
+    """
+    Set the 'affiliation' attribute on every node in graph
+    using a pre-built {node_id: affiliation} mapping.
+
+    Args:
+        graph:           NetworkX graph to enrich (mutated in place).
+        affiliation_map: Dict mapping node ID (email) to affiliation string.
+
+    Returns:
+        The same graph object with affiliation attributes set.
+
+    Raises:
+        AffiliationValidationError: If any node has no entry in affiliation_map.
+    """
+
+    if graph is None:
+        print_fatal_error("The input did not led to the creation of a valid network ")
+        sys.exit()
+
+    missing = [node for node in graph.nodes() if node not in affiliation_map]
+    if missing:
+        raise AffiliationValidationError(
+            f"{len(missing)} node(s) have no entry in affiliation_map: {missing}"
+        )
+
+    for node, affiliation in affiliation_map.items():
+        if graph.has_node(node):
+            graph.nodes[node]["affiliation"] = affiliation
+
+    return graph
+
 def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     """Export results to GraphML and print summary."""
 
@@ -892,7 +1004,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
                 console.print(f"Exporting{output_static_w_graph=}")
                 console.print(f"to file{graphml_filename=}")
 
-            if state.debug_mode and ask_yes_or_no_question("Do you want to inspect output_temporal_graph?"):
+            if state.debug_mode and ask_yes_or_no_question("Do you want to inspect output_weighted_graph?"):
                 inspect(output_static_w_graph)
                 show_weighted_edges(output_static_w_graph)
 
@@ -902,7 +1014,24 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
         elif state.network_type == 'inter_individual_graph_unweighted':
             output_static_uw_graph : nx.Graph = state.container_of_extracted_networks.dev_to_dev_unweighted_network
-            #export_log_data.create_graphml_file(output_static_uw_graph, graphml_filename)
+
+            if state.verbose_mode:
+                console.print(f"Exporting{output_static_uw_graph=}")
+                console.print(f"to file{graphml_filename=}")
+
+            if state.debug_mode and ask_yes_or_no_question("Do you want to inspect output_unweighted_graph?"):
+                inspect(output_static_uw_graph)
+                show_weighted_edges(output_static_uw_graph)
+
+            if  output_static_uw_graph  is None :
+                print_warning(f"No unweighted graph found for {state.network_type=}, {output_static_uw_graph=}")
+
+            "add the affiliation attributes back"
+
+            output_static_uw_graph_with_affiliation = enrich_graph_with_affiliation(output_static_uw_graph,state.affiliations)
+
+            export_log_data.create_graphml_file(output_static_uw_graph_with_affiliation, graphml_filename)
+            #nx.write_graphml(output_static_uw_graph_with_affiliation, graphml_filename)
             export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
 
         else:
