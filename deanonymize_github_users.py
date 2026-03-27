@@ -518,9 +518,9 @@ def copy_graph_with_attributes(source_graph: nx.Graph) -> nx.Graph:
     for node, attributes in source_graph.nodes(data=True):
         target_graph.add_node(node, **attributes)
 
-    # Copy edges without attributes
-    for u, v in source_graph.edges(data=False):
-        target_graph.add_edge(u, v)
+    # Copy edges with attributes
+    for u, v, attrs in source_graph.edges(data=True):
+        target_graph.add_edge(u, v, **attrs)
 
     return target_graph
 
@@ -578,8 +578,10 @@ def iterate_graph(
             )
 
             logger.info(f"Updating node={node} with email={new_email} and affiliation={new_affiliation}")
-            data['e-mail'] = new_email
-            data['affiliation'] = new_affiliation
+            if new_email != "unknown-by-GitHub":
+                data['email'] = new_email  # fix key name too
+            if new_affiliation != "unknown-by-GitHub":
+                data['affiliation'] = new_affiliation
 
     # Write the modified graph to output file
     logger.info(f"Writing output GraphML file: {output_file}")
