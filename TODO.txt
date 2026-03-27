@@ -1,3 +1,132 @@
+Fix issues with deanonimizer
+
+Looking at the code carefully, I can spot several bugs and issues worth fixing before you run this at scale on 12 GraphML files.
+
+**Bug 1 — Wrong node attribute key (`e-mail` vs `email`)**
+
+```python
+old_email = data.get('e-mail', '')
+```
+
+ScrapLogGit2Net writes the attribute as `email` (no hyphen) in GraphML. If the key doesn't match, `old_email` is always `''`, the `@users.noreply.github.com` check never triggers, and no node ever gets deanonymized — silently. Check your GraphML file with `grep 'e-mail\|email' networks/pytorch-post.graphML` to confirm which key your files actually use.
+
+---
+
+**Bug 2 — Graph copy drops edge attributes**
+
+```python
+for u, v in source_graph.edges(data=False):
+    target_graph.add_edge(u, v)
+```
+
+`data=False` discards all edge attributes. For your unweighted networks this doesn't matter now, but when you later run the weighted or temporal variants the edge weights will silently disappear. Change to:
+
+```python
+for u, v, attrs in source_graph.edges(data=True):
+    target_graph.add_edge(u, v, **attrs)
+```
+
+---
+
+**Bug 3 — `already_known_user_affiliations` cache returns wrong value**
+
+```python
+already_known_user_affiliations[email] = (github_email, github_affiliation)
+return (github_email, github_affiliation)
+```
+
+The cache stores a tuple `(email, affiliation)` and is retrieved as:
+
+```python
+return already_known_user_affiliations[email]
+```
+
+That is consistent. But the caller then does:
+
+```python
+new_email, new_affiliation = deanonymize_github_user_with_cache_and_pygithub(...)
+data['e-mail'] = new_email
+data['affiliation'] = new_affiliation
+```
+
+So `new_email` receives `github_email` which is `"unknown-by-GitHub"` when the user has no public email. That means you overwrite a known noreply address with a worse value. The email should only be updated if a real one was found:
+
+```python
+new_email, new_affiliation = deanonymize_github_user_with_cache_and_pygithub(...)
+
+if new_email != "unknown-by-GitHub":
+    data['email'] = new_email          # fix key name too
+if new_affiliation != "unknown-by-GitHub":
+    data['affiliation'] = new_affiliation
+```
+
+---
+
+**Bug 4 — Organisations check silently fails**
+
+```python
+organizations = [org.login for org in user.get_orgs()]
+```
+
+`get_orgs()` only returns public organisation memberships. Private memberships (very common for corporate contributors at Meta, Google, etc.) are invisible. This is a data quality issue rather than a crash bug, but it means `github_affiliation` will often stay `"unknown-by-GitHub"` for exactly the contributors you most want to resolve. Worth noting in your paper as a limitation of the GitHub REST API approach.
+
+---
+
+**Bug 5 — Recursive retry on rate limit can stack overflow**
+
+```python
+except RateLimitExceededException:
+    time.sleep(3600)
+    return deanonymize_github_user_with_cache_and_pygithub(
+        email, github_token, already_known_user_affiliations
+    )
+```
+
+If the rate limit is hit repeatedly (possible over a long run on 12 large networks), recursive calls accumulate on the stack. Replace with a loop:
+
+```python
+except RateLimitExceededException:
+    while True:
+        logger.warning("Rate limit exceeded — sleeping 60 seconds...")
+        time.sleep(60)
+        try:
+            user = g.get_user(username)
+            break
+        except RateLimitExceededException:
+            continue
+```
+
+---
+
+**Bug 6 — `iterate_graph` modifies node data dict in place while using a copy**
+
+```python
+G_copy = copy_graph_with_attributes(G)
+...
+for node, data in G_copy.nodes(data=True):
+    ...
+    data['e-mail'] = new_email
+```
+
+Mutating `data` in place during iteration works in NetworkX (it is the live attribute dict), so this is not a crash. But it is fragile and worth making explicit — use `G_copy.nodes[node]['email'] = new_email` instead of mutating the `data` reference.
+
+---
+
+**Summary table:**
+
+| # | Severity | Issue |
+|---|---|---|
+| 1 | High | Wrong attribute key `e-mail` vs `email` — deanonymization never fires |
+| 2 | Medium | Edge attributes dropped in copy |
+| 3 | Medium | Overwrites known email with `unknown-by-GitHub` |
+| 4 | Low/info | `get_orgs()` misses private memberships |
+| 5 | Low | Recursive retry can stack overflow on sustained rate limiting |
+| 6 | Low | Implicit mutation of node dict during iteration |
+
+Bug 1 is the most urgent — if the key is wrong the whole script runs successfully but produces no changes, and you would only notice if you diff the input and output files.
+
+
+
 nx.write_graphml(output_static_uw_graph_with_affiliation, graphml_filename)
 #export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
 
