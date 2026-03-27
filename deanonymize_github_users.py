@@ -565,6 +565,7 @@ def iterate_graph(
     for node, data in G_copy.nodes(data=True):
         logger.debug(f"Iterating over node: {node}")
 
+        # changing data ont the best approach
         old_email = data.get('e-mail', '')
         old_affiliation = data.get('affiliation', '')
 
