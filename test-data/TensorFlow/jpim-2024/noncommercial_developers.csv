@@ -1,0 +1,64 @@
+email,org,domain,names,total_commits,files_found_in,commits_per_file
+dongjoon@apache.org,apache,apache.org,Dongjoon Hyun,32,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:32
+hsaputra@apache.org,apache,apache.org,Henry Saputra,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+subin@apache.org,apache,apache.org,Subin,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+ziheng@apache.org,apache,apache.org,ZihengJiang,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+maidens@eecs.berkeley.edu,berkeley,eecs.berkeley.edu,John Maidens,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+nmishra@berkeley.edu,berkeley,berkeley.edu,Nikhil Mishra,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+volkovskyi@berkeley.edu,berkeley,berkeley.edu,Oleksii Volkovskyi,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+wuhaoyu@berkeley.edu,berkeley,berkeley.edu,Haoyu Wu,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+jeffcarp@chromium.org,chromium,chromium.org,Jeff Carpenter,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+martis@chromium.org,chromium,chromium.org,Michael Martis,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+mikecase@chromium.org,chromium,chromium.org,Michael Case,6,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:6
+pkasting@chromium.org,chromium,chromium.org,Peter Kasting,4,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:4
+thomasanderson@chromium.org,chromium,chromium.org,Tom Anderson,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+alexander.bosch@dfki.de,dfki,dfki.de,Alexander Bosch,18,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:18
+ehsan.nadjaran_toosi@dfki.de,dfki,dfki.de,Ehsan Toosi,16,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:16
+julian.gross@dfki.de,dfki,dfki.de,Julian Gross,4,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:4
+marcel.koester@dfki.de,dfki,dfki.de,Marcel Koester,13,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:13
+thomas.schmeyer@dfki.de,dfki,dfki.de,Thomas Schmeyer,10,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:10
+admcrae@gatech.edu,gatech,gatech.edu,amcrae,10,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:10
+dcastro9@gatech.edu,gatech,gatech.edu,dcastro9,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+e.ashtianjr@gatech.edu,gatech,gatech.edu,eashtian3,4,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:4
+sdamani6@gatech.edu,gatech,gatech.edu,sdamani,8,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:8
+sdamani@gatech.edu,gatech,gatech.edu,Sana Damani,3,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:3
+fedotoff@ispras.ru,ispras,ispras.ru,fedotoff,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+kobrineli@ispras.ru,ispras,ispras.ru,Eli Kobrin,12,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:12
+kutz@ispras.ru,ispras,ispras.ru,Daniil Kutz,13,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:13
+pa_darochek@ispras.ru,ispras,ispras.ru,Darya Parygina,4,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:4
+vishnya@ispras.ru,ispras,ispras.ru,Alexey Vishnyakov,5,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:5
+andhus@kth.se,kth,kth.se,Anders Huss,4,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:4
+konradma@kth.se,kth,kth.se,Konrad Magnusson,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+tiol@kth.se,kth,kth.se,timsl,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+wdchien@kth.se,kth,kth.se,Steven | steven,10,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:10
+ctl@mit.edu,mit,mit.edu,Chris Lesniewski,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+gharbi@mit.edu,mit,mit.edu,Michael Gharbi,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+ichuang@mit.edu,mit,mit.edu,ichuang,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+jasperv@alum.mit.edu,mit,alum.mit.edu,Jasper Vicenti,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+korrawat@mit.edu,mit,mit.edu,James Pruegsanusak,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+kris@alum.mit.edu,mit,alum.mit.edu,dauba-dauba,3,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:3
+rryan@alum.mit.edu,mit,alum.mit.edu,RJ Ryan,9,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:9
+vondrick@mit.edu,mit,mit.edu,Carl Vondrick,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+123bskim@naver.com,naver,naver.com,Beomsu Kim,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+cij1230@naver.com,naver,naver.com,Appleholic,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+dlwkdgn1@naver.com,naver,naver.com,이장후,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+izeye@naver.com,naver,naver.com,Johnny Lim,14,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:14
+jhdf1234@naver.com,naver,naver.com,HJYOO,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+jsrimr@naver.com,naver,naver.com,Jungsub Lim,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+mpbb03@naver.com,naver,naver.com,Yunmo Koo,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+msca8h@naver.com,naver,naver.com,Ray Kim,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+psj8252@naver.com,naver,naver.com,박상준,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+whdgus963@naver.com,naver,naver.com,merturl,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+yoodongphil@naver.com,naver,naver.com,dongpilYu,3,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:3
+chenxd@pku.edu.cn,pku,pku.edu.cn,chanis,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+qychen@pku.edu.cn,pku,pku.edu.cn,CQY,4,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:4
+totentanz@pku.edu.cn,pku,pku.edu.cn,lurker,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+yuanqiangliu@pku.edu.cn,pku,pku.edu.cn,liuyuanqiang,5,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:5
+zmxdream@pku.edu.cn,pku,pku.edu.cn,zmx,2,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:2
+hsgkim@snu.ac.kr,snu,snu.ac.kr,Hoeseong Kim,9,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:9
+jhchoi@europa.snu.ac.kr,snu,europa.snu.ac.kr,Jihun Choi,8,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:8
+jinhoyang@snu.ac.kr,snu,snu.ac.kr,SOLARIS,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+k.taebum@snu.ac.kr,snu,snu.ac.kr,Taebum Kim,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+ljh0728@snu.ac.kr,snu,snu.ac.kr,elzino,1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+seungjooli@snu.ac.kr,snu,snu.ac.kr,Seungwoo Choi (Biggie),1,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:1
+taehoonlee@snu.ac.kr,snu,snu.ac.kr,Taehoon Lee,19,tensorFlowGitLog-all-till-12-Apri-2024.IN,tensorFlowGitLog-all-till-12-Apri-2024.IN:19
