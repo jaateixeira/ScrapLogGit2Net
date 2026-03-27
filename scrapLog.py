@@ -88,98 +88,91 @@ def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
 def extract_affiliation_from_email(
         email: Email,
         state: ProcessingState
-) -> str | None:
-    """Get affiliation from an email address with aggregation support."""
+) -> str:
+    """
+    Get affiliation from an email address with aggregation support.
+
+    Returns the inferred organisation name, or "unknown_by_ScrapLog" if the
+    domain is valid but affiliation cannot be determined.
+
+    Returns None only for genuinely invalid input (not a string, empty, or
+    unparseable email) — callers should treat None as a signal to skip the
+    record entirely, whereas "unknown_by_ScrapLog" means the record is valid
+    but unresolved.
+    """
 
     if state.verbose_mode or state.very_verbose_mode:
         logger.info(f"\textract_affiliation_from_email({email})")
 
-    # Input validation
+    # ── Input validation — return None for bad input, not unknown ────────────
     if not email or not isinstance(email, str):
         return None
 
-        # Clean the email
     cleaned_email = clean_email(email)
     if not cleaned_email:
         return None
+
     email = cleaned_email.lower()
 
     try:
-        # Clean email
         email = email.strip()
         if email.endswith('?'):
             email = email[:-1]
 
-        # Validate email format
         if '@' not in email:
             if state.verbose_mode:
                 console.print(f"WARNING: No @ in email: {email}")
-            return None
+            return "unknown_by_ScrapLog"
 
-        # Extract domain and normalize to lowercase
         domain_part = email.split('@')[-1].lower()
 
-        # Handle case where there's nothing after @
         if not domain_part:
             if state.verbose_mode:
                 console.print(f"WARNING: Empty domain in email: {email}")
-            return None
+            return "unknown_by_ScrapLog"
 
         domain_parts = domain_part.split('.')
-
-        # Remove any empty parts from trailing/leading dots
         domain_parts = [part for part in domain_parts if part]
 
-        # If no valid domain parts after cleaning, return None
         if not domain_parts:
             if state.verbose_mode:
                 console.print(f"WARNING: No valid domain parts in: {email}")
-            return None
+            return "unknown_by_ScrapLog"
 
-        # The organization is almost always the second-to-last component
+        # Resolve organisation from domain
         # Examples:
-        # - abo.fi -> "abo" (fi is TLD)
-        # - mit.edu -> "mit" (edu is TLD)
-        # - us.ibm.com -> "ibm" (com is TLD, us is subdomain)
-        # - ca.us.ibm.com -> "ibm" (com is TLD, ca.us are subdomains)
-        # - alumni.mit.edu -> "mit" (edu is TLD, alumni is subdomain)
-        # - company.co.uk -> "company" (co.uk is compound TLD)
-        # - gmail.com -> "gmail" (com is TLD)
-
-        # Check for compound TLDs (co.uk, com.au, etc.)
-        # The organization is usually the part before the compound TLD
-        if len(domain_parts) >= 3 and domain_parts[-2] in {'co', 'com', 'ac', 'edu', 'gov', 'net', 'org', 'ltd', 'plc'}:
+        #   abo.fi            -> "abo"
+        #   mit.edu           -> "mit"
+        #   us.ibm.com        -> "ibm"
+        #   alumni.mit.edu    -> "mit"
+        #   company.co.uk     -> "company"
+        #   gmail.com         -> "gmail"
+        if len(domain_parts) >= 3 and domain_parts[-2] in {
+            'co', 'com', 'ac', 'edu', 'gov', 'net', 'org', 'ltd', 'plc'
+        }:
             potential_org = domain_parts[-3]
         elif len(domain_parts) >= 2:
-            # Default case: organization is the second-to-last part
-            # abo.fi -> abo
-            # mit.edu -> mit
-            # ibm.com -> ibm
-            # gmail.com -> gmail
-            # whitehouse.gov -> whitehouse
             potential_org = domain_parts[-2]
         else:
-            # Single part domain (e.g., "localhost", "internal")
             potential_org = domain_parts[0]
 
-        # Apply email aggregation if configured
+        # Apply aggregation config if provided
         for prefix, consolidated_name in state.email_aggregation_config.items():
             prefix_lower = prefix.lower()
             if potential_org == prefix_lower or potential_org.startswith(prefix_lower):
                 if state.verbose_mode or state.very_verbose_mode:
                     logger.info(f"\textracted_affiliation_from_email({email})={potential_org}")
-                return potential_org
+                return potential_org.lower()
 
-        # No config match, return the potential organization
+        # Valid domain, no config match — return as-is
         if state.verbose_mode or state.very_verbose_mode:
             logger.info(f"\textracted_affiliation_from_email({email})={potential_org}")
-        return potential_org
+        return potential_org.lower()
 
     except Exception as e:
         if state.verbose_mode or state.very_verbose_mode:
             console.print(f"Error extracting affiliation from {email}: {e}")
-        return None
-
+        return "unknown_by_ScrapLog"
 
 def parse_time_name_email_affiliation(
         line: str,
