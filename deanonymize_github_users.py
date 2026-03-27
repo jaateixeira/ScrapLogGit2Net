@@ -135,6 +135,7 @@ def load_configuration(config_path: Optional[str] = None) -> Dict[str, Any]:
         error_message += "1. Environment variables: GITHUB_TOKEN\n"
         error_message += "2. Config file: [github] section with 'token' keys\n"
         error_message += "3. Command line: --config path/to/config.ini"
+        print("see https://github.com/settings/tokens/")
         raise ValueError(error_message)
 
     return config_values
