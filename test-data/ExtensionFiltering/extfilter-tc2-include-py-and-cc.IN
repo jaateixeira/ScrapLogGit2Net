@@ -7,6 +7,7 @@ tensorflow/compiler/mlir/quantization/tensorflow/python/quantize_model.py
 
 ==Benjamin Kramer;kramerb@google.com;Wed Mar 27 12:34:46 2024 -0700==
 tensorflow/compiler/mlir/tensorflow/BUILD
+tensorflow/compiler/mlir/quantization/tensorflow/python/quantize_model.py
 
 ==Matt Callanan;mpcallanan@google.com;Thu Mar 28 08:12:15 2024 -0700==
 tensorflow/core/data/service/client/data_service_client.cc

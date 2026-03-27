@@ -689,6 +689,15 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
         }
         print_info(f"Exclude-extensions filter active: {sorted(state.exclude_extensions)}")
 
+    if state.include_extensions and state.exclude_extensions:
+        overlap = state.include_extensions & state.exclude_extensions
+        if overlap:
+            print_fatal_error(
+                f"Conflicting extension filters: {sorted(overlap)} appear in both "
+                f"-ie and -xe. Remove them from one of the two arguments."
+            )
+            sys.exit(1)
+
 def load_email_filter_file(state: ProcessingState, filter_file_path: str) -> None:
     """Load email filter list from file."""
     try:

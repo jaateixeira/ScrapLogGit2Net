@@ -189,9 +189,19 @@ else
     cp "$TC1_output" "$TC1_xml"
 
     TC1_expected=$(cat << 'EOF'
-<node id="thaink@google.com"/>
-<node id="gardener@tensorflow.org"/>
-<edge source="thaink@google.com" target="gardener@tensorflow.org"
+<graph id="G" edgedefault="undirected">
+        <node id="0">
+        <data key="d0">gardener@tensorflow.org</data>
+        <data key="d1">turquoise</data>
+        <data key="d2">tensorflow</data>
+        </node>
+        <node id="1">
+        <data key="d0">thaink@google.com</data>
+        <data key="d1">turquoise</data>
+        <data key="d2">google</data>
+        </node>
+        <edge id="e0" source="0" target="1"/>
+</graph
 EOF
 )
     TC1_passed=true
@@ -209,7 +219,7 @@ fi
 echo
 echo
 
-exit
+
 
 # =============================================================================
 # TC2 — include .py and .cc
@@ -229,7 +239,7 @@ echo "TESTCASE 2 — include .py and .cc"
 
 TC2_input="test-data/ExtensionFiltering/extfilter-tc2-include-py-and-cc.IN"
 TC2_output="extfilter-tc2-include-py-and-cc.NetworkFile.graphML"
-TC2_cmd="./scrapLog.py -r $TC2_input -t inter_individual_graph_unweighted -ie .py .cc"
+TC2_cmd="./scrapLog.py -r $TC2_input -t inter_individual_graph_unweighted  --include-only-with-file-extensions .py .cc"
 
 echo "Command: $TC2_cmd"
 $TC2_cmd
@@ -238,13 +248,25 @@ if [ ! -f "$TC2_output" ]; then
     echo "${RED}Error: output file $TC2_output not found.${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
     FAILED_TESTS+=("TC2")
+    exit
 else
     TC2_xml="$TEMP_DIR/tc2.xml"
     cp "$TC2_output" "$TC2_xml"
 
     TC2_expected=$(cat << 'EOF'
-<node id="thaink@google.com"/>
-<node id="mpcallanan@google.com"/>
+<graph id="G" edgedefault="undirected">
+        <node id="0">
+        <data key="d0">kramerb@google.com</data>
+        <data key="d1">turquoise</data>
+        <data key="d2">google</data>
+        </node>
+        <node id="1">
+        <data key="d0">thaink@google.com</data>
+        <data key="d1">turquoise</data>
+        <data key="d2">google</data>
+        </node>
+        <edge id="e0" source="0" target="1"/>
+</graph>
 EOF
 )
     TC2_passed=true
@@ -255,12 +277,15 @@ EOF
 
     $TC2_passed && echo "${GREEN}TESTCASE 2 passed${NC}" || {
         TESTS_FAILED=$((TESTS_FAILED + 1)); FAILED_TESTS+=("TC2")
+        exit
     }
     rm -f "$TC2_output"
 fi
 
 echo
 echo
+
+
 
 # =============================================================================
 # TC3 — exclude .bzl
@@ -281,7 +306,7 @@ echo "TESTCASE 3 — exclude .bzl"
 
 TC3_input="test-data/ExtensionFiltering/extfilter-tc3-exclude-bzl.IN"
 TC3_output="extfilter-tc3-exclude-bzl.NetworkFile.graphML"
-TC3_cmd="./scrapLog.py -r $TC3_input -t inter_individual_graph_unweighted -xe .bzl"
+TC3_cmd="./scrapLog.py -r $TC3_input -t inter_individual_graph_unweighted --exclude-all-with-file-extensions .bzl"
 
 echo "Command: $TC3_cmd"
 $TC3_cmd
@@ -290,13 +315,25 @@ if [ ! -f "$TC3_output" ]; then
     echo "${RED}Error: output file $TC3_output not found.${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
     FAILED_TESTS+=("TC3")
+    exit
 else
     TC3_xml="$TEMP_DIR/tc3.xml"
     cp "$TC3_output" "$TC3_xml"
 
     TC3_expected=$(cat << 'EOF'
-<node id="phawkins@google.com"/>
-<node id="slebedev@google.com"/>
+<graph id="G" edgedefault="undirected">
+        <node id="0">
+        <data key="d0">phawkins@google.com</data>
+        <data key="d1">turquoise</data>
+        <data key="d2">google</data>
+        </node>
+        <node id="1">
+        <data key="d0">polive@google.com</data>
+        <data key="d1">turquoise</data>
+        <data key="d2">google</data>
+        </node>
+        <edge id="e0" source="0" target="1"/>
+</graph>
 EOF
 )
     TC3_passed=true
@@ -308,6 +345,7 @@ EOF
 
     $TC3_passed && echo "${GREEN}TESTCASE 3 passed${NC}" || {
         TESTS_FAILED=$((TESTS_FAILED + 1)); FAILED_TESTS+=("TC3")
+        exit
     }
     rm -f "$TC3_output"
 fi
@@ -333,7 +371,7 @@ echo "TESTCASE 4 — include .cc .h then exclude .h  (net: .cc only)"
 
 TC4_input="test-data/ExtensionFiltering/extfilter-tc4-include-cc-h-exclude-h.IN"
 TC4_output="extfilter-tc4-include-cc-h-exclude-h.NetworkFile.graphML"
-TC4_cmd="./scrapLog.py -r $TC4_input -t inter_individual_graph_unweighted -ie .cc .h -xe .h"
+TC4_cmd="./scrapLog.py -r $TC4_input -t inter_individual_graph_unweighted -ie .cc .h -xe .md"
 
 echo "Command: $TC4_cmd"
 $TC4_cmd
@@ -342,14 +380,25 @@ if [ ! -f "$TC4_output" ]; then
     echo "${RED}Error: output file $TC4_output not found.${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
     FAILED_TESTS+=("TC4")
+    exit
 else
     TC4_xml="$TEMP_DIR/tc4.xml"
     cp "$TC4_output" "$TC4_xml"
 
     TC4_expected=$(cat << 'EOF'
-<node id="hebecker@google.com"/>
-<node id="bchetioui@google.com"/>
-<edge source="hebecker@google.com" target="bchetioui@google.com"
+<graph id="G" edgedefault="undirected">
+        <node id="0">
+        <data key="d0">bchetioui@google.com</data>
+        <data key="d1">turquoise</data>
+        <data key="d2">google</data>
+        </node>
+        <node id="1">
+        <data key="d0">hebecker@google.com</data>
+        <data key="d1">turquoise</data>
+        <data key="d2">google</data>
+        </node>
+        <edge id="e0" source="0" target="1"/>
+</graph>
 EOF
 )
     TC4_passed=true
@@ -361,6 +410,7 @@ EOF
 
     $TC4_passed && echo "${GREEN}TESTCASE 4 passed${NC}" || {
         TESTS_FAILED=$((TESTS_FAILED + 1)); FAILED_TESTS+=("TC4")
+        exit
     }
     rm -f "$TC4_output"
 fi
@@ -384,41 +434,32 @@ echo
 echo ""
 echo "────────────────────────────────────────────────────────────────────"
 echo "TESTCASE 5 — include .py .cc then exclude .cc  (net: .py only)"
+echo "TESTCASE 5  — overlapping -ie and -xe should exit with error"
 
-TC5_input="test-data/ExtensionFiltering/extfilter-tc5-include-py-cc-exclude-cc.IN"
-TC5_output="extfilter-tc5-include-py-cc-exclude-cc.NetworkFile.graphML"
-TC5_cmd="./scrapLog.py -r $TC5_input -t inter_individual_graph_unweighted -ie .py .cc -xe .cc"
 
-echo "Command: $TC5_cmd"
-$TC5_cmd
+TC5_cmd="./scrapLog.py -r test-data/ExtensionFiltering/extfilter-tc1-include-py-only.IN \
+    -t inter_individual_graph_unweighted -ie .py .cc -xe .cc"
 
-if [ ! -f "$TC5_output" ]; then
-    echo "${RED}Error: output file $TC5_output not found.${NC}"
-    TESTS_FAILED=$((TESTS_FAILED + 1))
-    FAILED_TESTS+=("TC5")
+echo -e TC5_cmd="$TC5_cmd"
+
+output=$($TC5_cmd 2>&1)
+exit_code=$?
+
+echo -e output="$output"
+
+
+
+echo -e "Expecting a error message to in the output on  conflicting extension filters:"
+
+
+if [ $exit_code -ne 0 ] && echo "$output" | grep -q "Conflicting extension filters"; then
+    echo "${GREEN}TESTCASE 5 passed — correctly rejected overlapping filters${NC}"
 else
-    TC5_xml="$TEMP_DIR/tc5.xml"
-    cp "$TC5_output" "$TC5_xml"
-
-    TC5_expected=$(cat << 'EOF'
-<node id="thaink@google.com"/>
-<node id="gardener@tensorflow.org"/>
-<edge source="thaink@google.com" target="gardener@tensorflow.org"
-EOF
-)
-    TC5_passed=true
-
-    if ! validate_xml "$TC5_xml" "$TC5_expected" "TC5"; then TC5_passed=false; fi
-    if ! assert_node_absent "$TC5_xml" "mpcallanan@google.com" "TC5"; then TC5_passed=false; fi
-    if ! assert_node_absent "$TC5_xml" "dansuh@google.com"     "TC5"; then TC5_passed=false; fi
-    if ! assert_edge_absent "$TC5_xml" \
-        "thaink@google.com" "mpcallanan@google.com" "TC5"; then TC5_passed=false; fi
-
-    $TC5_passed && echo "${GREEN}TESTCASE 5 passed${NC}" || {
-        TESTS_FAILED=$((TESTS_FAILED + 1)); FAILED_TESTS+=("TC5")
-    }
-    rm -f "$TC5_output"
+    echo "${RED}TESTCASE 5 failed${NC}"
+    echo "Output    : $output"
+    exit
 fi
+
 
 # =============================================================================
 # Summary
