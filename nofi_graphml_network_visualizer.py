@@ -264,6 +264,40 @@ class GraphMLVisualizer:
 
         console.print(table)
 
+    def reanalyze_affiliations_after_filtering(self) -> None:
+        """Recompute affiliation counts from the filtered graph after filtering."""
+        if not self.filtered_graph:
+            return
+
+        self.affiliation_counts = {}
+        for _, data in self.filtered_graph.nodes(data=True):
+            affiliation = data.get('affiliation', '')
+            if affiliation:
+                self.affiliation_counts[affiliation] = \
+                    self.affiliation_counts.get(affiliation, 0) + 1
+
+        # Re-sort descending
+        self.affiliation_counts = dict(
+            sorted(self.affiliation_counts.items(),
+                   key=lambda x: x[1], reverse=True)
+        )
+
+        # Recompute top_organizations from the now-clean counts
+        if self.config.org_list_top_only:
+            n = int(self.config.org_list_top_only.replace('top', ''))
+            self.top_organizations = dict(
+                list(self.affiliation_counts.items())[:n]
+            )
+        else:
+            self.top_organizations = dict(
+                list(self.affiliation_counts.items())[:10]
+            )
+
+        if self.config.verbose:
+            console.print(
+                "[yellow]Affiliation counts recomputed after filtering[/yellow]"
+            )
+
     def filter_graph(self) -> None:
         """Apply all configured filters to the graph."""
         if not self.graph:
@@ -289,6 +323,8 @@ class GraphMLVisualizer:
             self._filter_top_organizations()
 
         self._print_filtering_results()
+
+
 
     def _filter_by_organizations(self, org_list: List[str], keep: bool = True) -> None:
         """Filter nodes by organization list."""
@@ -600,20 +636,21 @@ class GraphMLVisualizer:
             orgs_to_show = list(self.affiliation_counts.items())[:10]
 
         # Create legend items
+        # Only show legend entries for orgs still present in the filtered graph
+        active_affiliations = {
+            data.get('affiliation', '')
+            for _, data in self.filtered_graph.nodes(data=True)
+        }
+
         for org, count in orgs_to_show:
+            if org not in active_affiliations:  # ← skip orgs filtered out
+                continue
             color = self.color_map.get(org, 'gray')
             legend_elements.append(
-                Line2D(
-                    [0], [0],
-                    marker='o',
-                    color=color,
-                    label=f"{org} ({count})",
-                    lw=0,
-                    markerfacecolor=color,
-                    markersize=8
-                )
+                Line2D([0], [0], marker='o', color=color,
+                       label=f"{org} ({count})", lw=0,
+                       markerfacecolor=color, markersize=8)
             )
-
         # Position legend based on location
         if self.config.legend_location == 'outside_center_right':
             fig.subplots_adjust(right=0.7)
@@ -911,6 +948,7 @@ def main() -> None:
         visualizer.normalize_affiliations()
         visualizer.analyze_affiliations()
         visualizer.filter_graph()
+        visualizer.reanalyze_affiliations_after_filtering()  # ← add this line
         visualizer.calculate_centralities()
         visualizer.calculate_layout()
 
