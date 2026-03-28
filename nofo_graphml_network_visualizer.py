@@ -478,6 +478,7 @@ class NetworkVisualizer:
         logger.info("Creating visualization...")
 
         # Set Georgia font for all text elements
+        """
         plt.rcParams.update({
             'font.family': 'serif',
             'font.serif': ['Georgia'],
@@ -485,6 +486,8 @@ class NetworkVisualizer:
             #'text.usetex': True,  # Set to True if you have LaTeX installed
             'pgf.rcfonts': False,  # Disable if using pgf backend
         })
+
+        """
 
         """
         # Set Times New Roman as the primary font
