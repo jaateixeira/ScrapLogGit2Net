@@ -410,7 +410,7 @@ def deanonymize_github_user_with_cache_and_pygithub(
         return already_known_user_affiliations[email]
 
     github_email = "unknown-by-GitHub"
-    github_affiliation = "unknown-by-GitHub"
+    github_affiliation = "unknown-by-github"
 
     # Extract the username from the email address
     try:
@@ -580,9 +580,9 @@ def iterate_graph(
 
             logger.info(f"Updating node={node} with email={new_email} and affiliation={new_affiliation}")
             if new_email != "unknown-by-GitHub":
-                data['email'] = new_email  # fix key name too
-            if new_affiliation != "unknown-by-GitHub":
-                data['affiliation'] = new_affiliation
+                data['email'] = new_email
+            if new_affiliation.lower() != "unknown-by-github":
+                data['affiliation'] = new_affiliation.lower()
 
     # Write the modified graph to output file
     logger.info(f"Writing output GraphML file: {output_file}")
