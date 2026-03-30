@@ -184,6 +184,21 @@ def print_summary(project: str, results: dict) -> None:
     print()
 
 
+def print_developer_listing(results: dict) -> None:
+    for period in ("pre", "washout", "post"):
+        d = results[period]
+        if d is None or not d["solo_only_devs"]:
+            continue
+        start, end = PERIODS[period]
+        devs = sorted(d["solo_only_devs"], key=str.lower)
+        print(f"\n  Solo-only developers [{period}]  "
+              f"{start.date()} \u2013 {end.date()}  ({len(devs)} developers)")
+        print(f"  {chr(8212)*52}")
+        for dev in devs:
+            print(f"  {dev}")
+    print()
+
+
 def print_file_listing(results: dict) -> None:
     for period in ("pre", "washout", "post"):
         d = results[period]
@@ -290,6 +305,9 @@ def main():
         results[period] = build_period_data(commits, period) if has_data else None
 
     print_summary(project, results)
+
+    if args.list_developers:
+        print_developer_listing(results)
 
     if args.list_files:
         print_file_listing(results)
