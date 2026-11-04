@@ -97,7 +97,60 @@ Note that:
   <em>Ilustration on how ScrapLogGit2Net models the network from Git commit logs.</em>
 </p>
 
+# Types of networks **scrapLog.py** can build
 
+The type of network is chosen with the `-t` / `--type-of-network` option. If you do not choose one, you get the default, `inter_individual_graph_unweighted`.
+
+All types share the same basic model:
+- **Nodes** are software developers, identified by their commit email address.
+- **Affiliation** is stored as a node attribute (`affiliation`) and inferred from the email domain (e.g., `us.ibm.com` becomes `ibm`, `alumni.mit.edu` becomes `mit`, `gmail.com` becomes `gmail`). If the domain is valid but the organization cannot be determined, the affiliation is `unknown_by_ScrapLog`. Use `-a` to aggregate email prefixes into a single organization (see the command line options below).
+- **Edges** connect two developers that co-edited the same source-code file.
+
+The types differ in how much information they keep about *how much* and *when* developers co-edited files:
+
+| Network type (`-t`) | Edges | Output file (default name) | Status |
+|---|---|---|---|
+| `inter_individual_graph_unweighted` (default) | Tie present or absent | `<input>.NetworkFile.graphML` | Available |
+| `inter_individual_graph_weighted` | Tie with a `weight` attribute | `<input>.WeightedNetwork.graphML` | Available |
+| `inter_individual_graph_temporal` | Time-stamped ties (who, with whom, when) | `<input>.temporal.graphml.zip` | Available |
+| `inter_individual_weighted_LOC_temporal` | Weighted by lines of code, over time | - | Listed in `--help`, not exported yet |
+| `inter_individual_graph_weighted_SUM_LOC` | Weighted by the sum of lines of code | - | Listed in `--help`, not exported yet |
+
+Here `<input>` is the name of the raw changelog file given with `-r`, without its last extension (e.g., `tensorFlowGitLog-first-trimester-2024.IN` gives `tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML`). Use `-o` / `--output-file` to choose another file name.
+
+## Unweighted inter-individual network (default)
+The simplest and most widely used network: an undirected graph where two developers are connected if they co-edited at least one source-code file during the analyzed period. It does not tell how often or when. It is the right choice for classic Social Network Analysis such as centrality, density, components, and visualization with the `formatFilterAndViz-*` tools.
+
+```
+./scrapLog.py -r test-data/tensorFlowGitLog-first-trimester-2024.IN
+./scrapLog.py -r test-data/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_unweighted
+```
+
+## Weighted inter-individual network
+Same nodes and ties as the unweighted network, but each tie carries a `weight` attribute that quantifies the collaborative relationship between two developers, so you can tell strong ties from incidental ones. It is derived from the temporal network (see `extract_weighted_network.py` for the exact weighting). The weight is written to the GraphML file as an edge attribute.
+
+```
+./scrapLog.py -r test-data/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_weighted
+```
+
+## Temporal inter-individual network
+Each tie is time-stamped with the moment of the contribution, so you can study how collaboration evolves, for instance with sliding windows or with temporal models. The network is exported as a compressed GraphML file (`.graphml.zip`) using the [networkx-temporal](https://pypi.org/project/networkx-temporal/) package. Use `-tntr` / `--temporal-network-time-resolution` to set the time resolution of the temporal network (an integer, default `1`, i.e., one second).
+
+```
+./scrapLog.py -r test-data/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_temporal -tntr 86400
+```
+
+Note that the temporal network is always extracted internally, as the first step of the pipeline, whatever type you request. The weighted network is then derived from it, and the unweighted network from the weighted one:
+
+```
+git log  ->  temporal network  ->  weighted network  ->  unweighted network
+```
+
+## Line-of-code networks (not available yet)
+`inter_individual_weighted_LOC_temporal` and `inter_individual_graph_weighted_SUM_LOC` are accepted by the command line parser but are not yet exported by `scrapLog.py`: choosing them ends with an "Unknown network type" error. They are reserved for networks whose ties are weighted by lines of code.
+
+## From individuals to organizations
+`scrapLog.py` itself outputs networks of **individuals**. To get a network of **organizations**, in which the weighted edge between two organizations counts the relationships between their developers, pass the GraphML file to `transform-nofi-2-nofo-GraphML.py`. Intra-organizational relationships are ignored in that transformation.
 
 # How to use **scrapLog.py**
 You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
@@ -179,7 +232,7 @@ or
 python3 scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN
 ```
 
-By default, and all goes well, you get a "NetworkFile.graphML" file prefixed with the data input filename (e.g., tensorFlowGitLog-first-trimester-2024.IN.NetworkFile.graphML) capturing the social network. Congrats. You collected social network data ready for analysis.
+By default, and all goes well, you get a "NetworkFile.graphML" file prefixed with the data input filename (e.g., tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML) capturing the unweighted social network of individuals. Congrats. You collected social network data ready for analysis. Use the `-t` option to get weighted or temporal networks instead (see [Types of networks](#types-of-networks-scraplogpy-can-build)).
 
 # Known issues on mining Git repositories from a network perspective with ScrapLogGit2Net
 
@@ -230,25 +283,47 @@ A way to quantify this issue is to first analyze all the historical data. From d
 - Use verbose mode for debugging and testing
 
 ```
-usage: scrapLog.py [-h] [-l LSER] [-r RAW] [-s SSER] [-fe FILTER_EMAILS] [-ff FILTER_FILES] [-v]
+usage: scrapLog.py [-h] [-l LOAD] -r RAW [-s SAVE] [-fe FILTER_EMAILS] [-ff FILTER_FILES]
+                   [-ie EXT [EXT ...]] [-xe EXT [EXT ...]] [-a AGGREGATE_EMAIL_PREFIXES]
+                   [-t {inter_individual_graph_unweighted,inter_individual_graph_weighted,
+                        inter_individual_graph_temporal,inter_individual_weighted_LOC_temporal,
+                        inter_individual_graph_weighted_SUM_LOC}]
+                   [-tntr TEMPORAL_NETWORK_TIME_RESOLUTION] [-o OUTPUT_FILE] [-v] [-d] [-st]
 
-Scrape some changelog to create networks/graphs for research purposes
+Scrap git changelog to create networks/graphs for research purposes
 
 options:
   -h, --help            show this help message and exit
-  -l LSER, --lser LSER  loads and processes a serialized changelog
-  -r RAW, --raw RAW     processes from a raw Git changelog
-  -s SSER, --sser SSER  processes from a raw Git changelog and saves it into a serialized changelog. Requires -r for input
-  -fe FILTER_EMAILS, --filter_emails FILTER_EMAILS
+  -l LOAD, --load LOAD  loads and processes a serialized changelog
+  -r RAW, --raw RAW     processes from a raw git changelog (required)
+  -s SAVE, --save SAVE  processes from a raw git changelog and saves it into a serialized changelog
+  -fe FILTER_EMAILS, --filter-emails FILTER_EMAILS
                         ignores the emails listed in a text file (one email per line)
-  -ff FILTER_FILES, --filter_files FILTER_FILES
+  -ff FILTER_FILES, --filter-files FILTER_FILES
                         ignores the files listed in a text file (one file per line)
-  -v, --verbose         increased output verbosity
+  -ie EXT [EXT ...], --include-only-with-file-extensions EXT [EXT ...]
+                        only process files with these extensions (e.g. -ie .py .cpp .cu)
+  -xe EXT [EXT ...], --exclude-all-with-file-extensions EXT [EXT ...]
+                        skip files with these extensions (e.g. -xe .json .html .php)
+  -a AGGREGATE_EMAIL_PREFIXES, --aggregate-email-prefixes AGGREGATE_EMAIL_PREFIXES
+                        JSON file defining email domain prefixes to aggregate
+                        (e.g., {"ibm": "ibm", "google": "google"})
+  -t TYPE, --type-of-network TYPE
+                        Type of network to generate (default: inter_individual_graph_unweighted)
+  -tntr N, --temporal-network-time-resolution N
+                        Temporal network time resolution (default: 1 second)
+  -o OUTPUT_FILE, --output-file OUTPUT_FILE
+                        creates a network/graph graphml file with the given name
+  -v, --verbose         Increase verbosity level (use -v, -vv, or -vvv)
+  -d, --debug           Enable debug output
+  -st, --strict         strict validation mode - fail on validation errors
 ```
 
 For example, the following command
 
-```./scrapLog.py -f test-configurations/TensorFlowBots.txt  -r test-data/tensorFlowGitLog-all-till-12-April-2024.IN --verbose``
+```
+./scrapLog.py -fe test-configurations/TensorFlowBots.txt  -r test-data/tensorFlowGitLog-all-till-12-April-2024.IN --verbose
+```
 
 scrapes the Git log in the test-data/tensorFlowGitLog-all-till-12-April-2024.IN input file, ignores emails listed in the test-configurations/TensorFlowBots.txt file, and prints debug information in a verbose way. By default, it also creates a
 network file in the standard XML-based format GraphML.
