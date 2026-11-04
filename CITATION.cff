@@ -15,7 +15,7 @@ authors:
     given-names: "José Apolinário"
     affiliation: "University of Jyväskylä"
     orcid: "https://orcid.org/0000-0002-7195-4157"
-version: "0.1.0"
+version: "1.0-alvarinho"
 doi: "10.5281/zenodo.23964330"
 date-released: "2026-11-04"
 repository-code: "https://github.com/jaateixeira/ScrapLogGit2Net"
