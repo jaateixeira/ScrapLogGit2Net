@@ -56,20 +56,30 @@ Hard to figure out who works with whom in complex software projects.
 # Vision
 A world where software co-production analytics put social network visualizations at the side of standard quantitative statistical data. All towards the improved management and engineering of complex software projects orchestrated on Git.
 
-# Executable tools
-- **scrapLog.py** - Mines a Git log with SNA (associating developers that co-edit the same source-code files) and outputs a GraphML network file (IN Git log -> GraphML).
-- **formatAndReport-nofi-GraphML.py** - Outputs a spreadsheet full of inter-individual network metrics from a given GraphML network file created with scrapLog (IN GraphML -> .csv or .xls).
-- **formatAndReport-nofo-GraphML.py** - Outputs a spreadsheet full of inter-organizational network metrics from a given GraphML network file created with scrapLog (IN GraphML ->  .csv or .xls).
-- **formatFilterAndViz-nofi-GraphML.py** - Formats, filters, and visualizes a network of individuals from a given GraphML network file created with scrapLog (IN GraphML -> pdf or png).
-- **formatFilterAndViz-nofo-GraphML.py** - Formats, filters, and visualizes a network of organizations from a given GraphML network file created with scrapLog (IN GraphML -> pdf or png).
-- **transform-nofi-2-nofo-GraphML.py** - Transforms a network into a network of organizations GraphML file (IN GraphML, OUT GraphML).
-- **deanonymize_github_users.py** - Deanonymizes developers' email and affiliation using GitHub REST API.
-
 # **scrapLog.py** Input
 A Git repository and its commit logs.
 
 # **scrapLog.py** Output
 Social networks that capture who codes with whom in a repository (note that a software project can have multiple repositories).
+
+# Executable tools/scripts 
+
+## Overview
+
+| Script | What it does | Input ‚Üí Output | Main options |
+|---|---|---|---|
+| **`scrapLog.py`** | The core tool. Mines a raw Git log and builds a collaboration network of developers that co-edited the same source-code files. Developers are identified by email, and their organization is inferred from the email domain. See [Types of networks](#types-of-networks-scraplogpy-can-build). | Git log (`.IN`) ‚Üí GraphML (`.NetworkFile.graphML`, `.WeightedNetwork.graphML` or `.temporal.graphml.zip`) | `-r` raw log (required), `-t` network type, `-tntr` temporal resolution, `-fe` ignore emails (bots), `-ff` ignore files, `-ie` / `-xe` include / exclude file extensions, `-a` aggregate email prefixes, `-o` output file, `-s` save serialized log, `-v`, `-d`, `-st` |
+| **`transform_nofi_2_nofo_graphml.py`** | Transforms a network of individuals (nofi) into a weighted network of organizations (nofo). The weight of an edge between two organizations is the number of developers that worked together across them (e.g., Nokia and Apple with three developers co-editing the same files gives weight 3). Intra-organizational ties are ignored. | Individuals GraphML ‚Üí organizations GraphML (`<name>.graphML`) | `file` (positional), `-o` output file, `-s` show the result, `-v` |
+| **`deanonymize_github_users.py`** | Improves a GraphML file by resolving GitHub `noreply` emails and affiliations through the GitHub REST API. Needs a GitHub token in the `GITHUB_TOKEN` environment variable or in a `config.ini` file. | GraphML ‚Üí GraphML (default `<input>.out.graphml`) | `input`, `output` (optional), `--config`, `--skip-api-test` |
+| **`formatFilterAndReport-nofi-GraphML.py`** | Reports metrics for a network of **individuals**: overview of the network, top organizations and top individuals. | Individuals GraphML ‚Üí Excel spreadsheet (`<name>_report.xls`) | `file`, `-oi` ignore organizations, `-oo` only these organizations, `-c` color map (JSON), `-tn` top organizations (default 20), `-ti` top individuals (default 10), `-v` |
+| **`formatFilterAndReport-nofo-GraphML.py`** | Reports metrics for a network of **organizations**, with focus on the top firms. | Organizations GraphML ‚Üí Excel spreadsheet (`<prefix>.xls`) | `file`, `-o` output prefix, `-c` color map (JSON), `--top-firms`, `--filter-firms`, `-v` |
+| **`nofi_graphml_network_visualizer.py`** | Formats, filters, and visualizes a network of **individuals**. Nodes are colored by organizational affiliation and sized by centrality. | Individuals GraphML ‚Üí `.png` and `.pdf` (`<name>_<layout>.png/.pdf`), or an interactive window with `-p` | `infile`, `-nl` layout (`spring`, `circular`), `-ns` node sizing (`all-equal`, `centrality-score`), `-nc` node coloring, `-c` color map (JSON), `-oi` / `-oo` / `-on` / `-ot` filter by organization, `-a` email domain aliases, `-l` legend (`-ll`, `-lt`, `-le`), `-s` save the filtered graph as GraphML, `-p` plot |
+| **`nofo_graphml_network_visualizer.py`** | Formats, filters, and visualizes a weighted network of **organizations**. Edge thickness maps to weight and nodes are colored by affiliation. | Organizations GraphML ‚Üí `.png` and `.pdf`, an HTML page with `-w`, or an interactive window with `-s` / `-p` | `file`, `-n` layout (`spring`, `circular`), `-ns` node sizing, `-nc` node coloring, `-c` color map (JSON), `-ff` focal firm to highlight, `-tf` top *n* central firms only, `--include-only`, `--exclude`, `-l` legend, `--legend-info-data` |
+| **`compare-set-nofi-GraphML.py`** | Compares several networks of individuals (e.g., one per year or release) by plotting standard network metrics side by side: nodes, edges, isolates, average degree, density, average clustering, connected components, and size of the largest component. | 2 to 20 GraphML files ‚Üí plot (shown and/or saved) | `files` (one or more), `--save-plot`, `--output-dir`, `--dpi`, `--no-show`, `--verbose` |
+| **`compare-two-nofi-GraphML-metrics.py`** | Same metrics and plot as above, plus a summary table in the console. | 2 to 20 GraphML files ‚Üí plot and console table | Same as above, plus `--no-table` |
+| **`solo_contributors.py`** | Counts, per study period, the developers that touched *only* files that nobody else touched. These developers are invisible in a co-editing network. Also lists every solo-edited file with its sole developer. | Raw Git log ‚Üí console summary, optional CSV files | `--log` (required), `--project` label, `--by-email`, `--list-files`, `--csv` |
+| **`scrap_repo_repositories_logs.py`** | Batch miner (experimental). Intended to mine the logs of a whole repository or directory, filtering by year range or release names, and to produce networks for every branch. | Directory ‚Üí processed files in `processed/` | `input_dir`, `--years`, `--releases`, `--output-dir`, `--dry-run`, `-v` |
+
 
 # How **scrapLog.py** works
 It uses the commit logs of a Git repository:
@@ -274,7 +284,7 @@ As pointed out by [Teixeira et al. (2015)](https://link.springer.com/article/10.
 
 A way to quantify this issue is to first analyze all the historical data. From day 0 to the last day save the edges. Then conduct the analysis in segments (e.g., year after year, release after release, etc). Then see how many edges there are in the network from all the time that were not captured by the time-limited analysis. 0 is ideal. But expect a few. Given that people tend to drop coding efforts before Xmas and New Year, or before releasing a new version (as they concentrate efforts on stabilizing over developing new features), the impacts on the model validity are very small.
 
-# Command line options for advanced use
+# ScrapLog.py command line options for advanced use
 
 - Use serialized changelogs so you don't need to use raw Git logs every time (speeds things up)
 - Provide a configuration file with emails (aka developers) that should be ignored. Handy for ignoring bots that commit code
