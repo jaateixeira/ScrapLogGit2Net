@@ -14,8 +14,17 @@ numpy>=1.24
 scipy>=1.10
 matplotlib>=3.7
 
-# Console output (tables, tracebacks, inspection)
+# Console output and logging (tables, tracebacks, inspection)
 rich>=13.0
+loguru>=0.7
+
+# Excel reports (formatFilterAndReport-*.py write .xls files)
+xlwt>=1.3
+
+# deanonymize_github_users.py (GitHub REST API, cached requests)
+requests>=2.28
+requests-cache>=1.0
+PyGithub>=2.0
 
 # Other dependencies listed in earlier README versions
 python-dateutil>=2.8
@@ -23,3 +32,6 @@ colorama>=0.4
 
 # Optional: string-similarity checks for names and emails
 # strsimpy>=0.2
+
+# Only for the lines-of-code network (extract_weighted_LOC_temporal_network.py)
+# pydriller>=2.5
