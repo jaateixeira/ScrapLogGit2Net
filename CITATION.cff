@@ -18,8 +18,8 @@ authors:
 # orcid: "https://orcid.org/0000-0000-0000-0000"
 version: 0.1.0
 # After the tagged release is archived on Zenodo, add:
-# doi: 10.5281/zenodo.XXXXXXX
-# date-released: 2026-11-DD
+ doi: https://doi.org/10.5281/zenodo.23964330
+ date-released: 2026-11-04
 repository-code: "https://github.com/jaateixeira/ScrapLogGit2Net"
 url: "https://github.com/jaateixeira/ScrapLogGit2Net"
 license: GPL-3.0-only
