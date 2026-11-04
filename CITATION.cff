@@ -1,0 +1,50 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "ScrapLogGit2Net: Inter-Individual and Inter-Organizational Co-Editing Networks from Git Logs"
+abstract: >-
+  ScrapLogGit2Net is an open-source command-line toolset that builds
+  co-editing collaboration networks from a plain git log. Developers are
+  nodes, identified by commit e-mail, and are linked when they edited the
+  same source file. Organizations are inferred from e-mail domains, so the
+  same log yields inter-individual and inter-organizational networks
+  (unweighted, weighted, and temporal), exported as GraphML, with scripts
+  to filter, report, visualize, and compare them.
+authors:
+  - family-names: "Teixeira"
+    given-names: "José Apolinário"
+    affiliation: "University of Jyväskylä"
+    orcid: https://orcid.org/0000-0002-7195-4157
+# orcid: "https://orcid.org/0000-0000-0000-0000"
+version: 0.1.0
+# After the tagged release is archived on Zenodo, add:
+# doi: 10.5281/zenodo.XXXXXXX
+# date-released: 2026-11-DD
+repository-code: "https://github.com/jaateixeira/ScrapLogGit2Net"
+url: "https://github.com/jaateixeira/ScrapLogGit2Net"
+license: GPL-3.0-only
+keywords:
+  - social network analysis
+  - mining software repositories
+  - git
+  - co-editing networks
+  - inter-organizational collaboration
+  - temporal networks
+  - open source
+references:
+  - type: article
+    title: "Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem"
+    authors:
+      - family-names: "Teixeira"
+        given-names: "Jose"
+      - family-names: "Robles"
+        given-names: "Gregorio"
+      - family-names: "González-Barahona"
+        given-names: "Jesús M."
+    journal: "Journal of Internet Services and Applications"
+    volume: 6
+    issue: 1
+    start: 1
+    end: 27
+    year: 2015
+    doi: 10.1186/s13174-015-0028-2
