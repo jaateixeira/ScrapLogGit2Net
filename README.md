@@ -3,13 +3,11 @@
 A toolset for mining and visualizing [Git](https://git-scm.com/) repositories with [Social Network Analysis](https://en.wikipedia.org/wiki/Social_network_analysis). ScrapLogGit2Net allows its users to scrape, model, and visualize social networks based on source-code file co-edits for any given Git repository.
 
 
-# ScrapLogGit2Net
-
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
 ![GitHub Contributors](https://img.shields.io/github/contributors/jaateixeira/ScrapLogGit2Net?style=flat-square&color=green)
 [![GitHub last commit](https://img.shields.io/github/last-commit/jaateixeira/ScrapLogGit2Net?style=flat-square)](https://github.com/jaateixeira/ScrapLogGit2Net/commits/main)
 [![GitHub issues](https://img.shields.io/github/issues-raw/jaateixeira/ScrapLogGit2Net?style=flat-square)](https://github.com/jaateixeira/ScrapLogGit2Net/issues)
-[![Python](https://img.shields.io/badge/python-3.8+-blue?style=flat-square)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/python-3.10+-blue?style=flat-square)](https://www.python.org/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/jaateixeira/ScrapLogGit2Net?style=social)](https://github.com/jaateixeira/ScrapLogGit2Net/stargazers)
 
 [![CLI Tool](https://img.shields.io/badge/interface-CLI-black?style=flat-square&logo=gnu-bash)]()  
@@ -177,23 +175,23 @@ man git log
 
 Congratulations you should have your raw data ready for analysis with ScrapLogGit2Net.
 
-Look at your INPUT data. As you can see from the following 4 April 2024 sample data from TensorFlow, you get timestamped data on who changed what files. Note that gardner@tensorflow.org is a bot, not a developer that directly commits code.
+Look at your INPUT data. As you can see from the following 4 April 2024 sample data from TensorFlow, you get timestamped data on who changed what files. Note that each commit starts with a header line wrapped in `==` (name, email and date with timezone offset, separated by `;`), followed by the files it changed. The timezone offset (e.g., `-0700`) is required by the parser. Also note that gardener@tensorflow.org is a bot, not a developer that directly commits code.
 
 ```
-A. Unique TensorFlower;gardener@tensorflow.org;Wed Apr 3 22:39:37 2024 -0700
+==A. Unique TensorFlower;gardener@tensorflow.org;Wed Apr 3 22:39:37 2024 -0700==
 tensorflow/core/tfrt/saved_model/tests/BUILD
 tensorflow/core/tfrt/saved_model/tests/saved_model_test.cc
 
-Doyeon Kim;doyeonkim@google.com;Wed Apr 3 20:54:06 2024 -0700
+==Doyeon Kim;doyeonkim@google.com;Wed Apr 3 20:54:06 2024 -0700==
 tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
 tensorflow/compiler/mlir/quantization/stablehlo/python/integration_test/quantize_model_test.py
 tensorflow/compiler/mlir/quantization/stablehlo/python/quantization.py
 tensorflow/compiler/mlir/quantization/stablehlo/quantization_config.proto
 
-Jiyoun (Jen) Ha;jiyounha@google.com;Wed Apr 3 18:50:32 2024 -0700
+==Jiyoun (Jen) Ha;jiyounha@google.com;Wed Apr 3 18:50:32 2024 -0700==
 tensorflow/lite/core/subgraph.cc
 
-Doyeon Kim;doyeonkim@google.com;Wed Apr 3 17:46:07 2024 -0700
+==Doyeon Kim;doyeonkim@google.com;Wed Apr 3 17:46:07 2024 -0700==
 tensorflow/compiler/mlir/lite/quantization/stablehlo/BUILD
 tensorflow/compiler/mlir/lite/quantization/stablehlo/quantization.cc
 ```
@@ -283,23 +281,40 @@ A way to quantify this issue is to first analyze all the historical data. From d
 - Use verbose mode for debugging and testing
 
 ```
+usage: scrapLog.py [-h] [-l LOAD] -r RAW [-s SAVE] [-fe FILTER_EMAILS] [-ff FILTER_FILES]
+                   [-ie EXT [EXT ...]] [-xe EXT [EXT ...]] [-a AGGREGATE_EMAIL_PREFIXES]
+                   [-t {inter_individual_graph_unweighted,inter_individual_graph_weighted,
+                        inter_individual_graph_temporal,inter_individual_weighted_LOC_temporal,
+                        inter_individual_graph_weighted_SUM_LOC}]
+                   [-tntr TEMPORAL_NETWORK_TIME_RESOLUTION] [-o OUTPUT_FILE] [-v] [-d] [-st]
 
- in a text file (one file per line)
-   -ie, --include-only-with-file-extensions EXT [EXT ...]
-                           only process files with these extensions (e.g. -ie .py .cpp .cu)
-			     -xe, --exclude-all-with-file-extensions EXT [EXT ...]
-			                             skip files with these extensions (e.g. -xe .json .html .php)
-						       -a, --aggregate-email-prefixes AGGREGATE_EMAIL_PREFIXES
-						                               JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})
-									         -t, --type-of-network {inter_individual_graph_unweighted,inter_individual_graph_weighted,inter_individual_graph_temporal,inter_individual_weighted_LOC_temporal,inter_individual_graph_weighted_SUM_LOC}
-										                         Type of network to generate (default: inter_individual_graph_unweighted)
-													   -tntr, --temporal-network-time-resolution TEMPORAL_NETWORK_TIME_RESOLUTION
-													                           Temporal network time resolution (default: 1 second)
-																     -o, --output-file OUTPUT_FILE
-																                             creates a network/graph graphml file with the given name
-																			       -v, --verbose         Increase verbosity level (use -v, -vv, or -vvv)
-																			         -d, --debug           Enable debug output
-																				   -st, --strict         strict validation mode - fail on validation errors~
+Scrap git changelog to create networks/graphs for research purposes
+
+options:
+  -h, --help            show this help message and exit
+  -l LOAD, --load LOAD  loads and processes a serialized changelog
+  -r RAW, --raw RAW     processes from a raw git changelog (required)
+  -s SAVE, --save SAVE  processes from a raw git changelog and saves it into a serialized changelog
+  -fe FILTER_EMAILS, --filter-emails FILTER_EMAILS
+                        ignores the emails listed in a text file (one email per line)
+  -ff FILTER_FILES, --filter-files FILTER_FILES
+                        ignores the files listed in a text file (one file per line)
+  -ie EXT [EXT ...], --include-only-with-file-extensions EXT [EXT ...]
+                        only process files with these extensions (e.g. -ie .py .cpp .cu)
+  -xe EXT [EXT ...], --exclude-all-with-file-extensions EXT [EXT ...]
+                        skip files with these extensions (e.g. -xe .json .html .php)
+  -a AGGREGATE_EMAIL_PREFIXES, --aggregate-email-prefixes AGGREGATE_EMAIL_PREFIXES
+                        JSON file defining email domain prefixes to aggregate
+                        (e.g., {"ibm": "ibm", "google": "google"})
+  -t TYPE, --type-of-network TYPE
+                        Type of network to generate (default: inter_individual_graph_unweighted)
+  -tntr N, --temporal-network-time-resolution N
+                        Temporal network time resolution (default: 1 second)
+  -o OUTPUT_FILE, --output-file OUTPUT_FILE
+                        creates a network/graph graphml file with the given name
+  -v, --verbose         Increase verbosity level (use -v or -vv)
+  -d, --debug           Enable debug output
+  -st, --strict         strict validation mode - fail on validation errors
 ```
 
 For example, the following command
@@ -348,31 +363,49 @@ network file in the standard XML-based format GraphML.
 
 # Installation
 
-## Linux
+ScrapLogGit2Net needs **Python 3.10 or newer** and **Git**. The recommended way to install it is inside a Python virtual environment, so its dependencies do not interfere with other Python projects on your computer.
 
-Most Linux distributions run ScrapLogGit2Net out of the box. See the file dependencies.sh if something is missing.
+## 1. Get the code
+```
+git clone https://github.com/jaateixeira/ScrapLogGit2Net.git
+cd ScrapLogGit2Net
+```
 
-## Mac
-1. Download a Python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/).
-2. Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
-  1. pip3 install dateutils
-  2. pip3 install networkx
-  3. pip3 install colorama
-  4. pip3 install numpy
-  5. pip3 install matplotlib
-  6. pip3 install scipy
-  
-## Windows
-1. Download a Python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/).
-2. Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
-  1. pip3 install dateutils
-  2. pip3 install networkx
-  3. pip3 install colorama
-  4. pip3 install numpy
-  5. pip3 install matplotlib
-  6. pip3 install scipy
+## 2. Create and activate a virtual environment
 
-Across platforms, you can run test cases by invoking the bash script testScrapLog.sh available in the repository. If those cases run well, i.e., you get green color, you installed ScrapLogGit2Net successfully.
+Linux and macOS:
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Windows (PowerShell):
+```
+py -3 -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+(In Windows Command Prompt, use `.venv\Scripts\activate.bat` instead.)
+
+Once activated, your prompt starts with `(.venv)`. Run `deactivate` to leave the environment.
+
+## 3. Install the dependencies
+```
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+## 4. Check the installation
+```
+python scrapLog.py --help
+```
+If you see the list of options, the installation worked. You can also run the test cases with the bash script `testScrapLog.sh` (Linux, macOS, or Windows with WSL/Git Bash). If those cases run well, i.e., you get green color, you installed ScrapLogGit2Net successfully.
+
+Next time, you only need to activate the environment again (step 2, second command) before running `scrapLog.py`.
+
+## Troubleshooting
+- **`ModuleNotFoundError: No module named 'tkinter'` when importing `networkx_temporal`.** Some `networkx-temporal` 1.4.x releases import `turtle`, which needs Tk. Either install Tk (Debian/Ubuntu: `sudo apt install python3-tk`; Fedora: `sudo dnf install python3-tkinter`; the python.org installers for macOS and Windows already include it) or stay on the 1.3.x series, which `requirements.txt` selects by default.
+- **`python3 -m venv` fails on Debian/Ubuntu.** Install the venv module with `sudo apt install python3-venv`.
+- **Missing system packages on Linux.** See the file `dependencies.sh`.
 
 # Contributing
 Please create a new branch for any new feature. Branch or fork, code, test, then pull request. See  [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for our contribuition guide. Please refer also to [the GitHub guide on how to contribute to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
