@@ -281,38 +281,35 @@ A way to quantify this issue is to first analyze all the historical data. From d
 - Use verbose mode for debugging and testing
 
 ```
-usage: scrapLog.py [-h] [-l LOAD] -r RAW [-s SAVE] [-fe FILTER_EMAILS] [-ff FILTER_FILES]
-                   [-ie EXT [EXT ...]] [-xe EXT [EXT ...]] [-a AGGREGATE_EMAIL_PREFIXES]
-                   [-t {inter_individual_graph_unweighted,inter_individual_graph_weighted,
-                        inter_individual_graph_temporal,inter_individual_weighted_LOC_temporal,
-                        inter_individual_graph_weighted_SUM_LOC}]
+▶ Executing: scrapLog.py --help
+usage: scrapLog.py [-h] [-l LOAD] -r RAW [-s SAVE] [-fe FILTER_EMAILS] [-ff FILTER_FILES] [-ie EXT [EXT ...]] [-xe EXT [EXT ...]] [-a AGGREGATE_EMAIL_PREFIXES]
+                   [-t {inter_individual_graph_unweighted,inter_individual_graph_weighted,inter_individual_graph_temporal,inter_individual_weighted_LOC_temporal,inter_individual_graph_weighted_SUM_LOC}]
                    [-tntr TEMPORAL_NETWORK_TIME_RESOLUTION] [-o OUTPUT_FILE] [-v] [-d] [-st]
 
 Scrap git changelog to create networks/graphs for research purposes
 
 options:
   -h, --help            show this help message and exit
-  -l LOAD, --load LOAD  loads and processes a serialized changelog
-  -r RAW, --raw RAW     processes from a raw git changelog (required)
-  -s SAVE, --save SAVE  processes from a raw git changelog and saves it into a serialized changelog
-  -fe FILTER_EMAILS, --filter-emails FILTER_EMAILS
+  -l, --load LOAD       loads and processes a serialized changelog
+  -r, --raw RAW         processes from a raw git changelog
+  -s, --save SAVE       processes from a raw git changelog and saves it into a serialized changelog
+  -fe, --filter-emails FILTER_EMAILS
                         ignores the emails listed in a text file (one email per line)
-  -ff FILTER_FILES, --filter-files FILTER_FILES
+  -ff, --filter-files FILTER_FILES
                         ignores the files listed in a text file (one file per line)
-  -ie EXT [EXT ...], --include-only-with-file-extensions EXT [EXT ...]
+  -ie, --include-only-with-file-extensions EXT [EXT ...]
                         only process files with these extensions (e.g. -ie .py .cpp .cu)
-  -xe EXT [EXT ...], --exclude-all-with-file-extensions EXT [EXT ...]
+  -xe, --exclude-all-with-file-extensions EXT [EXT ...]
                         skip files with these extensions (e.g. -xe .json .html .php)
-  -a AGGREGATE_EMAIL_PREFIXES, --aggregate-email-prefixes AGGREGATE_EMAIL_PREFIXES
-                        JSON file defining email domain prefixes to aggregate
-                        (e.g., {"ibm": "ibm", "google": "google"})
-  -t TYPE, --type-of-network TYPE
+  -a, --aggregate-email-prefixes AGGREGATE_EMAIL_PREFIXES
+                        JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})
+  -t, --type-of-network {inter_individual_graph_unweighted,inter_individual_graph_weighted,inter_individual_graph_temporal,inter_individual_weighted_LOC_temporal,inter_individual_graph_weighted_SUM_LOC}
                         Type of network to generate (default: inter_individual_graph_unweighted)
-  -tntr N, --temporal-network-time-resolution N
+  -tntr, --temporal-network-time-resolution TEMPORAL_NETWORK_TIME_RESOLUTION
                         Temporal network time resolution (default: 1 second)
-  -o OUTPUT_FILE, --output-file OUTPUT_FILE
+  -o, --output-file OUTPUT_FILE
                         creates a network/graph graphml file with the given name
-  -v, --verbose         Increase verbosity level (use -v or -vv)
+  -v, --verbose         Increase verbosity level (use -v, -vv, or -vvv)
   -d, --debug           Enable debug output
   -st, --strict         strict validation mode - fail on validation errors
 ```
