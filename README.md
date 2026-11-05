@@ -426,7 +426,7 @@ Jose Teixeira, currently the only maintainer, will review and merge pull request
 - Syed Ahmed 
 
 # Acknowledgments
-Åbo Akademi Library for financing a Master student during the summer of 2014 to contribute to the project as an open-science initiative. 
+Åbo Akademi Library for financing a Master student during the summer of 2024 to contribute to the project as an open-science initiative. 
 
 # Maintainers  
 - Jose Teixeira
