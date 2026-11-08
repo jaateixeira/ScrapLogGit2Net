@@ -17,4 +17,9 @@ RUN useradd -m -s /bin/bash developer \
 
 USER developer
 WORKDIR /workspace
+
+# Claude Code, installed as the unprivileged user with Anthropic's native installer
+RUN curl -fsSL https://claude.ai/install.sh | bash
+ENV PATH="/home/developer/.local/bin:${PATH}"
+
 CMD ["sleep", "infinity"]

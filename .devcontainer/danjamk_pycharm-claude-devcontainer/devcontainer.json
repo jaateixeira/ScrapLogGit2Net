@@ -1,9 +1,6 @@
 {
   "name": "ScrapLogGit2Net (Claude Code, restricted)",
   "build": { "dockerfile": "Dockerfile" },
-  "features": {
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
-  },
   "containerUser": "developer",
   "remoteUser": "developer",
   "workspaceFolder": "/workspace",
