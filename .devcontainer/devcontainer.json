@@ -1,0 +1,19 @@
+{
+  "name": "ScrapLogGit2Net (Claude Code, restricted)",
+  "build": { "dockerfile": "Dockerfile" },
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "containerUser": "developer",
+  "remoteUser": "developer",
+  "workspaceFolder": "/workspace",
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-claude-config,target=/home/developer/.claude,type=volume"
+  ],
+  "containerEnv": {
+    "CLAUDE_CONFIG_DIR": "/home/developer/.claude",
+    "DEVCONTAINER": "true"
+  },
+  "runArgs": ["--security-opt=no-new-privileges"],
+  "customizations": { "jetbrains": { "backend": "PyCharm" } }
+}
