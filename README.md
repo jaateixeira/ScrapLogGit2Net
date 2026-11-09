@@ -88,6 +88,58 @@ Note that:
   <em>Ilustration on how ScrapLogGit2Net models the network from Git commit logs.</em>
 </p>
 
+## The scrapLog.py pipeline, step by step
+
+The diagram shows what happens when you run `./scrapLog.py -r <log>.IN`. The four numbered steps are the four calls in `main()` (`scraplog/scraplog.py`); the names in brackets are the modules that do the work.
+
+```mermaid
+flowchart TD
+    IN["Git log file (.IN)<br/>==name;email;date== header + changed files, per commit"]
+
+    subgraph S1 ["1 · Setup (scraplog.py)"]
+        ARGS["Read command line options<br/>-t network type · -fe email filter · -ff file filter<br/>-ie / -xe file extensions · -a email aggregation"]
+    end
+
+    subgraph S2 ["2 · Parse the log (parsing.py, identity.py)"]
+        BLOCKS["Split the log into commit blocks"]
+        HEADER["Read the header: date, name, email<br/>affiliation = derived from the email domain"]
+        FILES["Read the changed files<br/>drop files matched by -ff, -ie, -xe"]
+        ENTRIES[("Change log entries<br/>((email, affiliation), files, date)")]
+        BLOCKS --> HEADER --> FILES --> ENTRIES
+    end
+
+    subgraph S3 ["3 · Build the networks (pipeline.py, networks/)"]
+        TEMPORAL["Temporal network, always built<br/>commits in time order: an edge, stamped with the commit date,<br/>to every earlier contributor of the same file"]
+        WEIGHTED["Weighted network<br/>weight = number of time-stamped co-edits of the pair"]
+        UNWEIGHTED["Unweighted network<br/>tie present or absent"]
+        AFFIL["Affiliations set on nodes (coediting.py)<br/>always derived from the email (design decision Q6)"]
+        EFILTER["Remove developers listed with -fe,<br/>then developers left without ties"]
+        TEMPORAL -- "-t weighted or unweighted" --> WEIGHTED
+        WEIGHTED -- "-t unweighted" --> UNWEIGHTED
+        UNWEIGHTED --> AFFIL --> EFILTER
+    end
+
+    subgraph S4 ["4 · Export (output.py, export/)"]
+        OT["(log name).temporal.graphml.zip"]
+        OW["(log name).WeightedNetwork.graphML"]
+        OU["(log name).NetworkFile.graphML"]
+        SUMMARY["Processing summary on the console"]
+    end
+
+    IN --> ARGS --> BLOCKS
+    ENTRIES --> TEMPORAL
+    ENTRIES -. "-s" .-> SAVED[["Serialized change log (pickle)"]]
+    TEMPORAL -- "-t temporal" --> OT
+    WEIGHTED -- "-t weighted" --> OW
+    EFILTER -- "-t unweighted (default)" --> OU
+    OT & OW & OU --> SUMMARY
+```
+
+Notes:
+- Only developers with at least one co-edit become nodes (design decision Q7, see [Design decisions](#design-decisions)).
+- The same input always gives byte-identical output files: nodes and edges are written in sorted order.
+- Known issue: the `-fe` email filter is currently applied to the unweighted network only. Developers listed with `-fe` still appear in weighted and temporal networks.
+
 # Types of networks **scrapLog.py** can build
 
 The type of network is chosen with the `-t` / `--type-of-network` option. If you do not choose one, you get the default, `inter_individual_graph_unweighted`.
@@ -142,6 +194,16 @@ git log  ->  temporal network  ->  weighted network  ->  unweighted network
 
 ## From individuals to organizations
 `scrapLog.py` itself outputs networks of **individuals**. To get a network of **organizations**, in which the weighted edge between two organizations counts the relationships between their developers, pass the GraphML file to `transform-nofi-2-nofo-GraphML.py`. Intra-organizational relationships are ignored in that transformation.
+
+## Design decisions
+
+These choices affect the networks you get, and therefore any measures computed from them.
+
+### Q6 · A developer's affiliation always comes from their email address
+The `affiliation` node attribute is always derived from the developer's commit email (`scraplog/identity.py`), when the network is created. Affiliations set by other means are not kept: the rules for turning an email into an organization live in one place, so every network built from the same log gets the same affiliations. Use `-a` to merge email domains into one organization. Tools that work on finished GraphML files, such as `deanonymize_github_users.py`, can still change affiliations afterwards.
+
+### Q7 · Developers who never co-edit a file are left out
+Only developers with at least one co-edit become nodes; a developer whose files nobody else edited is not in the network, not even as an isolated node. This holds for the temporal, weighted and unweighted networks. For example, the TensorFlow log for the first trimester of 2024 has 279 authors, of whom 256 co-edited at least one file, so its networks have 256 nodes. Keep this in mind for measures that depend on the number of nodes, such as density or normalized centralities. The same applies to networks of organizations: an organization without inter-organizational ties is not a node. To study developers who work alone, use `solo_contributors.py`.
 
 # How to use **scrapLog.py**
 You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
