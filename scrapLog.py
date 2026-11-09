@@ -15,6 +15,7 @@ import sys
 import time
 from collections import defaultdict
 from datetime import datetime
+from fnmatch import fnmatchcase
 from pathlib import Path
 from typing import List, Optional, Set, Tuple
 
@@ -275,6 +276,20 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Tupl
         return None
 
 
+def is_filtered_file(filename: str, state: ProcessingState) -> bool:
+    """
+    True if filename should be ignored according to the -ff filter file.
+
+    Matches exact paths (state.files_to_filter) and shell-style wildcard
+    patterns (state.file_filter_patterns). Patterns are matched against the
+    full path as it appears in the git log, and '*' also matches '/', so
+    '*.md' ignores markdown files in every directory.
+    """
+    if filename in state.files_to_filter:
+        return True
+    return any(fnmatchcase(filename, pattern) for pattern in state.file_filter_patterns)
+
+
 def extract_files_from_block(
         block: List[str],
         state: ProcessingState
@@ -291,7 +306,7 @@ def extract_files_from_block(
         filename = line.rstrip('\n')
         ext = Path(filename).suffix.lower()
 
-        if state.file_filtering_mode and filename in state.files_to_filter:
+        if state.file_filtering_mode and is_filtered_file(filename, state):
             n_filtered_by_name += 1
             continue
 
@@ -590,7 +605,9 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('-fe', '--filter-emails', type=Path,
                         help='ignores the emails listed in a text file (one email per line)')
     parser.add_argument('-ff', '--filter-files', type=Path,
-                        help='ignores the files listed in a text file (one file per line)')
+                        help='ignores the files listed in a text file (one file per line). '
+                             'Lines can be exact paths (src/main.py) or wildcard patterns '
+                             '(*.md, docs/*); blank lines and lines starting with # are ignored')
     # after the existing -ff / --filter-files argument:
     parser.add_argument(
         '-ie', '--include-only-with-file-extensions',
@@ -668,6 +685,7 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
     if args.filter_files:
         state.file_filtering_mode = True
         console.print("\nFile filtering turned on")
+        load_file_filter_file(state, args.filter_files)
 
     # Load specific filter files
     if state.email_filtering_mode and args.filter_emails:
@@ -707,6 +725,35 @@ def load_email_filter_file(state: ProcessingState, filter_file_path: str) -> Non
     except IOError as e:
         console.print(f" Could not read filter file {filter_file_path}: {e}")
         state.email_filtering_mode = False
+
+
+def load_file_filter_file(state: ProcessingState, filter_file_path: Path) -> None:
+    """
+    Load the -ff file filter list.
+
+    One entry per line: an exact path as it appears in the git log
+    (e.g. 'src/main.py') or a shell-style wildcard pattern (e.g. '*.md',
+    'docs/*'). Blank lines and lines starting with '#' are ignored.
+
+    Exits with an error if the file is missing or cannot be read.
+    """
+    try:
+        with open(filter_file_path, 'r', encoding='utf-8') as filter_file:
+            entries = [line.strip() for line in filter_file]
+    except (OSError, UnicodeDecodeError) as e:
+        print_fatal_error(f"Could not read file filter list {filter_file_path}", str(e))
+        sys.exit(1)
+
+    entries = [entry for entry in entries if entry and not entry.startswith('#')]
+
+    state.files_to_filter = {entry for entry in entries if not any(c in entry for c in '*?[')}
+    state.file_filter_patterns = [entry for entry in entries if any(c in entry for c in '*?[')]
+
+    if not entries:
+        print_warning(f"File filter list {filter_file_path} has no entries; no files will be ignored")
+
+    console.print(f"\tLoaded {len(state.files_to_filter)} file paths and "
+                  f"{len(state.file_filter_patterns)} wildcard patterns to filter")
 
 
 def process_changelog_file(state: ProcessingState, args: argparse.Namespace) -> None:

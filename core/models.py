@@ -210,7 +210,8 @@ class ProcessingState:
     email_filtering_mode: bool = False
     # existing fields for reference
     file_filtering_mode: bool = False
-    files_to_filter: set[str] = field(default_factory=set)
+    files_to_filter: set[str] = field(default_factory=set)  # exact paths, e.g. 'src/main.py'
+    file_filter_patterns: list[str] = field(default_factory=list)  # wildcard patterns, e.g. '*.md'
 
     # NEW
     include_extensions: set[str] = field(default_factory=set)  # e.g. {'.py', '.cpp'}

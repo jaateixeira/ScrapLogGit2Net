@@ -306,7 +306,8 @@ options:
   -fe, --filter-emails FILTER_EMAILS
                         ignores the emails listed in a text file (one email per line)
   -ff, --filter-files FILTER_FILES
-                        ignores the files listed in a text file (one file per line)
+                        ignores the files listed in a text file (one file per line). Lines can be exact paths (src/main.py) or
+                        wildcard patterns (*.md, docs/*); blank lines and lines starting with # are ignored
   -ie, --include-only-with-file-extensions EXT [EXT ...]
                         only process files with these extensions (e.g. -ie .py .cpp .cu)
   -xe, --exclude-all-with-file-extensions EXT [EXT ...]
@@ -332,6 +333,21 @@ For example, the following command
 
 scrapes the Git log in the test-data/tensorFlowGitLog-all-till-12-April-2024.IN input file, ignores emails listed in the test-configurations/TensorFlowBots.txt file, and prints debug information in a verbose way. By default, it also creates a
 network file in the standard XML-based format GraphML.
+
+## Ignoring files (`-ff`)
+
+Co-editing some files (e.g., build files, changelogs) can indicate coordination rather than collaboration. To leave such files out of the network, list them in a text file and pass it with `-ff`:
+
+```
+./scrapLog.py -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN -ff test-configurations/TensorFlow/TensorFlowIgnoreBuildFiles.txt
+```
+
+The filter file has one entry per line:
+- An exact path as it appears in the Git log, e.g. `tensorflow/core/BUILD`.
+- A wildcard pattern: `*` matches any characters (including `/`), `?` matches one character, and `[abc]` matches one of the listed characters. For example, `*.md` ignores Markdown files in every directory and `docs/*` ignores everything under `docs/`. Matching is case-sensitive.
+- Blank lines and lines starting with `#` are ignored.
+
+Commits that only touch ignored files are skipped. If the filter file is missing or cannot be read, scrapLog.py exits with an error.
 
 # Features
 

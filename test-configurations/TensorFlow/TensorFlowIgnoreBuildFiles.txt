@@ -1,0 +1,8 @@
+# Files to ignore with scrapLog.py -ff / --filter-files
+# One entry per line: an exact path as it appears in the git log, or a
+# wildcard pattern. '*' also matches '/', so '*.bzl' matches in every directory.
+# Blank lines and lines starting with '#' are ignored.
+
+# Bazel build files: edited by many developers for coordination, not collaboration
+*BUILD
+*.bzl
