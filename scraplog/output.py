@@ -17,6 +17,24 @@ from scraplog.utils.unified_console import console, traceback, inspect, print_in
 from scraplog.coediting import enrich_graph_with_affiliation
 
 
+def temporal_network_counts(state: ProcessingState) -> tuple[int, int, int, set]:
+    """Developers, time-stamped edges, distinct developer pairs and the affiliations
+    of the developers in the exported temporal network (all zero if there is none).
+
+    Affiliations come from the parsed commits, as the temporal network file does
+    not store them.
+    """
+    t_graph = state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
+    if t_graph is None:
+        return 0, 0, 0, set()
+    nodes = set().union(*t_graph.nodes())
+    edges = list(t_graph.temporal_edges())
+    pairs = {frozenset((u, v)) for u, v in edges}
+    affiliation_of = {email: affiliation for (email, affiliation), _, _ in state.parsed_change_log_entries}
+    affiliations = {affiliation_of[node] for node in nodes if node in affiliation_of}
+    return len(nodes), len(edges), len(pairs), affiliations
+
+
 def print_processing_summary(state: ProcessingState, in_work_file: Path, out_graphml_file: Path) -> None:
     """console.print a summary of processing results."""
     console.print("\n" + "=" * 60)
@@ -34,11 +52,20 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     console.print(f"Blocks changing code: {state.statistics.n_blocks_changing_code}")
     console.print(f"Files affected: {state.statistics.n_changed_files}")
     console.print(f"Validation errors: {state.statistics.n_validation_errors}")
-    console.print(f"Network nodes (developers): {state.dev_to_dev_network.number_of_nodes()}")
-    console.print(f"Network edges (collaborations): {state.dev_to_dev_network.size()}")
-    console.print(f"Unique affiliations: {len(set(state.affiliations.values()))}")
+    if state.network_type == 'inter_individual_graph_temporal':
+        # The static network (dev_to_dev_network) is not built for temporal runs:
+        # report the temporal network that is exported instead
+        nodes, n_temporal_edges, pairs, affiliations = temporal_network_counts(state)
+        console.print(f"Network nodes (developers): {nodes}")
+        console.print(f"Network edges (time-stamped co-edits): {n_temporal_edges}")
+        console.print(f"Developer pairs that co-edited: {pairs}")
+    else:
+        console.print(f"Network nodes (developers): {state.dev_to_dev_network.number_of_nodes()}")
+        console.print(f"Network edges (collaborations): {state.dev_to_dev_network.size()}")
+        affiliations = set(state.affiliations.values())
+    console.print(f"Unique affiliations: {len(affiliations)}")
     console.print(
-        f"Similar affiliation strings: 0.8 threshold {find_similar_strings(set(state.affiliations.values()))}")
+        f"Similar affiliation strings: 0.8 threshold {find_similar_strings(affiliations)}")
     # console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
     console.print("=" * 60)
 
