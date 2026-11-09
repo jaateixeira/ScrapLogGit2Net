@@ -1,9 +1,0 @@
-Executing ['../../scrapLog.py', '-r', '../icis-2024-wp-raw-inputs/tensorFlowGitLog-2014-git-log-outpuyt-by-Jose.IN.txt', '-fe', '../../test-configurations/TensorFlowBots.txt']
-
-Filtering (ignoring given emails) turned on
-
-processing [raw= ../icis-2024-wp-raw-inputs/tensorFlowGitLog-2014-git-log-outpuyt-by-Jose.IN.txt ]
-
-('Scrapping changeLog from ', '../icis-2024-wp-raw-inputs/tensorFlowGitLog-2014-git-log-outpuyt-by-Jose.IN.txt')
-
-STARTING the scrap of changeLog file ../icis-2024-wp-raw-inputs/tensorFlowGitLog-2014-git-log-outpuyt-by-Jose.IN.txt on 2024-04-16 11:35:18.008634

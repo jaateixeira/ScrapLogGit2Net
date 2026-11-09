@@ -445,6 +445,25 @@ Commits that only touch ignored files are skipped. If the filter file is missing
 - Integrate with https://www.logo.dev API for allowing users to use company logos.
 - Publish as a Python package to the community.
 
+# Research datasets
+
+The data behind Teixeira, J., Ahmed, S. S., Laine-Kronberg, A., Mezei, J., & Smailhodzic, E. (2025). *Towards understanding open and coopetitive platform ecosystems: The case of TensorFlow*. ECIS 2025 (TensorFlow git logs, co-editing networks, visualizations and an automatic report) is archived on Zenodo: **https://doi.org/10.5281/zenodo.24083489**
+
+The data behind Teixeira, J. (2026). *Lessons Learned from a Governance Transition in Deep Learning Ecosystems*. ICIS 2026 (PyTorch, TensorFlow, JAX and Chainer data) is archived on Zenodo: **https://doi.org/10.5281/zenodo.22284204**
+
+The data behind Teixeira, J., Ahmed, S. S., & Vuori, N. (2026). *Exploring the Roles of Non-Commercial Organizations in Open and Coopetitive Ecosystems: The Case of TensorFlow*. ICIS 2026 is archived on Zenodo: **https://doi.org/10.5281/zenodo.22282883**
+
+
+To keep the repository small, `test-data/` now only holds the small inputs used by the tests. Other research data that used to be stored here (Home Assistant Core, Koha, FOLIO, Robot Framework, Automotive Grade Linux, and other TensorFlow analyses) is no longer part of the repository; it remains available in its git history (before November 2026).
+
+To get the TensorFlow dataset back into a checkout, download the zip files from Zenodo and unzip them in the repository root; paths inside the zip files match the repository layout:
+
+```
+for z in /path/to/download/Teixeira_et_al_2025-*.zip; do unzip -n "$z"; done
+```
+
+The research data folders are listed in `.gitignore`, so restored files are not committed again. The scripts in `project-specific-analysis/AGL/` need the AGL data from the git history.
+
 # Installation
 
 ScrapLogGit2Net needs **Python 3.12 or newer** and **Git**. The recommended way to install it is inside a Python virtual environment, so its dependencies do not interfere with other Python projects on your computer.
