@@ -50,7 +50,6 @@ solo-contributors = "solo_contributors:main"
 packages = ["core", "utils"]
 py-modules = [
     "scrapLog",
-    "datamodels",
     "deanonymize_github_users",
     "export_graphml_format",
     "export_log_data",
@@ -58,7 +57,6 @@ py-modules = [
     "extract_unweighted_network",
     "extract_weighted_LOC_temporal_network",
     "extract_weighted_network",
-    "networkMeasures",
     "nofi_graphml_network_visualizer",
     "nofo_graphml_network_visualizer",
     "scrap_repo_repositories_logs",

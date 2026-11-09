@@ -43,7 +43,6 @@ ScrapLogGit2Net/
 │   │   ├── test_parsing.py     # Tests for parsing functions
 │   │   ├── test_email_affiliation.py
 │   │   ├── test_filters.py
-│   │   ├── test_datamodels.py
 │   │   ├── test_network.py
 │   │   ├── test_transform_network.py
 │   │   ├── test_parsing_to_temporal_networks.py
