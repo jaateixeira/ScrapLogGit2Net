@@ -26,7 +26,7 @@ One GraphML file, read with `networkx.read_graphml`. This can be:
 ## Output
 
 - Console: a "Graph Statistics" panel (nodes, edges, isolates), up to 5 isolated nodes, a "Top 10 Most Connected Individuals" table (email, degree centrality, affiliation), and a "Top 10 Organizations by Node Count" table (number of nodes per `affiliation` value).
-- Excel report: `<prefix>.xls`. The prefix is the value of `-o`; by default it is the input file name without its extension, and the file is written to the current working directory. For example, `test-data/TensorFlow/jit-2026/networks-nofo-graphML/tensorflow_2025_network.out.nofo.graphML` gives `tensorflow_2025_network.out.nofo.xls`. An existing file with the same name is overwritten. The workbook has these sheets:
+- Excel report: `<prefix>.xls`. The prefix is the value of `-o`; by default it is the input file name without its extension, and the file is written to the current working directory. For example, `test-data/TensorFlow/tensorflow_2025_network.out.nofo.graphML` gives `tensorflow_2025_network.out.nofo.xls`. An existing file with the same name is overwritten. The workbook has these sheets:
   - `Graph Statistics`: number of nodes, edges and isolates.
   - `Organizations by Node Count`: every `affiliation` value with its node count and percentage (not only the top 10).
   - `Nodes (Developers)`: every node with ID, email and affiliation.
@@ -54,13 +54,13 @@ All counts and lists are computed after the filters (`-t`, `-f`) are applied, ex
 Report on a network of organizations; writes `tensorflow_2025_network.out.nofo.xls` in the current directory:
 
 ```bash
-./formatFilterAndReport-nofo-GraphML.py test-data/TensorFlow/jit-2026/networks-nofo-graphML/tensorflow_2025_network.out.nofo.graphML
+./formatFilterAndReport-nofo-GraphML.py test-data/TensorFlow/tensorflow_2025_network.out.nofo.graphML
 ```
 
 Same input, with the generic organizations filter and a chosen output name (`tf2025-filtered.xls`):
 
 ```bash
-./formatFilterAndReport-nofo-GraphML.py test-data/TensorFlow/jit-2026/networks-nofo-graphML/tensorflow_2025_network.out.nofo.graphML -f -o tf2025-filtered
+./formatFilterAndReport-nofo-GraphML.py test-data/TensorFlow/tensorflow_2025_network.out.nofo.graphML -f -o tf2025-filtered
 ```
 
 Keep only developers of Google and NVIDIA in a network of individuals; writes `tensorFlowGitLog-3-commits-1-edge.NetworkFile.xls`:
