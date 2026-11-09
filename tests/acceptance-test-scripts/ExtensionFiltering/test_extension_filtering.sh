@@ -13,7 +13,8 @@
 #         Dan Suh + Matt Callanan touch only .cc/.h → must NOT appear
 #
 #   TC2 — include .py and .cc
-#         Thai Nguyen has commits with both .py and .cc → connected to others
+#         Benjamin Kramer + Thai Nguyen both edited quantize_model.py → connected
+#         Matt Callanan's .cc file is edited by nobody else → must NOT appear
 #         Dmitri Gribenko touches only .bzl → must NOT appear
 #
 #   TC3 — exclude .bzl
@@ -120,16 +121,33 @@ validate_xml() {
     return 0
 }
 
+# Print the GraphML node id ("0", "1", ...) of the node whose data contains
+# the given email, or nothing if there is no such node.
+# scrapLog.py writes nodes as <node id="N"> with the email in a <data> element,
+# so searching for the email in quotes would never find it.
+node_id_for_email() {
+    local xml_file=$1
+    local email=$2
+
+    awk -v email="$email" '
+        /<node id="/ { match($0, /id="[^"]*"/); id = substr($0, RSTART + 4, RLENGTH - 5) }
+        index($0, ">" email "<") && id != "" { print id; exit }
+        /<\/node>/ { id = "" }
+    ' "$xml_file"
+}
+
 # Assert a node is NOT present in the output.
 # Used to confirm developers who only touched filtered-out extensions
 # do not appear as collaborators in the network.
 assert_node_absent() {
     local xml_file=$1
-    local node_id=$2
+    local email=$2
     local test_name=$3
 
-    if grep -q "\"$node_id\"" "$xml_file"; then
-        echo "${RED}Error [$test_name]: node '$node_id' should be absent but was found.${NC}"
+    local node_id
+    node_id=$(node_id_for_email "$xml_file" "$email")
+    if [ -n "$node_id" ]; then
+        echo "${RED}Error [$test_name]: node '$email' (id $node_id) should be absent but was found.${NC}"
         echo "Actual XML:"
         cat "$xml_file"
         return 1
@@ -139,17 +157,27 @@ assert_node_absent() {
 
 # Assert an edge between two nodes is NOT present.
 # Used to confirm that collaboration through an excluded file type
-# does not leak into the network.
+# does not leak into the network. Edges reference node ids, not emails,
+# so the emails are first resolved to node ids.
 assert_edge_absent() {
     local xml_file=$1
-    local source=$2
-    local target=$3
+    local source_email=$2
+    local target_email=$3
     local test_name=$4
 
+    local source_id target_id
+    source_id=$(node_id_for_email "$xml_file" "$source_email")
+    target_id=$(node_id_for_email "$xml_file" "$target_email")
+
+    # If either developer is not in the network, there can be no edge between them
+    if [ -z "$source_id" ] || [ -z "$target_id" ]; then
+        return 0
+    fi
+
     if grep -q \
-        "source=\"$source\" target=\"$target\"\|source=\"$target\" target=\"$source\"" \
+        "source=\"$source_id\" target=\"$target_id\"\|source=\"$target_id\" target=\"$source_id\"" \
         "$xml_file"; then
-        echo "${RED}Error [$test_name]: edge '$source' <-> '$target' should be absent but was found.${NC}"
+        echo "${RED}Error [$test_name]: edge '$source_email' <-> '$target_email' should be absent but was found.${NC}"
         echo "Actual XML:"
         cat "$xml_file"
         return 1
@@ -183,7 +211,6 @@ if [ ! -f "$TC1_output" ]; then
     echo "${RED}Error: output file $TC1_output not found.${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
     FAILED_TESTS+=("TC1")
-    exit
 else
     TC1_xml="$TEMP_DIR/tc1.xml"
     cp "$TC1_output" "$TC1_xml"
@@ -227,11 +254,12 @@ echo
 # Input:
 #   thaink@google.com     → quantize_model.cc + .h  (commit 1)
 #   thaink@google.com     → quantize_model.py        (commit 2)
-#   kramerb@google.com    → tensorflow/.../BUILD      (BUILD only)
-#   mpcallanan@google.com → data_service_client.cc
+#   kramerb@google.com    → tensorflow/.../BUILD + quantize_model.py
+#   mpcallanan@google.com → data_service_client.cc   (no one else edits it)
 #   dmitrig@google.com    → workspace.bzl             (.bzl only)
 #
-# Expected: Thai + Matt connected via .cc; Dmitri + Kramer absent.
+# Expected: Kramer + Thai connected via quantize_model.py;
+#           Matt absent (no shared file); Dmitri absent (.bzl only).
 # =============================================================================
 echo ""
 echo "────────────────────────────────────────────────────────────────────"
@@ -248,7 +276,6 @@ if [ ! -f "$TC2_output" ]; then
     echo "${RED}Error: output file $TC2_output not found.${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
     FAILED_TESTS+=("TC2")
-    exit
 else
     TC2_xml="$TEMP_DIR/tc2.xml"
     cp "$TC2_output" "$TC2_xml"
@@ -273,11 +300,10 @@ EOF
 
     if ! validate_xml "$TC2_xml" "$TC2_expected" "TC2"; then TC2_passed=false; fi
     if ! assert_node_absent "$TC2_xml" "dmitrig@google.com"  "TC2"; then TC2_passed=false; fi
-    if ! assert_node_absent "$TC2_xml" "kramerb@google.com"  "TC2"; then TC2_passed=false; fi
+    if ! assert_node_absent "$TC2_xml" "mpcallanan@google.com" "TC2"; then TC2_passed=false; fi
 
     $TC2_passed && echo "${GREEN}TESTCASE 2 passed${NC}" || {
         TESTS_FAILED=$((TESTS_FAILED + 1)); FAILED_TESTS+=("TC2")
-        exit
     }
     rm -f "$TC2_output"
 fi
@@ -315,7 +341,6 @@ if [ ! -f "$TC3_output" ]; then
     echo "${RED}Error: output file $TC3_output not found.${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
     FAILED_TESTS+=("TC3")
-    exit
 else
     TC3_xml="$TEMP_DIR/tc3.xml"
     cp "$TC3_output" "$TC3_xml"
@@ -345,7 +370,6 @@ EOF
 
     $TC3_passed && echo "${GREEN}TESTCASE 3 passed${NC}" || {
         TESTS_FAILED=$((TESTS_FAILED + 1)); FAILED_TESTS+=("TC3")
-        exit
     }
     rm -f "$TC3_output"
 fi
@@ -380,7 +404,6 @@ if [ ! -f "$TC4_output" ]; then
     echo "${RED}Error: output file $TC4_output not found.${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
     FAILED_TESTS+=("TC4")
-    exit
 else
     TC4_xml="$TEMP_DIR/tc4.xml"
     cp "$TC4_output" "$TC4_xml"
@@ -410,7 +433,6 @@ EOF
 
     $TC4_passed && echo "${GREEN}TESTCASE 4 passed${NC}" || {
         TESTS_FAILED=$((TESTS_FAILED + 1)); FAILED_TESTS+=("TC4")
-        exit
     }
     rm -f "$TC4_output"
 fi
@@ -457,7 +479,7 @@ if [ $exit_code -ne 0 ] && echo "$output" | grep -q "Conflicting extension filte
 else
     echo "${RED}TESTCASE 5 failed${NC}"
     echo "Output    : $output"
-    exit
+    TESTS_FAILED=$((TESTS_FAILED + 1)); FAILED_TESTS+=("TC5")
 fi
 
 
