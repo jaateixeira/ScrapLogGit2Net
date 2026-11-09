@@ -133,7 +133,8 @@ def create_organizational_network(
         if verbose:
             logger.debug(f"org_edge={org_edge}, weight={weight}")
 
-        org_u, org_v = list(org_edge)
+        # sorted, not list(): frozenset order varies between runs; sorting keeps output deterministic
+        org_u, org_v = sorted(org_edge)
         org_network.add_edge(org_u, org_v, weight=weight)
 
     logger.info(f"Organizational network created with {org_network.number_of_nodes()} nodes "
