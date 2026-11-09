@@ -40,11 +40,7 @@ A toolset for mining and visualizing [Git](https://git-scm.com/) repositories wi
 
 The toolset was first developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) during his doctoral studies with some guidance from Software Engineering scholars with expertise in the mining of software repositories. The tool merits by considering both individuals and organizations. The tool maps developers to organizations by the commit email address and external [APIs](https://en.wikipedia.org/wiki/API) such as the [REST](https://docs.github.com/en/rest?apiVersion=2022-11-28) and [GraphQL](https://docs.github.com/en/graphql) ones provided by [GitHub](https://github.com/).
 
-Newer features allow you to:
-- Transform a network of individuals/individuals into a network of organizations/firms. The weighted edge between organizations is the sum of developers that worked together (i.e., co-edited the same source-code files).
-- Filter developers by email (handy to deal with bots that commit code).
-- Support for parallel edges (i.e., multiple edges between two nodes) that allow attributing weight to a collaborative relationship between two developers (e.g., the number of times they co-edited a source code file).
-- Visualize collaborations dynamically using [NetworkX, a Python package](https://networkx.org/documentation/latest/) and [Matplotlib: Visualization with Python](https://matplotlib.org/).
+See [Features](#features) for what it can do.
 
 The code was also recently (i.e., Spring 2024) made compliant with the [NetworkX is a Python package](https://networkx.org/documentation/latest/) data structures and the [Python 3.10 version](https://networkx.org/documentation/latest/) runtime, which simplified the original codebase.
 For more information, see the publication and related website:
@@ -470,14 +466,17 @@ Commits that only touch ignored files are skipped. If the filter file is missing
 
 # Features
 
-## Recently implemented features
-- Export to the [GraphML](http://graphml.graphdrawing.org/) format for graphs based on XML. Exports undirected graphs with company affiliation attributes.
-- Optional verbose debug output.
-- Use of a serialized changelog, so we don't need to use RAW Git logs every time. Saves a lot of time for analyzing complex projects.
-- Possibility of adding an argument pointing to a file with emails to ignore (e.g., bots and spam email addresses).
-- Dynamic export of social network visualizations within the circular and central layouts.
-- Dynamic node size based on degree centrality in the circular and centrality layouts. Highly connected nodes are bigger; less connected nodes are smaller.
-- Transformation of unweighted inter-individual networks into weighted inter-organizational networks. The weight is equal to the number of inter-organizational relationships. Intra-organizational relationships are ignored.
+## Available features
+- **Networks of developers** who co-edited the same files, in three types: unweighted, weighted (weight = number of time-stamped co-edits of the pair) and temporal (each tie stamped with the commit date). See [Types of networks](#types-of-networks-scraplogpy-can-build).
+- **Networks of organizations.** Affiliations are inferred from email domains (`-a` merges domains into one organization), and `transform_nofi_2_nofo_graphml.py` turns a network of developers into a weighted network of organizations; the weight is the number of inter-organizational relationships, and intra-organizational ones are ignored.
+- **Filters.** Ignore developers by email, e.g. bots (`-fe`, applied to every network type); ignore files by path or wildcard pattern (`-ff`); keep or drop file extensions (`-ie`, `-xe`).
+- **Export** to [GraphML](http://graphml.graphdrawing.org/), with affiliation attributes; temporal networks are exported as compressed GraphML.
+- **Visualization** of networks of developers and of organizations: nodes colored by organization and sized by centrality, in circular and spring layouts.
+- **Reports and comparisons.** Excel reports on networks of developers and of organizations, comparison of networks across periods, developers who only worked alone (`solo_contributors.py`), and resolution of GitHub `noreply` emails (`deanonymize_github_users.py`).
+- **Reproducible output.** The same input gives byte-identical output files.
+- **Saving the parsed change log** with `-s` (loading it back with `-l` is not implemented yet).
+- **Verbose and debug output** (`-v`, `-vv`, `-d`).
+- **Tested.** Unit and acceptance tests run on GitHub for every push and pull request (see [Testing](#testing)).
 
 ## To implement (volunteers welcome)
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
@@ -515,6 +514,30 @@ for z in /path/to/download/Teixeira_et_al_2025-*.zip; do unzip -n "$z"; done
 ```
 
 The research data folders are listed in `.gitignore`, so restored files are not committed again. The scripts in `project-specific-analysis/AGL/` need the AGL data from the git history.
+
+# How to cite
+If you use ScrapLogGit2Net in your research, please cite the software. GitHub's "Cite this repository" button (from `CITATION.cff`) gives the reference in APA and BibTeX formats.
+
+- All versions (resolves to the latest release): [10.5281/zenodo.23964329](https://doi.org/10.5281/zenodo.23964329)
+- Release v1.0 ("alvarinho"): [10.5281/zenodo.23964330](https://doi.org/10.5281/zenodo.23964330)
+
+The way ScrapLogGit2Net builds networks from git logs is described in:
+
+- Teixeira, J., Robles, G., & González-Barahona, J. M. (2015). Lessons learned from applying social network analysis on an industrial Free/Libre/Open Source Software ecosystem. *Journal of Internet Services and Applications*, 6, 1-27. https://doi.org/10.1186/s13174-015-0028-2
+
+# Testing
+Install the test dependencies first (`python -m pip install -e ".[test]"`), then run from the repository root:
+
+- **Unit tests:** `python -m pytest`. Add `-rs` to see why some tests are skipped (planned features).
+- **Acceptance tests:** bash scripts that run the tools on the small logs in `test-data/` and check the networks they produce:
+  ```
+  bash tests/acceptance-test-scripts/testScrapLog.sh
+  bash tests/acceptance-test-scripts/testScrapLogTemporalNetworks.sh
+  bash tests/acceptance-test-scripts/ExtensionFiltering/test_extension_filtering.sh
+  ```
+  They need `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`.
+
+Both run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 
 # Contributing
 Please create a new branch for any new feature. Branch or fork, code, test, then pull request. See  [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for our contribuition guide. Please refer also to [the GitHub guide on how to contribute to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).

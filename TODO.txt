@@ -1,3 +1,13 @@
+
+# remove specialized code
+
+Add JISA datasets
+
+Improve README with testing data
+Improive README by linking to other tools. Table is too big
+
+
+
 Fix issues with deanonimizer
 
 Looking at the code carefully, I can spot several bugs and issues worth fixing before you run this at scale on 12 GraphML files.
