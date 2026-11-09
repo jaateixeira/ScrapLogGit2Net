@@ -47,8 +47,7 @@ ScrapLogGit2Net/
 │   │   ├── test_transform_network.py
 │   │   ├── test_parsing_to_temporal_networks.py
 │   │   ├── test_extract_temporal_network_from_parsed_change_log_entries.py
-│   │   ├── test_nofo_network_visualizer.py
-│   │   └── test_utils_validators.py
+│   │   └── test_nofo_network_visualizer.py
 │   └── acceptance-test-scripts/ # bash end-to-end tests (run from project root)
 ├── test-data/                  # Input files used by the tests
 ├── scrapLog.py                 # Thin wrapper: runs scraplog/scraplog.py (one per command)
@@ -422,7 +421,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from scraplog.parsing import function_name  # or identity, coediting, pipeline, output
 
 # For utils modules
-from scraplog.utils.validators import validate_git_email
+from scraplog.utils.validators import validate_all_graph_edges_have_weights
 
 # For console/logger helpers (scraplog/utils/)
 from scraplog.utils.unified_logger import logger

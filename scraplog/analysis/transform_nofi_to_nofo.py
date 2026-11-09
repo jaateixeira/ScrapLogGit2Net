@@ -11,9 +11,6 @@ Nokia and Apple are then connected with an edge weight of 3.
 """
 
 
-# Path to visualization script
-noo_viz_script = "/home/apolinex/rep_clones/own-tools/ScrapLogGit2Net/transform-nofi-2-nofo-GraphML.py"
-
 import sys
 import os
 import argparse
@@ -355,21 +352,17 @@ def main() -> None:
     if args.show:
         console.print("\n[bold cyan]Displaying the results[/bold cyan]")
 
-        if not os.path.exists(noo_viz_script):
-            logger.warning(f"Visualization script not found at {noo_viz_script}")
-            console.print("[bold yellow]Warning:[/bold yellow] Skipping visualization")
-        else:
-            # Escape parentheses for shell safety
-            safe_output_file = output_file.replace("(", "\\(").replace(")", "\\)")
-            show_cmd = f"python3 {noo_viz_script} {safe_output_file}"
+        # Run the package's nofo visualizer with the current Python. Passing the
+        # arguments as a list (no shell) keeps file names with spaces or
+        # parentheses intact.
+        show_cmd = [sys.executable, "-m", "scraplog.viz.nofo_visualizer", output_file, "--show"]
+        logger.info(f"Invoking visualization: {' '.join(show_cmd)}")
 
-            logger.info(f"Invoking visualization script: {show_cmd}")
-
-            try:
-                subprocess.call(show_cmd, shell=True)
-            except Exception as e_read:
-                logger.error(f"Error running visualization script: {e_read}")
-                console.print_exception()
+        try:
+            subprocess.call(show_cmd)
+        except Exception as e_read:
+            logger.error(f"Error running visualization script: {e_read}")
+            console.print_exception()
 
     console.print("\n[bold green]✓ Transformation completed successfully![/bold green]")
     logger.info("Transformation process completed")

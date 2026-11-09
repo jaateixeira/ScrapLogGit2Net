@@ -435,30 +435,43 @@ def test_main_keyboard_interrupt(mocker, monkeypatch, tmp_path):
 
 
 def test_main_unexpected_error(mocker, monkeypatch):
-    """Test handling of unexpected errors."""
-    test_args = ["script.py", "test.graphML"]
+    """An unexpected error while running the script exits with code 1.
 
-    monkeypatch.setattr(sys, 'argv', test_args)
+    The handler is in the module's __main__ block, so run the module as
+    __main__ (as ./transform_nofi_2_nofo_graphml.py does).
+    """
+    import argparse
+    import runpy
 
-    # Mock main to raise Exception
-    mocker.patch.object(transform_module, 'main', side_effect=Exception("Test error"))
+    monkeypatch.setattr(sys, 'argv', ["script.py", "test.graphML"])
+    mocker.patch.object(argparse.ArgumentParser, 'parse_args', side_effect=Exception("Test error"))
 
     with pytest.raises(SystemExit) as exc_info:
-        transform_module.main()
+        runpy.run_module("scraplog.analysis.transform_nofi_to_nofo", run_name="__main__")
 
     assert exc_info.value.code == 1
 
 
 # Test command-line argument parsing
-def test_argument_parsing():
+def parsed_args_for(argv, mocker, monkeypatch):
+    """Run main() until it has parsed its arguments, and return them.
+
+    The parser is created inside main(), so spy on parse_args and stop main()
+    right after it by making the graph read fail (main then exits with 1).
+    """
+    import argparse
+
+    spy = mocker.spy(argparse.ArgumentParser, 'parse_args')
+    mocker.patch('scraplog.analysis.transform_nofi_to_nofo.nx.read_graphml', side_effect=OSError("stop here"))
+    monkeypatch.setattr(sys, 'argv', argv)
+    with pytest.raises(SystemExit):
+        transform_module.main()
+    return spy.spy_return
+
+
+def test_argument_parsing(mocker, monkeypatch):
     """Test that argument parser works correctly."""
-    test_args = ["script.py", "input.graphML", "-v", "-s", "-o", "output.graphML"]
-
-    # Access the parser from the module
-    parser = transform_module.main.__wrapped__.__globals__['parser']
-
-    # Parse arguments (skip the script name)
-    args = parser.parse_args(test_args[1:])
+    args = parsed_args_for(["script.py", "input.graphML", "-v", "-s", "-o", "output.graphML"], mocker, monkeypatch)
 
     assert args.file == "input.graphML"
     assert args.verbose == True
@@ -466,12 +479,9 @@ def test_argument_parsing():
     assert args.outfile == "output.graphML"
 
 
-def test_argument_parsing_minimal():
+def test_argument_parsing_minimal(mocker, monkeypatch):
     """Test minimal argument parsing."""
-    test_args = ["script.py", "input.graphML"]
-
-    parser = transform_module.main.__wrapped__.__globals__['parser']
-    args = parser.parse_args(test_args[1:])
+    args = parsed_args_for(["script.py", "input.graphML"], mocker, monkeypatch)
 
     assert args.file == "input.graphML"
     assert args.verbose == False
@@ -535,9 +545,10 @@ def test_network_single_node():
 
     org_network = transform_module.create_organizational_network(G)
 
-    # Should have Apple node but no edges
-    assert org_network.number_of_nodes() == 1
-    assert "Apple" in org_network
+    # Organizations only appear through inter-organizational edges
+    # (design decision, as for developers in question 7)
+    assert org_network.number_of_nodes() == 0
+    assert org_network.number_of_edges() == 0
     assert org_network.number_of_edges() == 0
 
 
@@ -610,8 +621,8 @@ def test_verbose_parameter_passed_to_functions(mocker, monkeypatch, sample_indiv
             raise
 
     # Check that functions were called with verbose=True
-    mock_remove_isolates.assert_called_once_with(sample_individual_network, verbose=True)
-    mock_create_org.assert_called_once_with(sample_individual_network, verbose=True)
+    mock_remove_isolates.assert_called_once_with(sample_individual_network, True)
+    mock_create_org.assert_called_once_with(sample_individual_network, True)
 
 
 def test_non_verbose_parameter_passed_to_functions(mocker, monkeypatch, sample_individual_network):
@@ -635,8 +646,8 @@ def test_non_verbose_parameter_passed_to_functions(mocker, monkeypatch, sample_i
             raise
 
     # Check that functions were called with verbose=False
-    mock_remove_isolates.assert_called_once_with(sample_individual_network, verbose=False)
-    mock_create_org.assert_called_once_with(sample_individual_network, verbose=False)
+    mock_remove_isolates.assert_called_once_with(sample_individual_network, False)
+    mock_create_org.assert_called_once_with(sample_individual_network, False)
 
 
 # Test integration
@@ -647,11 +658,10 @@ def test_main_integration(mocker, monkeypatch, tmp_path, sample_individual_netwo
     nx.write_graphml_lxml(sample_individual_network, str(input_file))
 
     # Mock subprocess.call to avoid actually running visualization
-    mock_subprocess = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.subprocess.call')
+    mocker.patch('scraplog.analysis.transform_nofi_to_nofo.subprocess.call')
 
-    # Mock the visualization script path
-    original_path = transform_module.noo_viz_script
-    transform_module.noo_viz_script = "/mock/path"
+    # Without -o the output is written to the current directory, so run in tmp_path
+    monkeypatch.chdir(tmp_path)
 
     # Run main with arguments
     test_args = ["script.py", str(input_file), "-v"]
@@ -663,18 +673,15 @@ def test_main_integration(mocker, monkeypatch, tmp_path, sample_individual_netwo
         if e.code not in (0, None):
             raise
 
-    # Restore original path
-    transform_module.noo_viz_script = original_path
-
     # Check that output file was created
     output_files = list(tmp_path.glob("*transformed-to-nofo*.graphML"))
     assert len(output_files) > 0, "No output file was created"
 
 
-# Test path escaping
+# -s runs the package's nofo visualizer on the output file
 def test_path_escaping(mocker, monkeypatch, tmp_path, sample_individual_network):
-    """Test that paths with parentheses are properly escaped."""
-    # Create a file with parentheses in the name
+    """-s runs the nofo visualizer with the current Python; the command is a
+    list (no shell), so a file name with parentheses is passed unchanged."""
     output_file = tmp_path / "test(file).graphML"
 
     # Mock dependencies
@@ -686,8 +693,7 @@ def test_path_escaping(mocker, monkeypatch, tmp_path, sample_individual_network)
     mock_save.return_value = str(output_file)
 
     # Run with show option
-    test_args = ["script.py", "test.graphML", "-s"]
-    monkeypatch.setattr(sys, 'argv', test_args)
+    monkeypatch.setattr(sys, 'argv', ["script.py", "test.graphML", "-s"])
 
     try:
         transform_module.main()
@@ -695,31 +701,24 @@ def test_path_escaping(mocker, monkeypatch, tmp_path, sample_individual_network)
         if e.code not in (0, None):
             raise
 
-    # Check that subprocess was called
-    mock_subprocess.assert_called_once()
-    call_args = mock_subprocess.call_args[0][0]
-    # Check if parentheses are escaped (either \ or \\)
-    assert "\\(" in call_args or "\(" in call_args or "test\\(" in call_args
+    mock_subprocess.assert_called_once_with(
+        [sys.executable, "-m", "scraplog.viz.nofo_visualizer", str(output_file), "--show"]
+    )
 
 
-# Test that the script handles missing visualization script gracefully
+# A failing visualizer does not stop the transformation
 def test_missing_visualization_script(mocker, monkeypatch, sample_individual_network):
-    """Test handling when visualization script is missing."""
-    # Mock dependencies
+    """If the visualizer cannot be run, the error is logged and the
+    transformation still completes."""
     mock_read_graphml = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.nx.read_graphml')
     mock_save = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.save_network')
-    mock_os_path_exists = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.os.path.exists')
+    mock_subprocess = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.subprocess.call',
+                                   side_effect=OSError("cannot run visualizer"))
 
     mock_read_graphml.return_value = sample_individual_network
     mock_save.return_value = "output.graphML"
-    mock_os_path_exists.return_value = False  # Visualization script doesn't exist
 
-    # Set visualization script path
-    original_path = transform_module.noo_viz_script
-    transform_module.noo_viz_script = "/non/existent/path.py"
-
-    test_args = ["script.py", "test.graphML", "-s"]
-    monkeypatch.setattr(sys, 'argv', test_args)
+    monkeypatch.setattr(sys, 'argv', ["script.py", "test.graphML", "-s"])
 
     try:
         transform_module.main()
@@ -727,11 +726,7 @@ def test_missing_visualization_script(mocker, monkeypatch, sample_individual_net
         if e.code not in (0, None):
             raise
 
-    # Restore original path
-    transform_module.noo_viz_script = original_path
-
-    # Verify os.path.exists was called
-    mock_os_path_exists.assert_called()
+    mock_subprocess.assert_called_once()
 
 
 # Test error handling in save_network
