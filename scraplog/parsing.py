@@ -12,7 +12,8 @@ from typing import List, Optional, Tuple
 from scraplog.core.models import ProcessingState, TimeStampedFileContribution
 from scraplog.core.types import Filename, DeveloperInfo, ChangeLogEntry
 from scraplog.utils.debugging import handle_step_completion, ask_yes_or_no_question
-from scraplog.utils.unified_console import console, traceback, inspect, print_info, print_warning, print_error, print_success, print_fatal_error
+import traceback  # the standard module (unified_console.traceback is rich.traceback outside PyCharm)
+from scraplog.utils.unified_console import console, inspect, print_info, print_warning, print_error, print_success, print_fatal_error
 from scraplog.utils.unified_logger import logger
 from scraplog.identity import extract_affiliation_from_email
 from scraplog.pipeline import save_processed_data

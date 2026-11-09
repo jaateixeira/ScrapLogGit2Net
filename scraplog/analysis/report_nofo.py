@@ -15,7 +15,8 @@ import xlwt
 from rich.panel import Panel
 
 from scraplog.utils.unified_logger import logger
-from scraplog.utils.unified_console import console, traceback
+import traceback  # the standard module (unified_console.traceback is rich.traceback outside PyCharm)
+from scraplog.utils.unified_console import console
 from scraplog.utils.unified_console import Table
 
 
@@ -536,7 +537,7 @@ def main() -> None:
     except Exception as e:
         console.print(f"\n❌ [bold red]Unexpected error:[/bold red]")
         console.print(f"   {e}")
-        console.print(traceback)
+        console.print(traceback.format_exc())
         sys.exit(1)
 
 

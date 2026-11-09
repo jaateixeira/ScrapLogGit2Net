@@ -13,7 +13,8 @@ from scraplog.core.models import ProcessingState
 from scraplog.networks.weighted import show_weighted_edges
 from scraplog.utils.debugging import ask_yes_or_no_question
 from scraplog.utils.string_comparators import find_similar_strings
-from scraplog.utils.unified_console import console, traceback, inspect, print_info, print_warning, print_error
+import traceback  # the standard module (unified_console.traceback is rich.traceback outside PyCharm)
+from scraplog.utils.unified_console import console, inspect, print_info, print_warning, print_error
 from scraplog.coediting import enrich_graph_with_affiliation
 
 
