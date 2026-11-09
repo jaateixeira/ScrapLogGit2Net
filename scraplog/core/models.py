@@ -105,6 +105,7 @@ class ProcessingStatistics:
     n_changed_files: int = 0
     n_validation_errors: int = 0
     n_skipped_blocks: int = 0
+    n_commits_excluded_by_email_filter: int = 0  # commits by -fe emails, dropped on purpose
 
     def increment_validation_errors(self) -> None:
         """Increment validation error count."""
@@ -197,6 +198,7 @@ class ProcessingState:
 
     affiliations: Dict[Email, Affiliation] = field(default_factory=dict)
     emails_to_filter: Set[Email] = field(default_factory=set)
+    excluded_emails: Set[Email] = field(default_factory=set)  # -fe emails that had commits
 
     email_aggregation_config: EmailAggregationConfig = field(default_factory=dict)
 

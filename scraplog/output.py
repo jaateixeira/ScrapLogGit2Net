@@ -26,8 +26,11 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     console.print(f"Out network graphml file: {out_graphml_file}")
     console.print(f"Total lines processed: {state.statistics.n_lines}")
     console.print(f"Total commit blocks found: {state.statistics.n_blocks}")
-    console.print(f"Successfully processed blocks: {state.statistics.n_blocks - state.statistics.n_skipped_blocks}")
+    console.print(f"Successfully processed blocks: {state.statistics.n_blocks - state.statistics.n_skipped_blocks - state.statistics.n_commits_excluded_by_email_filter}")
     console.print(f"Skipped/invalid blocks: {state.statistics.n_skipped_blocks}")
+    if state.email_filtering_mode:
+        console.print(f"Commits excluded by -fe email filter: {state.statistics.n_commits_excluded_by_email_filter}"
+                      f" (emails: {', '.join(sorted(state.excluded_emails)) or 'none found in the log'})")
     console.print(f"Blocks changing code: {state.statistics.n_blocks_changing_code}")
     console.print(f"Files affected: {state.statistics.n_changed_files}")
     console.print(f"Validation errors: {state.statistics.n_validation_errors}")

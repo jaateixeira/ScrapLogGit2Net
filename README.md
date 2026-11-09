@@ -102,7 +102,7 @@ flowchart TD
 
     subgraph S2 ["2 · Parse the log (parsing.py, identity.py)"]
         BLOCKS["Split the log into commit blocks"]
-        HEADER["Read the header: date, name, email<br/>affiliation = derived from the email domain"]
+        HEADER["Read the header: date, name, email<br/>drop the commit if the email is listed with -fe<br/>affiliation = derived from the email domain"]
         FILES["Read the changed files<br/>drop files matched by -ff, -ie, -xe"]
         ENTRIES[("Change log entries<br/>((email, affiliation), files, date)")]
         BLOCKS --> HEADER --> FILES --> ENTRIES
@@ -113,10 +113,9 @@ flowchart TD
         WEIGHTED["Weighted network<br/>weight = number of time-stamped co-edits of the pair"]
         UNWEIGHTED["Unweighted network<br/>tie present or absent"]
         AFFIL["Affiliations set on nodes (coediting.py)<br/>always derived from the email (design decision Q6)"]
-        EFILTER["Remove developers listed with -fe,<br/>then developers left without ties"]
         TEMPORAL -- "-t weighted or unweighted" --> WEIGHTED
         WEIGHTED -- "-t unweighted" --> UNWEIGHTED
-        UNWEIGHTED --> AFFIL --> EFILTER
+        UNWEIGHTED --> AFFIL
     end
 
     subgraph S4 ["4 · Export (output.py, export/)"]
@@ -131,14 +130,14 @@ flowchart TD
     ENTRIES -. "-s" .-> SAVED[["Serialized change log (pickle)"]]
     TEMPORAL -- "-t temporal" --> OT
     WEIGHTED -- "-t weighted" --> OW
-    EFILTER -- "-t unweighted (default)" --> OU
+    AFFIL -- "-t unweighted (default)" --> OU
     OT & OW & OU --> SUMMARY
 ```
 
 Notes:
 - Only developers with at least one co-edit become nodes (design decision Q7, see [Design decisions](#design-decisions)).
 - The same input always gives byte-identical output files: nodes and edges are written in sorted order.
-- Known issue: the `-fe` email filter is currently applied to the unweighted network only. Developers listed with `-fe` still appear in weighted and temporal networks.
+- Commits by emails listed with `-fe` are dropped while the log is parsed, so those developers are absent from every network type. The processing summary reports how many commits were excluded and for which emails.
 
 # Types of networks **scrapLog.py** can build
 

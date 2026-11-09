@@ -7,7 +7,7 @@ import sys
 from scraplog.core.models import ProcessingState
 from scraplog.core.types import EmailAggregationConfig, Email
 from scraplog.utils.strings_cleaners import clean_email
-from scraplog.utils.unified_console import console
+from scraplog.utils.unified_console import console, print_fatal_error
 from scraplog.utils.unified_logger import logger
 
 
@@ -140,6 +140,8 @@ def load_email_filter_file(state: ProcessingState, filter_file_path: str) -> Non
         with open(filter_file_path, 'r') as ff:
             state.emails_to_filter = {line.strip() for line in ff if line.strip()}
         console.print(f"\tLoaded {len(state.emails_to_filter)} emails to filter")
-    except IOError as e:
-        console.print(f" Could not read filter file {filter_file_path}: {e}")
-        state.email_filtering_mode = False
+    except (OSError, UnicodeDecodeError) as e:
+        # Fatal, as for -ff: continuing would silently keep the developers (e.g. bots)
+        # that were meant to be excluded
+        print_fatal_error(f"Could not read email filter file {filter_file_path}", str(e))
+        sys.exit(1)

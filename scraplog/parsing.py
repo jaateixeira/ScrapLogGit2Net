@@ -258,6 +258,13 @@ def process_commit_block(
 
         commit_time, dev_name, dev_email, dev_affiliation = time_dev_info
 
+        # -fe: drop commits by filtered emails before any network is built, so
+        # filtered developers are absent from every network type
+        if state.email_filtering_mode and dev_email in state.emails_to_filter:
+            state.statistics.n_commits_excluded_by_email_filter += 1
+            state.excluded_emails.add(dev_email)
+            return False
+
         # Extract files
         changed_files = extract_files_from_block(block[1:], state)
 
