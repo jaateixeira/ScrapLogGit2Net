@@ -117,7 +117,7 @@ To analyse your own project, see [How to use scrapLog.py](#how-to-use-scraplogpy
 
 
 
-# How **scrapLog.py** works
+# How `scrapLog.py` works
 It uses the commit logs of a Git repository:
 ```git log --pretty=format:"==%an;%ae;%ad==" --name-only```
 
@@ -138,10 +138,10 @@ Note that:
 <p align="center">
   <img src="http://users.abo.fi/jteixeir/OpenStackSNA/Figures/How%20we%20model%20the%20network.svg" alt="How we model the network" style="border: 1px solid #000011; width:700px;" />
   <br>
-  <em>Ilustration on how ScrapLogGit2Net models the network from Git commit logs.</em>
+  <em>Illustration of how ScrapLogGit2Net models the network from Git commit logs.</em>
 </p>
 
-## The scrapLog.py pipeline, step by step
+## The `scrapLog.py` pipeline, step by step
 
 The diagram shows what happens when you run `./scrapLog.py -r <log>.IN`. The four numbered steps are the four calls in `main()` (`scraplog/scraplog.py`); the names in brackets are the modules that do the work.
 
@@ -192,7 +192,7 @@ Notes:
 - The same input always gives byte-identical output files: nodes and edges are written in sorted order.
 - Commits by emails listed with `-fe` are dropped while the log is parsed, so those developers are absent from every network type. The processing summary reports how many commits were excluded and for which emails.
 
-# Types of networks **scrapLog.py** can build
+# Types of networks `scrapLog.py` can build
 
 The type of network is chosen with the `-t` / `--type-of-network` option. If you do not choose one, you get the default, `inter_individual_graph_unweighted`.
 
@@ -257,7 +257,7 @@ The `affiliation` node attribute is always derived from the developer's commit e
 ### Q7 · Developers who never co-edit a file are left out
 Only developers with at least one co-edit become nodes; a developer whose files nobody else edited is not in the network, not even as an isolated node. This holds for the temporal, weighted and unweighted networks. For example, the TensorFlow log for the first trimester of 2024 has 279 authors, of whom 256 co-edited at least one file, so its networks have 256 nodes. Keep this in mind for measures that depend on the number of nodes, such as density or normalized centralities. The same applies to networks of organizations: an organization without inter-organizational ties is not a node. To study developers who work alone, use `solo_contributors.py`.
 
-# How to use **scrapLog.py**
+# How to use `scrapLog.py`
 You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
 
 ## First, clone a Git repository
@@ -337,7 +337,7 @@ or
 python3 scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN
 ```
 
-By default, and all goes well, you get a "NetworkFile.graphML" file prefixed with the data input filename (e.g., tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML) capturing the unweighted social network of individuals. Congrats. You collected social network data ready for analysis. Use the `-t` option to get weighted or temporal networks instead (see [Types of networks](#types-of-networks-scraplogpy-can-build)).
+By default, if all goes well, you get a "NetworkFile.graphML" file prefixed with the data input filename (e.g., tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML) capturing the unweighted social network of individuals. Congrats. You collected social network data ready for analysis. Use the `-t` option to get weighted or temporal networks instead (see [Types of networks](#types-of-networks-scraplogpy-can-build)).
 
 # Executable tools/scripts 
 
@@ -370,12 +370,12 @@ The approach works well, most of the time. But there are known issues that shoul
 
 
 If a developer has two or more organization emails (e.g., works part-time for two organizations). Should it be treated as two developers!!  Or merged into one? This might require additional investigation on the developer and its contributions to figure out the best way to model the social network.
-If a developer changes organization (e.g., changed email), by default ScrapLogGit2Net models him as another developer. You might want to model it in another way.
-If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., IBM, Amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with Gmail. But it might make sense to associate him with the firm he also commits. Should contributions submitted with personal-use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with?
+If a developer changes organization (e.g., changed email), by default ScrapLogGit2Net models them as another developer. You might want to model it in another way.
+If a developer contributes with a personal email account (Gmail, Outlook) and with a firm account (e.g., IBM, Amazon) during the same period, what should be done? ScrapLogGit2Net associates the developer with Gmail. But it might make sense to associate them with the firm they also commit for. Should contributions submitted with personal-use email services (e.g., Gmail, Hotmail, Outlook) be considered as personal contributions that have nothing to do with an organization the developer works with?
 
 When associating emails with developers, and developers with firms, it is a good approach to find suspicious similarities in the strings identifying actors in the network. The Python package [strsimpy](https://pypi.org/project/strsimpy/) implements many algorithms for string similarity. The names 'George Tony' and 'George Toony' have a very high string similarity score, so they are probably the same person. Test for similarity in names and emails to enhance the robustness of the social network model.
 
-### A developer can have multiple emails!   ###
+### A developer can have multiple emails
 
 There are many ways to deal with developers that use several emails. The simplest one is to use the approach by [Augustina Ragwitz (2017)](https://rstudio-pubs-static.s3.amazonaws.com/316662_7181d6efdd584358b935f7e444efb152.html), the
 first email address found in the commit log for an author is then the authoritative one. According to her:
@@ -388,17 +388,17 @@ Note, however, that GitHub GraphQL API was designed in a way that you can retrie
 
 If the Git repository is not hosted on GitHub, you can use the approach by [Teixeira, Leppänen and Hyrynsalmi (2020)](https://arxiv.org/pdf/2106.09329) that used pattern-matching techniques with regular expressions to identify unique names and emails. Note that in their study of code reviews on the Linux Kernel, they adopted a strictly extra-relational approach: individuals are identified by their real names, while all affiliations are based on explicit data extraction from the domain names in individuals’ e-mail addresses. ScrapLogGit2Net gets developers' IDs and their affiliations from e-mail addresses, simply ignoring their names.
 
-### A developer can hide his email!   ###
+### A developer can hide their email
 
-Most developers do not hide their email from the git logs. Like scientists in their articles, they want to keep their names as authors or contributors. However, they can remain anonymous or simply do not want to be contacted or avoid spam. This is popular since GitHub started allowing the association of pseudo email addresses in the format [8 digit number]+[username]@users.noreply.github.com that are still associated with their GitHub profile. For example, a git commit from Ruslan Inovic <rroinov@gmail.com> might appear as <608192+rosmanov@users.noreply.github.com>. See GitHub documentation on the issue at [GitHub Docs](https://docs.github.com/en/account-and-profile/setting-up-and-management-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address#about-commit-email-addresses). Once again using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)) would allow mapping the @users.noreply.github.com with developers or other emails used by them. Note that once a developer commits code with an email, it will always be associated with him on GitHub. When a developer sets commits to be signed with a no-reply email, he is only affecting future commits, not the past recorded ones.
+Most developers do not hide their email from the git logs. Like scientists in their articles, they want to keep their names as authors or contributors. However, they can remain anonymous or simply do not want to be contacted or avoid spam. This is popular since GitHub started allowing the association of pseudo email addresses in the format [8 digit number]+[username]@users.noreply.github.com that are still associated with their GitHub profile. For example, a git commit from Ruslan Inovic <rroinov@gmail.com> might appear as <608192+rosmanov@users.noreply.github.com>. See GitHub documentation on the issue at [GitHub Docs](https://docs.github.com/en/account-and-profile/setting-up-and-management-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address#about-commit-email-addresses). Once again using the GitHub GraphQL API  (see  [https://docs.github.com/en/graphql](https://docs.github.com/en/graphql))  or the GitHub  REST API (see [https://docs.github.com/en/rest](https://docs.github.com/en/rest)) would allow mapping the @users.noreply.github.com with developers or other emails used by them. Note that once a developer commits code with an email, it will always be associated with them on GitHub. When developers set commits to be signed with a no-reply email, they only affect future commits, not the past recorded ones.
 
-## Some collaborative edges are missed with longitudinal segmentation!
+## Some collaborative edges are missed with longitudinal segmentation
 
 As pointed out by [Teixeira et al. (2015)](https://link.springer.com/article/10.1186/s13174-015-0028-2), when studying code-collaboration as a synchronous behaviour happening across different time windows (release after release or year after year), you will miss some collaboration edges between two developers who contributed to the same file that started before the time-window opened for analysis or did not end before the time-window closed. See [https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3](https://link.springer.com/article/10.1186/s13174-015-0028-2/figures/3).
 
 A way to quantify this issue is to first analyze all the historical data. From day 0 to the last day save the edges. Then conduct the analysis in segments (e.g., year after year, release after release, etc). Then see how many edges there are in the network from all the time that were not captured by the time-limited analysis. 0 is ideal. But expect a few. Given that people tend to drop coding efforts before Xmas and New Year, or before releasing a new version (as they concentrate efforts on stabilizing over developing new features), the impacts on the model validity are very small.
 
-# ScrapLog.py command line options for advanced use
+# `scrapLog.py` command line options for advanced use
 
 - Use serialized changelogs so you don't need to use raw Git logs every time (speeds things up)
 - Provide a configuration file with emails (aka developers) that should be ignored. Handy for ignoring bots that commit code
@@ -540,7 +540,7 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
 Both run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 
 # Contributing
-Please create a new branch for any new feature. Branch or fork, code, test, then pull request. See  [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for our contribuition guide. Please refer also to [the GitHub guide on how to contribute to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
+Please create a new branch for any new feature. Branch or fork, code, test, then pull request. See  [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for our contribution guide. Please refer also to [the GitHub guide on how to contribute to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
 
 Note you should not break the test runner bash script (testScrapLog.sh) that runs ScrapLogGit2Net against test-data and compares with the expected output. You might need to change the test runner to comply with new developments.
 
