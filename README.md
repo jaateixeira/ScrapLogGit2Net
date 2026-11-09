@@ -414,9 +414,9 @@ Scrap git changelog to create networks/graphs for research purposes
 
 options:
   -h, --help            show this help message and exit
-  -l, --load LOAD       loads and processes a serialized changelog
+  -l, --load LOAD       load a change log saved with -s. Not implemented yet: stops with an error
   -r, --raw RAW         processes from a raw git changelog
-  -s, --save SAVE       processes from a raw git changelog and saves it into a serialized changelog
+  -s, --save SAVE       also save the parsed change log to this file (Python pickle)
   -fe, --filter-emails FILTER_EMAILS
                         ignores the emails listed in a text file (one email per line)
   -ff, --filter-files FILTER_FILES

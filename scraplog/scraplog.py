@@ -34,11 +34,12 @@ def parse_arguments() -> argparse.Namespace:
         description='Scrap git changelog to create networks/graphs for research purposes'
     )
     parser.add_argument('-l', '--load', type=Path,
-                        help='loads and processes a serialized changelog')
+                        help='load a change log saved with -s. Not implemented yet: '
+                             'stops with an error')
     parser.add_argument('-r', '--raw', type=Path, required=True,
                         help='processes from a raw git changelog')
     parser.add_argument('-s', '--save', type=Path,
-                        help='processes from a raw git changelog and saves it into a serialized changelog')
+                        help='also save the parsed change log to this file (Python pickle)')
     parser.add_argument('-fe', '--filter-emails', type=Path,
                         help='ignores the emails listed in a text file (one email per line)')
     parser.add_argument('-ff', '--filter-files', type=Path,
@@ -96,6 +97,14 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
     state.strict_validation = args.strict
 
     state.network_type = args.type_of_network
+
+    # Loading a saved change log is not implemented: stop instead of silently
+    # parsing the raw log given with -r.
+    if args.load:
+        print_fatal_error(
+            "Loading a saved change log (-l) is not implemented yet",
+            "Leave out -l; scrapLog parses the raw git log given with -r.")
+        sys.exit(1)
 
     # Only a 1-second temporal resolution is implemented. Stop instead of silently
     # ignoring another value, which would give a network the user did not ask for.

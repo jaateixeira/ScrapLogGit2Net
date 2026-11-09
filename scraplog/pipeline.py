@@ -21,7 +21,9 @@ def save_processed_data(state: ProcessingState, save_path: Path) -> None:
     def save_data(data, path):
         """Safely save data with pickle."""
         # Ensure directory exists
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        folder = os.path.dirname(path)
+        if folder:  # a plain file name has no folder to create (makedirs('') fails)
+            os.makedirs(folder, exist_ok=True)
 
         # Save with error handling
         try:
