@@ -1,0 +1,62 @@
+name: Acceptance tests
+
+# Runs the scrapLog acceptance tests on every pull request into main and on
+# every push to main. To block merges until they pass, enable branch protection
+# for main (Settings -> Branches) and require the "scrapLog acceptance tests" check.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    name: scrapLog acceptance tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      MPLBACKEND: Agg   # no display on the runner
+      TERM: xterm       # the scripts use tput for colours
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        # The code uses Python 3.12 f-string syntax (scraplog/export/log_data.py)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install system tools (xmllint, unzip)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libxml2-utils unzip
+
+      - name: Install scraplog
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      # Run from the repository root: the scripts use paths relative to it.
+      - name: scrapLog networks (testScrapLog.sh)
+        run: bash tests/acceptance-test-scripts/testScrapLog.sh
+
+      - name: Temporal networks (testScrapLogTemporalNetworks.sh)
+        run: bash tests/acceptance-test-scripts/testScrapLogTemporalNetworks.sh
+
+      - name: Extension filtering (test_extension_filtering.sh)
+        run: bash tests/acceptance-test-scripts/ExtensionFiltering/test_extension_filtering.sh
+
+      # Not run: test-nofi-2-nofo-transformer.sh validates against
+      # http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd, which is currently
+      # out of service. The test-nofi-*/test-nofo-* viz and reporter scripts are
+      # manual visual checks (plot windows, LibreOffice).

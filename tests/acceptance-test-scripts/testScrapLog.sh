@@ -8,6 +8,9 @@ GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 NC=$(tput sgr0)
 
+# Cases 2.2-3.4 record failures here; the script exits 1 at the end if any failed
+TESTS_FAILED=0
+
 
 
 assert_str_in_file() {
@@ -111,6 +114,7 @@ if test -f "$GraphMLFILE"; then
     echo "${GREEN}TESTCASE 2.2 - $GraphMLFILE exists ${NC}"
 else
     echo "${RED}TESTCASE 2.2 did not pass${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
     echo "$GraphMLFILE not created" 
 fi
 
@@ -129,6 +133,7 @@ if [ "$actualHeader" == "$GraphMLHeader" ]; then
    echo "${GREEN}TESTCASE 2.3 - $GraphMLFILE have a good header${NC}"
 else 
    echo "${RED}TESTCASE 2.3 did not pass${NC}"
+   TESTS_FAILED=$((TESTS_FAILED + 1))
    echo "$GraphMLFILE with wrong header" 
 fi
 
@@ -141,6 +146,7 @@ if grep -q '<data key="d0">olupton@nvidia.com</data>' "$GraphMLFILE"; then
     echo "${GREEN}TESTCASE 2.4 - $GraphMLFILE have the olupton@nvidia.com node as expected${NC}"
 else 
     echo "${RED}TESTCASE 2.4 did not pass${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
 echo "" 
@@ -149,6 +155,7 @@ if grep -q '<data key="d0">lawrencews@google.com</data>' "$GraphMLFILE"; then
     echo "${GREEN}TESTCASE 2.5 - $GraphMLFILE have the lawrencews@google.com node as expected${NC}"
 else 
     echo "${RED}TESTCASE 2.5 did not pass${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
 
@@ -160,6 +167,7 @@ if grep -q '<edge id="e0" source="0" target="1"/>' "$GraphMLFILE"; then
     echo "${GREEN}TESTCASE 2.6 - $GraphMLFILE have the the expected edge connecting two nodes${NC}"
 else 
     echo "${RED}TESTCASE 2.6 did not pass${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
     echo '   expecting <edge id="e0" source="0" target="1"/>'
     echo "   please check check the edges in  tensorFlowGitLog-3-commits-1-edge.NetworkFile.graphML"
     
@@ -176,6 +184,7 @@ if [ "$cmdOutput" == '</graph></graphml>' ]; then
     echo "${GREEN}TESTCASE 2.7 - $GraphMLFILE ends in the proper way with </graphml>${NC}"
 else 
     echo "${RED}TESTCASE 2.7 did not pass - Wrong ending of $GraphMLFILE ${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
 
@@ -200,6 +209,7 @@ if grep -q 'Total commit blocks found: 4431' testResults.tmp; then
     echo "${GREEN}TESTCASE 3.1 - Scrapped changelog blocks [4431] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.1 did not pass - unexpected number of changelog blocks${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
 
@@ -209,6 +219,7 @@ if grep -q 'Files affected: 8467' testResults.tmp; then
     echo "${GREEN}TESTCASE 3.2 - number of changed files [8467] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.2 did not pass - unexpected number of changed files${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
 
@@ -216,9 +227,10 @@ fi
 echo""
 
 if grep -q 'Network nodes (developers): 256' testResults.tmp; then
-    echo "${GREEN}TESTCASE 3.3 - number of nodes [279] as expected${NC}"
+    echo "${GREEN}TESTCASE 3.3 - number of nodes [256] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.3 did not pass - unexpected number of nodes${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
 echo""
@@ -227,6 +239,7 @@ if grep -q 'Network edges (collaborations): 3363' testResults.tmp; then
     echo "${GREEN}TESTCASE 3.4 - number of edges [3363] as expected${NC}"
 else 
     echo "${RED}TESTCASE 3.4 did not pass - unexpected number of edges ${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
 
@@ -235,6 +248,15 @@ fi
 
 rm testResults.tmp
 #rm $GraphMLFILE
+
+echo ""
+if [ $TESTS_FAILED -eq 0 ]; then
+    echo "${GREEN}ALL TESTS PASSED${NC}"
+    exit 0
+else
+    echo "${RED}FAILED: $TESTS_FAILED test case(s) did not pass${NC}"
+    exit 1
+fi
 
 
 
