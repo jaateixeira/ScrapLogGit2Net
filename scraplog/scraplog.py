@@ -69,7 +69,8 @@ def parse_arguments() -> argparse.Namespace:
                         default='inter_individual_graph_unweighted',
                         help='Type of network to generate (default: inter_individual_graph_unweighted)')
     parser.add_argument('-tntr', '--temporal-network-time-resolution', type=int, default=1,
-                        help='Temporal network time resolution (default: 1 second)')
+                        help='Temporal network time resolution in seconds. Only 1 (the default) is '
+                             'implemented so far; other values stop with an error')
     parser.add_argument('-o', '--output-file', type=Path,
                         help='creates a network/graph graphml file with the given name')
 
@@ -95,6 +96,14 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
     state.strict_validation = args.strict
 
     state.network_type = args.type_of_network
+
+    # Only a 1-second temporal resolution is implemented. Stop instead of silently
+    # ignoring another value, which would give a network the user did not ask for.
+    if args.temporal_network_time_resolution != 1:
+        print_fatal_error(
+            f"Temporal network time resolution {args.temporal_network_time_resolution} is not implemented yet",
+            "Only -tntr 1 (one second, the default) is supported. Leave out -tntr.")
+        sys.exit(1)
 
     if state.verbose_mode:
         print_info('Verbose mode')

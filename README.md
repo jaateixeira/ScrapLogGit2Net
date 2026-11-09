@@ -176,10 +176,10 @@ Same nodes and ties as the unweighted network, but each tie carries a `weight` a
 ```
 
 ## Temporal inter-individual network
-Each tie is time-stamped with the moment of the contribution, so you can study how collaboration evolves, for instance with sliding windows or with temporal models. The network is exported as a compressed GraphML file (`.graphml.zip`) using the [networkx-temporal](https://pypi.org/project/networkx-temporal/) package. Use `-tntr` / `--temporal-network-time-resolution` to set the time resolution of the temporal network (an integer, default `1`, i.e., one second).
+Each tie is time-stamped with the moment of the contribution, so you can study how collaboration evolves, for instance with sliding windows or with temporal models. The network is exported as a compressed GraphML file (`.graphml.zip`) using the [networkx-temporal](https://pypi.org/project/networkx-temporal/) package. Edges are stamped with a resolution of one second. The `-tntr` / `--temporal-network-time-resolution` option is reserved for other resolutions, which are not implemented yet: any value other than `1` stops with an error.
 
 ```
-./scrapLog.py -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_temporal -tntr 86400
+./scrapLog.py -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_temporal
 ```
 
 Note that the temporal network is always extracted internally, as the first step of the pipeline, whatever type you request. The weighted network is then derived from it, and the unweighted network from the weighted one:
@@ -378,7 +378,8 @@ options:
   -t, --type-of-network {inter_individual_graph_unweighted,inter_individual_graph_weighted,inter_individual_graph_temporal,inter_individual_weighted_LOC_temporal,inter_individual_graph_weighted_SUM_LOC}
                         Type of network to generate (default: inter_individual_graph_unweighted)
   -tntr, --temporal-network-time-resolution TEMPORAL_NETWORK_TIME_RESOLUTION
-                        Temporal network time resolution (default: 1 second)
+                        Temporal network time resolution in seconds. Only 1 (the default) is
+                        implemented so far; other values stop with an error
   -o, --output-file OUTPUT_FILE
                         creates a network/graph graphml file with the given name
   -v, --verbose         Increase verbosity level (use -v, -vv, or -vvv)
