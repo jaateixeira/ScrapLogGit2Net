@@ -286,6 +286,8 @@ def main():
                         help="Project label (e.g. PyTorch)")
     parser.add_argument("--by-email",   action="store_true",
                         help="Identify authors by email only")
+    parser.add_argument("--list-developers", action="store_true",
+                        help="Print the solo-only developers of each period")
     parser.add_argument("--list-files", action="store_true",
                         help="Print full Developer – File listing")
     parser.add_argument("--csv",        action="store_true",

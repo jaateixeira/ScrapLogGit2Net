@@ -52,7 +52,7 @@ A summary on standard output. For each period it shows:
 
 A period without commits shows "no commits in window". The project label is `--project`, or the log file name without its extension.
 
-The code also has a solo-edited file listing (`--list-files`) and two CSV files (`--csv`), written next to the log file as `<log>_solo_summary.csv` and `<log>_solo_files.csv`, where `<log>` is the log file name without its extension. In the current code these are never reached; see Notes and limitations.
+Optionally, it also prints the solo-only developers of each period (`--list-developers`) and every solo-edited file with its developer (`--list-files`), and writes two CSV files (`--csv`) next to the log file: `<log>_solo_summary.csv` and `<log>_solo_files.csv`, where `<log>` is the log file name without its extension.
 
 ## Options
 
@@ -62,12 +62,11 @@ The code also has a solo-edited file listing (`--list-files`) and two CSV files 
 | `--log LOG` | The raw Git log to read. Required. If no commit is parsed, the tool prints "ERROR: no commits parsed from LOG" and exits with code 1. | none (required) |
 | `--project PROJECT` | Project label printed in the summary and written to the CSV files. | the log file name without its extension |
 | `--by-email` | Identify developers by email only, instead of `Name <email>`. One person who used several names with the same email then counts once. | off |
-| `--list-files` | Print every solo-edited file with its developer, per period. Does not work in the current code: the tool stops before this step (see Notes). | off |
-| `--csv` | Write `<log>_solo_summary.csv` and `<log>_solo_files.csv` in the folder of the log file. Does not work in the current code: the tool stops before this step (see Notes). | off |
+| `--list-developers` | Print the solo-only developers of each period. | off |
+| `--list-files` | Print every solo-edited file with its developer, per period. | off |
+| `--csv` | Write `<log>_solo_summary.csv` and `<log>_solo_files.csv` in the folder of the log file. | off |
 
 ## Examples
-
-Every run currently ends with an `AttributeError` and exit code 1, after the summary is printed (see Notes). The summary is printed in full before the error.
 
 Count solo-only developers in the TensorFlow log (January to March 2024). In the `post` period the summary shows 279 developers, of whom 256 are collaborative and 23 are solo-only, and 8466 files, of which 5151 are solo-edited:
 
@@ -81,12 +80,17 @@ Identify developers by email only, on a small test log where no file is co-edite
 ./solo_contributors.py --log test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN --by-email
 ```
 
+List the solo-only developers and solo-edited files of each period, and write the two CSV files next to the log (`test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024_solo_summary.csv` and `..._solo_files.csv`):
+
+```
+./solo_contributors.py --log test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN --project TensorFlow --list-developers --list-files --csv
+```
+
 ## Notes and limitations
 
-- Known bug: after printing the summary, `main()` reads `args.list_developers`, but there is no `--list-developers` option. Every run that parses at least one commit ends with `AttributeError: 'Namespace' object has no attribute 'list_developers'` and exit code 1. Because of this, `--list-files` and `--csv` never produce output. The code has a developer listing function (`print_developer_listing`) that this missing option was meant to enable.
 - The study periods are fixed in the code. To use other periods, edit `PERIODS`.
 - The counts are per period. A developer can be solo-only in one period and collaborative in another.
 - Developers are not filtered: bots and other emails count like everyone else. There is no equivalent of the `-fe` or `-ff` filters of `scrapLog.py`.
-- With `--csv` (once it works), the CSV files are written next to the log file, not in the current directory.
+- With `--csv`, the CSV files are written next to the log file, not in the current directory.
 
 [Back to the README](../../README.md#executable-toolsscripts)
