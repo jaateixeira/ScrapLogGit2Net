@@ -1,27 +1,74 @@
 """
-Test cases for temporal network analysis feature.
+Test cases for the temporal network feature (-t inter_individual_graph_temporal).
+
+These tests feed parsed change log entries to
+extract_temporal_network_from_parsed_change_log_entries() and check the
+resulting temporal network.
+
+How the temporal network is built: entries are processed in chronological
+order, and whenever a developer edits a file, one time-stamped edge is added
+between that developer and every *earlier* contributor of the same file.
+Each edge carries a `time` (ISO 8601) and a `file` attribute.
+
+A parsed change log entry is a tuple:
+    ((email, affiliation), [filenames], "Mon Jan 16 14:20:00 2023 -0500")
+
+Run with:
+    pytest tests/unit/test_parsing_to_temporal_networks.py -v
 """
 
-import pytest
-import time
-from pathlib import Path
-from datetime import datetime
-from collections import defaultdict
-import networkx as nx
-from typing import List, Tuple
+from collections import Counter, defaultdict
+from datetime import datetime, timedelta, timezone
 
-# Import your module
-from your_script import (
-    ProcessingState,
-    ProcessingStatistics,
-    extract_temporal_connections,
-    create_temporal_network_graph,
-    FileContribution,
-    ChangeLogEntry,
-    DeveloperInfo,
-    Connection,
-    ConnectionWithFile
-)
+import pytest
+
+from core.models import ProcessingState
+from extract_temporal_network import extract_temporal_network_from_parsed_change_log_entries
+
+
+# =============================================================================
+# Helpers
+# =============================================================================
+
+def git_ts(year, month, day, hour, minute, utc_offset_hours=-5):
+    """Build a timestamp in git log format, e.g. 'Mon Jan 16 14:20:00 2023 -0500'."""
+    tz = timezone(timedelta(hours=utc_offset_hours))
+    return datetime(year, month, day, hour, minute, tzinfo=tz).strftime("%a %b %d %H:%M:%S %Y %z")
+
+
+def iso_ts(year, month, day, hour, minute, utc_offset_hours=-5):
+    """The same moment in the ISO format stored on temporal edges."""
+    tz = timezone(timedelta(hours=utc_offset_hours))
+    return datetime(year, month, day, hour, minute, tzinfo=tz).isoformat()
+
+
+def entry(email, files, timestamp, affiliation="company"):
+    """Build one parsed change log entry."""
+    return ((email, affiliation), list(files), timestamp)
+
+
+def make_state(entries):
+    state = ProcessingState()
+    state.network_type = "inter_individual_graph_temporal"
+    state.parsed_change_log_entries = entries
+    return state
+
+
+def temporal_edges(t_graph):
+    """All edges as (frozenset({u, v}), time, file) tuples, order-independent."""
+    return [
+        (frozenset((u, v)), data["time"], data["file"])
+        for u, v, data in t_graph.temporal_edges(data=True)
+    ]
+
+
+def all_nodes(t_graph):
+    """Nodes across all snapshots (nodes() returns one NodeView per snapshot)."""
+    return set().union(*t_graph.nodes())
+
+
+def pair(a, b):
+    return frozenset((a, b))
 
 
 # =============================================================================
@@ -29,315 +76,182 @@ from your_script import (
 # =============================================================================
 
 @pytest.fixture
-def sample_file_history():
-    """Create a sample file history with multiple contributions."""
-    history = defaultdict(list)
-    
-    # File A: Multiple developers over time
-    history["src/module1.py"] = [
-        FileContribution("alice@company.com", "2023-01-15 10:30:00 -0500", 0),
-        FileContribution("bob@company.com", "2023-01-16 14:20:00 -0500", 1),
-        FileContribution("alice@company.com", "2023-01-17 09:15:00 -0500", 2),
-        FileContribution("charlie@company.com", "2023-01-18 11:45:00 -0500", 3),
-        FileContribution("bob@company.com", "2023-01-19 16:30:00 -0500", 4),
-    ]
-    
-    # File B: Two developers collaborating
-    history["src/module2.py"] = [
-        FileContribution("alice@company.com", "2023-02-01 10:00:00 -0500", 5),
-        FileContribution("bob@company.com", "2023-02-02 11:30:00 -0500", 6),
-        FileContribution("alice@company.com", "2023-02-03 09:45:00 -0500", 7),
-    ]
-    
-    # File C: Single developer (should not create connections)
-    history["README.md"] = [
-        FileContribution("alice@company.com", "2023-03-01 15:00:00 -0500", 8),
-    ]
-    
-    # File D: Developers in different order
-    history["src/module3.py"] = [
-        FileContribution("bob@company.com", "2023-04-01 10:00:00 -0400", 9),
-        FileContribution("charlie@company.com", "2023-04-02 11:00:00 -0400", 10),
-        FileContribution("david@company.com", "2023-04-03 12:00:00 -0400", 11),
-    ]
-    
-    return history
-
-
-@pytest.fixture
-def processing_state_with_history(sample_file_history):
-    """Create a processing state with file history."""
-    state = ProcessingState()
-    state.statistics = ProcessingStatistics()
-    state.verbose_mode = False
-    state.network_type = "inter_individual_graph_temporal"
-    state.file_history = sample_file_history
-    state.affiliations = {}
-    return state
-
-
-@pytest.fixture
-def temporal_connections_expected():
-    """Expected connections from sample_file_history."""
-    # Format: (email1, email2, timestamp) - normalized order
+def sample_entries():
+    """Commits touching four files, mirroring a small project history."""
     return [
-        # From module1.py
-        ("alice@company.com", "bob@company.com", "2023-01-16 14:20:00 -0500"),
-        ("alice@company.com", "bob@company.com", "2023-01-19 16:30:00 -0500"),
-        ("alice@company.com", "charlie@company.com", "2023-01-18 11:45:00 -0500"),
-        ("bob@company.com", "charlie@company.com", "2023-01-18 11:45:00 -0500"),
-        ("bob@company.com", "charlie@company.com", "2023-01-19 16:30:00 -0500"),
-        
-        # From module2.py
-        ("alice@company.com", "bob@company.com", "2023-02-02 11:30:00 -0500"),
-        ("alice@company.com", "bob@company.com", "2023-02-03 09:45:00 -0500"),
-        
-        # From module3.py
-        ("bob@company.com", "charlie@company.com", "2023-04-02 11:00:00 -0400"),
-        ("bob@company.com", "david@company.com", "2023-04-03 12:00:00 -0400"),
-        ("charlie@company.com", "david@company.com", "2023-04-03 12:00:00 -0400"),
+        # src/module1.py: several developers over time
+        entry("alice@company.com", ["src/module1.py"], git_ts(2023, 1, 15, 10, 30)),
+        entry("bob@company.com", ["src/module1.py"], git_ts(2023, 1, 16, 14, 20)),
+        entry("alice@company.com", ["src/module1.py"], git_ts(2023, 1, 17, 9, 15)),
+        entry("charlie@company.com", ["src/module1.py"], git_ts(2023, 1, 18, 11, 45)),
+        entry("bob@company.com", ["src/module1.py"], git_ts(2023, 1, 19, 16, 30)),
+
+        # src/module2.py: two developers collaborating
+        entry("alice@company.com", ["src/module2.py"], git_ts(2023, 2, 1, 10, 0)),
+        entry("bob@company.com", ["src/module2.py"], git_ts(2023, 2, 2, 11, 30)),
+        entry("alice@company.com", ["src/module2.py"], git_ts(2023, 2, 3, 9, 45)),
+
+        # README.md: single developer (no connections)
+        entry("alice@company.com", ["README.md"], git_ts(2023, 3, 1, 15, 0)),
+
+        # src/module3.py: different developers, different time zone
+        entry("bob@company.com", ["src/module3.py"], git_ts(2023, 4, 1, 10, 0, -4)),
+        entry("charlie@company.com", ["src/module3.py"], git_ts(2023, 4, 2, 11, 0, -4)),
+        entry("david@company.com", ["src/module3.py"], git_ts(2023, 4, 3, 12, 0, -4)),
+    ]
+
+
+@pytest.fixture
+def expected_edges():
+    """Expected temporal edges for sample_entries: (pair, time, file)."""
+    a, b, c, d = ("alice@company.com", "bob@company.com",
+                  "charlie@company.com", "david@company.com")
+    m1, m2, m3 = "src/module1.py", "src/module2.py", "src/module3.py"
+    return [
+        # module1.py
+        (pair(a, b), iso_ts(2023, 1, 16, 14, 20), m1),      # bob joins alice
+        (pair(a, b), iso_ts(2023, 1, 17, 9, 15), m1),       # alice edits again
+        (pair(a, c), iso_ts(2023, 1, 18, 11, 45), m1),      # charlie joins
+        (pair(b, c), iso_ts(2023, 1, 18, 11, 45), m1),
+        (pair(a, b), iso_ts(2023, 1, 19, 16, 30), m1),      # bob edits again
+        (pair(b, c), iso_ts(2023, 1, 19, 16, 30), m1),
+        # module2.py
+        (pair(a, b), iso_ts(2023, 2, 2, 11, 30), m2),
+        (pair(a, b), iso_ts(2023, 2, 3, 9, 45), m2),
+        # module3.py
+        (pair(b, c), iso_ts(2023, 4, 2, 11, 0, -4), m3),
+        (pair(b, d), iso_ts(2023, 4, 3, 12, 0, -4), m3),
+        (pair(c, d), iso_ts(2023, 4, 3, 12, 0, -4), m3),
     ]
 
 
 # =============================================================================
-# Test Case 1: Test temporal connection extraction
+# Test Case 1: Temporal connection extraction
 # =============================================================================
 
-def test_extract_temporal_connections(processing_state_with_history, temporal_connections_expected):
+def test_extract_temporal_connections(sample_entries, expected_edges):
     """
-    Test that temporal connections are correctly extracted from file history.
-    
     Verifies:
-    - All expected connections are created
+    - All expected time-stamped connections are created
     - No extra connections are created
-    - Timestamps are correctly preserved
-    - Connections are normalized (email1 < email2)
+    - Timestamps and files are preserved on each edge
     """
-    # Extract connections
-    extract_temporal_connections(processing_state_with_history)
-    
-    # Get actual connections
-    actual_connections = [
-        conn for conn, _, _ in processing_state_with_history.file_coediting_collaborative_relationships
-    ]
-    
-    # Check count
-    assert len(actual_connections) == len(temporal_connections_expected)
-    
-    # Check each expected connection exists
-    for expected_conn in temporal_connections_expected:
-        assert expected_conn in actual_connections, f"Missing connection: {expected_conn}"
-    
-    # Verify email normalization (email1 < email2)
-    for conn in actual_connections:
-        email1, email2, _ = conn
-        assert email1 < email2, f"Connection not normalized: {email1} >= {email2}"
-    
-    # Verify timestamps are strings (not modified)
-    for conn in actual_connections:
-        assert isinstance(conn[2], str), f"Timestamp not preserved as string: {conn[2]}"
+    t_graph = extract_temporal_network_from_parsed_change_log_entries(make_state(sample_entries))
+
+    assert t_graph is not None
+    assert Counter(temporal_edges(t_graph)) == Counter(expected_edges)
+
+
+def test_entries_are_processed_in_chronological_order(sample_entries, expected_edges):
+    """The input order does not matter: entries are sorted by timestamp first."""
+    shuffled = list(reversed(sample_entries))
+    t_graph = extract_temporal_network_from_parsed_change_log_entries(make_state(shuffled))
+
+    assert Counter(temporal_edges(t_graph)) == Counter(expected_edges)
 
 
 # =============================================================================
-# Test Case 2: Test temporal graph creation
+# Test Case 2: Collaboration summary derived from the temporal network
 # =============================================================================
 
-def test_create_temporal_network_graph(processing_state_with_history):
+def test_collaboration_summary_per_pair(sample_entries):
     """
-    Test that temporal network graph is correctly created with temporal attributes.
-    
-    Verifies:
-    - Nodes are correctly added
-    - Edges have correct temporal attributes
-    - First/last collaboration times are correct
-    - Collaboration counts are correct
-    - Files shared are correctly tracked
+    Verifies, per developer pair:
+    - Nodes and pairs that collaborated
+    - First/last collaboration times
+    - Collaboration counts
+    - Files shared
     """
-    # First extract connections
-    extract_temporal_connections(processing_state_with_history)
-    
-    # Then create graph
-    create_temporal_network_graph(processing_state_with_history)
-    
-    graph = processing_state_with_history.dev_to_dev_network
-    
-    # Check node count (alice, bob, charlie, david)
-    assert graph.number_of_nodes() == 4
-    
-    # Check edge count (pairs that collaborated)
-    expected_edges = [
-        ("alice@company.com", "bob@company.com"),
-        ("alice@company.com", "charlie@company.com"),
-        ("bob@company.com", "charlie@company.com"),
-        ("bob@company.com", "david@company.com"),
-        ("charlie@company.com", "david@company.com"),
-    ]
-    assert graph.number_of_edges() == len(expected_edges)
-    
-    # Check Alice-Bob edge attributes
-    edge_data = graph.get_edge_data("alice@company.com", "bob@company.com")
-    assert edge_data is not None
-    
-    # Verify temporal attributes
-    assert edge_data["first_collaboration"] == "2023-01-16 14:20:00 -0500"
-    assert edge_data["last_collaboration"] == "2023-02-03 09:45:00 -0500"
-    assert edge_data["collaboration_count"] == 4  # Two from module1 + two from module2
-    
-    # Check files shared
-    expected_files = ["src/module1.py", "src/module2.py"]
-    assert set(edge_data["files_shared"]) == set(expected_files)
-    
-    # Check collaboration timeline
-    assert len(edge_data["collaboration_timeline"]) == 4
-    
-    # Check Bob-Charlie edge
-    edge_data = graph.get_edge_data("bob@company.com", "charlie@company.com")
-    assert edge_data is not None
-    assert edge_data["collaboration_count"] == 3  # Two from module1 + one from module3
-    assert "src/module1.py" in edge_data["files_shared"]
-    assert "src/module3.py" in edge_data["files_shared"]
+    t_graph = extract_temporal_network_from_parsed_change_log_entries(make_state(sample_entries))
+
+    a, b, c, d = ("alice@company.com", "bob@company.com",
+                  "charlie@company.com", "david@company.com")
+
+    assert all_nodes(t_graph) == {a, b, c, d}
+
+    times, files = defaultdict(list), defaultdict(set)
+    for p, time, file in temporal_edges(t_graph):
+        times[p].append(datetime.fromisoformat(time))
+        files[p].add(file)
+
+    assert set(times) == {pair(a, b), pair(a, c), pair(b, c), pair(b, d), pair(c, d)}
+
+    # Alice-Bob: three collaborations on module1 + two on module2
+    assert len(times[pair(a, b)]) == 5
+    assert min(times[pair(a, b)]) == datetime.fromisoformat(iso_ts(2023, 1, 16, 14, 20))
+    assert max(times[pair(a, b)]) == datetime.fromisoformat(iso_ts(2023, 2, 3, 9, 45))
+    assert files[pair(a, b)] == {"src/module1.py", "src/module2.py"}
+
+    # Bob-Charlie: two on module1 + one on module3
+    assert len(times[pair(b, c)]) == 3
+    assert files[pair(b, c)] == {"src/module1.py", "src/module3.py"}
 
 
 # =============================================================================
-# Test Case 3: Test edge cases and error handling
+# Test Case 3: Edge cases
 # =============================================================================
 
-def test_temporal_network_edge_cases():
-    """
-    Test edge cases for temporal network feature.
-    
-    Verifies:
-    - Empty file history
-    - Single contributor files
-    - Identical timestamps
-    - Very large number of contributors
-    - Email ordering normalization
-    """
-    
-    # Test 1: Empty file history
-    state_empty = ProcessingState()
-    state_empty.file_history = defaultdict(list)
-    state_empty.network_type = "inter_individual_graph_temporal"
-    
-    extract_temporal_connections(state_empty)
-    assert len(state_empty.file_coediting_collaborative_relationships) == 0
-    
-    create_temporal_network_graph(state_empty)
-    assert state_empty.dev_to_dev_network.number_of_nodes() == 0
-    assert state_empty.dev_to_dev_network.number_of_edges() == 0
-    
-    # Test 2: Single contributor files (should not create connections)
-    state_single = ProcessingState()
-    state_single.file_history = defaultdict(list)
-    state_single.file_history["file1.txt"] = [
-        FileContribution("alice@company.com", "2023-01-01 10:00:00 -0500", 0),
-        FileContribution("alice@company.com", "2023-01-02 11:00:00 -0500", 1),  # Same contributor
+def test_empty_history_returns_none():
+    assert extract_temporal_network_from_parsed_change_log_entries(make_state([])) is None
+
+
+def test_single_contributor_files_create_no_connections():
+    entries = [
+        entry("alice@company.com", ["file1.txt"], git_ts(2023, 1, 1, 10, 0)),
+        entry("alice@company.com", ["file1.txt"], git_ts(2023, 1, 2, 11, 0)),  # same contributor
+        entry("bob@company.com", ["file2.txt"], git_ts(2023, 1, 3, 12, 0)),
     ]
-    state_single.file_history["file2.txt"] = [
-        FileContribution("bob@company.com", "2023-01-03 12:00:00 -0500", 2),
+    t_graph = extract_temporal_network_from_parsed_change_log_entries(make_state(entries))
+
+    assert temporal_edges(t_graph) == []
+
+
+def test_identical_timestamps_still_create_a_connection():
+    same_time = git_ts(2023, 1, 1, 10, 0)
+    entries = [
+        entry("alice@company.com", ["file1.txt"], same_time),
+        entry("bob@company.com", ["file1.txt"], same_time),
     ]
-    
-    extract_temporal_connections(state_single)
-    assert len(state_single.file_coediting_collaborative_relationships) == 0
-    
-    # Test 3: Identical timestamps (should still create connections)
-    state_identical = ProcessingState()
-    state_identical.file_history = defaultdict(list)
-    state_identical.file_history["file1.txt"] = [
-        FileContribution("alice@company.com", "2023-01-01 10:00:00 -0500", 0),
-        FileContribution("bob@company.com", "2023-01-01 10:00:00 -0500", 1),  # Same timestamp
+    t_graph = extract_temporal_network_from_parsed_change_log_entries(make_state(entries))
+
+    assert [p for p, _, _ in temporal_edges(t_graph)] == [pair("alice@company.com", "bob@company.com")]
+
+
+def test_many_contributors_on_one_file():
+    """10 developers editing one file in turn connect every pair once: 10 choose 2 = 45."""
+    entries = [
+        entry(f"dev{i}@company.com", ["bigfile.py"], git_ts(2023, 1, i + 1, 10, 0))
+        for i in range(10)
     ]
-    
-    extract_temporal_connections(state_identical)
-    assert len(state_identical.file_coediting_collaborative_relationships) == 1
-    
-    # Test 4: Multiple contributors with mixed ordering
-    state_mixed = ProcessingState()
-    state_mixed.file_history = defaultdict(list)
-    state_mixed.file_history["file1.txt"] = [
-        FileContribution("bob@company.com", "2023-01-01 10:00:00 -0500", 0),
-        FileContribution("alice@company.com", "2023-01-02 11:00:00 -0500", 1),
-        FileContribution("charlie@company.com", "2023-01-03 12:00:00 -0500", 2),
-    ]
-    
-    extract_temporal_connections(state_mixed)
-    
-    # Check normalization
-    for conn, _, _ in state_mixed.file_coediting_collaborative_relationships:
-        email1, email2, _ = conn
-        assert email1 < email2
-    
-    # Test 5: Large number of contributors (performance sanity check)
-    state_large = ProcessingState()
-    state_large.file_history = defaultdict(list)
-    
-    # Create 10 contributors
-    contributors = [f"dev{i}@company.com" for i in range(10)]
-    for i, email in enumerate(contributors):
-        state_large.file_history["bigfile.py"].append(
-            FileContribution(email, f"2023-01-{i+1:02d} 10:00:00 -0500", i)
-        )
-    
-    # Should create combinations (n choose 2 = 45 connections)
-    extract_temporal_connections(state_large)
-    expected_connections = 45  # 10 choose 2
-    assert len(state_large.file_coediting_collaborative_relationships) == expected_connections
+    t_graph = extract_temporal_network_from_parsed_change_log_entries(make_state(entries))
+
+    edges = temporal_edges(t_graph)
+    assert len(edges) == 45
+    assert len({p for p, _, _ in edges}) == 45
+
+
+def test_non_default_time_resolution_not_implemented(sample_entries):
+    with pytest.raises(NotImplementedError):
+        extract_temporal_network_from_parsed_change_log_entries(
+            make_state(sample_entries), time_resolution=timedelta(days=1))
 
 
 # =============================================================================
-# Test Case 4: Test integration with real commit data (Optional)
+# Test Case 4: End-to-end with mock commits
 # =============================================================================
 
 def test_temporal_network_with_mock_commits():
-    """
-    Test temporal network with mock commit data to verify end-to-end flow.
-    """
-    state = ProcessingState()
-    state.network_type = "inter_individual_graph_temporal"
-    state.file_history = defaultdict(list)
-    
-    # Simulate 3 commits
-    mock_commits = [
-        # Commit 0: Alice changes module1.py
-        (("2023-01-01 10:00:00 -0500", "alice@company.com", "company"), 
-         ["src/module1.py"]),
-        
-        # Commit 1: Bob changes module1.py (collaboration with Alice)
-        (("2023-01-02 11:00:00 -0500", "bob@company.com", "company"), 
-         ["src/module1.py"]),
-        
-        # Commit 2: Alice changes module2.py
-        (("2023-01-03 09:00:00 -0500", "alice@company.com", "company"), 
-         ["src/module2.py"]),
-        
-        # Commit 3: Bob changes module2.py (another collaboration)
-        (("2023-01-04 14:00:00 -0500", "bob@company.com", "company"), 
-         ["src/module2.py"]),
+    alice, bob = "alice@company.com", "bob@company.com"
+    entries = [
+        entry(alice, ["src/module1.py"], git_ts(2023, 1, 1, 10, 0)),
+        entry(bob, ["src/module1.py"], git_ts(2023, 1, 2, 11, 0)),   # collaboration with Alice
+        entry(alice, ["src/module2.py"], git_ts(2023, 1, 3, 9, 0)),
+        entry(bob, ["src/module2.py"], git_ts(2023, 1, 4, 14, 0)),   # another collaboration
     ]
-    
-    # Build file history from mock commits
-    for idx, (dev_info, files) in enumerate(mock_commits):
-        timestamp, email, _ = dev_info
-        for filename in files:
-            state.file_history[filename].append(
-                FileContribution(email, timestamp, idx)
-            )
-    
-    # Extract temporal connections
-    extract_temporal_connections(state)
-    
-    # Verify connections
-    assert len(state.file_coediting_collaborative_relationships) == 4
-    
-    # Create graph
-    create_temporal_network_graph(state)
-    
-    # Verify graph
-    assert state.dev_to_dev_network.number_of_nodes() == 2
-    assert state.dev_to_dev_network.number_of_edges() == 1
-    
-    edge_data = state.dev_to_dev_network.get_edge_data("alice@company.com", "bob@company.com")
-    assert edge_data["collaboration_count"] == 4
-    assert edge_data["first_collaboration"] == "2023-01-02 11:00:00 -0500"
-    assert edge_data["last_collaboration"] == "2023-01-04 14:00:00 -0500"
-    assert set(edge_data["files_shared"]) == {"src/module1.py", "src/module2.py"}
+    t_graph = extract_temporal_network_from_parsed_change_log_entries(make_state(entries))
+
+    assert all_nodes(t_graph) == {alice, bob}
+    assert sorted(temporal_edges(t_graph), key=lambda e: e[1]) == [
+        (pair(alice, bob), iso_ts(2023, 1, 2, 11, 0), "src/module1.py"),
+        (pair(alice, bob), iso_ts(2023, 1, 4, 14, 0), "src/module2.py"),
+    ]

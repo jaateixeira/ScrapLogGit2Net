@@ -23,10 +23,10 @@ python -m pytest tests/ -v
 python -m pytest tests/ -v -s
 
 # Run specific test file
-python -m pytest tests/test_parsing.py -v
+python -m pytest tests/unit/test_parsing.py -v
 
 # Run single test function
-python -m pytest tests/test_parsing.py::test_email_parsing -v
+python -m pytest tests/unit/test_parsing.py::test_processing_statistics -v
 
 # Run tests with coverage
 python -m pytest tests/ --cov=. --cov-report=term-missing
@@ -35,178 +35,176 @@ python -m pytest tests/ --cov=. --cov-report=term-missing
 text
 
 ScrapLogGit2Net/
-├── tests/                      # All test
-
-you are giving me several files. give me all in one file. Ready to copy&past into my text editor.
-Test Guide for ScrapLogGit2Net
-📋 Overview
-
-This guide explains how to run tests and write new tests for the ScrapLogGit2Net project.
-🚀 Quick Start
-Prerequisites
-bash
-
-# Install pytest and related tools
-pip install pytest pytest-mock pytest-cov
-
-# Optional: For rich output in tests
-pip install rich loguru
-
-Running Tests
-bash
-
-# Run all tests from project root
-cd /path/to/ScrapLogGit2Net
-python -m pytest tests/ -v
-
-# Run with console output (to see rich tables)
-python -m pytest tests/ -v -s
-
-# Run specific test file
-python -m pytest tests/test_parsing.py -v
-
-# Run single test function
-python -m pytest tests/test_parsing.py::test_email_parsing -v
-
-# Run tests with coverage
-python -m pytest tests/ --cov=. --cov-report=term-missing
-
-📁 Project Structure
-text
-
-ScrapLogGit2Net/
-├── tests/                      # All test files
-│   ├── conftest.py            # Pytest configuration (critical!)
-│   ├── test_parsing.py        # Tests for parsing functions
-│   ├── test_email_affiliation.py
-│   ├── test_filters.py
-│   ├── test_datamodels.py
-│   ├── test_network.py
-│   └── test_utils_validators.py
+├── pyproject.toml              # pytest config ([tool.pytest.ini_options])
+├── tests/
+│   ├── conftest.py             # Pytest configuration + shared fixtures (critical!)
+│   ├── test_guide.md           # This guide
+│   ├── unit/                   # pytest unit tests
+│   │   ├── test_parsing.py     # Tests for parsing functions
+│   │   ├── test_email_affiliation.py
+│   │   ├── test_filters.py
+│   │   ├── test_datamodels.py
+│   │   ├── test_network.py
+│   │   ├── test_transform_network.py
+│   │   ├── test_parsing_to_temporal_networks.py
+│   │   ├── test_extract_temporal_network_from_parsed_change_log_entries.py
+│   │   ├── test_nofo_network_visualizer.py
+│   │   └── test_utils_validators.py
+│   └── acceptance-test-scripts/ # bash end-to-end tests (run from project root)
+├── test-data/                  # Input files used by the tests
 ├── scrapLog.py                 # Main module
-├── transform-nofi-2-nofo-GraphML.py
-├── utils/
-│   └── validators.py
-└── uutils/
-    └── unifiedOutputAndLogger.py
+├── transform_nofi_2_nofo_graphml.py
+├── core/
+│   ├── models.py
+│   └── types.py
+└── utils/
+    ├── validators.py
+    ├── unified_console.py
+    └── unified_logger.py
 
 🔧 Critical: The conftest.py File
 
-Create this file in your tests/ directory:
+tests/conftest.py already exists. Its key part is:
 python
 
 # tests/conftest.py
 import sys
 import os
 
-# Add the project root to Python path so tests can import modules
+# Add the project root (and utils/) to Python path so tests can import modules
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
-
-# Optional: Print debug info
-print(f"Python path: {sys.path}")
-print(f"Project root: {project_root}")
+sys.path.insert(0, os.path.join(project_root, 'utils'))
 
 🧪 Writing New Tests
 Basic Test Template
 python
 
-# tests/test_your_feature.py
-import pytest
-from unittest.mock import patch
+# tests/unit/test_your_feature.py
+from scrapLog import ProcessingState, extract_affiliation_from_email
 
 # Test function (no classes needed!)
 def test_function_name():
     """Test description goes here."""
     # Arrange: Setup test data
-    input_data = "test@example.com"
+    state = ProcessingState()
+    email = "test@example.com"
     expected = "example"
-    
+
     # Act: Call the function
-    result = getAffiliationFromEmail(input_data)
-    
+    result = extract_affiliation_from_email(email, state)
+
     # Assert: Verify the result
     assert result == expected
 
 Full Example Test File
 python
 
-# tests/test_example.py
+# tests/unit/test_example.py
 """
 Example test file showing best practices.
 """
 
-import pytest
+import json
 from unittest.mock import patch
-import sys
-import os
 
-# Add project root to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import pytest
+import networkx as nx
 
-# Import functions to test
-from scrapLog import getAffiliationFromEmail, getDateEmailAffiliation
+# conftest.py puts the project root on sys.path, so plain imports work
+from scrapLog import (
+    ProcessingState,
+    extract_affiliation_from_email,
+    parse_time_name_email_affiliation,
+    load_email_aggregation_config,
+)
 
 
 # FIXTURES: Reusable test data
 @pytest.fixture
-def sample_emails():
-    """Fixture providing sample email data."""
-    return [
-        "user@company.com",
-        "dev@organization.org",
-        "test@university.edu",
-    ]
+def state():
+    """A fresh ProcessingState for each test (no shared globals)."""
+    return ProcessingState()
 
 
 # BASIC TESTS
-def test_email_processing():
-    """Test basic email processing."""
-    email = "user@google.com"
-    expected = "google"
-    
-    result = getAffiliationFromEmail(email)
-    assert result == expected
+def test_extract_affiliation_from_email(state):
+    """The affiliation is the organisation part of the email domain."""
+    result = extract_affiliation_from_email("user@google.com", state)
+    assert result == "google"
 
 
-def test_invalid_email():
-    """Test handling of invalid emails."""
-    with pytest.raises(ValueError):
-        getAffiliationFromEmail("not-an-email")
+def test_invalid_email_returns_none(state):
+    """Invalid input returns None (callers skip the record); it does not raise."""
+    assert extract_affiliation_from_email("not-an-email", state) is None
+    assert extract_affiliation_from_email("", state) is None
+    assert extract_affiliation_from_email(None, state) is None
 
 
 # PARAMETERIZED TESTS (multiple inputs)
 @pytest.mark.parametrize("email,expected", [
     ("user@google.com", "google"),
-    ("dev@microsoft.com", "microsoft"),
-    ("eng@ibm.com", "ibm"),
-    ("test@amazon.com", "amazon"),
+    ("dev@us.ibm.com", "ibm"),            # subdomain is skipped
+    ("eng@alumni.mit.edu", "mit"),
+    ("someone@company.co.uk", "company"), # second-level country domain
+    ("user@domain?", "domain"),           # trailing '?' is stripped
 ])
-def test_affiliation_extraction(email, expected):
+def test_affiliation_extraction(state, email, expected):
     """Test multiple email cases."""
-    result = getAffiliationFromEmail(email)
-    assert result == expected
+    assert extract_affiliation_from_email(email, state) == expected
+
+
+# PARSING A GIT LOG HEADER LINE
+def test_parse_time_name_email_affiliation(state):
+    """A '==name;email;date==' line is split into its parts."""
+    line = "==Jane Doe;jane@google.com;Wed Apr 3 20:54:06 2024 -0700=="
+    result = parse_time_name_email_affiliation(line, state)
+    assert result == ("Wed Apr 3 20:54:06 2024 -0700", "Jane Doe",
+                      "jane@google.com", "google")
 
 
 # TESTS WITH MOCKING
-def test_with_mocked_globals():
-    """Test function that uses global variables."""
-    # Mock global variables from scrapLog module
-    with patch('scrapLog.DEBUG_MODE', 1):
-        with patch('scrapLog.EMAIL_FILTERING_MODE', 0):
-            # Now test your function
-            result = some_function_using_globals("test@example.com")
-            assert result == "example"
+def test_parse_uses_affiliation_extractor(state):
+    """Replace a collaborator to test one function in isolation."""
+    with patch("scrapLog.extract_affiliation_from_email", return_value="acme") as mock_extract:
+        line = "==Jane Doe;jane@google.com;Wed Apr 3 20:54:06 2024 -0700=="
+        result = parse_time_name_email_affiliation(line, state)
+
+    assert result[3] == "acme"
+    mock_extract.assert_called_once_with("jane@google.com", state)
 
 
-# TESTS USING FIXTURES
-def test_multiple_emails(sample_emails):
-    """Test using the fixture."""
-    for email in sample_emails:
-        result = getAffiliationFromEmail(email)
-        # Extract domain part (after @, before .)
-        expected = email.split('@')[1].split('.')[0]
-        assert result == expected
+# TESTS USING FILES (pytest's tmp_path is cleaned up for you)
+def test_load_email_aggregation_config(tmp_path):
+    config_file = tmp_path / "aggregation.json"
+    config_file.write_text(json.dumps({"ibm": "ibm", "google": "google"}))
+
+    assert load_email_aggregation_config(str(config_file)) == {"ibm": "ibm", "google": "google"}
+
+
+# TESTING EXPECTED EXITS / EXCEPTIONS
+def test_invalid_config_json_exits(tmp_path):
+    """Invalid JSON makes the loader call sys.exit(1)."""
+    config_file = tmp_path / "broken.json"
+    config_file.write_text("{not valid json")
+
+    with pytest.raises(SystemExit) as exc_info:
+        load_email_aggregation_config(str(config_file))
+    assert exc_info.value.code == 1
+
+
+# CONFIGURING BEHAVIOUR THROUGH STATE (instead of patching module globals)
+def test_aggregation_config_on_state(state):
+    state.email_aggregation_config = {"ibm": "ibm"}
+    state.verbose_mode = True
+    assert extract_affiliation_from_email("user@us.ibm.com", state) == "ibm"
+
+
+# USING A SHARED FIXTURE FROM conftest.py
+def test_sample_network_fixture(sample_individual_network):
+    G = sample_individual_network
+    assert isinstance(G, nx.Graph)
+    assert G.nodes["dev1"]["affiliation"] == "Apple"
 
 🎯 Best Practices
 1. Test Naming Convention
@@ -248,47 +246,51 @@ assert email in valid_emails
 4. Test Expected Exceptions
 python
 
-def test_invalid_input_raises_error():
-    """Test that invalid input raises ValueError."""
-    with pytest.raises(ValueError) as exc_info:
-        process_invalid_input("")
-    
-    # Check the error message
-    assert "cannot be empty" in str(exc_info.value)
+import pytest
+from scrapLog import load_email_aggregation_config
+
+def test_invalid_config_exits(tmp_path):
+    """Invalid JSON in the aggregation config makes scrapLog exit with code 1."""
+    config_file = tmp_path / "broken.json"
+    config_file.write_text("{not valid json")
+
+    with pytest.raises(SystemExit) as exc_info:
+        load_email_aggregation_config(str(config_file))
+
+    # Check the exit code
+    assert exc_info.value.code == 1
 
 🔍 Common Test Patterns
-Testing Functions with Global Variables
+Configuring Behaviour with ProcessingState
 python
 
-import pytest
-from unittest.mock import patch
+# scrapLog keeps its settings (verbose/debug modes, filters, aggregation
+# config) on a ProcessingState object instead of module-level globals.
+# Build a fresh state per test and set only what you need.
+from scrapLog import ProcessingState, extract_affiliation_from_email
 
-def test_function_with_globals():
-    """When testing functions that use global variables from scrapLog."""
-    # Mock the global variables
-    with patch('scrapLog.DEBUG_MODE', 1):
-        with patch('scrapLog.EMAIL_FILTERING_MODE', 0):
-            with patch('scrapLog.list_of_emails_to_filter', []):
-                # Now test your function
-                result = getAffiliationFromEmail("test@example.com")
-                assert result == "example"
+def test_with_custom_state():
+    state = ProcessingState()
+    state.verbose_mode = True
+    state.email_aggregation_config = {"ibm": "ibm"}
+
+    result = extract_affiliation_from_email("user@us.ibm.com", state)
+    assert result == "ibm"
 
 Testing File I/O Operations
 python
 
-import tempfile
-import pytest
+import json
+from scrapLog import load_email_aggregation_config
 
-def test_read_config_file():
-    """Test reading from a configuration file."""
-    # Create temporary file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.txt') as tmp:
-        tmp.write("key=value\n")
-        tmp.flush()  # Make sure data is written
-        
-        # Test the function
-        result = read_config(tmp.name)
-        assert result["key"] == "value"
+def test_read_config_file(tmp_path):
+    """Test reading the email aggregation config (a JSON file)."""
+    # tmp_path is a pytest fixture: a fresh directory, cleaned up for you
+    config_file = tmp_path / "aggregation.json"
+    config_file.write_text(json.dumps({"google": "google"}))
+
+    result = load_email_aggregation_config(str(config_file))
+    assert result["google"] == "google"
 
 Testing NetworkX Graph Functions
 python
@@ -328,7 +330,7 @@ python
 # Add at top of test file
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 Useful Pytest Commands
 bash
@@ -355,7 +357,7 @@ bash
 python -m pytest tests/ --pdb
 
 # Debug specific test
-python -m pytest tests/test_parsing.py::test_specific --pdb
+python -m pytest tests/unit/test_parsing.py::test_specific --pdb
 
 📊 Test Coverage
 Generate Coverage Reports
@@ -418,30 +420,34 @@ python
 # For modules in project root
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from scrapLog import function_name
 
 # For utils modules
-from utils.validators import validate_email
+from utils.validators import validate_git_email
 
-# For uutils modules
-from uutils.unifiedOutputAndLogger import logger, console
+# For console/logger helpers (utils/)
+from utils.unified_logger import logger
+from utils.unified_console import console
 
 Mocking Patterns
 python
 
-# Mock global variables
-with patch('scrapLog.DEBUG_MODE', 1):
-    # test code
+from unittest.mock import patch, mock_open
 
-# Mock external API calls
-with patch('scrapLog.requests.get') as mock_get:
-    mock_get.return_value.json.return_value = {"data": "test"}
-    # test code
+# Replace a function scrapLog calls (patch where it is *used*)
+with patch('scrapLog.extract_affiliation_from_email', return_value="acme") as mock_extract:
+    result = parse_time_name_email_affiliation(line, state)
+    mock_extract.assert_called_once()
+
+# Same thing with the pytest-mock "mocker" fixture
+def test_with_mocker(mocker):
+    mocker.patch('scrapLog.extract_affiliation_from_email', return_value="acme")
+    ...
 
 # Mock file operations
-with patch('builtins.open', mock_open(read_data="test content")):
-    # test code
+with patch('builtins.open', mock_open(read_data='{"ibm": "ibm"}')):
+    config = load_email_aggregation_config("any/path.json")
 
 Assertion Patterns
 python
@@ -475,32 +481,32 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-Problem: Global variables interfering with tests
+Problem: State leaking between tests
 
-Solution: Mock them in each test:
+Solution: Never share a ProcessingState between tests; create a new one per test with a fixture:
 python
 
-from unittest.mock import patch
+import pytest
+from scrapLog import ProcessingState
 
-def test_with_globals():
-    with patch('scrapLog.DEBUG_MODE', 0):
-        with patch('scrapLog.EMAIL_FILTERING_MODE', 0):
-            # Your test code
+@pytest.fixture
+def state():
+    return ProcessingState()
+
+def test_something(state):
+    state.email_filtering_mode = True
+    # Your test code
 
 Problem: Tests leaving temporary files
 
-Solution: Use pytest fixtures or tempfile:
+Solution: Use pytest's built-in tmp_path fixture:
 python
 
-import tempfile
-import pytest
-
-@pytest.fixture
-def temp_config_file():
-    with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
-        f.write("test data")
-        yield f.name
-    # File automatically deleted after test
+def test_writes_output(tmp_path):
+    out_file = tmp_path / "network.graphml"
+    # ... code under test writes to out_file ...
+    assert out_file.exists()
+    # tmp_path is removed by pytest, nothing left behind
 
 📚 Additional Resources
 Pytest Documentation
@@ -519,7 +525,7 @@ Python Testing
 
 Project-Specific
 
-    Check existing tests in tests/ directory for examples
+    Check existing tests in tests/unit/ directory for examples
 
     Look at function signatures in scrapLog.py to understand what to test
 

@@ -14,9 +14,9 @@ import sys
 import os
 
 
+from core.models import ProcessingStatistics
 from scrapLog import (
     ProcessingState,
-    ProcessingStatistics,
     load_email_aggregation_config,
     extract_affiliation_from_email,
     parse_time_name_email_affiliation,

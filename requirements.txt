@@ -18,6 +18,9 @@ matplotlib>=3.7
 rich>=13.0
 loguru>=0.7
 
+# Email validation (utils/validators.py, imported by scrapLog.py)
+email-validator>=2.0
+
 # Excel reports (formatFilterAndReport-*.py write .xls files)
 xlwt>=1.3
 

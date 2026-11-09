@@ -1,225 +1,112 @@
+"""
+Tests for inferring a developer's affiliation from their commit email.
+
+Covers scrapLog.extract_affiliation_from_email(email, state), which returns:
+  - the organisation inferred from the email domain (lower case),
+  - "unknown_by_ScrapLog" for a valid record whose organisation can't be resolved,
+  - None for invalid input (callers skip the record).
+
+Email filtering (-f) is no longer part of affiliation extraction; it happens
+later in scrapLog.apply_email_filtering, which is tested at the end.
+
+Run with:
+    pytest tests/unit/test_email_affiliation.py -v
+"""
+
+import networkx as nx
 import pytest
-import sys
 
-from rich.console import Console
-from rich.table import Table
-from rich.panel import Panel
-
-# Import your function (replace with actual import)
-# Note: You'll need to handle the import based on your project structure
-try:
-    from scrapLog import getAffiliationFromEmail
-except ImportError:
-    # Fallback for testing
-    import sys
-    import os
-
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from scrapLog import getAffiliationFromEmail
-
-console = Console(record=True)
+from scrapLog import ProcessingState, apply_email_filtering, extract_affiliation_from_email
 
 
-# Pytest fixtures for setup and teardown
-@pytest.fixture(autouse=True)
-def setup_test_environment():
-    """Setup test environment before each test."""
-    # Save original globals
-    original_globals = {
-        'DEBUG_MODE': globals().get('DEBUG_MODE', 0),
-        'EMAIL_FILTERING_MODE': globals().get('EMAIL_FILTERING_MODE', 0),
-        'list_of_emails_to_filter': globals().get('list_of_emails_to_filter', []),
-        'ibm_email_domains_prefix': globals().get('ibm_email_domains_prefix', [])
-    }
-
-    # Set defaults
-    globals()['DEBUG_MODE'] = 0
-    globals()['EMAIL_FILTERING_MODE'] = 0
-    globals()['list_of_emails_to_filter'] = []
-    globals()['ibm_email_domains_prefix'] = ['us', 'br', 'linux.vnet', 'zurich']
-
-    yield
-
-    # Restore original globals
-    for k, v in original_globals.items():
-        globals()[k] = v
+@pytest.fixture
+def state():
+    """A fresh ProcessingState per test, so settings never leak between tests."""
+    return ProcessingState()
 
 
-@pytest.fixture(scope="session", autouse=True)
-def print_test_banner():
-    """Print test suite banner at start and end."""
-    console.rule("[bold blue]📋 Starting Email Affiliation Test Suite[/bold blue]")
-    yield
-    console.print()
-    console.rule("[bold green]✅ Test Suite Completed[/bold green]")
-    console.save_html("test_results.html", clear=False)
-    console.save_text("test_results.txt", clear=False)
+# Standard formats
+def test_normal_email(state):
+    assert extract_affiliation_from_email("user@apolinex.com", state) == "apolinex"
 
 
-# Test functions (no classes needed!)
-def test_normal_email():
-    """Standard email formats"""
-    email = "user@apolinex.com"
-    expected = "apolinex"
-    result = getAffiliationFromEmail(email)
-    assert result == expected
+def test_hyphenated_domain(state):
+    assert extract_affiliation_from_email("name@university-edu.org", state) == "university-edu"
 
 
-def test_hyphenated_domain():
-    """Domains with hyphens"""
-    email = "name@university-edu.org"
-    expected = "university-edu"
-    result = getAffiliationFromEmail(email)
-    assert result == expected
+def test_affiliation_is_lower_case(state):
+    assert extract_affiliation_from_email("USER@Google.COM", state) == "google"
 
 
-# Use pytest.mark.parametrize for multiple test cases
+def test_email_with_question_mark(state):
+    """A trailing '?' (seen in some git logs) is stripped."""
+    assert extract_affiliation_from_email("user@domain?", state) == "domain"
+
+
+# Subdomains
 @pytest.mark.parametrize("email,expected", [
     ("user@us.ibm.com", "ibm"),
     ("name@linux.vnet.ibm.com", "ibm"),
     ("test@br.ibm.com", "ibm"),
+    ("eng@alumni.mit.edu", "mit"),
 ])
-def test_valid_ibm_domains(email, expected):
-    """Valid IBM subdomains"""
-    result = getAffiliationFromEmail(email)
-    assert result == expected
+def test_subdomains_resolve_to_organisation(state, email, expected):
+    assert extract_affiliation_from_email(email, state) == expected
 
 
-def test_invalid_ibm_domain():
-    """Invalid IBM domains should exit"""
-    email = "user@invalid.ibm.com"
-    with pytest.raises(SystemExit):
-        getAffiliationFromEmail(email)
+def test_unknown_ibm_subdomain_still_resolves_to_ibm(state):
+    """Earlier versions exited on IBM subdomains not on an allow-list; now any
+    subdomain of ibm.com resolves to 'ibm'."""
+    assert extract_affiliation_from_email("user@invalid.ibm.com", state) == "ibm"
 
 
-def test_email_with_question_mark():
-    """Emails ending with ?"""
-    email = "user@domain?"
-    expected = "domain"
-    result = getAffiliationFromEmail(email)
-    assert result == expected
+@pytest.mark.parametrize("email,expected", [
+    ("someone@company.co.uk", "company"),
+    ("someone@university.ac.uk", "university"),
+])
+def test_second_level_country_domains(state, email, expected):
+    assert extract_affiliation_from_email(email, state) == expected
 
 
-def test_filtered_emails():
-    """Email filtering mode"""
-    # Set filtering mode
-    globals()['EMAIL_FILTERING_MODE'] = 1
-    globals()['list_of_emails_to_filter'] = ['spam@example.com']
-
-    email = "spam@example.com"
-    expected = "filtered - included in file passed with -f argument"
-    result = getAffiliationFromEmail(email)
-    assert result == expected
+# Email aggregation config (-a)
+def test_aggregation_config(state):
+    state.email_aggregation_config = {"ibm": "ibm"}
+    assert extract_affiliation_from_email("user@us.ibm.com", state) == "ibm"
 
 
-def test_invalid_email_format():
-    """Completely invalid formats"""
-    email = "not-an-email"
-    with pytest.raises(SystemExit):
-        getAffiliationFromEmail(email)
+# Invalid input returns None instead of exiting
+@pytest.mark.parametrize("email", ["not-an-email", "", None])
+def test_invalid_input_returns_none(state, email):
+    assert extract_affiliation_from_email(email, state) is None
 
 
-def test_empty_email():
-    """Empty string input"""
-    email = ""
-    with pytest.raises(SystemExit):
-        getAffiliationFromEmail(email)
+def test_verbose_mode_does_not_change_result(state):
+    state.verbose_mode = True
+    state.very_verbose_mode = True
+    assert extract_affiliation_from_email("user@apolinex.com", state) == "apolinex"
 
 
-# Using pytest-mock for mocking
-def test_with_mocking(mocker):
-    """Example using pytest-mock for mocking dependencies"""
-    # Mock external dependencies if needed
-    mock_external = mocker.patch('some_module.some_function')
-    mock_external.return_value = "mocked_value"
+# Email filtering (-f)
+def test_filtered_emails_are_removed_from_network(state):
+    """Filtered developers are removed from the network, along with any
+    developers left isolated by that removal."""
+    state.email_filtering_mode = True
+    state.emails_to_filter = {"spam@example.com"}
+    state.dev_to_dev_network = nx.Graph()
+    state.dev_to_dev_network.add_edge("spam@example.com", "lonely@example.com")
+    state.dev_to_dev_network.add_edge("alice@example.com", "bob@example.com")
 
-    email = "test@example.com"
-    result = getAffiliationFromEmail(email)
-    # Your assertions here
+    apply_email_filtering(state)
 
-
-# Advanced: Custom test output with rich
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    """Hook to create rich test reports."""
-    outcome = yield
-    rep = outcome.get_result()
-
-    if rep.when == "call":
-        if rep.failed:
-            status = "[red]✗ FAIL[/red]"
-        elif rep.passed:
-            status = "[green]✓ PASS[/green]"
-        else:
-            status = "[yellow]SKIP[/yellow]"
-
-        # You could create a rich table here similar to unittest version
-        if hasattr(item, 'callspec'):
-            test_input = str(item.callspec.params)
-        else:
-            test_input = item.name.replace("test_", "").replace("_", " ")
-
-        # Create a simple test results table (simplified version)
-        if rep.failed:
-            console.print(f"{status} {item.name}: {rep.longreprtext}")
+    assert set(state.dev_to_dev_network.nodes()) == {"alice@example.com", "bob@example.com"}
 
 
-# Optional: Session-scoped table for summary
-@pytest.fixture(scope="session")
-def test_results_table():
-    """Create a table to collect test results."""
-    table = Table(title="Test Results", show_header=True, header_style="bold magenta")
-    table.add_column("Status", width=8)
-    table.add_column("Test Case", style="cyan")
-    table.add_column("Input")
-    table.add_column("Expected")
-    table.add_column("Actual", style="red")
-    return table
+def test_filtering_disabled_keeps_network(state):
+    state.email_filtering_mode = False
+    state.emails_to_filter = {"spam@example.com"}
+    state.dev_to_dev_network = nx.Graph()
+    state.dev_to_dev_network.add_edge("spam@example.com", "alice@example.com")
 
+    apply_email_filtering(state)
 
-# Example of using the table fixture
-def test_with_table_report(test_results_table):
-    """Example test that adds to the results table."""
-    email = "test@example.com"
-    expected = "example"
-
-    try:
-        result = getAffiliationFromEmail(email)
-        assert result == expected
-        test_results_table.add_row(
-            "[green]✓ PASS[/green]",
-            "test_with_table_report",
-            email,
-            expected,
-            "[green]Matched[/green]"
-        )
-    except Exception as e:
-        test_results_table.add_row(
-            "[red]✗ FAIL[/red]",
-            "test_with_table_report",
-            email,
-            expected,
-            str(e)
-        )
-        raise
-
-
-# Run all tests with a custom session fixture
-def pytest_session_finish(session, exitstatus):
-    """Hook called after all tests are run."""
-    # Print summary if we have a test_results_table
-    for item in session.items:
-        if hasattr(item.function, '__test_results_table__'):
-            console.print()
-            console.print(Panel.fit(
-                item.function.__test_results_table__,
-                title="[bold]Detailed Test Results[/bold]"
-            ))
-            break
-
-
-# To run from command line, just use: pytest test_file.py
-# But we can also add a main block for running directly
-if __name__ == "__main__":
-    # Run pytest programmatically
-    sys.exit(pytest.main([__file__, "-v", "--tb=short"]))
+    assert state.dev_to_dev_network.has_node("spam@example.com")
