@@ -80,7 +80,8 @@ Basic Test Template
 python
 
 # tests/unit/test_your_feature.py
-from scraplog.scraplog import ProcessingState, extract_affiliation_from_email
+from scraplog.core.models import ProcessingState
+from scraplog.identity import extract_affiliation_from_email
 
 # Test function (no classes needed!)
 def test_function_name():
@@ -111,12 +112,9 @@ import pytest
 import networkx as nx
 
 # conftest.py puts the project root on sys.path, so plain imports work
-from scraplog.scraplog import (
-    ProcessingState,
-    extract_affiliation_from_email,
-    parse_time_name_email_affiliation,
-    load_email_aggregation_config,
-)
+from scraplog.core.models import ProcessingState
+from scraplog.identity import extract_affiliation_from_email, load_email_aggregation_config
+from scraplog.parsing import parse_time_name_email_affiliation
 
 
 # FIXTURES: Reusable test data
@@ -165,7 +163,7 @@ def test_parse_time_name_email_affiliation(state):
 # TESTS WITH MOCKING
 def test_parse_uses_affiliation_extractor(state):
     """Replace a collaborator to test one function in isolation."""
-    with patch("scraplog.scraplog.extract_affiliation_from_email", return_value="acme") as mock_extract:
+    with patch("scraplog.parsing.extract_affiliation_from_email", return_value="acme") as mock_extract:
         line = "==Jane Doe;jane@google.com;Wed Apr 3 20:54:06 2024 -0700=="
         result = parse_time_name_email_affiliation(line, state)
 
@@ -246,7 +244,7 @@ assert email in valid_emails
 python
 
 import pytest
-from scraplog.scraplog import load_email_aggregation_config
+from scraplog.identity import load_email_aggregation_config
 
 def test_invalid_config_exits(tmp_path):
     """Invalid JSON in the aggregation config makes scrapLog exit with code 1."""
@@ -266,7 +264,8 @@ python
 # scrapLog keeps its settings (verbose/debug modes, filters, aggregation
 # config) on a ProcessingState object instead of module-level globals.
 # Build a fresh state per test and set only what you need.
-from scraplog.scraplog import ProcessingState, extract_affiliation_from_email
+from scraplog.core.models import ProcessingState
+from scraplog.identity import extract_affiliation_from_email
 
 def test_with_custom_state():
     state = ProcessingState()
@@ -280,7 +279,7 @@ Testing File I/O Operations
 python
 
 import json
-from scraplog.scraplog import load_email_aggregation_config
+from scraplog.identity import load_email_aggregation_config
 
 def test_read_config_file(tmp_path):
     """Test reading the email aggregation config (a JSON file)."""
@@ -420,7 +419,7 @@ python
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from scraplog.scraplog import function_name
+from scraplog.parsing import function_name  # or identity, coediting, pipeline, output
 
 # For utils modules
 from scraplog.utils.validators import validate_git_email
@@ -435,13 +434,13 @@ python
 from unittest.mock import patch, mock_open
 
 # Replace a function scrapLog calls (patch where it is *used*)
-with patch('scraplog.scraplog.extract_affiliation_from_email', return_value="acme") as mock_extract:
+with patch('scraplog.parsing.extract_affiliation_from_email', return_value="acme") as mock_extract:
     result = parse_time_name_email_affiliation(line, state)
     mock_extract.assert_called_once()
 
 # Same thing with the pytest-mock "mocker" fixture
 def test_with_mocker(mocker):
-    mocker.patch('scraplog.scraplog.extract_affiliation_from_email', return_value="acme")
+    mocker.patch('scraplog.parsing.extract_affiliation_from_email', return_value="acme")
     ...
 
 # Mock file operations
@@ -486,7 +485,7 @@ Solution: Never share a ProcessingState between tests; create a new one per test
 python
 
 import pytest
-from scraplog.scraplog import ProcessingState
+from scraplog.core.models import ProcessingState
 
 @pytest.fixture
 def state():

@@ -19,7 +19,7 @@ from pathlib import Path
 import networkx as nx
 
 from scraplog.export import log_data as export_log_data
-from scraplog.scraplog import normalize_zip_timestamps
+from scraplog.output import normalize_zip_timestamps
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 

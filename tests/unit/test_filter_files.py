@@ -12,13 +12,8 @@ Run with:
 
 import pytest
 
-from scraplog.scraplog import (
-    ProcessingState,
-    extract_files_from_block,
-    is_filtered_file,
-    load_file_filter_file,
-    process_commit_block,
-)
+from scraplog.core.models import ProcessingState
+from scraplog.parsing import extract_files_from_block, is_filtered_file, load_file_filter_file, process_commit_block
 
 
 def write_filter_file(tmp_path, content):

@@ -15,24 +15,12 @@ import os
 
 
 from scraplog.core.models import ProcessingStatistics
-from scraplog.scraplog import (
-    ProcessingState,
-    load_email_aggregation_config,
-    extract_affiliation_from_email,
-    parse_time_name_email_affiliation,
-    parse_exceptional_format,
-    extract_files_from_block,
-    process_commit_block,
-    aggregate_files_and_contributors,
-    extract_contributor_connections,
-    get_unique_connections,
-    create_network_graph,
-    apply_email_filtering,
-    extract_affiliation_from_email,
-    print_processing_summary,
-    ChangeLogEntry,
-    DeveloperInfo
-)
+from scraplog.coediting import aggregate_files_and_contributors, extract_contributor_connections, get_unique_connections, create_network_graph, apply_email_filtering
+from scraplog.core.models import ProcessingState
+from scraplog.core.types import ChangeLogEntry, DeveloperInfo
+from scraplog.identity import load_email_aggregation_config, extract_affiliation_from_email
+from scraplog.output import print_processing_summary
+from scraplog.parsing import parse_time_name_email_affiliation, parse_exceptional_format, extract_files_from_block, process_commit_block
 
 
 # Test 1: ProcessingStatistics basic functionality

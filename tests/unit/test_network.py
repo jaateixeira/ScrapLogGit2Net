@@ -17,11 +17,8 @@ from collections import defaultdict
 
 import pytest
 
-from scraplog.scraplog import (
-    ProcessingState,
-    aggregate_files_and_contributors,
-    extract_contributor_connections,
-)
+from scraplog.coediting import aggregate_files_and_contributors, extract_contributor_connections
+from scraplog.core.models import ProcessingState
 
 
 def entry(email, affiliation, files, timestamp="Mon Jan 1 12:00:00 2024 +0000"):

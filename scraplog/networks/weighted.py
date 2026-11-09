@@ -26,7 +26,7 @@ import networkx as nx
 from typing import Optional, Dict, Any
 
 
-from scraplog.networks.temporal import print_first_n_temporal_edges
+from scraplog.networks.temporal_report import print_first_n_temporal_edges
 
 from scraplog.utils.unified_console import  console, Table, inspect,print_info, print_error, print_success
 from scraplog.core.models import ProcessingState
