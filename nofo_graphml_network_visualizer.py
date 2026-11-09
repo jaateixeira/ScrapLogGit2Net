@@ -65,6 +65,11 @@ class NetworkVisualizer:
 
     def load_graph(self) -> None:
         """Load GraphML file from string or Path object."""
+        # nx.read_graphml would treat other types (e.g. an int) as an open file descriptor
+        if not isinstance(self.config.input_file, (str, Path)):
+            raise TypeError(
+                f"input_file must be str or Path, got {type(self.config.input_file).__name__}")
+
         # Convert input_file to Path object if it's a string
         input_path = Path(self.config.input_file) if isinstance(self.config.input_file, str) else self.config.input_file
 
@@ -119,7 +124,7 @@ class NetworkVisualizer:
 
     def filter_by_organization_names(self) -> None:
         """Filter graph by organization names using include/exclude lists."""
-        if not self.graph:
+        if self.graph is None:
             raise ValueError("Graph not loaded")
 
         # Check if we have any organization filters to apply
@@ -127,7 +132,16 @@ class NetworkVisualizer:
         has_exclude = self.config.exclude_orgs is not None and len(self.config.exclude_orgs) > 0
 
         if not (has_include or has_exclude):
-            return  # No organization filtering needed
+            # No organization filtering needed, but --filter_by_org still
+            # removes isolated nodes
+            if self.config.filter_by_org:
+                isolates = list(nx.isolates(self.graph))
+                if isolates:
+                    self.graph.remove_nodes_from(isolates)
+                    logger.info(f"Removed {len(isolates)} isolated nodes")
+                    if self.config.verbose:
+                        logger.debug(f"Removed isolated nodes: {isolates}")
+            return
 
         logger.info("Filtering by organization names...")
 
@@ -219,7 +233,7 @@ class NetworkVisualizer:
         if not self.config.filter_by_n_top_central_firms_only:
             return
 
-        if not self.graph:
+        if self.graph is None:
             raise ValueError("Graph not loaded")
 
         if not self.degree_centrality:
@@ -285,8 +299,13 @@ class NetworkVisualizer:
     def calculate_centralities(self) -> None:
         """Calculate network centralities."""
         logger.info("Calculating centralities...")
-        if not self.graph:
+        if self.graph is None:
             raise ValueError("Graph not loaded")
+
+        if self.graph.number_of_nodes() == 0:
+            logger.warning("Graph has no nodes; no centralities to calculate")
+            self.degree_centrality = {}
+            return
 
         # Use eigenvector centrality for weighted graphs
         # If the graph has no edges or is disconnected, fall back to degree centrality
@@ -474,7 +493,7 @@ class NetworkVisualizer:
 
     def visualize(self) -> None:
         """Main visualization method."""
-        if not self.graph:
+        if self.graph is None:
             raise ValueError("Graph not loaded")
 
         logger.info("Creating visualization...")
@@ -732,7 +751,7 @@ def parse_arguments() -> NetworkConfig:
     parser.add_argument(
         "-f", "--filter_by_org",
         action="store_true",
-        help="Remove isolated nodes after organization filtering"
+        help="Remove isolated nodes (also those left isolated by organization filtering)"
     )
 
     # Add organization filtering arguments
@@ -837,7 +856,7 @@ def main() -> None:
         console.print("[bold green] Success:[/bold green] Legend information loaded 😀\n")
 
         # Apply organization name filtering IMMEDIATELY (removes nodes and their edges)
-        if config.include_only_orgs or config.exclude_orgs:
+        if config.include_only_orgs or config.exclude_orgs or config.filter_by_org:
             console.print(f"[bold blue] Filtering by organization names\n")
             visualizer.filter_by_organization_names()
             console.print("[bold green] Success:[/bold green] Organization filtering applied 😀\n")
