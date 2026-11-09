@@ -51,15 +51,16 @@ ScrapLogGit2Net/
 │   │   └── test_utils_validators.py
 │   └── acceptance-test-scripts/ # bash end-to-end tests (run from project root)
 ├── test-data/                  # Input files used by the tests
-├── scrapLog.py                 # Main module
-├── transform_nofi_2_nofo_graphml.py
-├── core/
-│   ├── models.py
-│   └── types.py
-└── utils/
-    ├── validators.py
-    ├── unified_console.py
-    └── unified_logger.py
+├── scrapLog.py                 # Thin wrapper: runs scraplog/scraplog.py (one per command)
+└── scraplog/                   # The package: all code lives here
+    ├── scraplog.py             # Main module (parsing + pipeline + CLI)
+    ├── core/                   # models.py, types.py
+    ├── utils/                  # validators, unified_console, unified_logger, ...
+    ├── networks/               # temporal, weighted, unweighted networks
+    ├── export/                 # GraphML writers
+    ├── viz/                    # nofi / nofo visualizers
+    ├── analysis/               # transform, reports, comparisons
+    └── tools/                  # deanonymize_github_users, scrap_repo_logs
 
 🔧 Critical: The conftest.py File
 
@@ -70,17 +71,16 @@ python
 import sys
 import os
 
-# Add the project root (and utils/) to Python path so tests can import modules
+# Add the project root to Python path so tests can import the scraplog package
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, 'utils'))
 
 🧪 Writing New Tests
 Basic Test Template
 python
 
 # tests/unit/test_your_feature.py
-from scrapLog import ProcessingState, extract_affiliation_from_email
+from scraplog.scraplog import ProcessingState, extract_affiliation_from_email
 
 # Test function (no classes needed!)
 def test_function_name():
@@ -111,7 +111,7 @@ import pytest
 import networkx as nx
 
 # conftest.py puts the project root on sys.path, so plain imports work
-from scrapLog import (
+from scraplog.scraplog import (
     ProcessingState,
     extract_affiliation_from_email,
     parse_time_name_email_affiliation,
@@ -165,7 +165,7 @@ def test_parse_time_name_email_affiliation(state):
 # TESTS WITH MOCKING
 def test_parse_uses_affiliation_extractor(state):
     """Replace a collaborator to test one function in isolation."""
-    with patch("scrapLog.extract_affiliation_from_email", return_value="acme") as mock_extract:
+    with patch("scraplog.scraplog.extract_affiliation_from_email", return_value="acme") as mock_extract:
         line = "==Jane Doe;jane@google.com;Wed Apr 3 20:54:06 2024 -0700=="
         result = parse_time_name_email_affiliation(line, state)
 
@@ -246,7 +246,7 @@ assert email in valid_emails
 python
 
 import pytest
-from scrapLog import load_email_aggregation_config
+from scraplog.scraplog import load_email_aggregation_config
 
 def test_invalid_config_exits(tmp_path):
     """Invalid JSON in the aggregation config makes scrapLog exit with code 1."""
@@ -266,7 +266,7 @@ python
 # scrapLog keeps its settings (verbose/debug modes, filters, aggregation
 # config) on a ProcessingState object instead of module-level globals.
 # Build a fresh state per test and set only what you need.
-from scrapLog import ProcessingState, extract_affiliation_from_email
+from scraplog.scraplog import ProcessingState, extract_affiliation_from_email
 
 def test_with_custom_state():
     state = ProcessingState()
@@ -280,7 +280,7 @@ Testing File I/O Operations
 python
 
 import json
-from scrapLog import load_email_aggregation_config
+from scraplog.scraplog import load_email_aggregation_config
 
 def test_read_config_file(tmp_path):
     """Test reading the email aggregation config (a JSON file)."""
@@ -313,7 +313,7 @@ def test_graph_creation():
 🐛 Debugging Tests
 Common Error: Import Issues
 
-If you see: ImportError: No module named 'scrapLog'
+If you see: ImportError: No module named 'scraplog'
 
 Solution 1: Run pytest with correct Python path:
 bash
@@ -416,18 +416,18 @@ Test Checklist Before Submission
 Common Import Patterns
 python
 
-# For modules in project root
+# For the main module
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from scrapLog import function_name
+from scraplog.scraplog import function_name
 
 # For utils modules
-from utils.validators import validate_git_email
+from scraplog.utils.validators import validate_git_email
 
-# For console/logger helpers (utils/)
-from utils.unified_logger import logger
-from utils.unified_console import console
+# For console/logger helpers (scraplog/utils/)
+from scraplog.utils.unified_logger import logger
+from scraplog.utils.unified_console import console
 
 Mocking Patterns
 python
@@ -435,13 +435,13 @@ python
 from unittest.mock import patch, mock_open
 
 # Replace a function scrapLog calls (patch where it is *used*)
-with patch('scrapLog.extract_affiliation_from_email', return_value="acme") as mock_extract:
+with patch('scraplog.scraplog.extract_affiliation_from_email', return_value="acme") as mock_extract:
     result = parse_time_name_email_affiliation(line, state)
     mock_extract.assert_called_once()
 
 # Same thing with the pytest-mock "mocker" fixture
 def test_with_mocker(mocker):
-    mocker.patch('scrapLog.extract_affiliation_from_email', return_value="acme")
+    mocker.patch('scraplog.scraplog.extract_affiliation_from_email', return_value="acme")
     ...
 
 # Mock file operations
@@ -486,7 +486,7 @@ Solution: Never share a ProcessingState between tests; create a new one per test
 python
 
 import pytest
-from scrapLog import ProcessingState
+from scraplog.scraplog import ProcessingState
 
 @pytest.fixture
 def state():

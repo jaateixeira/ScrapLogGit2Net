@@ -118,7 +118,7 @@ The simplest and most widely used network: an undirected graph where two develop
 ```
 
 ## Weighted inter-individual network
-Same nodes and ties as the unweighted network, but each tie carries a `weight` attribute that quantifies the collaborative relationship between two developers, so you can tell strong ties from incidental ones. It is derived from the temporal network (see `extract_weighted_network.py` for the exact weighting). The weight is written to the GraphML file as an edge attribute.
+Same nodes and ties as the unweighted network, but each tie carries a `weight` attribute that quantifies the collaborative relationship between two developers, so you can tell strong ties from incidental ones. It is derived from the temporal network (see `scraplog/networks/weighted.py` for the exact weighting). The weight is written to the GraphML file as an edge attribute.
 
 ```
 ./scrapLog.py -r test-data/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_weighted
