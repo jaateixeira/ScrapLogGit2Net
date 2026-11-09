@@ -24,11 +24,12 @@ Extracts collaboration networks from `git log` data (who works with whom, via sh
 - State what was NOT verified.
 
 ## Commands
-<!-- Fill in the real ones; delete this comment -->
-- Install: `pip install -e .`
-- Test: `pytest -q`
-- Lint/format: `ruff check . && ruff format .`
-- Run: `python -m scraploggit2net --repo <path> --out <dir>`
+- Install: `pip install -r requirements.txt pytest pytest-mock` (`pyproject.toml` dependencies are incomplete; don't use `pip install -e .`)
+- Test: `python -m pytest -q` (unit tests in `tests/unit/`)
+- Acceptance tests (run from repo root; need `xmllint`): `bash tests/acceptance-test-scripts/testScrapLog.sh`, `testScrapLogTemporalNetworks.sh`, `ExtensionFiltering/test_extension_filtering.sh`
+- Lint/format: none configured
+- Make input: `git log --pretty=format:"==%an;%ae;%ad==" --name-only > <name>.IN`
+- Run: `./scrapLog.py -r <name>.IN [-t <network type>] [-o <out>.graphML]`
 
 ## Conventions
 - Python 3.10+, type hints, small pure functions; I/O at the edges.
