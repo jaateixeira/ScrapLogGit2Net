@@ -1,1 +1,5 @@
 dive_docker_workspace.sh
+
+# Python build and cache artifacts
+__pycache__/
+*.egg-info/

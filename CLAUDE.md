@@ -24,7 +24,7 @@ Extracts collaboration networks from `git log` data (who works with whom, via sh
 - State what was NOT verified.
 
 ## Commands
-- Install: `pip install -r requirements.txt pytest pytest-mock` (`pyproject.toml` dependencies are incomplete; don't use `pip install -e .`)
+- Install: `pip install -e ".[test]"` (dependencies are declared in both `pyproject.toml` and `requirements.txt`; keep them in sync)
 - Test: `python -m pytest -q` (unit tests in `tests/unit/`)
 - Acceptance tests (run from repo root; need `xmllint`): `bash tests/acceptance-test-scripts/testScrapLog.sh`, `testScrapLogTemporalNetworks.sh`, `ExtensionFiltering/test_extension_filtering.sh`
 - Lint/format: none configured
