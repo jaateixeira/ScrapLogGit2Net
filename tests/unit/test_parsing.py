@@ -530,12 +530,14 @@ def test_create_network_graph():
     """Test creation of network graph."""
     state = ProcessingState()
 
-    # Set up unique connections and affiliations
+    # Set up unique connections
     state.aggregated_file_coediting_collaborative_relationships = [
         ("alice@example.com", "bob@example.com"),
         ("bob@example.com", "charlie@test.com"),
     ]
 
+    # Affiliations already on the state are ignored: create_network_graph always
+    # derives them from the email (identity rules live in one place, identity.py)
     state.affiliations = {
         "alice@example.com": "Example Corp",
         "bob@example.com": "Example Corp",
@@ -548,10 +550,15 @@ def test_create_network_graph():
     assert state.dev_to_dev_network.number_of_nodes() == 3
     assert state.dev_to_dev_network.number_of_edges() == 2
 
-    # Check node attributes
-    assert state.dev_to_dev_network.nodes["alice@example.com"]["affiliation"] == "Example Corp"
+    # Check node attributes (affiliation derived from the email domain)
+    assert state.dev_to_dev_network.nodes["alice@example.com"]["affiliation"] == "example"
     assert state.dev_to_dev_network.nodes["alice@example.com"]["email"] == "alice@example.com"
-    assert state.dev_to_dev_network.nodes["charlie@test.com"]["affiliation"] == "Test Inc"
+    assert state.dev_to_dev_network.nodes["charlie@test.com"]["affiliation"] == "test"
+    assert state.affiliations == {
+        "alice@example.com": "example",
+        "bob@example.com": "example",
+        "charlie@test.com": "test",
+    }
 
     # Check edges
     assert state.dev_to_dev_network.has_edge("alice@example.com", "bob@example.com")
