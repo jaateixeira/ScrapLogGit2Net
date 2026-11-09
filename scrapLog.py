@@ -13,6 +13,7 @@ import pickle
 import re
 import sys
 import time
+import zipfile
 from collections import defaultdict
 from datetime import datetime
 from fnmatch import fnmatchcase
@@ -1020,6 +1021,25 @@ def enrich_graph_with_affiliation(
 
     return graph
 
+def normalize_zip_timestamps(zip_path: Path) -> None:
+    """
+    Rewrite a zip archive with a fixed timestamp on every entry.
+
+    Zip entries record when they were written, so the same network exported
+    twice would otherwise give different bytes. Content, compression and
+    file attributes are kept as they are.
+    """
+    with zipfile.ZipFile(zip_path) as archive:
+        entries = [(info, archive.read(info)) for info in archive.infolist()]
+
+    with zipfile.ZipFile(zip_path, 'w') as archive:
+        for info, data in entries:
+            fixed_info = zipfile.ZipInfo(info.filename, date_time=(1980, 1, 1, 0, 0, 0))
+            fixed_info.compress_type = info.compress_type
+            fixed_info.external_attr = info.external_attr
+            archive.writestr(fixed_info, data)
+
+
 def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     """Export results to GraphML and print summary."""
 
@@ -1043,6 +1063,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
         if state.network_type == 'inter_individual_graph_temporal':
             output_static_w_graph : tx.TemporalGraph = state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
             tx.write_graph(output_static_w_graph, graphml_filename)
+            normalize_zip_timestamps(Path(graphml_filename))
         elif state.network_type == 'inter_individual_graph_weighted':
             output_static_w_graph: nx.Graph= state.container_of_extracted_networks.dev_to_dev_weighted_network
             #nx.write_graphml(output_temporal_graph, graphml_filename,  named_key_ids='email')

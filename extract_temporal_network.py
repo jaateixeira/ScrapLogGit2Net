@@ -1132,7 +1132,8 @@ def extract_temporal_network_from_parsed_change_log_entries(
                     print_info(
                         f"checking if {file} was edited before by others in accumulated_history_of_contributors_by_file")
                 if file in accumulated_history_of_contributors_by_file.keys():
-                    for collaborator in accumulated_history_of_contributors_by_file[file]:
+                    # sorted: set order varies between runs; sorting keeps output deterministic
+                    for collaborator in sorted(accumulated_history_of_contributors_by_file[file]):
                         if developer_email != collaborator:
                             if verbose_mode or very_verbose_mode or debug_mode:
                                 print_key_action(

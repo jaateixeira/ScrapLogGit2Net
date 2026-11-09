@@ -321,7 +321,10 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
     print ()
     print ("\t\tWriting nodes in graphML file")
     node_id = 0
-    for node, data in network_with_affiliation_attributes.nodes(data=True):
+    # Sorted by email so that the same input always gives byte-identical output
+    # (graph iteration order depends on set ordering, which varies between runs)
+    for node in sorted(network_with_affiliation_attributes.nodes()):
+        data = network_with_affiliation_attributes.nodes[node]
         email=node
         afl= data['affiliation']
         #print(exportGraphml.addNode(nAf,[(0,email),(1,"turquoise"),(2,afl)]))
@@ -338,10 +341,15 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
     print ()
     print ("\t\tWriting edges in graphML file")
     
+    # Undirected edges: write each as (smaller id, larger id), sorted, for deterministic output
+    def edge_ids(edge):
+        ids = (network_with_affiliation_attributes.nodes[edge[0]]['id'],
+               network_with_affiliation_attributes.nodes[edge[1]]['id'])
+        return min(ids), max(ids)
+
     nTup=0
-    for edge in network_with_affiliation_attributes.edges():
-        nodeIdFrom = network_with_affiliation_attributes.nodes[edge[0]]['id']
-        nodeIdTo = network_with_affiliation_attributes.nodes[edge[1]]['id']
+    for edge in sorted(network_with_affiliation_attributes.edges(), key=edge_ids):
+        nodeIdFrom, nodeIdTo = edge_ids(edge)
         #print("edge=",edge)
         #print("edge via id=",nodeIdFrom,nodeIdTo)
         
