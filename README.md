@@ -164,22 +164,22 @@ Here `<input>` is the name of the raw changelog file given with `-r`, without it
 The simplest and most widely used network: an undirected graph where two developers are connected if they co-edited at least one source-code file during the analyzed period. It does not tell how often or when. It is the right choice for classic Social Network Analysis such as centrality, density, components, and visualization with the `formatFilterAndViz-*` tools.
 
 ```
-./scrapLog.py -r test-data/tensorFlowGitLog-first-trimester-2024.IN
-./scrapLog.py -r test-data/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_unweighted
+./scrapLog.py -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN
+./scrapLog.py -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_unweighted
 ```
 
 ## Weighted inter-individual network
 Same nodes and ties as the unweighted network, but each tie carries a `weight` attribute that quantifies the collaborative relationship between two developers, so you can tell strong ties from incidental ones. It is derived from the temporal network (see `scraplog/networks/weighted.py` for the exact weighting). The weight is written to the GraphML file as an edge attribute.
 
 ```
-./scrapLog.py -r test-data/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_weighted
+./scrapLog.py -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_weighted
 ```
 
 ## Temporal inter-individual network
 Each tie is time-stamped with the moment of the contribution, so you can study how collaboration evolves, for instance with sliding windows or with temporal models. The network is exported as a compressed GraphML file (`.graphml.zip`) using the [networkx-temporal](https://pypi.org/project/networkx-temporal/) package. Use `-tntr` / `--temporal-network-time-resolution` to set the time resolution of the temporal network (an integer, default `1`, i.e., one second).
 
 ```
-./scrapLog.py -r test-data/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_temporal -tntr 86400
+./scrapLog.py -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_temporal -tntr 86400
 ```
 
 Note that the temporal network is always extracted internally, as the first step of the pipeline, whatever type you request. The weighted network is then derived from it, and the unweighted network from the weighted one:
@@ -192,7 +192,7 @@ git log  ->  temporal network  ->  weighted network  ->  unweighted network
 `inter_individual_weighted_LOC_temporal` and `inter_individual_graph_weighted_SUM_LOC` are accepted by the command line parser but are not yet exported by `scrapLog.py`: choosing them ends with an "Unknown network type" error. They are reserved for networks whose ties are weighted by lines of code.
 
 ## From individuals to organizations
-`scrapLog.py` itself outputs networks of **individuals**. To get a network of **organizations**, in which the weighted edge between two organizations counts the relationships between their developers, pass the GraphML file to `transform-nofi-2-nofo-GraphML.py`. Intra-organizational relationships are ignored in that transformation.
+`scrapLog.py` itself outputs networks of **individuals**. To get a network of **organizations**, in which the weighted edge between two organizations counts the relationships between their developers, pass the GraphML file to `transform_nofi_2_nofo_graphml.py`. Intra-organizational relationships are ignored in that transformation.
 
 ## Design decisions
 
@@ -277,11 +277,11 @@ cd tensorflow && git log --since='Jan 1 2024' --until='Mar 31 2024' --pretty=for
 
 ## Scrape the data - Get basic statistics and social networks
 ```
-./scrapLog.py  --raw  test-data/tensorFlowGitLog-first-trimester-2024.IN
+./scrapLog.py  --raw  test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN
 ```
 or
 ```
-python3 scrapLog.py  -r test-data/tensorFlowGitLog-first-trimester-2024.IN
+python3 scrapLog.py  -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN
 ```
 
 By default, and all goes well, you get a "NetworkFile.graphML" file prefixed with the data input filename (e.g., tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML) capturing the unweighted social network of individuals. Congrats. You collected social network data ready for analysis. Use the `-t` option to get weighted or temporal networks instead (see [Types of networks](#types-of-networks-scraplogpy-can-build)).
@@ -389,10 +389,10 @@ options:
 For example, the following command
 
 ```
-./scrapLog.py -fe test-configurations/TensorFlowBots.txt  -r test-data/tensorFlowGitLog-all-till-12-April-2024.IN --verbose
+./scrapLog.py -fe test-configurations/TensorFlow/TensorFlowBots.txt -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN --verbose
 ```
 
-scrapes the Git log in the test-data/tensorFlowGitLog-all-till-12-April-2024.IN input file, ignores emails listed in the test-configurations/TensorFlowBots.txt file, and prints debug information in a verbose way. By default, it also creates a
+scrapes the Git log in the test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN input file, ignores emails listed in the test-configurations/TensorFlow/TensorFlowBots.txt file, and prints debug information in a verbose way. By default, it also creates a
 network file in the standard XML-based format GraphML.
 
 ## Ignoring files (`-ff`)
@@ -422,8 +422,6 @@ Commits that only touch ignored files are skipped. If the filter file is missing
 - Transformation of unweighted inter-individual networks into weighted inter-organizational networks. The weight is equal to the number of inter-organizational relationships. Intra-organizational relationships are ignored.
 
 ## To implement (volunteers welcome)
-- Cache the API requests using https://pypi.org/project/requests-cache/ as GitHub REST API replies are limited for regular for non-paying users 
-- Test the possible integration with the PyGithub API library
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
 - Account for commits on behalf of organizations using the 'on-behalf-of: @ORG NAME[AT]ORGANIZATION.COM' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-on-behalf-of-an-organization).
 - Possibility to add an argument pointing to a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company).
@@ -431,19 +429,15 @@ Commits that only touch ignored files are skipped. If the filter file is missing
 - Possibility to add an argument pointing to a file that aggregates different emails used by different organizations (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com all map IBM).
 - Possibility to export both networks at the individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations) during scraplog execution from Git log data.
 - Possibility to limit analysis to n top contributors (organization with most nodes).
-- Colorize nodes by company affiliation automatically.
 - Report stats on the files connecting people the most (handy for identifying outliers).
-- Support for weighted edges.
 - Reporting analysis in LaTeX, Markdown, HTML, and text files. Should include quantitative metrics (e.g., n. commits, n. lines of code per dev, most co-edited files) and relational metrics (e.g., centrality, density).
 - Support for other network formats besides GraphML (see [https://socnetv.org/docs/formats.html](https://socnetv.org/docs/formats.html)).
 - Support for community detection.
-- Use a logging system (e.g., [https://docs.python.org/3/library/logging.html](https://docs.python.org/3/library/logging.html) instead of print statements for debugging.
-- Write unit tests for the main functions in ScrapLogGit2Net (see [https://docs.python.org/3/library/unittest.html](https://docs.python.org/3/library/unittest.html)).
 - Use config files as there are already so many parameters.
 - Integrate with the [TNM Tool for Mining of Socio-Technical Data from Git Repositories](https://github.com/JetBrains-Research/tnm). Cool, advanced, research-based but coded in Java. See [TNM tool presentation at MSR (2021) conference](https://www.youtube.com/watch?v=-NXaY8zTEOU).
 - Integrate with the [git2net tool that also facilitates the extraction of co-editing networks from Git repositories.](https://github.com/gotec/git2net). Cool, advanced, research-based and also coded in Python. Has a more sophisticated approach to edges based on entropy and offers disambiguation features.
 - Integrate with https://www.logo.dev API for allowing users to use company logos.
-- Publish as a Python package to the community.
+- Publish the Python package on PyPI (it can already be installed from a clone with `pip install -e .`).
 
 # Research datasets
 
@@ -515,7 +509,7 @@ Please create a new branch for any new feature. Branch or fork, code, test, then
 
 Note you should not break the test runner bash script (testScrapLog.sh) that runs ScrapLogGit2Net against test-data and compares with the expected output. You might need to change the test runner to comply with new developments.
 
-Jose Teixeira, currently the only maintainer, will review and merge pull requests, update the ChangeLog.txt, acknowledge the contributions, and work on documentation in free time from work.
+Jose Teixeira, currently the only maintainer, will review and merge pull requests, publish changes in the [GitHub releases](https://github.com/jaateixeira/ScrapLogGit2Net/releases), acknowledge the contributions, and work on documentation in free time from work.
 
 # Contributors
 - Jose Teixeira
