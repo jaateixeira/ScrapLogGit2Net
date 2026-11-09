@@ -224,21 +224,27 @@ def parse_time_name_email_affiliation(
         return None
 
 
-def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[DeveloperInfo]:
-    """Parse exceptional log line formats."""
+def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Tuple[str, str, str, str]]:
+    """
+    Parse exceptional log line formats.
+
+    Returns the same (date_time, name, email, affiliation) tuple as
+    parse_time_name_email_affiliation, or None if no known format matches.
+    """
     try:
         # Pattern 1: Name and email together before ;;
         # ==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
-        pattern1 = re.compile(r'^==(.+?)\s(.+?@.+?);;(.+?)\s([+-]\d{4})==$')
+        # The email is the last whitespace-free token before ;; (names can have spaces)
+        pattern1 = re.compile(r'^==(.+)\s(\S+@\S+);;(.+?)\s([+-]\d{4})==$')
         match1 = pattern1.search(line)
 
         if match1:
-            name_part, email, date_str, timezone = match1.groups()
-            name = name_part.split()[0] if ' ' in name_part else name_part
+            name, email, date_str, timezone = match1.groups()
             affiliation = extract_affiliation_from_email(email, state)
-            return email, affiliation
+            return f"{date_str} {timezone}", name, email, affiliation
 
         # Pattern 2: Just email before ;;
+        # ==bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==
         pattern2 = re.compile(r'^==(.+?@.+?);;(.+?)\s([+-]\d{4})==$')
         match2 = pattern2.search(line)
 
@@ -247,17 +253,18 @@ def parse_exceptional_format(line: str, state: ProcessingState) -> Optional[Deve
             # Extract name from email
             name = email.split('@')[0]
             affiliation = extract_affiliation_from_email(email, state)
-            return  email, affiliation
+            return f"{date_str} {timezone}", name, email, affiliation
 
         # Pattern 3: Launchpad bot
+        # ==Launchpad;;Tue Sep 20 06:50:27 2011 +0000==
         if "Launchpad" in line:
             pattern3 = re.compile(r'^==(.+?);;(.+?)\s([+-]\d{4})==$')
             match3 = pattern3.search(line)
             if match3:
-                name_part, date_str, timezone = match3.groups()
+                name, date_str, timezone = match3.groups()
                 email = "launchpad@bot.bot"
                 affiliation = "bot"
-                return  email, affiliation
+                return f"{date_str} {timezone}", name, email, affiliation
 
         # If nothing matches, return None
         return None

@@ -278,28 +278,48 @@ def test_parse_exceptional_format_direct():
     """Test parse_exceptional_format function directly."""
     state = ProcessingState()
 
+    # Returns (date_time, name, email, affiliation), like parse_time_name_email_affiliation
+
     # Test pattern 1
     line = "==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000=="
     result = parse_exceptional_format(line, state)
-    assert result is not None
-    assert result[1] == "bmcconne@rackspace.com"
+    assert result == ("Tue Sep 20 06:50:27 2011 +0000", "Brad McConnell",
+                      "bmcconne@rackspace.com", "rackspace")
 
-    # Test pattern 2
+    # Test pattern 2 (name taken from the email)
     line = "==bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000=="
     result = parse_exceptional_format(line, state)
-    assert result is not None
-    assert result[1] == "bmcconne@rackspace.com"
+    assert result == ("Tue Sep 20 06:50:27 2011 +0000", "bmcconne",
+                      "bmcconne@rackspace.com", "rackspace")
 
     # Test pattern 3 (Launchpad)
     line = "==Launchpad;;Tue Sep 20 06:50:27 2011 +0000=="
     result = parse_exceptional_format(line, state)
-    assert result is not None
-    assert result[1] == "launchpad@bot.bot"
+    assert result == ("Tue Sep 20 06:50:27 2011 +0000", "Launchpad",
+                      "launchpad@bot.bot", "bot")
 
     # Test non-matching line
     line = "==Some other format=="
     result = parse_exceptional_format(line, state)
     assert result is None
+
+
+# Test 16b: commits with exceptional headers are kept (regression)
+@pytest.mark.parametrize("header,email,affiliation", [
+    ("==Brad McConnell bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==", "bmcconne@rackspace.com", "rackspace"),
+    ("==bmcconne@rackspace.com;;Tue Sep 20 06:50:27 2011 +0000==", "bmcconne@rackspace.com", "rackspace"),
+    ("==Launchpad;;Tue Sep 20 06:50:27 2011 +0000==", "launchpad@bot.bot", "bot"),
+])
+def test_process_commit_block_exceptional_header(header, email, affiliation):
+    """Commits whose header uses an exceptional format used to be dropped."""
+    state = ProcessingState()
+
+    assert process_commit_block([header, "nova/api.py"], state, 0) is True
+
+    assert state.parsed_change_log_entries == [
+        ((email, affiliation), ["nova/api.py"], "Tue Sep 20 06:50:27 2011 +0000")
+    ]
+    assert state.statistics.n_skipped_blocks == 0
 
 
 # Test 17: extract_files_from_block - basic

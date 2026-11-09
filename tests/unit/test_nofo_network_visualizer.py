@@ -329,6 +329,28 @@ def test_filter_by_organization_names_preserves_edges(sample_graphml_file):
     assert not visualizer.graph.has_edge("C", "D")
 
 
+def test_exclude_org_with_filter_by_org_removes_new_isolates(tmp_path):
+    """Excluding an organization can leave its partners isolated; with
+    filter_by_org those isolates are removed (this used to crash with
+    'Frozen graph can't be modified')."""
+    graph_file = tmp_path / "orgs.graphml"
+    graph_file.write_text("""<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+  <graph id="G" edgedefault="undirected">
+    <node id="A"/><node id="B"/><node id="C"/><node id="D"/>
+    <edge source="A" target="B"/>
+    <edge source="C" target="D"/>
+  </graph>
+</graphml>""")
+
+    config = NetworkConfig(input_file=graph_file, filter_by_org=True, exclude_orgs=["D"])
+    visualizer = NetworkVisualizer(config)
+    visualizer.load_graph()
+    visualizer.filter_by_organization_names()
+
+    assert set(visualizer.graph.nodes()) == {"A", "B"}
+
+
 def test_filter_by_org_flag_removes_isolates():
     """Test that --filter_by_org removes isolated nodes."""
     # Create a graph with an isolated node

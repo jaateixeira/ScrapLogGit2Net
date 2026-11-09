@@ -156,8 +156,10 @@ class NetworkVisualizer:
                 logger.debug(f"Excluding organizations: {exclude_set}")
                 logger.debug(f"Nodes after exclude filter: {nodes_to_keep}")
 
-        # Create subgraph with only the nodes we want to keep
-        self.graph = self.graph.subgraph(list(nodes_to_keep))
+        # Create subgraph with only the nodes we want to keep.
+        # copy() because subgraph() returns a read-only view, and isolated
+        # nodes may be removed from it below.
+        self.graph = self.graph.subgraph(list(nodes_to_keep)).copy()
 
         # Remove isolated nodes if filter_by_org flag is set
         if self.config.filter_by_org:
