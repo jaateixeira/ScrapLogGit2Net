@@ -1,7 +1,7 @@
 import sys
 
-from utils.unified_console import print_success, print_info, console, inspect
-from core.models import ProcessingState
+from scraplog.utils.unified_console import print_success, print_info, console, inspect
+from scraplog.core.models import ProcessingState
 
 
 def ask_yes_or_no_question(question: str) -> bool:

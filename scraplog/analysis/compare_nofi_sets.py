@@ -27,14 +27,8 @@ import sys
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-from utils.unified_logger import logger
-from utils.unified_console import console
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
-from rich.table import Table
-from rich import box
-from rich.panel import Panel
-from rich.layout import Layout
-from rich.text import Text
+from scraplog.utils.unified_logger import logger
+from scraplog.utils.unified_console import console
 
 
 def parse_arguments():
@@ -90,86 +84,59 @@ Examples:
         help="Don't display the plot (only save if --save-plot is specified)"
     )
 
-    parser.add_argument(
-        "--no-table",
-        action="store_true",
-        help="Don't display the Rich table summary"
-    )
-
     return parser.parse_args()
 
 
 def validate_files(files, verbose=False):
     """Validate input files."""
     if len(files) < 2:
-        console.print("[red]✗ Error: At least 2 GraphML files are required for comparison[/red]")
+        logger.error("At least 2 GraphML files are required for comparison")
         return False
 
     if len(files) > 20:
-        console.print("[red]✗ Error: Maximum 20 GraphML files are supported[/red]")
+        logger.error("Maximum 20 GraphML files are supported")
         return False
 
     valid_files = []
-    invalid_files = []
-
-    with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-            TimeElapsedColumn(),
-            console=console,
-            transient=True,
-    ) as progress:
-        task = progress.add_task("[cyan]Validating files...", total=len(files))
-
-        for file in files:
-            if not os.path.exists(file):
-                invalid_files.append((file, "File not found"))
-            elif not file.lower().endswith('.graphml'):
-                invalid_files.append((file, "Not a .graphml file"))
-            else:
-                valid_files.append(file)
-
-            progress.update(task, advance=1)
-
-    if invalid_files:
-        console.print("\n[bold yellow]⚠ Warning: Invalid files found:[/bold yellow]")
-        invalid_table = Table(show_header=True, header_style="bold magenta", box=box.SIMPLE)
-        invalid_table.add_column("File", style="dim", width=40)
-        invalid_table.add_column("Reason", style="red")
-
-        for file, reason in invalid_files:
-            invalid_table.add_row(file, reason)
-
-        console.print(invalid_table)
+    for file in files:
+        if not os.path.exists(file):
+            logger.warning(f"File not found: {file}")
+        elif not file.lower().endswith('.graphml'):
+            logger.warning(f"File doesn't have .graphml extension: {file}")
+        else:
+            valid_files.append(file)
 
     if len(valid_files) < 2:
-        console.print("[red]✗ Error: Need at least 2 valid GraphML files[/red]")
+        logger.error("Need at least 2 valid GraphML files")
         return False
 
-    console.print(f"[green]✓ Found {len(valid_files)} valid GraphML files[/green]")
+    if verbose:
+        console.print(f"Found {len(valid_files)} valid GraphML files")
 
     return valid_files
 
 
-def read_graphml_file(filepath):
+def read_graphml_file(filepath, verbose=False):
     """Read and validate a GraphML file."""
     try:
         graph = nx.read_graphml(filepath)
         filename = os.path.basename(filepath)
-        return graph, filename, None
+
+        if verbose:
+            console.print(f"  ✓ {filename}: {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges")
+
+        return graph, filename
 
     except Exception as e:
-        return None, None, str(e)
+        logger.error(f"Error reading {filepath}: {e}")
+        return None, None
 
 
-def calculate_metrics(graph, filename):
+def calculate_metrics(graph):
     """Calculate various network metrics."""
     metrics = {}
 
     # Basic metrics
-    metrics['filename'] = filename
     metrics['num_nodes'] = graph.number_of_nodes()
     metrics['num_edges'] = graph.number_of_edges()
     metrics['num_isolates'] = nx.number_of_isolates(graph)
@@ -217,7 +184,7 @@ def calculate_metrics(graph, filename):
     return metrics
 
 
-def create_metrics_dataframe(all_metrics):
+def create_metrics_dataframe(files_data):
     """Organize metrics into a structured format."""
     data = {
         'filenames': [],
@@ -234,8 +201,8 @@ def create_metrics_dataframe(all_metrics):
         'is_weighted': []
     }
 
-    for metrics in all_metrics:
-        data['filenames'].append(metrics['filename'])
+    for filename, metrics in files_data:
+        data['filenames'].append(filename)
         data['num_nodes'].append(metrics['num_nodes'])
         data['num_edges'].append(metrics['num_edges'])
         data['num_isolates'].append(metrics['num_isolates'])
@@ -442,51 +409,33 @@ def create_comparison_plot(data, output_dir=".", save_path=None, dpi=100):
             full_save_path = save_path
 
         plt.savefig(full_save_path, dpi=dpi, bbox_inches='tight')
-        console.print(f"[green]✓ Plot saved to: [bold]{full_save_path}[/bold][/green]")
+        console.print(f"\n✓ Plot saved to: {full_save_path}")
 
     return fig
 
 
-def create_rich_metrics_table(data):
-    """Create a Rich table with metrics summary."""
+def print_metrics_summary(data):
+    """Print a detailed summary of all metrics to console."""
+    console.print("\n" + "=" * 100)
+    console.print("NETWORK METRICS SUMMARY")
+    console.print("=" * 100)
 
-    # Create main table
-    table = Table(
-        title="[bold cyan]Network Metrics Summary[/bold cyan]",
-        box=box.ROUNDED,
-        header_style="bold magenta",
-        title_style="bold cyan",
-        caption=f"Total files: {len(data['filenames'])}",
-        show_lines=True,
-    )
+    headers = ["#", "Filename", "Nodes", "Edges", "Isolates", "Avg Deg", "Density",
+               "Clustering", "Components", "Largest %", "Directed", "Weighted"]
 
-    # Add columns
-    table.add_column("#", style="dim", width=4, justify="right")
-    table.add_column("Filename", style="cyan", width=25)
-    table.add_column("Nodes", justify="right", style="green")
-    table.add_column("Edges", justify="right", style="green")
-    table.add_column("Isolates", justify="right", style="yellow")
-    table.add_column("Avg Deg", justify="right", style="blue")
-    table.add_column("Density", justify="right", style="magenta")
-    table.add_column("Clustering", justify="right", style="red")
-    table.add_column("Components", justify="right", style="green")
-    table.add_column("Largest %", justify="right", style="cyan")
-    table.add_column("Dir", justify="center", style="yellow")
-    table.add_column("Wgt", justify="center", style="yellow")
+    # Print header
+    header_format = "{:<4} {:<25} {:>8} {:>8} {:>8} {:>8} {:>8} {:>8} {:>10} {:>10} {:>8} {:>8}"
+    console.print(header_format.format(*headers))
+    console.print("-" * 100)
 
-    # Add rows
+    # Print data rows
     for i in range(len(data['filenames'])):
-        # Color code based on values
-        node_color = "green" if data['num_nodes'][i] > np.median(data['num_nodes']) else "dim"
-        edge_color = "green" if data['num_edges'][i] > np.median(data['num_edges']) else "dim"
-        isolate_color = "red" if data['num_isolates'][i] > np.median(data['num_isolates']) else "dim"
-
-        table.add_row(
+        row = [
             str(i + 1),
             data['filenames'][i][:25],
-            f"[{node_color}]{data['num_nodes'][i]:,}[/{node_color}]",
-            f"[{edge_color}]{data['num_edges'][i]:,}[/{edge_color}]",
-            f"[{isolate_color}]{data['num_isolates'][i]:,}[/{isolate_color}]",
+            f"{data['num_nodes'][i]:,}",
+            f"{data['num_edges'][i]:,}",
+            f"{data['num_isolates'][i]:,}",
             f"{data['avg_degree'][i]:.2f}",
             f"{data['density'][i]:.4f}",
             f"{data['avg_clustering'][i]:.3f}",
@@ -494,218 +443,99 @@ def create_rich_metrics_table(data):
             f"{data['largest_component_percentage'][i]:.1f}%",
             "✓" if data['is_directed'][i] else "✗",
             "✓" if data['is_weighted'][i] else "✗"
-        )
+        ]
+        console.print(header_format.format(*row))
 
-    # Add summary row
-    table.add_row(
-        "[bold]AVG[/bold]",
+    # Print averages
+    console.print("-" * 100)
+    avg_row = [
+        "AVG",
         "",
-        f"[bold]{np.mean(data['num_nodes']):.0f}[/bold]",
-        f"[bold]{np.mean(data['num_edges']):.0f}[/bold]",
-        f"[bold]{np.mean(data['num_isolates']):.0f}[/bold]",
-        f"[bold]{np.mean(data['avg_degree']):.2f}[/bold]",
-        f"[bold]{np.mean(data['density']):.4f}[/bold]",
-        f"[bold]{np.mean(data['avg_clustering']):.3f}[/bold]",
-        f"[bold]{np.mean(data['num_components']):.0f}[/bold]",
-        f"[bold]{np.mean(data['largest_component_percentage']):.1f}%[/bold]",
-        f"[bold]{sum(data['is_directed'])}/{len(data['filenames'])}[/bold]",
-        f"[bold]{sum(data['is_weighted'])}/{len(data['filenames'])}[/bold]",
-        style="bold"
-    )
-
-    return table
-
-
-def create_statistics_panel(data):
-    """Create a Rich panel with statistics summary."""
-
-    # Calculate statistics
-    stats_text = Text()
-    stats_text.append("\n")
-    stats_text.append("📊 ", style="bold cyan")
-    stats_text.append("Overall Statistics:\n", style="bold")
-
-    # Nodes stats
-    stats_text.append("  • Nodes: ", style="bold")
-    stats_text.append(f"Min={min(data['num_nodes']):,}, ", style="dim")
-    stats_text.append(f"Max={max(data['num_nodes']):,}, ", style="dim")
-    stats_text.append(f"Avg={np.mean(data['num_nodes']):.0f}\n", style="green")
-
-    # Edges stats
-    stats_text.append("  • Edges: ", style="bold")
-    stats_text.append(f"Min={min(data['num_edges']):,}, ", style="dim")
-    stats_text.append(f"Max={max(data['num_edges']):,}, ", style="dim")
-    stats_text.append(f"Avg={np.mean(data['num_edges']):.0f}\n", style="green")
-
-    # Network properties
-    stats_text.append("  • Density Range: ", style="bold")
-    stats_text.append(f"{min(data['density']):.4f} - {max(data['density']):.4f}\n", style="magenta")
-
-    # Graph types
-    directed_pct = (sum(data['is_directed']) / len(data['filenames'])) * 100
-    weighted_pct = (sum(data['is_weighted']) / len(data['filenames'])) * 100
-
-    stats_text.append("  • Graph Types: ", style="bold")
-    stats_text.append(f"{directed_pct:.1f}% directed, ", style="yellow")
-    stats_text.append(f"{weighted_pct:.1f}% weighted\n", style="yellow")
-
-    return Panel(
-        stats_text,
-        title="[bold]Statistics[/bold]",
-        border_style="cyan",
-        padding=(1, 2)
-    )
+        f"{np.mean(data['num_nodes']):.0f}",
+        f"{np.mean(data['num_edges']):.0f}",
+        f"{np.mean(data['num_isolates']):.0f}",
+        f"{np.mean(data['avg_degree']):.2f}",
+        f"{np.mean(data['density']):.4f}",
+        f"{np.mean(data['avg_clustering']):.3f}",
+        f"{np.mean(data['num_components']):.0f}",
+        f"{np.mean(data['largest_component_percentage']):.1f}%",
+        f"{sum(data['is_directed'])}/{len(data['filenames'])}",
+        f"{sum(data['is_weighted'])}/{len(data['filenames'])}"
+    ]
+    console.print(header_format.format(*avg_row))
+    console.print("=" * 100)
 
 
 def main():
     """Main function."""
-
-    # ASCII art header
-    header = """
-    ╔═══════════════════════════════════════════════════════╗
-    ║      GraphML Metrics Plotter & Analyzer              ║
-    ║         Network Analysis Visualization Tool          ║
-    ╚═══════════════════════════════════════════════════════╝
-    """
-
-    console.print(Panel.fit(header, border_style="cyan"))
+    console.print("\n" + "=" * 60)
+    console.print("GraphML Metrics Plotter")
+    console.print("=" * 60)
 
     # Parse arguments
     args = parse_arguments()
 
     # Validate files
-    console.print("\n[bold cyan]🔍 File Validation:[/bold cyan]")
     valid_files = validate_files(args.files, args.verbose)
     if not valid_files:
         logger.error("Invalid input files. Exiting.")
         sys.exit(1)
 
-    # Process files with progress bar
-    console.print("\n[bold cyan]📂 Processing GraphML Files:[/bold cyan]")
+    if args.verbose:
+        console.print(f"\nProcessing {len(valid_files)} GraphML files:")
 
-    all_metrics = []
+    # Process each file
+    files_data = []
     failed_files = []
 
-    with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-            TextColumn("•"),
-            TextColumn("[cyan]{task.fields[filename]}"),
-            TimeElapsedColumn(),
-            console=console,
-            transient=True,
-    ) as progress:
+    for filepath in valid_files:
+        graph, filename = read_graphml_file(filepath, args.verbose)
 
-        task = progress.add_task(
-            "[cyan]Analyzing networks...",
-            total=len(valid_files),
-            filename=""
-        )
+        if graph is not None:
+            metrics = calculate_metrics(graph)
+            files_data.append((filename, metrics))
+        else:
+            failed_files.append(filepath)
 
-        for filepath in valid_files:
-            filename = os.path.basename(filepath)
-            progress.update(task, filename=filename[:20] + "..." if len(filename) > 20 else filename)
+    if len(failed_files) > 0:
+        console.print(f"\n⚠ Failed to process {len(failed_files)} files:")
+        for f in failed_files:
+            console.print(f"  - {f}")
 
-            graph, filename, error = read_graphml_file(filepath)
-
-            if graph is not None:
-                metrics = calculate_metrics(graph, filename)
-                all_metrics.append(metrics)
-            else:
-                failed_files.append((filepath, error))
-
-            progress.update(task, advance=1)
-
-    if len(all_metrics) < 2:
-        console.print("[red]✗ Error: Need at least 2 successfully processed files for comparison[/red]")
+    if len(files_data) < 2:
+        logger.error("Need at least 2 successfully processed files for comparison")
         sys.exit(1)
 
     # Organize data
-    data = create_metrics_dataframe(all_metrics)
+    data = create_metrics_dataframe(files_data)
 
-    # Display Rich table
-    if not args.no_table:
-        console.print("\n")
-        table = create_rich_metrics_table(data)
-        console.print(table)
-
-        # Display statistics panel
-        stats_panel = create_statistics_panel(data)
-        console.print(stats_panel)
-
-    # Show failed files
-    if failed_files:
-        console.print("\n[bold yellow]⚠ Warning: Failed to process some files:[/bold yellow]")
-        failed_table = Table(show_header=True, header_style="bold red", box=box.SIMPLE)
-        failed_table.add_column("File", style="dim", width=40)
-        failed_table.add_column("Error", style="red")
-
-        for file, error in failed_files:
-            failed_table.add_row(file, error)
-
-        console.print(failed_table)
+    # Print summary
+    print_metrics_summary(data)
 
     # Create and display plot
-    console.print("\n[bold cyan]🎨 Creating Visualization:[/bold cyan]")
+    if args.save_plot or not args.no_show:
+        console.print("\nCreating comparison plot...")
 
-    with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-            TimeElapsedColumn(),
-            console=console,
-            transient=True,
-    ) as progress:
-        task = progress.add_task("[cyan]Generating plots...", total=100)
+        fig = create_comparison_plot(
+            data,
+            output_dir=args.output_dir,
+            save_path=args.save_plot,
+            dpi=args.dpi
+        )
 
-        # Simulate progress for plot creation
-        for i in range(10):
-            progress.update(task, advance=10)
-            import time
-            time.sleep(0.1)
+        if not args.no_show:
+            console.print("\nDisplaying plot. Close the plot window to exit.")
+            plt.show()
+        else:
+            plt.close(fig)  # Close figure if not showing
 
-    fig = create_comparison_plot(
-        data,
-        output_dir=args.output_dir,
-        save_path=args.save_plot,
-        dpi=args.dpi
-    )
+    console.print("\n✓ Analysis completed successfully!")
+    console.print(f"  Processed {len(files_data)} files")
+    console.print(f"  Failed to process {len(failed_files)} files")
 
-    # Show plot by default (unless --no-show is specified)
-    if not args.no_show:
-        console.print("\n[bold cyan]📊 Displaying Plot:[/bold cyan]")
-        console.print("[dim]Close the plot window to continue...[/dim]")
-        plt.show()
-    else:
-        plt.close(fig)
-
-    # Final summary
-    console.print("\n" + "═" * 60)
-
-    summary_panel = Panel.fit(
-        f"""
-[bold]✅ Analysis Complete![/bold]
-
-📁 [cyan]Processed:[/cyan] [green]{len(all_metrics)}[/green] files
-❌ [cyan]Failed:[/cyan] [red]{len(failed_files)}[/red] files
-🎨 [cyan]Plot:[/cyan] {'Saved' if args.save_plot else 'Displayed'}
-
-[dim]Generated at: {time.strftime('%Y-%m-%d %H:%M:%S')}[/dim]
-        """,
-        title="[bold green]Summary[/bold green]",
-        border_style="green",
-        padding=(1, 2)
-    )
-
-    console.print(summary_panel)
-    console.print("═" * 60)
+    if args.save_plot:
+        console.print(f"  Plot saved to: {os.path.join(args.output_dir, args.save_plot)}")
 
 
 if __name__ == "__main__":
-    # Import time for timestamp
-    import time
-
     main()

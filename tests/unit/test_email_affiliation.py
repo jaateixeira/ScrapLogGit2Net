@@ -16,7 +16,7 @@ Run with:
 import networkx as nx
 import pytest
 
-from scrapLog import ProcessingState, apply_email_filtering, extract_affiliation_from_email
+from scraplog.scraplog import ProcessingState, apply_email_filtering, extract_affiliation_from_email
 
 
 @pytest.fixture

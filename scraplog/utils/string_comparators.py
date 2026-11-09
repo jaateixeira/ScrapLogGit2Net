@@ -3,7 +3,7 @@ from difflib import SequenceMatcher
 from itertools import combinations
 from typing import Tuple
 
-from utils.unified_console import console
+from scraplog.utils.unified_console import console
 
 
 def find_similar_strings(strings: set[str], similarity_threshold: float = 0.8) -> set[Tuple[str, str, float]]:

@@ -26,11 +26,11 @@ import networkx as nx
 from typing import Optional, Dict, Any
 
 
-from extract_temporal_network import print_first_n_temporal_edges
+from scraplog.networks.temporal import print_first_n_temporal_edges
 
-from utils.unified_console import  console, Table, inspect,print_info, print_error, print_success
-from core.models import ProcessingState
-from utils.validators import validate_all_graph_edges_have_weights
+from scraplog.utils.unified_console import  console, Table, inspect,print_info, print_error, print_success
+from scraplog.core.models import ProcessingState
+from scraplog.utils.validators import validate_all_graph_edges_have_weights
 
 
 

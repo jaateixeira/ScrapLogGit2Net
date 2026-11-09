@@ -28,7 +28,7 @@ def test_rich_output():
     console.print("Hello, [bold red]Rich[/bold red]!")
 
 # Import the module (renamed to use underscores)
-import transform_nofi_2_nofo_graphml as transform_module
+import scraplog.analysis.transform_nofi_to_nofo as transform_module
 
 
 
@@ -371,8 +371,8 @@ def test_print_graph_edges_and_its_data(capsys, sample_individual_network):
 def test_main_without_show_option(mocker, monkeypatch, sample_individual_network):
     """Test main function without --show option."""
     # Mock dependencies
-    mock_read_graphml = mocker.patch('transform_nofi_2_nofo_graphml.nx.read_graphml')
-    mock_save = mocker.patch('transform_nofi_2_nofo_graphml.save_network')
+    mock_read_graphml = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.nx.read_graphml')
+    mock_save = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.save_network')
 
     # Setup mocks
     mock_read_graphml.return_value = sample_individual_network
@@ -398,7 +398,7 @@ def test_main_without_show_option(mocker, monkeypatch, sample_individual_network
 
 def test_main_file_not_found(mocker, monkeypatch):
     """Test main function with non-existent file."""
-    mock_read_graphml = mocker.patch('transform_nofi_2_nofo_graphml.nx.read_graphml')
+    mock_read_graphml = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.nx.read_graphml')
     mock_read_graphml.side_effect = FileNotFoundError("File not found")
 
     test_args = ["script.py", "nonexistent.graphML"]
@@ -578,17 +578,17 @@ def test_with_digraph():
 def test_verbose_parameter_passed_to_functions(mocker, monkeypatch, sample_individual_network):
     """Test that verbose parameter is correctly passed to functions."""
     # Mock the functions to verify they receive verbose parameter
-    mock_remove_isolates = mocker.patch('transform_nofi_2_nofo_graphml.remove_isolates')
-    mock_create_org = mocker.patch('transform_nofi_2_nofo_graphml.create_organizational_network')
+    mock_remove_isolates = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.remove_isolates')
+    mock_create_org = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.create_organizational_network')
 
     # Setup return values
     mock_remove_isolates.return_value = sample_individual_network
     mock_create_org.return_value = nx.Graph()
 
     # Mock other dependencies
-    mocker.patch('transform_nofi_2_nofo_graphml.nx.read_graphml', return_value=sample_individual_network)
-    mocker.patch('transform_nofi_2_nofo_graphml.save_network')
-    mocker.patch('transform_nofi_2_nofo_graphml.subprocess.call')
+    mocker.patch('scraplog.analysis.transform_nofi_to_nofo.nx.read_graphml', return_value=sample_individual_network)
+    mocker.patch('scraplog.analysis.transform_nofi_to_nofo.save_network')
+    mocker.patch('scraplog.analysis.transform_nofi_to_nofo.subprocess.call')
 
     # Run main with verbose flag
     test_args = ["script.py", "test.graphML", "-v"]
@@ -608,14 +608,14 @@ def test_verbose_parameter_passed_to_functions(mocker, monkeypatch, sample_indiv
 
 def test_non_verbose_parameter_passed_to_functions(mocker, monkeypatch, sample_individual_network):
     """Test that non-verbose mode passes verbose=False to functions."""
-    mock_remove_isolates = mocker.patch('transform_nofi_2_nofo_graphml.remove_isolates')
-    mock_create_org = mocker.patch('transform_nofi_2_nofo_graphml.create_organizational_network')
+    mock_remove_isolates = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.remove_isolates')
+    mock_create_org = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.create_organizational_network')
 
     mock_remove_isolates.return_value = sample_individual_network
     mock_create_org.return_value = nx.Graph()
-    mocker.patch('transform_nofi_2_nofo_graphml.nx.read_graphml', return_value=sample_individual_network)
-    mocker.patch('transform_nofi_2_nofo_graphml.save_network')
-    mocker.patch('transform_nofi_2_nofo_graphml.subprocess.call')
+    mocker.patch('scraplog.analysis.transform_nofi_to_nofo.nx.read_graphml', return_value=sample_individual_network)
+    mocker.patch('scraplog.analysis.transform_nofi_to_nofo.save_network')
+    mocker.patch('scraplog.analysis.transform_nofi_to_nofo.subprocess.call')
 
     test_args = ["script.py", "test.graphML"]  # No -v flag
     monkeypatch.setattr(sys, 'argv', test_args)
@@ -639,7 +639,7 @@ def test_main_integration(mocker, monkeypatch, tmp_path, sample_individual_netwo
     nx.write_graphml_lxml(sample_individual_network, str(input_file))
 
     # Mock subprocess.call to avoid actually running visualization
-    mock_subprocess = mocker.patch('transform_nofi_2_nofo_graphml.subprocess.call')
+    mock_subprocess = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.subprocess.call')
 
     # Mock the visualization script path
     original_path = transform_module.noo_viz_script
@@ -670,9 +670,9 @@ def test_path_escaping(mocker, monkeypatch, tmp_path, sample_individual_network)
     output_file = tmp_path / "test(file).graphML"
 
     # Mock dependencies
-    mock_read_graphml = mocker.patch('transform_nofi_2_nofo_graphml.nx.read_graphml')
-    mock_save = mocker.patch('transform_nofi_2_nofo_graphml.save_network')
-    mock_subprocess = mocker.patch('transform_nofi_2_nofo_graphml.subprocess.call')
+    mock_read_graphml = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.nx.read_graphml')
+    mock_save = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.save_network')
+    mock_subprocess = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.subprocess.call')
 
     mock_read_graphml.return_value = sample_individual_network
     mock_save.return_value = str(output_file)
@@ -698,9 +698,9 @@ def test_path_escaping(mocker, monkeypatch, tmp_path, sample_individual_network)
 def test_missing_visualization_script(mocker, monkeypatch, sample_individual_network):
     """Test handling when visualization script is missing."""
     # Mock dependencies
-    mock_read_graphml = mocker.patch('transform_nofi_2_nofo_graphml.nx.read_graphml')
-    mock_save = mocker.patch('transform_nofi_2_nofo_graphml.save_network')
-    mock_os_path_exists = mocker.patch('transform_nofi_2_nofo_graphml.os.path.exists')
+    mock_read_graphml = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.nx.read_graphml')
+    mock_save = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.save_network')
+    mock_os_path_exists = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.os.path.exists')
 
     mock_read_graphml.return_value = sample_individual_network
     mock_save.return_value = "output.graphML"
@@ -730,7 +730,7 @@ def test_missing_visualization_script(mocker, monkeypatch, sample_individual_net
 def test_save_network_error_handling(mocker, sample_individual_network):
     """Test error handling in save_network function."""
     # Mock nx.write_graphml_lxml to raise an exception
-    mock_write = mocker.patch('transform_nofi_2_nofo_graphml.nx.write_graphml_lxml')
+    mock_write = mocker.patch('scraplog.analysis.transform_nofi_to_nofo.nx.write_graphml_lxml')
     mock_write.side_effect = Exception("Write error")
 
     # This should raise an exception

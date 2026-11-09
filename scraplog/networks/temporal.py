@@ -32,11 +32,11 @@ from networkx_temporal import TemporalGraph, TemporalMultiGraph, utils
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-from core.models import ProcessingState
-from utils.debugging import ask_yes_or_no_question
-from utils.unified_console import print_success, print_header, print_info, print_warning, print_key_action, console, \
+from scraplog.core.models import ProcessingState
+from scraplog.utils.debugging import ask_yes_or_no_question
+from scraplog.utils.unified_console import print_success, print_header, print_info, print_warning, print_key_action, console, \
     print_error, inspect, Table, print_note
-from utils.unified_logger import logger
+from scraplog.utils.unified_logger import logger
 
 
 PlotFormat = Literal["snapshots", "animation", "both", "interactive"]

@@ -15,9 +15,9 @@ import networkx as nx
 from networkx import Graph
 from typing import Optional
 
-from core.models import ProcessingState
+from scraplog.core.models import ProcessingState
 
-from utils.unified_console import console, Table, inspect, print_info, print_error, print_success, print_warning
+from scraplog.utils.unified_console import console, Table, inspect, print_info, print_error, print_success, print_warning
 
 
 def extract_unweighted_from_parsed_change_log_entries(state:ProcessingState) -> Graph | None:

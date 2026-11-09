@@ -24,14 +24,14 @@ from typing import Optional
 import networkx as nx
 
 
-from utils.unified_console import (
+from scraplog.utils.unified_console import (
     console,
     rprint,
     Table,
     track
 )
 
-from utils.unified_logger import logger
+from scraplog.utils.unified_logger import logger
 
 
 def print_graph_as_dict_of_dicts(graph: nx.Graph) -> None:

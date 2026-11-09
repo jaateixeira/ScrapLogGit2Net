@@ -7,7 +7,7 @@ from loguru import logger
 from rich import print as rprint
 from rich.logging import RichHandler
 from rich import inspect
-from utils.unified_console import console
+from scraplog.utils.unified_console import console
 
 # Remove the default logger
 logger.remove()

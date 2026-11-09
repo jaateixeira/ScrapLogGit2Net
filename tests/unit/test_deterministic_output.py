@@ -18,8 +18,8 @@ from pathlib import Path
 
 import networkx as nx
 
-import export_log_data
-from scrapLog import normalize_zip_timestamps
+from scraplog.export import log_data as export_log_data
+from scraplog.scraplog import normalize_zip_timestamps
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -84,8 +84,8 @@ def test_normalize_zip_timestamps(tmp_path):
 
 TEMPORAL_EDGES_SCRIPT = """
 import json
-from core.models import ProcessingState
-from extract_temporal_network import extract_temporal_network_from_parsed_change_log_entries
+from scraplog.core.models import ProcessingState
+from scraplog.networks.temporal import extract_temporal_network_from_parsed_change_log_entries
 
 # 12 developers committing to overlapping files, so files gather several
 # earlier contributors (a single shared file is not enough to expose the bug)

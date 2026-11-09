@@ -4,7 +4,7 @@ import sys
 import os
 
 
-from utils.validators import validate_git_name, validate_git_email, validate_git_time
+from scraplog.utils.validators import validate_git_name, validate_git_email, validate_git_time
 
 
 # --- Name Validation Tests ---

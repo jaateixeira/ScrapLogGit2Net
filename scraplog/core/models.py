@@ -6,13 +6,13 @@ import networkx as nx
 import networkx_temporal as tx
 
 """ Import the more simple str based types"""
-from core.types import Email, Affiliation, Filename, Timestamp
+from scraplog.core.types import Email, Affiliation, Filename, Timestamp
 
 """ Import more complex types """
-from core.types import  ChangeLogEntry # tuple[DeveloperInfo, list[Filename],Timestamp]
-from core.types import EmailAggregationConfig # dict[str, str]
-from core.types import ConnectionWithFile # tuple[Connection, Filename, Timestamp]
-from core.types import Connection # tuple[Email, Email, Timestamp]
+from scraplog.core.types import  ChangeLogEntry # tuple[DeveloperInfo, list[Filename],Timestamp]
+from scraplog.core.types import EmailAggregationConfig # dict[str, str]
+from scraplog.core.types import ConnectionWithFile # tuple[Connection, Filename, Timestamp]
+from scraplog.core.types import Connection # tuple[Email, Email, Timestamp]
 
 
 @dataclass

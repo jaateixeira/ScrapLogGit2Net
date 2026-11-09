@@ -17,8 +17,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-from utils.unified_logger import logger
-from utils.unified_console import (console,
+from scraplog.utils.unified_logger import logger
+from scraplog.utils.unified_console import (console,
                                    inspect,
                                    print_info,
                                    print_warning,

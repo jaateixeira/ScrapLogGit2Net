@@ -22,8 +22,8 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from core.models import ProcessingState
-from extract_temporal_network import extract_temporal_network_from_parsed_change_log_entries
+from scraplog.core.models import ProcessingState
+from scraplog.networks.temporal import extract_temporal_network_from_parsed_change_log_entries
 
 
 # =============================================================================

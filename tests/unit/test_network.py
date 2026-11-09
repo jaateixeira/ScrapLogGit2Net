@@ -17,7 +17,7 @@ from collections import defaultdict
 
 import pytest
 
-from scrapLog import (
+from scraplog.scraplog import (
     ProcessingState,
     aggregate_files_and_contributors,
     extract_contributor_connections,

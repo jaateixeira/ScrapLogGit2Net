@@ -42,14 +42,14 @@ from typing import List, Optional
 import networkx_temporal as tx
 
 # Import your actual types
-from core.types import (
+from scraplog.core.types import (
     Email, Affiliation, Filename, Timestamp,
     ChangeLogEntry, DeveloperInfo, Connection, ConnectionWithFile,
 )
 
-from core.models import ProcessingState, ProcessingStatistics
+from scraplog.core.models import ProcessingState, ProcessingStatistics
 
-from extract_temporal_network import extract_temporal_network_from_parsed_change_log_entries
+from scraplog.networks.temporal import extract_temporal_network_from_parsed_change_log_entries
 
 
 # Test 1: Empty input returns None

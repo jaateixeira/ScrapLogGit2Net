@@ -13,10 +13,10 @@ from dataclasses import dataclass
 import networkx as nx
 import xlwt
 
-from utils.unified_logger import logger
-from utils.unified_console import console
-from utils.unified_console import Table
-from utils.unified_console import Progress
+from scraplog.utils.unified_logger import logger
+from scraplog.utils.unified_console import console
+from scraplog.utils.unified_console import Table
+from scraplog.utils.unified_console import Progress
 
 
 from rich.progress import SpinnerColumn, TextColumn

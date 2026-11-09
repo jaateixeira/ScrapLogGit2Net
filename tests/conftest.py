@@ -10,7 +10,6 @@ import networkx as nx
 # Add the project root to sys.path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, 'utils'))
 
 
 print ("running conftest.py")
@@ -116,7 +115,7 @@ def mock_visualization_script():
 @pytest.fixture
 def processing_state():
     """Create a processing state with email aggregation config."""
-    from core.models import ProcessingState
+    from scraplog.core.models import ProcessingState
 
     state = ProcessingState()
 

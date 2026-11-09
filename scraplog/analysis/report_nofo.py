@@ -14,9 +14,9 @@ import networkx as nx
 import xlwt
 from rich.panel import Panel
 
-from utils.unified_logger import logger
-from utils.unified_console import console, traceback
-from utils.unified_console import Table
+from scraplog.utils.unified_logger import logger
+from scraplog.utils.unified_console import console, traceback
+from scraplog.utils.unified_console import Table
 
 
 

@@ -11,7 +11,7 @@ from pathlib import Path
 import networkx as nx
 
 # Import the module under test
-from nofo_graphml_network_visualizer import NetworkConfig, NetworkVisualizer, parse_arguments
+from scraplog.viz.nofo_visualizer import NetworkConfig, NetworkVisualizer, parse_arguments
 
 
 # ============================================================================

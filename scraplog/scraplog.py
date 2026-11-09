@@ -23,23 +23,23 @@ from typing import List, Optional, Set, Tuple
 import networkx as nx
 import networkx_temporal as tx
 
-import export_log_data
+from scraplog.export import log_data as export_log_data
 
-from extract_temporal_network import extract_temporal_network_from_parsed_change_log_entries, \
+from scraplog.networks.temporal import extract_temporal_network_from_parsed_change_log_entries, \
     extract_coauthorship_temporal_network_from_parsed_change_log_entries
-from extract_unweighted_network import extract_unweighted_from_weighted_network
+from scraplog.networks.unweighted import extract_unweighted_from_weighted_network
 
-from core.models import ProcessingState, TimeStampedFileContribution
-from core.types import Filename, EmailAggregationConfig, Email, DeveloperInfo, ChangeLogEntry, ConnectionWithFile, \
+from scraplog.core.models import ProcessingState, TimeStampedFileContribution
+from scraplog.core.types import Filename, EmailAggregationConfig, Email, DeveloperInfo, ChangeLogEntry, ConnectionWithFile, \
     Connection
-from extract_weighted_network import extract_weighted_from_extracted_temporal_network, show_weighted_edges
-from utils.debugging import handle_step_completion, ask_yes_or_no_question
-from utils.string_comparators import find_similar_strings
-from utils.strings_cleaners import clean_email
-from utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
+from scraplog.networks.weighted import extract_weighted_from_extracted_temporal_network, show_weighted_edges
+from scraplog.utils.debugging import handle_step_completion, ask_yes_or_no_question
+from scraplog.utils.string_comparators import find_similar_strings
+from scraplog.utils.strings_cleaners import clean_email
+from scraplog.utils.unified_console import (console, traceback, Table, inspect, print_info, print_tip, print_warning,
                                    print_error, print_success, print_fatal_error)
-from utils.unified_logger import logger
-from utils.validators import AffiliationValidationError
+from scraplog.utils.unified_logger import logger
+from scraplog.utils.validators import AffiliationValidationError
 
 
 def print_exit_info(start_time: float) -> None:

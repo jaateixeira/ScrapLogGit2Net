@@ -11,16 +11,16 @@ from datetime import *
 from pathlib import Path
 
 import networkx as nx
-import export_graphml_format
+from scraplog.export import graphml_format as export_graphml_format
 
-from utils.unified_console import console
-from utils.unified_console import print_fatal_error , print_warning , print_error, print_success, print_info
+from scraplog.utils.unified_console import console
+from scraplog.utils.unified_console import print_fatal_error , print_warning , print_error, print_success, print_info
 from rich import inspect
 
-from utils.validators import validate_all_graph_nodes_have_affiliation_attributes, AffiliationValidationError
+from scraplog.utils.validators import validate_all_graph_nodes_have_affiliation_attributes, AffiliationValidationError
 
 from typing import Dict
-from core.types import Email, Affiliation
+from scraplog.core.types import Email, Affiliation
 
 # Replace '@' and '.' by "AT" and "DOT"
 def clearDotsAndAts(contribEmail):

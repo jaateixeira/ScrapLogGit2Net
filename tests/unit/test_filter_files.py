@@ -12,7 +12,7 @@ Run with:
 
 import pytest
 
-from scrapLog import (
+from scraplog.scraplog import (
     ProcessingState,
     extract_files_from_block,
     is_filtered_file,

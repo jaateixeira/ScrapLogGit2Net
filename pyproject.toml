@@ -32,37 +32,26 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-mock"]
-# Only for the lines-of-code network (extract_weighted_LOC_temporal_network.py)
+# Only for the lines-of-code network (scraplog/networks/weighted_loc_temporal.py)
 loc = ["pydriller>=2.5"]
 
-# Console commands. Scripts with hyphens in their file names can't be imported,
-# so they get commands once they are renamed (reorganization step 3).
+# Console commands. The top-level *.py files with the same names are thin
+# wrappers kept so that ./scrapLog.py etc. keep working without installing.
 [project.scripts]
-scrapLog = "scrapLog:main"
-transform-nofi-2-nofo = "transform_nofi_2_nofo_graphml:main"
-deanonymize-github-users = "deanonymize_github_users:main"
-nofi-graphml-network-visualizer = "nofi_graphml_network_visualizer:main"
-nofo-graphml-network-visualizer = "nofo_graphml_network_visualizer:main"
-scrap-repo-repositories-logs = "scrap_repo_repositories_logs:main"
-solo-contributors = "solo_contributors:main"
+scrapLog = "scraplog.scraplog:main"
+transform-nofi-2-nofo = "scraplog.analysis.transform_nofi_to_nofo:main"
+report-nofi = "scraplog.analysis.report_nofi:main"
+report-nofo = "scraplog.analysis.report_nofo:main"
+compare-nofi-sets = "scraplog.analysis.compare_nofi_sets:main"
+compare-nofi-metrics = "scraplog.analysis.compare_nofi_metrics:main"
+solo-contributors = "scraplog.analysis.solo_contributors:main"
+nofi-graphml-network-visualizer = "scraplog.viz.nofi_visualizer:main"
+nofo-graphml-network-visualizer = "scraplog.viz.nofo_visualizer:main"
+deanonymize-github-users = "scraplog.tools.deanonymize_github_users:main"
+scrap-repo-repositories-logs = "scraplog.tools.scrap_repo_logs:main"
 
-[tool.setuptools]
-packages = ["core", "utils"]
-py-modules = [
-    "scrapLog",
-    "deanonymize_github_users",
-    "export_graphml_format",
-    "export_log_data",
-    "extract_temporal_network",
-    "extract_unweighted_network",
-    "extract_weighted_LOC_temporal_network",
-    "extract_weighted_network",
-    "nofi_graphml_network_visualizer",
-    "nofo_graphml_network_visualizer",
-    "scrap_repo_repositories_logs",
-    "solo_contributors",
-    "transform_nofi_2_nofo_graphml",
-]
+[tool.setuptools.packages.find]
+include = ["scraplog*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
