@@ -10,6 +10,8 @@ A toolset for mining and visualizing [Git](https://git-scm.com/) repositories wi
 [![GitHub issues](https://img.shields.io/github/issues-raw/jaateixeira/ScrapLogGit2Net?style=flat-square)](https://github.com/jaateixeira/ScrapLogGit2Net/issues)
 [![Python](https://img.shields.io/badge/python-3.12+-blue?style=flat-square)](https://www.python.org/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/jaateixeira/ScrapLogGit2Net?style=social)](https://github.com/jaateixeira/ScrapLogGit2Net/stargazers)
+[![Unit tests](https://github.com/jaateixeira/ScrapLogGit2Net/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/jaateixeira/ScrapLogGit2Net/actions/workflows/unit-tests.yml)
+[![Acceptance tests](https://github.com/jaateixeira/ScrapLogGit2Net/actions/workflows/acceptance-tests.yml/badge.svg)](https://github.com/jaateixeira/ScrapLogGit2Net/actions/workflows/acceptance-tests.yml)
 
 [![CLI Tool](https://img.shields.io/badge/interface-CLI-black?style=flat-square&logo=gnu-bash)]()  
 [![MSR](https://img.shields.io/badge/field-Mining%20Software%20Repositories-8A2BE2?style=flat-square)]()  
@@ -51,17 +53,72 @@ For more information, see the publication and related website:
 - Website [http://users.abo.fi/jteixeir/OpenStackSNA/](http://users.abo.fi/jteixeir/OpenStackSNA/) with the obtained social networks and visualizations included [in publications by the author on the OpenStack software ecosystem](http://www.jteixeira.eu/#pub).
 - Website [http://users.abo.fi/jteixeir/TensorFlowSNA/](http://users.abo.fi/jteixeir/TensorFlowSNA/) with the obtained social networks and visualizations for the TensorFlow open and cooperative project. See [https://aisel.aisnet.org/ecis2025/gov_platform/gov_platform/1/](https://aisel.aisnet.org/ecis2025/gov_platform/gov_platform/1/) for most recent publication. 
 
-# Problem statement
-Hard to figure out who works with whom in complex software projects.
+# Overview
+- **Problem:** it is hard to figure out who works with whom in complex software projects.
+- **Input:** a Git repository and its commit log.
+- **Output:** social networks that capture who codes with whom in a repository (note that a software project can have multiple repositories): networks of developers, or of the organizations they work for, saved as GraphML files.
+- **Vision:** a world where software co-production analytics put social network visualizations at the side of standard quantitative statistical data. All towards the improved management and engineering of complex software projects orchestrated on Git.
 
-# Vision
-A world where software co-production analytics put social network visualizations at the side of standard quantitative statistical data. All towards the improved management and engineering of complex software projects orchestrated on Git.
+# Installation
 
-# **scrapLog.py** Input
-A Git repository and its commit logs.
+ScrapLogGit2Net needs **Python 3.12 or newer** and **Git**. The recommended way to install it is inside a Python virtual environment, so its dependencies do not interfere with other Python projects on your computer.
 
-# **scrapLog.py** Output
-Social networks that capture who codes with whom in a repository (note that a software project can have multiple repositories).
+## 1. Get the code
+```
+git clone https://github.com/jaateixeira/ScrapLogGit2Net.git
+cd ScrapLogGit2Net
+```
+
+## 2. Create and activate a virtual environment
+
+Linux and macOS:
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Windows (PowerShell):
+```
+py -3 -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+(In Windows Command Prompt, use `.venv\Scripts\activate.bat` instead.)
+
+Once activated, your prompt starts with `(.venv)`. Run `deactivate` to leave the environment.
+
+## 3. Install ScrapLogGit2Net
+```
+python -m pip install --upgrade pip
+python -m pip install -e .
+```
+This installs the dependencies and the command-line tools: `scrapLog`, `transform-nofi-2-nofo`, `nofo-graphml-network-visualizer` and the others listed in [Executable tools/scripts](#executable-toolsscripts). The scripts in the repository root (e.g. `./scrapLog.py`) keep working as before. To run the tests or contribute, also install the test dependencies: `python -m pip install -e ".[test]"`.
+
+## 4. Check the installation
+```
+scrapLog --help
+```
+If you see the list of options, the installation worked. To run the tests, use `python -m pytest` (unit tests, needs the test dependencies) and `bash tests/acceptance-test-scripts/testScrapLog.sh` (Linux, macOS, or Windows with WSL/Git Bash). Both also run on GitHub for every push and pull request.
+
+Next time, you only need to activate the environment again (step 2, second command) before running `scrapLog`.
+
+## Troubleshooting
+- **`ModuleNotFoundError: No module named 'tkinter'` when importing `networkx_temporal`.** Some `networkx-temporal` 1.4.x releases import `turtle`, which needs Tk. Either install Tk (Debian/Ubuntu: `sudo apt install python3-tk`; Fedora: `sudo dnf install python3-tkinter`; the python.org installers for macOS and Windows already include it) or stay on the 1.3.x series, which ScrapLogGit2Net selects by default.
+- **`python3 -m venv` fails on Debian/Ubuntu.** Install the venv module with `sudo apt install python3-venv`.
+- **Missing system packages on Linux.** See the file `dependencies.sh`.
+
+# Quick start
+Once installed, try ScrapLogGit2Net on the TensorFlow git log that comes with the repository (January to March 2024):
+```
+scrapLog -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN
+transform-nofi-2-nofo tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML
+nofo-graphml-network-visualizer tensorFlowGitLog-first-trimester-2024.NetworkFile-transformed-to-nofo.graphML
+```
+1. `scrapLog` builds the network of developers who co-edited the same files: `tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML` (256 developers, 3,363 ties).
+2. `transform-nofi-2-nofo` turns it into a weighted network of the organizations they work for: `tensorFlowGitLog-first-trimester-2024.NetworkFile-transformed-to-nofo.graphML`.
+3. `nofo-graphml-network-visualizer` draws that network: `tensorFlowGitLog-first-trimester-2024.NetworkFile-transformed-to-nofo-spring-all.png` (and `.pdf`).
+
+To analyse your own project, see [How to use scrapLog.py](#how-to-use-scraplogpy).
+
 
 
 # How **scrapLog.py** works
@@ -458,52 +515,6 @@ for z in /path/to/download/Teixeira_et_al_2025-*.zip; do unzip -n "$z"; done
 ```
 
 The research data folders are listed in `.gitignore`, so restored files are not committed again. The scripts in `project-specific-analysis/AGL/` need the AGL data from the git history.
-
-# Installation
-
-ScrapLogGit2Net needs **Python 3.12 or newer** and **Git**. The recommended way to install it is inside a Python virtual environment, so its dependencies do not interfere with other Python projects on your computer.
-
-## 1. Get the code
-```
-git clone https://github.com/jaateixeira/ScrapLogGit2Net.git
-cd ScrapLogGit2Net
-```
-
-## 2. Create and activate a virtual environment
-
-Linux and macOS:
-```
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-Windows (PowerShell):
-```
-py -3 -m venv .venv
-.venv\Scripts\Activate.ps1
-```
-(In Windows Command Prompt, use `.venv\Scripts\activate.bat` instead.)
-
-Once activated, your prompt starts with `(.venv)`. Run `deactivate` to leave the environment.
-
-## 3. Install the dependencies
-```
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-## 4. Check the installation
-```
-python scrapLog.py --help
-```
-If you see the list of options, the installation worked. You can also run the test cases with the bash script `testScrapLog.sh` (Linux, macOS, or Windows with WSL/Git Bash). If those cases run well, i.e., you get green color, you installed ScrapLogGit2Net successfully.
-
-Next time, you only need to activate the environment again (step 2, second command) before running `scrapLog.py`.
-
-## Troubleshooting
-- **`ModuleNotFoundError: No module named 'tkinter'` when importing `networkx_temporal`.** Some `networkx-temporal` 1.4.x releases import `turtle`, which needs Tk. Either install Tk (Debian/Ubuntu: `sudo apt install python3-tk`; Fedora: `sudo dnf install python3-tkinter`; the python.org installers for macOS and Windows already include it) or stay on the 1.3.x series, which `requirements.txt` selects by default.
-- **`python3 -m venv` fails on Debian/Ubuntu.** Install the venv module with `sudo apt install python3-venv`.
-- **Missing system packages on Linux.** See the file `dependencies.sh`.
 
 # Contributing
 Please create a new branch for any new feature. Branch or fork, code, test, then pull request. See  [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for our contribuition guide. Please refer also to [the GitHub guide on how to contribute to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
