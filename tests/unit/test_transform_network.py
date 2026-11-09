@@ -411,17 +411,25 @@ def test_main_file_not_found(mocker, monkeypatch):
     assert exc_info.value.code == 1
 
 
-def test_main_keyboard_interrupt(mocker, monkeypatch):
-    """Test handling of keyboard interrupt."""
-    test_args = ["script.py", "test.graphML"]
+def test_main_keyboard_interrupt(mocker, monkeypatch, tmp_path):
+    """Ctrl-C while running the script exits with code 1.
 
-    monkeypatch.setattr(sys, 'argv', test_args)
+    The KeyboardInterrupt handler is in the module's __main__ block, so run the
+    module as __main__ (as ./transform_nofi_2_nofo_graphml.py does). Mocking
+    main() itself and calling it would let the KeyboardInterrupt escape and
+    stop the whole pytest session.
+    """
+    import runpy
 
-    # Mock main to raise KeyboardInterrupt
-    mocker.patch.object(transform_module, 'main', side_effect=KeyboardInterrupt)
+    input_file = tmp_path / "test.graphML"
+    input_file.write_text("<graphml/>")
+    monkeypatch.setattr(sys, 'argv', ["script.py", str(input_file)])
+
+    # Interrupt while the network is being loaded
+    mocker.patch('networkx.read_graphml', side_effect=KeyboardInterrupt)
 
     with pytest.raises(SystemExit) as exc_info:
-        transform_module.main()
+        runpy.run_module("scraplog.analysis.transform_nofi_to_nofo", run_name="__main__")
 
     assert exc_info.value.code == 1
 
