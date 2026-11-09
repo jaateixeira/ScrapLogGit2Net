@@ -1,0 +1,45 @@
+name: Unit tests
+
+# Runs the pytest unit tests on every pull request into main and on every push
+# to main. To block merges until they pass, enable branch protection for main
+# (Settings -> Branches) and require the "Unit tests (pytest)" check.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    name: Unit tests (pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      MPLBACKEND: Agg   # no display on the runner
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        # The code uses Python 3.12 f-string syntax (scraplog/export/log_data.py)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install scraplog with test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      # -rs lists why tests were skipped (planned temporal features, design question 8)
+      - name: Run unit tests
+        run: python -m pytest -rs
