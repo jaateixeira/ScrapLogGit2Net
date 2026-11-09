@@ -2,9 +2,6 @@
 apt-get install python3-networkx
 apt-get install python3-matplotlib
 
-# For time-stamping 
-apt-get install python3-dateutil
-
 # For coloring nodes 
 apt-get install python3-colorama
 
@@ -29,9 +26,6 @@ pip3 install PyGithub
 sudo apt-get install texlive-latex-recommended texlive-extra-utils texlive-latex-extra
 pip3 install pdfCropMargins --user --upgrade --only-binary pymupdf
 sudo apt install python3-pytest
-sudo apt-get install python3-email-validator
-pip3 install email_validator
-pip3 install python_dateutil
 sudo apt-get install python3-github
 sudo apt-get install python3-json5
 sudo apt-get install python3-pytest-mock

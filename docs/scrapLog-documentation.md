@@ -255,22 +255,20 @@ Most Linux distributions run ScrapLogGit2Net out of the box. See the file depend
 ## Mac
 1. Download a Python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/).
 2. Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
-  1. pip3 install dateutils
-  2. pip3 install networkx
-  3. pip3 install colorama
-  4. pip3 install numpy
-  5. pip3 install matplotlib
-  6. pip3 install scipy
+  1. pip3 install networkx
+  2. pip3 install colorama
+  3. pip3 install numpy
+  4. pip3 install matplotlib
+  5. pip3 install scipy
   
 ## Windows
 1. Download a Python development environment such as [PyCharm](https://www.jetbrains.com/pycharm/).
 2. Install the necessary packages using pip3 on the console (either on Mac terminal or inside your dev. env. like PyCharm).
-  1. pip3 install dateutils
-  2. pip3 install networkx
-  3. pip3 install colorama
-  4. pip3 install numpy
-  5. pip3 install matplotlib
-  6. pip3 install scipy
+  1. pip3 install networkx
+  2. pip3 install colorama
+  3. pip3 install numpy
+  4. pip3 install matplotlib
+  5. pip3 install scipy
 
 Across platforms, you can run test cases by invoking the bash script testScrapLog.sh available in the repository. If those cases run well, i.e., you get green color, you installed ScrapLogGit2Net successfully.
 
