@@ -1,4 +1,4 @@
-# ScrapLogGit2Net runtime dependencies (Python 3.10+)
+# ScrapLogGit2Net runtime dependencies (Python 3.12+)
 # Install with:  pip install -r requirements.txt
 
 # Core: graph model and GraphML export

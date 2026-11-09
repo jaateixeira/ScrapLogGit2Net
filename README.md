@@ -8,7 +8,7 @@ A toolset for mining and visualizing [Git](https://git-scm.com/) repositories wi
 ![GitHub Contributors](https://img.shields.io/github/contributors/jaateixeira/ScrapLogGit2Net?style=flat-square&color=green)
 [![GitHub last commit](https://img.shields.io/github/last-commit/jaateixeira/ScrapLogGit2Net?style=flat-square)](https://github.com/jaateixeira/ScrapLogGit2Net/commits/main)
 [![GitHub issues](https://img.shields.io/github/issues-raw/jaateixeira/ScrapLogGit2Net?style=flat-square)](https://github.com/jaateixeira/ScrapLogGit2Net/issues)
-[![Python](https://img.shields.io/badge/python-3.10+-blue?style=flat-square)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/python-3.12+-blue?style=flat-square)](https://www.python.org/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/jaateixeira/ScrapLogGit2Net?style=social)](https://github.com/jaateixeira/ScrapLogGit2Net/stargazers)
 
 [![CLI Tool](https://img.shields.io/badge/interface-CLI-black?style=flat-square&logo=gnu-bash)]()  
@@ -386,7 +386,7 @@ Commits that only touch ignored files are skipped. If the filter file is missing
 
 # Installation
 
-ScrapLogGit2Net needs **Python 3.10 or newer** and **Git**. The recommended way to install it is inside a Python virtual environment, so its dependencies do not interfere with other Python projects on your computer.
+ScrapLogGit2Net needs **Python 3.12 or newer** and **Git**. The recommended way to install it is inside a Python virtual environment, so its dependencies do not interfere with other Python projects on your computer.
 
 ## 1. Get the code
 ```

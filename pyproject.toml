@@ -9,8 +9,8 @@ description = "Transform Git logs into collaboration networks"
 authors = [{name = "Jose Teixeira"}]
 readme = "README.md"
 license = {file = "LICENSE"}
-# The code uses PEP 604 unions (str | None), so 3.10 is the minimum
-requires-python = ">=3.10"
+# The code uses Python 3.12 f-string syntax (PEP 701, scraplog/export/log_data.py)
+requires-python = ">=3.12"
 
 # Keep in sync with requirements.txt
 dependencies = [

@@ -43,7 +43,7 @@ This file is for any coding agent or LLM (Mistral, DeepSeek, Gemma, Qwen, Llama,
 - Run: `./scrapLog.py -r <name>.IN [-t <network type>] [-o <out>.graphML]`
 
 ## Conventions
-- Python 3.10+, type hints, small pure functions; I/O at the edges.
+- Python 3.12+, type hints, small pure functions; I/O at the edges.
 - pandas/networkx for graphs. Export GraphML and edge-list CSV (source, target, weight, first_ts, last_ts).
 - Large repos: stream the git log; do not load it all into memory.
 - Never commit data dumps, tokens, or cloned repos. Keep them in `.gitignore`.
