@@ -322,6 +322,17 @@ def test_process_commit_block_exceptional_header(header, email, affiliation):
     assert state.statistics.n_skipped_blocks == 0
 
 
+# Test 16c: an unparseable header is counted as one skipped block (regression)
+def test_process_commit_block_unparseable_header_counted_once():
+    """It used to be counted twice: once explicitly, once by the exception handler."""
+    state = ProcessingState()
+
+    assert process_commit_block(["==John Doe;;Thu Feb 20 03:56:00 2014 +0000==", "file.txt"], state, 0) is False
+
+    assert state.statistics.n_skipped_blocks == 1
+    assert state.parsed_change_log_entries == []
+
+
 # Test 17: extract_files_from_block - basic
 def test_extract_files_from_block_basic():
     """Test basic file extraction from block."""

@@ -412,7 +412,7 @@ def process_commit_block(
             print_warning(f"Could not parse commit header: {first_line[:50]}...")
             print_error(f"Could not get developer information from commit block {first_line}")
             state.statistics.increment_skipped_blocks()
-            # sys.exit(1)
+            return False
 
         commit_time, dev_name, dev_email, dev_affiliation = time_dev_info
 
