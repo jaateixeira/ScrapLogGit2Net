@@ -203,13 +203,13 @@ All types share the same basic model:
 
 The types differ in how much information they keep about *how much* and *when* developers co-edited files:
 
-| Network type (`-t`) | Edges | Output file (default name) | Status |
-|---|---|---|---|
-| `inter_individual_graph_unweighted` (default) | Tie present or absent | `<input>.NetworkFile.graphML` | Available |
-| `inter_individual_graph_weighted` | Tie with a `weight` attribute | `<input>.WeightedNetwork.graphML` | Available |
-| `inter_individual_graph_temporal` | Time-stamped ties (who, with whom, when) | `<input>.temporal.graphml.zip` | Available |
-| `inter_individual_weighted_LOC_temporal` | Weighted by lines of code, over time | - | Listed in `--help`, not exported yet |
-| `inter_individual_graph_weighted_SUM_LOC` | Weighted by the sum of lines of code | - | Listed in `--help`, not exported yet |
+| Network type (`-t`) | Edges | Output file (default name) |
+|---|---|---|
+| `inter_individual_graph_unweighted` (default) | Tie present or absent | `<input>.NetworkFile.graphML` |
+| `inter_individual_graph_weighted` | Tie with a `weight` attribute | `<input>.WeightedNetwork.graphML` |
+| `inter_individual_graph_temporal` | Time-stamped ties (who, with whom, when) | `<input>.temporal.graphml.zip` |
+| `inter_individual_weighted_LOC_temporal` | Weighted by lines of code, over time | - |
+| `inter_individual_graph_weighted_SUM_LOC` | Weighted by the sum of lines of code | - |
 
 Here `<input>` is the name of the raw changelog file given with `-r`, without its last extension (e.g., `tensorFlowGitLog-first-trimester-2024.IN` gives `tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML`). Use `-o` / `--output-file` to choose another file name.
 
@@ -505,16 +505,6 @@ The data behind Teixeira, J. (2026). *Lessons Learned from a Governance Transiti
 The data behind Teixeira, J., Ahmed, S. S., & Vuori, N. (2026). *Exploring the Roles of Non-Commercial Organizations in Open and Coopetitive Ecosystems: The Case of TensorFlow*. ICIS 2026 is archived on Zenodo: **https://doi.org/10.5281/zenodo.22282883**
 
 
-To keep the repository small, `test-data/` now only holds the small inputs used by the tests. Other research data that used to be stored here (Home Assistant Core, Koha, FOLIO, Robot Framework, Automotive Grade Linux, and other TensorFlow analyses) is no longer part of the repository; it remains available in its git history (before November 2026).
-
-To get the TensorFlow dataset back into a checkout, download the zip files from Zenodo and unzip them in the repository root; paths inside the zip files match the repository layout:
-
-```
-for z in /path/to/download/Teixeira_et_al_2025-*.zip; do unzip -n "$z"; done
-```
-
-The research data folders are listed in `.gitignore`, so restored files are not committed again. The scripts in `project-specific-analysis/AGL/` need the AGL data from the git history.
-
 # How to cite
 If you use ScrapLogGit2Net in your research, please cite the software. GitHub's "Cite this repository" button (from `CITATION.cff`) gives the reference in APA and BibTeX formats.
 
@@ -537,7 +527,9 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   ```
   They need `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`.
 
-Both run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
+As of November 2026 there are 218 unit tests in 16 files (212 run, 6 are skipped because they describe planned features) and 21 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh` and 5 in `test_extension_filtering.sh`. A fourth script, `test-nofi-2-nofo-transformer.sh` (3 cases), is not run automatically while the GraphML schema it validates against (graphml.graphdrawing.org) is offline.
+
+Both the unit tests and the three acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 
 # Contributing
 Please create a new branch for any new feature. Branch or fork, code, test, then pull request. See  [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for our contribution guide. Please refer also to [the GitHub guide on how to contribute to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
@@ -548,7 +540,9 @@ Jose Teixeira, currently the only maintainer, will review and merge pull request
 
 # Contributors
 - Jose Teixeira
-- Syed Ahmed 
+- Syed Ahmed
+- Claude (Anthropic), AI coding assistant
+- DeepSeek, AI coding assistant
 
 # Acknowledgments
 Åbo Akademi Library for financing a Master student during the summer of 2024 to contribute to the project as an open-science initiative. 
