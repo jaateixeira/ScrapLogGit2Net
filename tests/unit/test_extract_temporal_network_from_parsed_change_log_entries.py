@@ -63,7 +63,7 @@ def test_empty_entries_returns_none():
     state.parsed_change_log_entries = []
     state.verbose_mode = False
     state.very_verbose_mode = True
-    state.debug_mode = True
+    state.debug_mode = False  # debug mode asks interactive yes/no questions
 
     # Act
     result = extract_temporal_network_from_parsed_change_log_entries(state)
@@ -98,7 +98,7 @@ def test_single_developer_no_edges():
     state.parsed_change_log_entries = [entry, entry]  # Two edits by same developer
     state.verbose_mode = False
     state.very_verbose_mode = True
-    state.debug_mode = True
+    state.debug_mode = False  # debug mode asks interactive yes/no questions
 
     # Act with default window resolution
     result = extract_temporal_network_from_parsed_change_log_entries(

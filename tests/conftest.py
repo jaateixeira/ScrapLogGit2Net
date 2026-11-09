@@ -116,10 +116,9 @@ def mock_visualization_script():
 @pytest.fixture
 def processing_state():
     """Create a processing state with email aggregation config."""
-    state = SimpleNamespace()
-    state.verbose_mode = False
-    state.email_filtering_mode = False
-    state.emails_to_filter = set()
+    from core.models import ProcessingState
+
+    state = ProcessingState()
 
     # Set up email aggregation config
     state.email_aggregation_config = {

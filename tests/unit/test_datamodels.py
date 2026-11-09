@@ -1,5 +1,4 @@
 import pytest
-from pytest_mock import mocker
 
 from pathlib import Path
 from datetime import datetime
@@ -32,7 +31,7 @@ def sample_commit_block(valid_commit_data):
 def test_gitemail_validation_called(mocker):
     """Test utils validator is properly called."""
     # Arrange
-    mock_validate = mocker.patch('utils.validators.validate_git_email')
+    mock_validate = mocker.patch('datamodels.validate_git_email')
     mock_validate.return_value = (True, "")
 
     # Act
@@ -44,7 +43,7 @@ def test_gitemail_validation_called(mocker):
 
 def test_gitemail_invalid_email_raises():
     """Test invalid emails raise ValueError."""
-    with pytest.raises(ValueError, match="Invalid git email"):
+    with pytest.raises(ValueError, match="Email must contain @"):
         GitEmail("invalid-email")
 
 
@@ -69,7 +68,7 @@ def test_gitemail_hash():
 # GitName TESTS ---------------------------------------------------------------
 def test_gitname_validation_called(mocker):
     """Test name validation integration."""
-    mock_validate = mocker.patch('utils.validators.validate_git_name')
+    mock_validate = mocker.patch('datamodels.validate_git_name')
     mock_validate.return_value = (True, "")
 
     name = GitName("Valid Name")
@@ -87,7 +86,7 @@ def test_gitname_str_repr():
 # GitCommitBlock TESTS --------------------------------------------------------
 def test_commit_block_from_raw_validation(mocker):
     """Test full block validation in factory method."""
-    mock_validate = mocker.patch('utils.validators.validate_git_commit_block')
+    mock_validate = mocker.patch('datamodels.validate_git_commit_block')
     mock_validate.return_value = (True, "")
 
     commit = GitCommitBlock.from_raw("raw log")
@@ -155,7 +154,7 @@ def test_repository_path_validation_invalid(mocker):
 ])
 def test_git_email_validation_parametrized(email_input, expected_valid, mocker):
     """Parametrized test for email validation."""
-    mock_validate = mocker.patch('utils.validators.validate_git_email')
+    mock_validate = mocker.patch('datamodels.validate_git_email')
 
     if expected_valid:
         mock_validate.return_value = (True, "")
@@ -175,7 +174,7 @@ def test_git_email_validation_parametrized(email_input, expected_valid, mocker):
 ])
 def test_gitname_validation_parametrized(name_input, expected_valid, mocker):
     """Parametrized test for name validation."""
-    mock_validate = mocker.patch('utils.validators.validate_git_name')
+    mock_validate = mocker.patch('datamodels.validate_git_name')
 
     if expected_valid:
         mock_validate.return_value = (True, "")
@@ -194,7 +193,7 @@ def test_gitname_validation_parametrized(name_input, expected_valid, mocker):
 ])
 def test_gitemail_equality_parametrized(email1, email2, expected_equal, mocker):
     """Parametrized test for email equality."""
-    mocker.patch('utils.validators.validate_git_email', return_value=(True, ""))
+    mocker.patch('datamodels.validate_git_email', return_value=(True, ""))
 
     email_obj1 = GitEmail(email1)
     email_obj2 = GitEmail(email2)
@@ -207,10 +206,10 @@ def test_gitemail_equality_parametrized(email1, email2, expected_equal, mocker):
 
 # GROUPING TESTS WITH MARKS ---------------------------------------------------
 @pytest.mark.datamodel
-def test_all_datamodels_have_repr():
+def test_all_datamodels_have_repr(mocker):
     """Test that all data models have proper string representations."""
-    mocker.patch('utils.validators.validate_git_email', return_value=(True, ""))
-    mocker.patch('utils.validators.validate_git_name', return_value=(True, ""))
+    mocker.patch('datamodels.validate_git_email', return_value=(True, ""))
+    mocker.patch('datamodels.validate_git_name', return_value=(True, ""))
 
     email = GitEmail("test@example.com")
     name = GitName("Test Name")
@@ -222,10 +221,10 @@ def test_all_datamodels_have_repr():
 
 
 @pytest.mark.slow
-def test_large_file_list():
+def test_large_file_list(mocker):
     """Test commit block with many files (marked as slow)."""
-    mocker.patch('utils.validators.validate_git_email', return_value=(True, ""))
-    mocker.patch('utils.validators.validate_git_name', return_value=(True, ""))
+    mocker.patch('datamodels.validate_git_email', return_value=(True, ""))
+    mocker.patch('datamodels.validate_git_name', return_value=(True, ""))
 
     # Create commit with many files
     many_files = [f"file_{i}.txt" for i in range(1000)]
@@ -248,7 +247,7 @@ from unittest.mock import patch
 
 def test_git_email_with_unittest_mock():
     """Example using unittest.mock directly."""
-    with patch('utils.validators.validate_git_email') as mock_validate:
+    with patch('datamodels.validate_git_email') as mock_validate:
         mock_validate.return_value = (True, "")
 
         email = GitEmail("test@example.com")

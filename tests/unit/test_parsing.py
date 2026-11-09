@@ -58,7 +58,7 @@ def test_processing_state_initialization():
 
     assert isinstance(state.statistics, ProcessingStatistics)
     assert len(state.parsed_change_log_entries) == 0
-    assert len(state.file_contributors) == 0
+    assert len(state.map_files_to_their_contributors) == 0
     assert len(state.file_coediting_collaborative_relationships) == 0
     assert len(state.aggregated_file_coediting_collaborative_relationships) == 0
     assert len(state.affiliations) == 0
@@ -138,8 +138,8 @@ def test_extract_affiliation_from_email_basic():
     # Test basic email
     assert extract_affiliation_from_email("user@example.com", state) == "example"
 
-    # Test email with subdomain
-    assert extract_affiliation_from_email("user@sub.example.com", state) == "sub"
+    # Test email with subdomain (the subdomain is skipped, e.g. us.ibm.com -> ibm)
+    assert extract_affiliation_from_email("user@sub.example.com", state) == "example"
 
     # Test email with dash
     assert extract_affiliation_from_email("user@example-test.com", state) == "example-test"
@@ -169,9 +169,9 @@ def test_extract_affiliation_from_email_filtering():
     state.email_filtering_mode = True
     state.emails_to_filter = {"spam@bot.com"}
 
-    # Filtered email
-    assert extract_affiliation_from_email("spam@bot.com",
-                                          state) == "filtered - included in file passed with -f argument"
+    # Filtering no longer happens here: filtered emails still get an affiliation
+    # and are removed from the network later by apply_email_filtering (tests 27/28)
+    assert extract_affiliation_from_email("spam@bot.com", state) == "bot"
 
     # Non-filtered email
     assert extract_affiliation_from_email("user@example.com", state) == "example"
@@ -182,14 +182,14 @@ def test_extract_affiliation_from_email_invalid():
     """Test email affiliation extraction with invalid emails."""
     state = ProcessingState()
 
-    # Email without @
-    assert extract_affiliation_from_email("notanemail", state) == "unknown"
+    # Email without @ (invalid input returns None)
+    assert extract_affiliation_from_email("notanemail", state) is None
 
     # Email ending with ?
     assert extract_affiliation_from_email("user@example.com?", state) == "example"
 
     # Empty email
-    assert extract_affiliation_from_email("", state) == "unknown"
+    assert extract_affiliation_from_email("", state) is None
 
 
 # Test 11: parse_time_name_email_affiliation - standard format
@@ -369,14 +369,15 @@ def test_process_commit_block_valid():
         "\n"
     ]
 
-    result = process_commit_block(block, state)
+    result = process_commit_block(block, state, 0)
     assert result is True
     assert len(state.parsed_change_log_entries) == 1
 
-    entry = state.parsed_change_log_entries[0]
-    assert entry[0][1] == "john@example.com"
-    assert entry[0][2] == "example"
-    assert entry[1] == ["file1.txt", "file2.py"]
+    (email, affiliation), files, timestamp = state.parsed_change_log_entries[0]
+    assert email == "john@example.com"
+    assert affiliation == "example"
+    assert files == ["file1.txt", "file2.py"]
+    assert "Feb 20" in timestamp
 
 
 # Test 21: process_commit_block - invalid block
@@ -385,19 +386,20 @@ def test_process_commit_block_invalid():
     state = ProcessingState()
 
     # Empty block
-    assert process_commit_block([], state) is False
+    assert process_commit_block([], state, 0) is False
 
-    # No header
+    # No header: the input is not a git log in the expected format, so scrapLog exits
     block = ["file1.txt\n", "file2.py\n"]
-    assert process_commit_block(block, state) is False
+    with pytest.raises(SystemExit):
+        process_commit_block(block, state, 1)
 
     # Invalid header
     block = ["==Invalid header==\n", "file.txt\n"]
-    assert process_commit_block(block, state) is False
+    assert process_commit_block(block, state, 2) is False
 
     # No files
     block = ["==John Doe;john@example.com;Thu Feb 20 03:56:00 2014 +0000==\n", "\n"]
-    assert process_commit_block(block, state) is False
+    assert process_commit_block(block, state, 3) is False
 
 
 # Test 22: aggregate_files_and_contributors
@@ -407,19 +409,20 @@ def test_aggregate_files_and_contributors():
 
     # Add some change log data
     state.parsed_change_log_entries = [
-        (("date1", "alice@example.com", "example"), ["file1.txt", "file2.py"]),
-        (("date2", "bob@example.com", "example"), ["file2.py", "file3.js"]),
-        (("date3", "alice@example.com", "example"), ["file3.js", "file4.md"]),
+        (("alice@example.com", "example"), ["file1.txt", "file2.py"], "Mon Jan 1 12:00:00 2024 +0000"),
+        (("bob@example.com", "example"), ["file2.py", "file3.js"], "Tue Jan 2 12:00:00 2024 +0000"),
+        (("alice@example.com", "example"), ["file3.js", "file4.md"], "Wed Jan 3 12:00:00 2024 +0000"),
     ]
 
     aggregate_files_and_contributors(state)
 
+    contributors = state.map_files_to_their_contributors
     assert state.statistics.n_changed_files == 4
-    assert set(state.file_contributors.keys()) == {"file1.txt", "file2.py", "file3.js", "file4.md"}
-    assert state.file_contributors["file1.txt"] == ["alice@example.com"]
-    assert set(state.file_contributors["file2.py"]) == {"alice@example.com", "bob@example.com"}
-    assert set(state.file_contributors["file3.js"]) == {"bob@example.com", "alice@example.com"}
-    assert state.file_contributors["file4.md"] == ["alice@example.com"]
+    assert set(contributors.keys()) == {"file1.txt", "file2.py", "file3.js", "file4.md"}
+    assert contributors["file1.txt"] == ["alice@example.com"]
+    assert set(contributors["file2.py"]) == {"alice@example.com", "bob@example.com"}
+    assert set(contributors["file3.js"]) == {"bob@example.com", "alice@example.com"}
+    assert contributors["file4.md"] == ["alice@example.com"]
 
 
 # Test 23: extract_contributor_connections
@@ -428,7 +431,7 @@ def test_extract_contributor_connections():
     state = ProcessingState()
 
     # Set up file contributors
-    state.file_contributors = defaultdict(list, {
+    state.map_files_to_their_contributors = defaultdict(list, {
     "file1.txt": ["alice@example.com"],
     "file2.py": ["alice@example.com", "bob@example.com"],
     "file3.js": ["alice@example.com", "bob@example.com", "charlie@test.com"],
@@ -438,7 +441,7 @@ def test_extract_contributor_connections():
     extract_contributor_connections(state)
 
     # Check connections
-    assert len(state.file_coediting_collaborative_relationships) == 4  # 1 + 3 + 3 + 1
+    assert len(state.file_coediting_collaborative_relationships) == 5  # file2: 1 + file3: 3 + file4: 1
 
     # Check specific connections
     connections_by_file = {cf[1]: cf[0] for cf in state.file_coediting_collaborative_relationships}
@@ -487,40 +490,20 @@ def test_get_unique_connections():
 
 # Test 25: extract_affiliations
 def test_extract_affiliations():
-    """Test extraction of affiliations."""
+    """create_network_graph records each developer's affiliation, inferred from their email."""
     state = ProcessingState()
+    state.aggregated_file_coediting_collaborative_relationships = [
+        ("alice@example.com", "bob@alumni.example.com"),
+        ("bob@alumni.example.com", "charlie@test.com"),
+    ]
 
-    # Mock the extract_affiliation_from_email function
-    def mock_extract(email, _):
-        if "example" in email:
-            return "Example Corp"
-        elif "test" in email:
-            return "Test Inc"
-        else:
-            return "Unknown"
+    create_network_graph(state)
 
-    # Replace the function temporarily
-    import scrapLog
-    original_func = scrapLog.extract_affiliation_from_email
-    scrapLog.extract_affiliation_from_email = mock_extract
-
-    try:
-        # Set up change log data
-        state.parsed_change_log_entries = [
-            (("date1", "alice@example.com", ""), ["file1.txt"]),
-            (("date2", "bob@example.com", ""), ["file2.py"]),
-            (("date3", "charlie@test.com", ""), ["file3.js"]),
-        ]
-
-        create_network_graph(state)
-
-        assert len(state.affiliations) == 3
-        assert state.affiliations["alice@example.com"] == "example"
-        assert state.affiliations["bob@alummi.example.com"] == "example"
-        assert state.affiliations["charlie@test.com"] == "test"
-    finally:
-        # Restore original function
-        scrapLog.extract_affiliation_from_email = original_func
+    assert state.affiliations == {
+        "alice@example.com": "example",
+        "bob@alumni.example.com": "example",
+        "charlie@test.com": "test",
+    }
 
 
 # Test 26: create_network_graph
@@ -644,7 +627,7 @@ def test_print_processing_summary(capsys):
 
     # Check key information is in output
     assert "PROCESSING SUMMARY" in output
-    assert "Input file: test.log" in output
+    assert "Input log file: test.log" in output
     assert "Total lines processed: 1000" in output
     assert "Total commit blocks found: 50" in output
     assert "Skipped/invalid blocks: 5" in output
@@ -681,8 +664,8 @@ def test_full_processing_flow():
     ]
 
     # Process each block
-    for block in blocks:
-        assert process_commit_block(block, state) is True
+    for index, block in enumerate(blocks):
+        assert process_commit_block(block, state, index) is True
 
     # Verify change log data
     assert len(state.parsed_change_log_entries) == 3
