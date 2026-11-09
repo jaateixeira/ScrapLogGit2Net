@@ -1,0 +1,83 @@
+# formatFilterAndReport-nofo-GraphML.py
+
+Prints basic statistics for a GraphML network and writes them, with an organization count, a node list and degree centralities, to an Excel `.xls` file. It can keep only a list of "top firms" or remove a list of generic organizations before the analysis. It is listed as the reporter for networks of organizations (nofo), but most of its analysis reads the `e-mail` and `affiliation` node attributes, which only networks of individuals (nofi) have. Read [Notes and limitations](#notes-and-limitations) before using it.
+
+## Run it
+
+From the repository root:
+
+```bash
+./formatFilterAndReport-nofo-GraphML.py [options] file
+```
+
+After `pip install -e .`, the same tool is available as a console command:
+
+```bash
+report-nofo [options] file
+```
+
+## Input
+
+One GraphML file, read with `networkx.read_graphml`. This can be:
+
+- a network of organizations, for example a file from `transform_nofi_2_nofo_graphml.py` (node IDs are organization names, nodes have no attributes); or
+- a network of individuals from `scrapLog.py` (nodes have `e-mail` and `affiliation` attributes).
+
+## Output
+
+- Console: a "Graph Statistics" panel (nodes, edges, isolates), up to 5 isolated nodes, a "Top 10 Most Connected Individuals" table (email, degree centrality, affiliation), and a "Top 10 Organizations by Node Count" table (number of nodes per `affiliation` value).
+- Excel report: `<prefix>.xls`. The prefix is the value of `-o`; by default it is the input file name without its extension, and the file is written to the current working directory. For example, `test-data/TensorFlow/jit-2026/networks-nofo-graphML/tensorflow_2025_network.out.nofo.graphML` gives `tensorflow_2025_network.out.nofo.xls`. An existing file with the same name is overwritten. The workbook has these sheets:
+  - `Graph Statistics`: number of nodes, edges and isolates.
+  - `Organizations by Node Count`: every `affiliation` value with its node count and percentage (not only the top 10).
+  - `Nodes (Developers)`: every node with ID, email and affiliation.
+  - `Centrality Analysis`: every node with degree centrality, email and affiliation, sorted by centrality.
+- Log file: `app.log` in the current working directory (written by the project's shared logger).
+
+All counts and lists are computed after the filters (`-t`, `-f`) are applied, except the "Graph Statistics" panel on the console, which is printed right after loading.
+
+## Options
+
+| Option | Meaning | Default |
+|---|---|---|
+| `file` | Path to the GraphML network file (required). | none |
+| `-h`, `--help` | Show the help message and exit. | |
+| `-v`, `--verbose` | Print the configuration, each node removed by a filter, each `alum` affiliation renamed to `alum.mit.edu`, and up to 20 more organizations after the top 10. | off |
+| `-t`, `--top-firms-only` | Keep only nodes whose `affiliation` is in the top-firms list. | off |
+| `-f`, `--filter-by-org` | Remove nodes whose `affiliation` is in the filter-firms list. | off |
+| `-c`, `--color-map` | JSON file mapping firms/organizations to colors. The file is loaded, but the colors are not used anywhere in the report: this option has no effect on the output. | none |
+| `-o`, `--output` | Output file name prefix; `.xls` is appended. It can include a directory. | input file name without extension |
+| `--top-firms` | Comma-separated list that replaces the default top-firms list. Only used together with `-t`. | `google,microsoft,ibm,amazon,intel,amd,nvidia,arm,meta,bytedance` |
+| `--filter-firms` | Comma-separated list that replaces the default filter-firms list. Only used together with `-f`. | `users,tensorflow,gmail` |
+
+## Examples
+
+Report on a network of organizations; writes `tensorflow_2025_network.out.nofo.xls` in the current directory:
+
+```bash
+./formatFilterAndReport-nofo-GraphML.py test-data/TensorFlow/jit-2026/networks-nofo-graphML/tensorflow_2025_network.out.nofo.graphML
+```
+
+Same input, with the generic organizations filter and a chosen output name (`tf2025-filtered.xls`):
+
+```bash
+./formatFilterAndReport-nofo-GraphML.py test-data/TensorFlow/jit-2026/networks-nofo-graphML/tensorflow_2025_network.out.nofo.graphML -f -o tf2025-filtered
+```
+
+Keep only developers of Google and NVIDIA in a network of individuals; writes `tensorFlowGitLog-3-commits-1-edge.NetworkFile.xls`:
+
+```bash
+./formatFilterAndReport-nofo-GraphML.py test-data/TensorFlow/tensorFlowGitLog-3-commits-1-edge.NetworkFile.graphML -t --top-firms "google,nvidia"
+```
+
+## Notes and limitations
+
+- On a network of organizations (for example from `transform_nofi_2_nofo_graphml.py`), nodes have no `e-mail` or `affiliation` attributes. The "Most Connected Individuals" table then shows `N/A` and `unknown` for every node, and the organization count has a single entry, `unknown`. The node IDs (the organization names) and their degree centralities are only in the `Nodes (Developers)` and `Centrality Analysis` sheets.
+- The filters compare the lists with the `affiliation` attribute, not with the node ID. On a network of organizations, `-f` removes nothing, and `-t` removes every node. When every node is removed, the tool stops with the error `No graph data to export` and exit code 1, and no report is written.
+- The filter lists are matched exactly, including case (`google` does not match `Google`).
+- `--top-firms` has no effect without `-t`, and `--filter-firms` has no effect without `-f`.
+- If both `-f` and `-t` are given, `-f` is applied first, then `-t`.
+- The console tables always show at most 10 rows; there is no option to change this.
+- Weighted edges (the `weight` attribute in networks of organizations) are not used; degree centrality counts edges only.
+- The output is written in the legacy Excel 97-2003 `.xls` format (library `xlwt`).
+
+[Back to the README](../../README.md#executable-toolsscripts)
