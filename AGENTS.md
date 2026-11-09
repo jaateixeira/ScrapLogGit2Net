@@ -31,7 +31,7 @@ This file is for any coding agent or LLM (Mistral, DeepSeek, Gemma, Qwen, Llama,
 - Run all tests listed under Commands.
 - When fixing a bug, add a test that fails before the fix and passes after.
 - Test on a tiny fixture repo (a few commits, 3 authors, known expected edges) and compare with a hand-computed network.
-- Sanity checks on output: node count = number of distinct normalised authors; no self-loops unless intended; edge weights >= 1; no NaN.
+- Sanity checks on output: node count = number of distinct normalised authors with at least one co-edit (developers who never co-edit are left out by design); no self-loops unless intended; edge weights >= 1; no NaN.
 - Say clearly what you did not verify. Never claim a test passed unless you ran it.
 
 ## Commands

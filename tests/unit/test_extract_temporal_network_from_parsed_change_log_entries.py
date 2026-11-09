@@ -113,12 +113,14 @@ def test_single_developer_no_edges():
     total_edges = sum(G.number_of_edges() for G in result)
     assert total_edges == 0, f"Expected 0 edges for single developer, got {total_edges}"
 
-    # Check nodes - should have 1 developer (by email)
+    # Check nodes - developers who never co-edited a file are not nodes
+    # (design decision: networks only contain developers with at least one
+    # co-edit; solo developers are covered by solo_contributors.py)
     all_nodes = set()
     for G in result:
         all_nodes.update(G.nodes())
-    assert email in all_nodes, f"{email} should be a node"
-    assert len(all_nodes) == 1, f"Expected 1 node, got {len(all_nodes)}"
+    assert email not in all_nodes, f"{email} should not be a node"
+    assert len(all_nodes) == 0, f"Expected 0 nodes, got {len(all_nodes)}"
 
 
 # Test 3: Two developers editing same file creates edge (developer_coediting)

@@ -20,7 +20,7 @@ Extracts collaboration networks from `git log` data (who works with whom, via sh
 ## Verify before saying "done"
 - Run the tests (command below). Add a test for any bug fixed.
 - Test on a tiny fixture repo (a handful of commits, 3 authors, known expected edges) and compare to a hand-computed network.
-- Sanity-check output: node count = distinct normalized authors, no self-loops unless intended, edge weights >= 1, no NaN.
+- Sanity-check output: node count = distinct normalized authors with at least one co-edit (developers who never co-edit are left out by design), no self-loops unless intended, edge weights >= 1, no NaN.
 - State what was NOT verified.
 
 ## Commands
