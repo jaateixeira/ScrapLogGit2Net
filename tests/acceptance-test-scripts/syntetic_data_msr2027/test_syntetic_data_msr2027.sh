@@ -167,11 +167,11 @@ echo ""
 echo "TC2 — weighted network of individuals"
 TC2_OUT=$TEMP_DIR/syntetic.WeightedNetwork.graphML
 if run TC2 python scrapLog.py -r "$INPUT" -t inter_individual_graph_weighted -o "$TC2_OUT"; then
-    check_network TC2 "$TC2_OUT" "node ana@alpha.com -
-node bob@alpha.com -
-node cleo@beta.org -
-node dan@beta.org -
-node eli@gamma.io -
+    check_network TC2 "$TC2_OUT" "node ana@alpha.com alpha
+node bob@alpha.com alpha
+node cleo@beta.org beta
+node dan@beta.org beta
+node eli@gamma.io gamma
 edge ana@alpha.com bob@alpha.com 1
 edge ana@alpha.com cleo@beta.org 1
 edge bob@alpha.com cleo@beta.org 1
