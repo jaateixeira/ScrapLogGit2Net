@@ -80,11 +80,6 @@ def load_configuration(config_path: Optional[str] = None) -> Dict[str, Any]:
     # Try environment variables first (recommended for production)
     github_token = os.getenv('GITHUB_TOKEN')
 
-
-    logger.debug(f'{github_token=}')
-
-
-
     if github_token:
         config_values['token'] = github_token
         logger.info("✓ Using GITHUB_TOKEN from environment variables")
@@ -301,9 +296,7 @@ def validate_configuration_and_api_access(config_path: Optional[str] = None) -> 
         config = load_configuration(config_path)
         logger.success("✓ Configuration loaded successfully")
 
-        console.print(f'{config=}')
-
-        # Mask token for display
+        # Never print the token itself. Mask token for display
         masked_token = config['token'][:8] + "..." if len(config['token']) > 8 else "***"
         logger.info(f"  Token: {masked_token}")
 

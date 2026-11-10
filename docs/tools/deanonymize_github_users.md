@@ -93,7 +93,7 @@ Show the help text:
 
 ## Notes and limitations
 
-- **The token is printed in full.** The tool always logs `github_token=<value of GITHUB_TOKEN>` at debug level to the terminal. Without `--skip-api-test`, it also prints `config={'token': '<token>'}`. Do not share the terminal output or logs.
+- **The token is not printed.** When it checks the configuration, the tool shows only the first 8 characters of the token followed by `...`. The HTTP cache (`github_cache.sqlite`) does not store the `Authorization` header by default.
 - **The e-mail is written to the wrong attribute.** The public e-mail is stored in a new `email` attribute, while the rest of ScrapLogGit2Net uses `e-mail`. The `e-mail` attribute keeps the noreply address.
 - **Rate limits.** Each noreply user costs at least two API calls (profile and organizations). If GitHub reports that the rate limit is exceeded during processing, the tool sleeps for one hour and then tries again. A large network can take a long time.
 - **Caching.** Results are kept in memory per e-mail address during a run, so each address is looked up once. HTTP responses from the `requests` library are also cached in `github_cache.sqlite` in the current working directory, and cached entries expire after one hour. This file is created on start-up, even when you run only `--help`.
