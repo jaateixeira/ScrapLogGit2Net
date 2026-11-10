@@ -272,7 +272,7 @@ class GraphMLReporter:
             console.print("\n[bold yellow]Isolated nodes:[/bold yellow]")
             for isolate in self.stats['isolates']:
                 data = self.graph.nodes[isolate] if self.graph else {}
-                console.print(f"  • {isolate}: {data.get('email', 'N/A')} @ {data.get('affiliation', 'N/A')}")
+                console.print(f"  • {isolate}: {data.get('e-mail', 'N/A')} @ {data.get('affiliation', 'N/A')}")
 
     def print_organization_analysis(self) -> None:
         """Print organization analysis to console."""
@@ -426,7 +426,7 @@ class GraphMLReporter:
 
         for i, (node_id, data) in enumerate(self.graph.nodes(data=True), 1):
             sheet.write(i, 0, str(node_id))
-            sheet.write(i, 1, data.get('email', ''))
+            sheet.write(i, 1, data.get('e-mail', ''))
             sheet.write(i, 2, data.get('affiliation', ''))
 
     def _export_edge_analysis_to_excel(self, workbook: xlwt.Workbook) -> None:

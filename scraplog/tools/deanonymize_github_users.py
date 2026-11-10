@@ -573,7 +573,7 @@ def iterate_graph(
 
             logger.info(f"Updating node={node} with email={new_email} and affiliation={new_affiliation}")
             if new_email != "unknown-by-GitHub":
-                data['email'] = new_email
+                data['e-mail'] = new_email  # the attribute scrapLog writes and the other tools read
             if new_affiliation.lower() != "unknown-by-github":
                 data['affiliation'] = new_affiliation.lower()
 

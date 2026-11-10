@@ -54,7 +54,7 @@ Only nodes whose `e-mail` attribute contains `@users.noreply.github.com` are cha
 1. The GitHub user name is taken from the address: the part between `+` and `@` (for `12345+octocat@users.noreply.github.com` this is `octocat`), or the part before `@` if there is no `+`.
 2. The user's GitHub profile is fetched.
 3. **Affiliation:** the `company` field of the profile is used. If the user is a public member of one or more GitHub organizations, the first organization's login is used instead. The value is converted to lower case and written to the `affiliation` attribute. If neither is found, `affiliation` is not changed.
-4. **E-mail:** if the profile shows a public e-mail address, it is written to a new node attribute named `email`. The original `e-mail` attribute is **not** changed (see [Notes and limitations](#notes-and-limitations)).
+4. **E-mail:** if the profile shows a public e-mail address, it replaces the noreply address in the `e-mail` attribute, the attribute that `scrapLog.py` writes and the other tools read. If not, `e-mail` is not changed.
 
 If GitHub returns an error for a user (for example, the user does not exist), a warning is logged and the node is left unchanged.
 
@@ -94,7 +94,6 @@ Show the help text:
 ## Notes and limitations
 
 - **The token is not printed.** When it checks the configuration, the tool shows only the first 8 characters of the token followed by `...`. The HTTP cache (`github_cache.sqlite`) does not store the `Authorization` header by default.
-- **The e-mail is written to the wrong attribute.** The public e-mail is stored in a new `email` attribute, while the rest of ScrapLogGit2Net uses `e-mail`. The `e-mail` attribute keeps the noreply address.
 - **Rate limits.** Each noreply user costs at least two API calls (profile and organizations). If GitHub reports that the rate limit is exceeded during processing, the tool sleeps for one hour and then tries again. A large network can take a long time.
 - **Caching.** Results are kept in memory per e-mail address during a run, so each address is looked up once. HTTP responses from the `requests` library are also cached in `github_cache.sqlite` in the current working directory, and cached entries expire after one hour. This file is created on start-up, even when you run only `--help`.
 - Only public profile data is used. Users who hide their e-mail, company or organization memberships stay unchanged.

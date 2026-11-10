@@ -76,7 +76,6 @@ Limit the report to the top 5 organizations and the top 3 individuals:
 
 ## Notes and limitations
 
-- The `Email` column of the `Nodes` sheet and the email shown for isolated nodes are always empty or `N/A` for files written by `scrapLog.py`. The code reads a node attribute named `email`, but `scrapLog.py` writes the attribute as `e-mail`.
 - Organization names in `-oi` and `-oo` must match the `affiliation` value exactly, including case. For example, `-oi Rijksmuseum` does not remove nodes with affiliation `rijksmuseum`.
 - `-oi` and `-oo` can be combined. `-oi` is applied first, then `-oo`.
 - Before filtering, an affiliation of exactly `alum` is renamed to `alum.mit.edu`.
