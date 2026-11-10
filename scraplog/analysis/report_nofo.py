@@ -60,6 +60,14 @@ class BasicGraphMLReporter:
         self.degree_centrality: Dict[str, float] = {}
         self.top_connected_individuals: List[Tuple[str, float]] = []
         self.organization_counts: Dict[str, int] = {}
+        self.weighted_degree: Dict[str, float] = {}
+        # True for a network of individuals (nodes have e-mail/affiliation attributes),
+        # False for a network of organizations (the node ID is the organization)
+        self.is_nofi: bool = False
+
+    def organization(self, node: str) -> str:
+        """The organization of a node: its affiliation attribute (nofi), else its ID (nofo)."""
+        return self.graph.nodes[node].get('affiliation') or str(node)
 
     def load_graph(self) -> None:
         """Load GraphML file with error handling."""
@@ -72,11 +80,15 @@ class BasicGraphMLReporter:
             logger.error(f"Failed to load GraphML file: {e}")
             raise
 
+        self.is_nofi = any('e-mail' in data or 'affiliation' in data
+                           for _, data in self.graph.nodes(data=True))
+        kind = "individuals (nofi)" if self.is_nofi else "organizations (nofo)"
+        console.print(f"[cyan]Network of {kind}[/cyan]")
         self._print_basic_stats()
 
     def _print_basic_stats(self) -> None:
         """Print basic graph statistics."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         stats_panel = Panel.fit(
@@ -104,7 +116,7 @@ class BasicGraphMLReporter:
 
     def normalize_affiliations(self) -> None:
         """Normalize affiliation domains."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         normalized_count = 0
@@ -123,7 +135,7 @@ class BasicGraphMLReporter:
 
     def filter_graph(self) -> None:
         """Filter graph based on configuration options."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         original_node_count = self.graph.number_of_nodes()
@@ -148,7 +160,7 @@ class BasicGraphMLReporter:
 
     def _filter_by_organizations(self, org_list: List[str], keep: bool = True) -> None:
         """Internal method to filter nodes by organization."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         operation = "Keeping only" if keep else "Removing"
@@ -156,7 +168,7 @@ class BasicGraphMLReporter:
 
         nodes_to_remove = []
         for node, data in self.graph.nodes(data=True):
-            affiliation = data.get('affiliation', '')
+            affiliation = self.organization(node)
             should_remove = (affiliation not in org_list) if keep else (affiliation in org_list)
 
             if should_remove:
@@ -169,31 +181,41 @@ class BasicGraphMLReporter:
 
     def analyze_centralities(self) -> None:
         """Calculate and analyze centrality measures."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         console.print("[bold cyan]Calculating centralities...[/bold cyan]")
 
         try:
             self.degree_centrality = nx.degree_centrality(self.graph)
-            self.top_connected_individuals = sorted(
-                self.degree_centrality.items(),
-                key=lambda x: x[1],
-                reverse=True
-            )[:10]  # Top 10 connected individuals
+            # Sum of edge weights; in a nofo network: the number of inter-firm co-edits
+            self.weighted_degree = dict(self.graph.degree(weight='weight'))
+            if self.is_nofi:
+                ranking = sorted(self.degree_centrality.items(), key=lambda x: x[1], reverse=True)
+            else:
+                ranking = self._organizations_ranked()
+            self.top_connected_individuals = ranking[:10]  # Top 10 connected nodes
         except Exception as e:
             logger.error(f"Error calculating centralities: {e}")
             self.degree_centrality = {}
             self.top_connected_individuals = []
 
+    def _organizations_ranked(self) -> List[Tuple[str, float]]:
+        """Nodes by degree centrality, then weighted degree, then name (deterministic)."""
+        return sorted(self.degree_centrality.items(),
+                      key=lambda x: (-x[1], -self.weighted_degree.get(x[0], 0), str(x[0])))
+
     def analyze_organizations(self) -> None:
         """Analyze organizations by node count."""
-        if not self.graph:
+        if self.graph is None:
             return
+
+        self.organization_counts = {}
+        if not self.is_nofi:
+            return  # each node is one organization: a node count per organization is always 1
 
         console.print("[bold cyan]Analyzing organizations...[/bold cyan]")
 
-        self.organization_counts = {}
         for _, data in self.graph.nodes(data=True):
             affiliation = data.get('affiliation', 'unknown')
             self.organization_counts[affiliation] = self.organization_counts.get(affiliation, 0) + 1
@@ -209,7 +231,7 @@ class BasicGraphMLReporter:
 
     def print_analysis_summary(self) -> None:
         """Print comprehensive analysis summary."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         # Print isolates if any
@@ -218,12 +240,30 @@ class BasicGraphMLReporter:
             console.print("\n[bold yellow]Isolated Nodes:[/bold yellow]")
             for isolate in isolates[:5]:  # Show first 5 only
                 data = self.graph.nodes[isolate]
-                console.print(f"  • {isolate}: {data.get('e-mail', 'N/A')} @ {data.get('affiliation', 'N/A')}")
+                if self.is_nofi:
+                    console.print(f"  • {isolate}: {data.get('e-mail', 'N/A')} @ {data.get('affiliation', 'N/A')}")
+                else:
+                    console.print(f"  • {isolate}")
             if len(isolates) > 5:
                 console.print(f"  ... and {len(isolates) - 5} more")
 
         # Print top connected individuals
-        if self.top_connected_individuals:
+        if self.top_connected_individuals and not self.is_nofi:
+            console.print("\n[bold cyan]Top 10 Most Connected Organizations:[/bold cyan]")
+            table = Table(show_header=True, header_style="bold magenta")
+            table.add_column("Rank", style="dim")
+            table.add_column("Organization", style="green")
+            table.add_column("Degree", style="yellow")
+            table.add_column("Weighted degree", style="yellow")
+            table.add_column("Degree centrality", style="cyan")
+
+            for i, (node_id, centrality) in enumerate(self.top_connected_individuals, 1):
+                table.add_row(str(i), str(node_id), str(self.graph.degree(node_id)),
+                              f"{self.weighted_degree.get(node_id, 0):g}", f"{centrality:.4f}")
+
+            console.print(table)
+
+        if self.top_connected_individuals and self.is_nofi:
             console.print("\n[bold cyan]Top 10 Most Connected Individuals:[/bold cyan]")
             table = Table(show_header=True, header_style="bold magenta")
             table.add_column("Rank", style="dim")
@@ -278,7 +318,7 @@ class BasicGraphMLReporter:
 
     def export_to_excel(self) -> str:
         """Export analysis to Excel file."""
-        if not self.graph:
+        if self.graph is None:
             raise ValueError("No graph data to export")
 
         console.print("[bold cyan]Exporting to Excel...[/bold cyan]")
@@ -289,14 +329,12 @@ class BasicGraphMLReporter:
         # Export basic statistics
         self._export_basic_stats(workbook)
 
-        # Export organization analysis
-        self._export_organization_analysis(workbook)
-
-        # Export node list
-        self._export_node_list(workbook)
-
-        # Export centrality analysis
-        self._export_centrality_analysis(workbook)
+        if self.is_nofi:
+            self._export_organization_analysis(workbook)
+            self._export_node_list(workbook)
+            self._export_centrality_analysis(workbook)
+        else:
+            self._export_organizations(workbook)
 
         # Save file
         output_filename = f"{self.config.output_prefix}.xls"
@@ -341,6 +379,20 @@ class BasicGraphMLReporter:
             sheet.write(i, 0, org)
             sheet.write(i, 1, count)
             sheet.write(i, 2, f"{percentage:.2f}%")
+
+    def _export_organizations(self, workbook: xlwt.Workbook) -> None:
+        """Export every organization of a nofo network, ranked like the console table."""
+        sheet = workbook.add_sheet("Organizations")
+
+        for col, title in enumerate(["Rank", "Organization", "Degree", "Weighted degree", "Degree centrality"]):
+            sheet.write(0, col, title)
+
+        for i, (node_id, centrality) in enumerate(self._organizations_ranked(), 1):
+            sheet.write(i, 0, i)
+            sheet.write(i, 1, str(node_id))
+            sheet.write(i, 2, self.graph.degree(node_id))
+            sheet.write(i, 3, self.weighted_degree.get(node_id, 0))
+            sheet.write(i, 4, centrality)
 
     def _export_node_list(self, workbook: xlwt.Workbook) -> None:
         """Export node list to Excel."""
@@ -508,6 +560,10 @@ def main() -> None:
         reporter.load_color_map()
         reporter.normalize_affiliations()
         reporter.filter_graph()
+        if reporter.graph.number_of_nodes() == 0:
+            console.print("\n❌ [bold red]Error: no nodes left after filtering[/bold red]")
+            console.print("   Check the organization names given to -t/--top-firms or -f/--filter-firms.")
+            sys.exit(1)
 
         # Perform analysis
         reporter.analyze_centralities()
