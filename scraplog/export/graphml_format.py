@@ -57,6 +57,30 @@ def addEdge(edgeId,nodeIdFrom,nodeIdTo):
 
 
 
+# Set an attribute that an edge can have, without a default
+# i.e <key id="d3" for="edge" attr.name="weight" attr.type="long"/>
+def setEdgeAttributeKey(id, attrName, attrType):
+
+    if attrType not in ("int", "long", "float", "double", "string"):
+        print ("Not supported GRAPHML edge atribute type")
+        sys.exit()
+
+    return '<key id="d'+str(id)+'" for="edge" attr.name="'+attrName+'" attr.type="'+attrType+'"/>\n'
+
+# Add a edge connecting nodes, with a tuple of (key id, value) atributes
+def addEdgeWithAttributes(edgeId, nodeIdFrom, nodeIdTo, atributes):
+
+    if edgeId[0] != 'e':
+        print ("edgeid mist start with e: ie. e0, e12")
+        sys.exit()
+
+    res = '\t<edge id="'+str(edgeId)+'" source="'+ str(nodeIdFrom)+'" target="'+ str(nodeIdTo)+'">\n'
+    for key_id, value in atributes:
+        res += '\t\t<data key="d'+str(key_id)+'">'+str(value)+'</data>\n'
+    res += '\t</edge>\n'
+    return res
+
+
 # Sample ML file works on Visone and Gephi
 
 def main():

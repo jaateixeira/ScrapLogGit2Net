@@ -47,7 +47,7 @@ All output files are written to the current working directory, unless `-o` gives
 | Network type (`-t`) | Default output file | Content |
 |---|---|---|
 | `inter_individual_graph_unweighted` (default) | `<log>.NetworkFile.graphML` | Undirected GraphML. Each node has the attributes `e-mail`, `color` and `affiliation`. |
-| `inter_individual_graph_weighted` | `<log>.WeightedNetwork.graphML` | Undirected GraphML. Node IDs are emails. Each edge has a `weight` attribute. Nodes have no `affiliation` attribute. |
+| `inter_individual_graph_weighted` | `<log>.WeightedNetwork.graphML` | Undirected GraphML, laid out like the unweighted file (each node has `e-mail`, `color` and `affiliation`). Each edge also has a `weight` attribute. |
 | `inter_individual_graph_temporal` | `<log>.temporal.graphml.zip` | A zip archive (written with networkx-temporal) holding `<log>.temporal.graphml`. Node IDs are emails. There is one edge per time-stamped co-edit, with a `time` attribute such as `2024-01-06T04:03:16-08:00`. |
 | `inter_individual_weighted_LOC_temporal`, `inter_individual_graph_weighted_SUM_LOC` | none | Not exported (see Options). |
 
@@ -111,6 +111,7 @@ Build a temporal network from a small test log. This writes `tensorFlowGitLog-te
 
 - Only developers with at least one co-edit become nodes. A developer whose files nobody else edited is not in the network.
 - With the default unweighted type, a log with no co-edits prints "FATAL ERROR: The input did not led to the creation of a valid network" and writes no file, but the exit code is 0. Check the output file exists (for example with `test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN`).
+- With the weighted type, a log with no co-edits prints "FATAL ERROR: Network have less than two nodes !", writes no file and exits with code 1.
 - With `-fe`, the tool prints the tip "The filtering based on only happen when creating the graphml network output file." In fact the commits are dropped while parsing, for every network type.
 - `-l` is not implemented, `-tntr` only accepts `1`, and the two LOC network types are not exported.
 - `-d` waits for answers on standard input.

@@ -214,7 +214,10 @@ def createAtributesByCoreFileCSV(logData , outFileName):
 # Must be readable by Visone
 def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
                         out_file_name: Path,
-                        verbose=True) -> None:
+                        verbose=True,
+                        weighted: bool = False) -> None:
+    """Write a network of individuals to GraphML: numeric node IDs with e-mail, color and
+    affiliation attributes. With weighted=True, each edge also gets its 'weight' attribute."""
     # iterator for nAf  
 
     # Accept both string and Path
@@ -308,6 +311,8 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
     gfile.writelines(export_graphml_format.setNodeAntributeKey(0,"e-mail","string"))
     gfile.writelines(export_graphml_format.setNodeAntributeKey(1,"color","string"))
     gfile.writelines(export_graphml_format.setNodeAntributeKey(2,"affiliation","string"))
+    if weighted:
+        gfile.writelines(export_graphml_format.setEdgeAttributeKey(3,"weight","long"))
     
 
     # Open grapth 
@@ -355,7 +360,11 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
         
         
         #print(exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
-        gfile.writelines(export_graphml_format.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
+        if weighted:
+            weight = network_with_affiliation_attributes.edges[edge]['weight']
+            gfile.writelines(export_graphml_format.addEdgeWithAttributes("e"+str(nTup),nodeIdFrom,nodeIdTo,[(3, weight)]))
+        else:
+            gfile.writelines(export_graphml_format.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
         nTup+=1
 
         if edge[0] == edge[1]:

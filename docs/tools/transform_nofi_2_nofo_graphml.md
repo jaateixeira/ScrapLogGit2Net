@@ -1,6 +1,6 @@
 # transform_nofi_2_nofo_graphml.py
 
-`transform_nofi_2_nofo_graphml.py` turns a network of individuals (nofi) into a weighted network of organizations (nofo). Two organizations are connected when developers from them are connected. The edge weight is the number of developer-to-developer edges between the two organizations. Edges between developers of the same organization are ignored. Use it on the unweighted network written by `scrapLog.py`.
+`transform_nofi_2_nofo_graphml.py` turns a network of individuals (nofi) into a weighted network of organizations (nofo). Two organizations are connected when developers from them are connected. The edge weight is the number of developer-to-developer edges between the two organizations. Edges between developers of the same organization are ignored. Use it on the unweighted or weighted network written by `scrapLog.py`.
 
 ## Run it
 
@@ -18,9 +18,9 @@ transform-nofi-2-nofo <network file> [options]
 
 ## Input
 
-A GraphML network of individuals. Every node must have an `affiliation` attribute. The unweighted network from `scrapLog.py` (`<log>.NetworkFile.graphML`) has one.
+A GraphML network of individuals. Every node must have an `affiliation` attribute. The unweighted (`<log>.NetworkFile.graphML`) and weighted (`<log>.WeightedNetwork.graphML`) networks from `scrapLog.py` both have one.
 
-The weighted network from `scrapLog.py` (`<log>.WeightedNetwork.graphML`) has no `affiliation` attribute. With that file the tool fails with a `KeyError` and exit code 1.
+The developer-level `weight` of a weighted input is not used: each developer pair counts once, so the weighted and unweighted networks of the same log give the same network of organizations.
 
 Isolated nodes are listed in a table and removed before the transformation.
 
@@ -72,7 +72,7 @@ Verbose run with a chosen output name. This writes `two-orgs.graphML`:
 
 ## Notes and limitations
 
-- The input must have an `affiliation` attribute on every node. Use the unweighted network from `scrapLog.py`, not the weighted one.
+- The input must have an `affiliation` attribute on every node.
 - An organization whose developers only work with each other has no inter-organizational edge, so it is not a node in the output.
 - `-t` and `-f` are not implemented and stop the tool.
 - With `-s`, the exit code of the visualizer is not checked. The transformation reports success even if the visualizer fails. The visualizer is called with `--show`, which (per its help text) shows the visualization instead of saving it.
