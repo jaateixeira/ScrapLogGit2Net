@@ -56,6 +56,9 @@ jobs:
       - name: Extension filtering (test_extension_filtering.sh)
         run: bash tests/acceptance-test-scripts/ExtensionFiltering/test_extension_filtering.sh
 
+      - name: MSR 2027 paper example (test_syntetic_data_msr2027.sh)
+        run: bash tests/acceptance-test-scripts/syntetic_data_msr2027/test_syntetic_data_msr2027.sh
+
       # Not run: test-nofi-2-nofo-transformer.sh validates against
       # http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd, which is currently
       # out of service. The test-nofi-*/test-nofo-* viz and reporter scripts are

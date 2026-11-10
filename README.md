@@ -525,12 +525,13 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   bash tests/acceptance-test-scripts/testScrapLog.sh
   bash tests/acceptance-test-scripts/testScrapLogTemporalNetworks.sh
   bash tests/acceptance-test-scripts/ExtensionFiltering/test_extension_filtering.sh
+  bash tests/acceptance-test-scripts/syntetic_data_msr2027/test_syntetic_data_msr2027.sh
   ```
   They need `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`.
 
-As of November 2026 there are 218 unit tests in 16 files (212 run, 6 are skipped because they describe planned features) and 21 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh` and 5 in `test_extension_filtering.sh`. A fourth script, `test-nofi-2-nofo-transformer.sh` (3 cases), is not run automatically while the GraphML schema it validates against (graphml.graphdrawing.org) is offline.
+As of November 2026 there are 218 unit tests in 16 files (212 run, 6 are skipped because they describe planned features) and 26 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh` and 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks). A fourth script, `test-nofi-2-nofo-transformer.sh` (3 cases), is not run automatically while the GraphML schema it validates against (graphml.graphdrawing.org) is offline.
 
-Both the unit tests and the three acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
+Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 
 # Contributing
 Please create a new branch for any new feature. Branch or fork, code, test, then pull request. See  [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for our contribution guide. Please refer also to [the GitHub guide on how to contribute to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
