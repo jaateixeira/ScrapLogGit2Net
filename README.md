@@ -198,7 +198,7 @@ The type of network is chosen with the `-t` / `--type-of-network` option. If you
 
 All types share the same basic model:
 - **Nodes** are software developers, identified by their commit email address.
-- **Affiliation** is stored as a node attribute (`affiliation`) and inferred from the email domain (e.g., `us.ibm.com` becomes `ibm`, `alumni.mit.edu` becomes `mit`, `gmail.com` becomes `gmail`). If the domain is valid but the organization cannot be determined, the affiliation is `unknown_by_ScrapLog`. Use `-a` to aggregate email prefixes into a single organization (see the command line options below).
+- **Affiliation** is stored as a node attribute (`affiliation`) and inferred from the email domain (e.g., `us.ibm.com` becomes `ibm`, `alumni.mit.edu` becomes `mit`, `gmail.com` becomes `gmail`). If the domain is valid but the organization cannot be determined, the affiliation is `unknown_by_ScrapLog`. Use `-a` with a JSON file such as `{"gmail": "google", "googlemail": "google"}` to merge organizations: a key must equal the organization part of the domain (case-insensitive), and the organization name is written in lower case (see the command line options below).
 - **Edges** connect two developers that co-edited the same source-code file.
 
 The types differ in how much information they keep about *how much* and *when* developers co-edited files:
@@ -427,7 +427,8 @@ options:
   -xe, --exclude-all-with-file-extensions EXT [EXT ...]
                         skip files with these extensions (e.g. -xe .json .html .php)
   -a, --aggregate-email-prefixes AGGREGATE_EMAIL_PREFIXES
-                        JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})
+                        JSON file mapping the organization part of email domains to an organization name (exact,
+                        case-insensitive match; e.g. {"gmail": "google", "googlemail": "google"})
   -t, --type-of-network {inter_individual_graph_unweighted,inter_individual_graph_weighted,inter_individual_graph_temporal,inter_individual_weighted_LOC_temporal,inter_individual_graph_weighted_SUM_LOC}
                         Type of network to generate (default: inter_individual_graph_unweighted)
   -tntr, --temporal-network-time-resolution TEMPORAL_NETWORK_TIME_RESOLUTION

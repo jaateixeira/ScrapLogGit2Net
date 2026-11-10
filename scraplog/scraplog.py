@@ -60,7 +60,8 @@ def parse_arguments() -> argparse.Namespace:
         help='skip files with these extensions (e.g. -xe .json .html .php)'
     )
     parser.add_argument('-a', '--aggregate-email-prefixes', type=Path,
-                        help='JSON file defining email domain prefixes to aggregate (e.g., {"ibm": "ibm", "google": "google"})')
+                        help='JSON file mapping the organization part of email domains to an organization name '
+                             '(exact, case-insensitive match; e.g. {"gmail": "google", "googlemail": "google"})')
     parser.add_argument('-t', '--type-of-network',
                         choices=['inter_individual_graph_unweighted',
                                  'inter_individual_graph_weighted',

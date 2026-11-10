@@ -14,7 +14,8 @@ from scraplog.utils.unified_logger import logger
 def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
     """
     Load email aggregation configuration from a JSON file.
-    Format: {"prefix": "consolidated_name", ...}
+    Format: {"organization": "consolidated_name", ...}, e.g. {"gmail": "google"}.
+    Keys match the organization part of an email domain exactly (case-insensitive).
     Example: {"ibm": "ibm", "google": "google"}
     """
     try:
@@ -30,7 +31,7 @@ def load_email_aggregation_config(config_file: str) -> EmailAggregationConfig:
 
         console.print(f"Loaded email aggregation config from {config_file}")
         for prefix, name in config.items():
-            console.print(f"  {prefix}.* -> {name}")
+            console.print(f"  {prefix} -> {name.lower()}")
 
         return config
 
@@ -116,13 +117,15 @@ def extract_affiliation_from_email(
         else:
             potential_org = domain_parts[0]
 
-        # Apply aggregation config if provided
-        for prefix, consolidated_name in state.email_aggregation_config.items():
-            prefix_lower = prefix.lower()
-            if potential_org == prefix_lower or potential_org.startswith(prefix_lower):
+        # Apply the -a aggregation config: a key matches the organization part exactly
+        # (case-insensitive) and is replaced by its configured name, in lower case like
+        # every other affiliation. E.g. {"gmail": "Google"}: user@gmail.com -> google
+        for organization_key, consolidated_name in state.email_aggregation_config.items():
+            if potential_org == organization_key.lower():
                 if state.verbose_mode or state.very_verbose_mode:
-                    logger.info(f"\textracted_affiliation_from_email({email})={potential_org}")
-                return potential_org.lower()
+                    logger.info(f"\textracted_affiliation_from_email({email})={consolidated_name.lower()} "
+                                f"(aggregated from {potential_org})")
+                return consolidated_name.lower()
 
         # Valid domain, no config match — return as-is
         if state.verbose_mode or state.very_verbose_mode:

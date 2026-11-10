@@ -836,7 +836,7 @@ def test_extract_affiliation_from_email(processing_state):
 
     test_cases = [
         # (email, expected_affiliation, description)
-        ("jose.teixeira@abo.fi", "abo", "University domain with specific prefix"),
+        ("jose.teixeira@abo.fi", "abo.fi", "abo aggregated to abo.fi by the fixture's -a config"),
         ("smallguy@alumni.mit.edu", "mit", "Subdomain with alumni prefix"),
         ("bigguy@us.IBM.com", "ibm", "IBM with country subdomain"),
         ("evenbigguy@ca.us.ibm.com", "ibm", "IBM with multiple subdomains"),
@@ -862,7 +862,7 @@ def test_extract_affiliation_case_sensitivity(processing_state):
     """Test case handling in email domains."""
 
     test_cases = [
-        ("Jose.Teixeira@ABO.FI", "abo", "Uppercase domain should normalize to lowercase"),
+        ("Jose.Teixeira@ABO.FI", "abo.fi", "Uppercase domain should normalize to lowercase, then aggregate"),
         ("SmallGuy@ALUMNI.MIT.EDU", "mit", "Mixed case with MIT config"),
         ("BigGuy@US.IBM.COM", "ibm", "Uppercase IBM domain"),
     ]
@@ -886,10 +886,11 @@ def test_extract_affiliation_with_custom_config(processing_state):
     }
 
     test_cases = [
-        ("jose.teixeira@abo.fi", "abo", "Custom affiliation for abo.fi"),
-        ("smallguy@alumni.mit.edu", "mit", "Custom affiliation for MIT"),
-        ("bigguy@us.ibm.com", "ibm", "Custom affiliation for IBM"),
-        ("user@gmail.com", "gmail", "Custom affiliation for Gmail"),
+        # configured names are used, in lower case
+        ("jose.teixeira@abo.fi", "åbo akademi", "Custom affiliation for abo.fi"),
+        ("smallguy@alumni.mit.edu", "massachusetts institute of technology", "Custom affiliation for MIT"),
+        ("bigguy@us.ibm.com", "international business machines", "Custom affiliation for IBM"),
+        ("user@gmail.com", "google mail", "Custom affiliation for Gmail"),
     ]
 
     for email, expected, description in test_cases:
@@ -904,7 +905,7 @@ def test_extract_affiliation_partial_matches(processing_state):
     processing_state.email_aggregation_config["a"] = "Should not match"
 
     test_cases = [
-        ("jose.teixeira@abo.fi", "abo", "Should not match on single letter 'a'"),
+        ("jose.teixeira@abo.fi", "abo.fi", "Matches its own key 'abo', not the single letter 'a'"),
         ("bigguy@us.ibm.com", "ibm", "Should match exact IBM, not partial"),
         ("user@amazon.com", "amazon", "Should not match 'a' prefix"),
     ]
