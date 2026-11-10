@@ -7,7 +7,6 @@ import os
 import sys
 import json
 import math
-import random
 import argparse
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
@@ -16,6 +15,8 @@ from dataclasses import dataclass, field
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+
+from scraplog.viz.colors import organization_color
 
 from scraplog.utils.unified_logger import logger
 from scraplog.utils.unified_console import (console,
@@ -50,6 +51,7 @@ class NetworkConfig:
     exclude_orgs: Optional[List[str]] = None
     # Add legend info data file
     legend_info_file: Optional[str] = None
+    seed: int = 42
 
 
 class NetworkVisualizer:
@@ -341,7 +343,7 @@ class NetworkVisualizer:
                 self.known_org_node_colors = {}
         else:
             self.known_org_node_colors = {}
-            logger.info("No color map provided, using random colors for unknown firms")
+            logger.info("No color map provided, coloring unknown firms by name")
 
     def get_node_colors(self) -> List[Any]:
         """Get colors for all nodes based on coloring strategy."""
@@ -358,7 +360,7 @@ class NetworkVisualizer:
                 if strategy == 'gray-color-to-unknown-firms':
                     color = 'gray'
                 elif strategy == 'random-color-to-unknown-firms':
-                    color = (random.random(), random.random(), random.random())
+                    color = organization_color(str(node))
                 else:
                     logger.error(f"Unknown coloring strategy: {strategy}")
                     color = 'gray'
@@ -406,10 +408,10 @@ class NetworkVisualizer:
         if self.config.network_layout == 'circular':
             return nx.circular_layout(self.graph)
         elif self.config.network_layout == 'spring':
-            return nx.spring_layout(self.graph, seed=42)  # Add seed for reproducibility
+            return nx.spring_layout(self.graph, seed=self.config.seed)
         else:
             logger.error(f"Unknown layout: {self.config.network_layout}")
-            return nx.spring_layout(self.graph, seed=42)
+            return nx.spring_layout(self.graph, seed=self.config.seed)
 
     def get_legend_elements(self) -> List[Line2D]:
         """Create legend elements for the plot with enhanced information, sorted by number of contributors."""
@@ -633,7 +635,8 @@ class NetworkVisualizer:
             png_path = output_dir / f"{base_name}-{self.config.network_layout}-{filter_str}.png"
 
             logger.info(f"Saving PDF to {pdf_path}")
-            plt.savefig(pdf_path, format='pdf', dpi=300, bbox_inches='tight')
+            plt.savefig(pdf_path, format='pdf', dpi=300, bbox_inches='tight',
+                        metadata={'CreationDate': None})  # same input, same PDF
 
             logger.info(f"Saving PNG to {png_path}")
             plt.savefig(png_path, format='png', dpi=300, bbox_inches='tight')
@@ -704,6 +707,13 @@ def parse_arguments() -> NetworkConfig:
         choices=['circular', 'spring'],
         default='spring',
         help="Network layout algorithm"
+    )
+
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Seed for the spring layout; the same seed gives the same node positions (default: 42)"
     )
 
     parser.add_argument(
@@ -815,6 +825,7 @@ def parse_arguments() -> NetworkConfig:
         include_only_orgs=args.include_only if args.include_only else None,
         exclude_orgs=args.exclude if args.exclude else None,
         legend_info_file=args.legend_info_data,
+        seed=args.seed,
     )
 
 
@@ -874,7 +885,7 @@ def main() -> None:
             console.print(
                 f"[bold green] Success:[/bold green] Filtered to top {config.filter_by_n_top_central_firms_only} central firms 😀\n")
 
-        console.print(f"[bold blue] Load color map vs. random colors for nodes \n")
+        console.print(f"[bold blue] Load color map vs. name-based colors for nodes \n")
         visualizer.load_color_map()
         console.print("[bold green] Success:[/bold green] Nodes associated with colors 😀\n")
 

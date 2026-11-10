@@ -33,7 +33,6 @@ import argparse
 import json
 import os
 import sys
-import random
 import configparser
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any, Set
@@ -45,6 +44,8 @@ from tkinter import filedialog
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+
+from scraplog.viz.colors import organization_color
 
 # For logging
 from loguru import logger
@@ -101,6 +102,7 @@ class VisualizationConfig:
     legend_extra_organizations: Optional[List[str]] = None
     plot: bool = False
     save_graphml: bool = False
+    seed: int = 42
     verbose: bool = False
 
 
@@ -164,7 +166,7 @@ class GraphMLVisualizer:
                 self.color_map = {}
         else:
             self.color_map = {}
-            console.print("[yellow]No color map provided, using random colors for unknown firms[/yellow]")
+            console.print("[yellow]No color map provided, coloring unknown firms by name[/yellow]")
 
     def apply_affiliation_aliases(self) -> None:
         """Apply affiliation aliases from config file."""
@@ -475,7 +477,7 @@ class GraphMLVisualizer:
                     colors.append('gray')
                     self.color_map[affiliation] = 'gray'
                 elif strategy == 'random-color-to-unknown-firms':
-                    color = (random.random(), random.random(), random.random())
+                    color = organization_color(affiliation)
                     colors.append(color)
                     self.color_map[affiliation] = color
                 elif strategy == 'gray-color-to-others-not-in-topn-filter':
@@ -483,7 +485,7 @@ class GraphMLVisualizer:
                     if affiliation in self.top_organizations:
                         # Assign a color if not in map
                         if affiliation not in self.color_map:
-                            self.color_map[affiliation] = (random.random(), random.random(), random.random())
+                            self.color_map[affiliation] = organization_color(affiliation)
                         colors.append(self.color_map[affiliation])
                     else:
                         colors.append('gray')
@@ -526,10 +528,10 @@ class GraphMLVisualizer:
         if self.config.network_layout == 'circular':
             self.pos = nx.circular_layout(self.filtered_graph)
         elif self.config.network_layout == 'spring':
-            self.pos = nx.spring_layout(self.filtered_graph)
+            self.pos = nx.spring_layout(self.filtered_graph, seed=self.config.seed)
         else:
             console.print(f"[yellow]Unknown layout, using spring layout[/yellow]")
-            self.pos = nx.spring_layout(self.filtered_graph)
+            self.pos = nx.spring_layout(self.filtered_graph, seed=self.config.seed)
 
     def create_visualization(self) -> None:
         """Create and display/save the visualization."""
@@ -715,7 +717,8 @@ class GraphMLVisualizer:
 
         # Save as PDF
         pdf_file = f"{base_name}_{layout}.pdf"
-        fig.savefig(pdf_file, bbox_inches='tight')
+        # no creation date, so the same input gives the same PDF
+        fig.savefig(pdf_file, bbox_inches='tight', metadata={'CreationDate': None})
         console.print(f"[green]✓ Saved PDF: {pdf_file}[/green]")
 
     def save_filtered_graphml(self) -> None:
@@ -784,6 +787,13 @@ def parse_arguments() -> VisualizationConfig:
         choices=['circular', 'spring'],
         default='spring',
         help="Network layout algorithm"
+    )
+
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Seed for the spring layout; the same seed gives the same node positions (default: 42)"
     )
 
     parser.add_argument(
@@ -906,6 +916,7 @@ def parse_arguments() -> VisualizationConfig:
         input_file=args.infile,
         color_map_file=args.color_map_file,
         network_layout=args.network_layout,
+        seed=args.seed,
         node_sizing_strategy=args.node_sizing_strategy,
         node_coloring_strategy=args.node_coloring_strategy,
         org_list_to_ignore=args.org_list_to_ignore,

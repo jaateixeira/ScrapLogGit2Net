@@ -54,9 +54,10 @@ The tool also prints to the terminal: the initial node, edge and isolate counts;
 | `-h`, `--help` | Show the help message and exit. | |
 | `-v`, `--verbose` | Print more detail (removed nodes, the first 10 node colors, debug log). Also draws the part of each developer's e-mail before `@` as a node label. | off |
 | `-c COLOR_MAP_FILE`, `--color-map COLOR_MAP_FILE` | JSON file that maps affiliations to colors. Colors in this file are used first, for every coloring strategy. If the file is missing or is not valid JSON, a warning or error is logged and an empty map is used. | none |
-| `-nl {circular,spring}`, `--network-layout {circular,spring}` | Layout algorithm. The spring layout uses no fixed seed, so node positions change from run to run. | `spring` |
+| `-nl {circular,spring}`, `--network-layout {circular,spring}` | Layout algorithm. The spring layout uses the seed from `--seed`, so the same input gives the same positions. | `spring` |
+| `--seed SEED` | Seed for the spring layout. Change it to get a different arrangement. | `42` |
 | `-ns {all-equal,centrality-score}`, `--node-sizing-strategy {all-equal,centrality-score}` | `all-equal`: every node has size 100. `centrality-score`: size is degree centrality × 100. | `centrality-score` |
-| `-nc {random-color-to-unknown-firms,gray-color-to-unknown-firms,gray-color-to-others-not-in-topn-filter}`, `--node-coloring-strategy ...` | How to color affiliations that are not in the color map. `random-color-to-unknown-firms`: a random color per affiliation. `gray-color-to-unknown-firms`: gray. `gray-color-to-others-not-in-topn-filter`: a random color for affiliations among the top N organizations, gray for the rest. N comes from `-ot`, or is 10 if `-ot` is not given. | `random-color-to-unknown-firms` |
+| `-nc {random-color-to-unknown-firms,gray-color-to-unknown-firms,gray-color-to-others-not-in-topn-filter}`, `--node-coloring-strategy ...` | How to color affiliations that are not in the color map. `random-color-to-unknown-firms`: a color derived from the affiliation name, the same in every run and in both visualizers (the strategy keeps its old name). `gray-color-to-unknown-firms`: gray. `gray-color-to-others-not-in-topn-filter`: the name-derived color for affiliations among the top N organizations, gray for the rest. N comes from `-ot`, or is 10 if `-ot` is not given. | `random-color-to-unknown-firms` |
 | `-oi ORG_LIST_TO_IGNORE`, `--org-list-to-ignore ORG_LIST_TO_IGNORE` | Comma-separated list of affiliations. Developers with these affiliations are removed. | none |
 | `-oo ORG_LIST_ONLY`, `--org-list-only ORG_LIST_ONLY` | Comma-separated list of affiliations. Only developers with these affiliations are kept. | none |
 | `-on ORG_LIST_AND_NEIGHBOURS_ONLY`, `--org-list-and-neighbours-only ORG_LIST_AND_NEIGHBOURS_ONLY` | Comma-separated list of affiliations. Keeps developers with these affiliations and every developer directly connected to them. | none |
@@ -103,9 +104,8 @@ Keep only the top 5 organizations, gray out the others, and list the top 5 in th
 
 - **Tk is required.** The module imports `tkinter` at start-up, even when you pass `infile`. Without a working Tk library the tool fails before parsing any option, including `--help` (for example `ImportError: libtk8.6.so: cannot open shared object file`). On Debian or Ubuntu, Tk usually comes with the `python3-tk` package.
 - **Empty result after filtering.** When the filters remove every node (for example `-oo nosuch` on the sample file), the tool prints the "Filtering Results" table and "Graph is empty after filtering!", saves no files and exits with status 1.
-- **Images differ between runs.** Affiliations without a color in the color map get random colors, so two runs on the same input can give different PNG and PDF files.
+- **Repeatable images.** The same input and options give the same PNG and PDF files: colors come from affiliation names, the spring layout uses a fixed seed and the PDF has no creation date. Two different affiliations can get similar colors; use `-c` to choose them.
 - With `-ns centrality-score`, a node with no edges has degree centrality 0 and is drawn with size 0, so it is not visible.
-- Random colors and the spring layout change on each run. Use `-c` and `-nl circular` for repeatable figures.
 - Alias keys in the `-a` file are read with Python `configparser`, which converts keys to lower case. An affiliation that contains upper-case letters will not match any alias.
 - An older document, `docs/formatAndViz-nofi-GraphML-documentation.md`, describes this tool under its old name.
 
