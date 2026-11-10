@@ -81,7 +81,7 @@ Examples:
     parser.add_argument(
         "--verbose",
         action="store_true",
-        help="Enable verbose output"
+        help="Print the node and edge counts of each file as it is read"
     )
 
     parser.add_argument(
@@ -611,6 +611,9 @@ def main():
             graph, filename, error = read_graphml_file(filepath)
 
             if graph is not None:
+                if args.verbose:
+                    progress.console.print(f"  ✓ {filename}: {graph.number_of_nodes()} nodes, "
+                                           f"{graph.number_of_edges()} edges")
                 metrics = calculate_metrics(graph, filename)
                 all_metrics.append(metrics)
             else:

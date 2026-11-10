@@ -47,7 +47,7 @@ The tool does not use node attributes, so any GraphML network works, including n
 | `--save-plot` | Save the plot to this file name, for example `metrics.png` or `metrics.pdf`. | not saved |
 | `--output-dir` | Directory for the saved plot. It is created if it does not exist. Only used with `--save-plot`. | current directory |
 | `--dpi` | Resolution of the saved plot. | 100 |
-| `--verbose` | Accepted, but not implemented: it has no effect on the output. | off |
+| `--verbose` | Print each file's node and edge counts as it is read, for example `5-pentagon-with-star.graphML: 5 nodes, 10 edges`. | off |
 | `--no-show` | Do not open the plot window. | off (window opens) |
 | `--no-table` | Do not print the "Network Metrics Summary" table and the "Statistics" panel. | off (table printed) |
 

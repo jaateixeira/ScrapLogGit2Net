@@ -6,7 +6,6 @@ formatAndReportGraphML - Basic reporter for GraphML files with company analysis.
 import argparse
 import os
 import sys
-import json
 from typing import Dict, List, Tuple, Optional, Any, Set
 from dataclasses import dataclass
 
@@ -25,7 +24,6 @@ from scraplog.utils.unified_console import Table
 class ReportConfig:
     """Configuration for basic GraphML reporting."""
     input_file: str
-    color_map_file: Optional[str] = None
     top_firms_only: bool = False
     filter_by_org: bool = False
     verbose: bool = False
@@ -56,7 +54,6 @@ class BasicGraphMLReporter:
     def __init__(self, config: ReportConfig):
         self.config = config
         self.graph: Optional[nx.Graph] = None
-        self.color_map: Dict[str, str] = {}
         self.degree_centrality: Dict[str, float] = {}
         self.top_connected_individuals: List[Tuple[str, float]] = []
         self.organization_counts: Dict[str, int] = {}
@@ -99,20 +96,6 @@ class BasicGraphMLReporter:
             border_style="blue"
         )
         console.print(stats_panel)
-
-    def load_color_map(self) -> None:
-        """Load color map from JSON file if provided."""
-        if not self.config.color_map_file:
-            return
-
-        try:
-            with open(self.config.color_map_file, 'r') as file:
-                self.color_map = json.load(file)
-            console.print(f"[green]✓ Loaded color map from {self.config.color_map_file}[/green]")
-        except FileNotFoundError:
-            logger.warning(f"Color map file not found: {self.config.color_map_file}")
-        except json.JSONDecodeError:
-            logger.error(f"Invalid JSON in color map file: {self.config.color_map_file}")
 
     def normalize_affiliations(self) -> None:
         """Normalize affiliation domains."""
@@ -473,13 +456,6 @@ def parse_arguments() -> ReportConfig:
     )
 
     parser.add_argument(
-        "-c", "--color-map",
-        type=str,
-        dest="color_map_file",
-        help="JSON file mapping firms/organizations to colors"
-    )
-
-    parser.add_argument(
         "-o", "--output",
         type=str,
         dest="output_prefix",
@@ -502,7 +478,6 @@ def parse_arguments() -> ReportConfig:
 
     return ReportConfig(
         input_file=args.file,
-        color_map_file=args.color_map_file,
         top_firms_only=args.top_firms_only,
         filter_by_org=args.filter_by_org,
         verbose=args.verbose,
@@ -547,7 +522,6 @@ def main() -> None:
             config_table.add_row("Input file", config.input_file)
             config_table.add_row("Top firms only", str(config.top_firms_only))
             config_table.add_row("Filter by org", str(config.filter_by_org))
-            config_table.add_row("Color map", config.color_map_file or "None")
             config_table.add_row("Output prefix", config.output_prefix)
 
             console.print(config_table)
@@ -557,7 +531,6 @@ def main() -> None:
 
         # Load and process graph
         reporter.load_graph()
-        reporter.load_color_map()
         reporter.normalize_affiliations()
         reporter.filter_graph()
         if reporter.graph.number_of_nodes() == 0:
@@ -584,10 +557,6 @@ def main() -> None:
         sys.exit(1)
     except nx.NetworkXError as e:
         console.print(f"\n❌ [bold red]NetworkX Error:[/bold red]")
-        console.print(f"   {e}")
-        sys.exit(1)
-    except json.JSONDecodeError as e:
-        console.print(f"\n❌ [bold red]JSON Error: Invalid color map file[/bold red]")
         console.print(f"   {e}")
         sys.exit(1)
     except Exception as e:

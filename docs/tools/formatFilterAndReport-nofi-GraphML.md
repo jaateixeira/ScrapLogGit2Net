@@ -44,7 +44,6 @@ All counts and lists are computed after the organization filters (`-oi`, `-oo`) 
 | `-v`, `--verbose` | Print a debug line for each node removed by `-oi` or `-oo`, and for each `alum` affiliation renamed to `alum.mit.edu`. | off |
 | `-oi`, `--org_list_to_ignore` | Comma-separated list of organizations. Developers whose `affiliation` matches one of them are removed. | none |
 | `-oo`, `--org_list_only` | Comma-separated list of organizations. Only developers whose `affiliation` matches one of them are kept. | none |
-| `-c`, `--color_map` | JSON file mapping firms/organizations to colors. The file is loaded, but the colors are not used anywhere in the report: this option has no effect on the output. | none |
 | `-tn`, `--top_n_orgs` | Number of top organizations to report (console table and `Top Organizations` sheet). | 20 |
 | `-ti`, `--top_n_inds` | Number of top individuals by degree centrality to report (console table and `Centralities` sheet). | 10 |
 

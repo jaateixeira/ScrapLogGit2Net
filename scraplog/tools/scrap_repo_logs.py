@@ -172,7 +172,8 @@ install(
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description='Deanonymize GitHub noreply emails in gramphML files',
+        description='Experimental: list the remote branches of a local Git repository, check out each one '
+                    'and print the first and last commit date per branch',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
@@ -180,16 +181,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         'input_dir',
         type=str,
-        help='Directory containing gramphML files to process'
-    )
-
-    # Year range option (now optional)
-    parser.add_argument(
-        '--years',
-        nargs='*',
-        metavar=('START_YEAR', 'END_YEAR'),
-        help='Range of years to process (inclusive). '
-             'Specify exactly 2 years (start and end)'
+        help='Local Git repository to process'
     )
 
     # Releases list option (optional)
@@ -204,17 +196,6 @@ def parse_args() -> argparse.Namespace:
 
     # Optional arguments
     parser.add_argument(
-        '--output-dir',
-        type=str,
-        default='processed',
-        help='Directory to save processed files'
-    )
-    parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help='Show what would be done without making changes'
-    )
-    parser.add_argument(
         '--verbose', '-v',
         action='count',
         default=0,
@@ -226,50 +207,9 @@ def parse_args() -> argparse.Namespace:
 
 def validate_args(args: argparse.Namespace) -> Tuple[bool, str]:
     """Validate command line arguments."""
-    # Validate input directory
     if not os.path.isdir(args.input_dir):
         return False, f"Input directory does not exist: {args.input_dir}"
-
-    # Validate year range if specified
-    if args.years is not None:
-        if len(args.years) != 2:
-            return False, "Must specify exactly 2 years (start and end)"
-        try:
-            start_year = int(args.years[0])
-            end_year = int(args.years[1])
-            if start_year > end_year:
-                return False, "Start year must be <= end year"
-            if start_year < 1970 or end_year > 2100:
-                return False, "Years must be between 1970 and 2100"
-        except ValueError:
-            return False, "Years must be integers"
-
     return True, ""
-
-
-
-def validate_args(args: argparse.Namespace) -> Tuple[bool, str]:
-    """Validate command line arguments."""
-    # Validate input directory
-    if not os.path.isdir(args.input_dir):
-        return False, f"Input directory does not exist: {args.input_dir}"
-
-    # Validate year range if specified
-    if args.years:
-        try:
-            start_year = int(args.years[0])
-            end_year = int(args.years[1])
-            if start_year > end_year:
-                return False, "Start year must be <= end year"
-            if start_year < 1970 or end_year > 2100:  # Reasonable bounds
-                return False, "Years must be between 1970 and 2100"
-        except ValueError:
-            return False, "Years must be integers"
-
-    return True, ""
-
-
-
 
 
 def check_if_directory_is_a_git_repository(directory_path: str) -> bool:

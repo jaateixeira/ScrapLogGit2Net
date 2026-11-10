@@ -102,7 +102,6 @@ class VisualizationConfig:
     plot: bool = False
     save_graphml: bool = False
     verbose: bool = False
-    github_token: Optional[str] = None
 
 
 class GraphMLVisualizer:
@@ -625,13 +624,15 @@ class GraphMLVisualizer:
             orgs_to_show = list(self.affiliation_counts.items())[:10]
         elif self.config.legend_type == 'top20':
             orgs_to_show = list(self.affiliation_counts.items())[:20]
-        elif self.config.legend_type.startswith('top10+'):
+        elif self.config.legend_type == 'top10+others':
             orgs_to_show = list(self.affiliation_counts.items())[:10]
-            # Add extra organizations if specified
+            # Add extra organizations if specified (once, even if already in the top 10)
             if self.config.legend_extra_organizations:
+                shown = {org for org, _ in orgs_to_show}
                 for extra_org in self.config.legend_extra_organizations:
-                    if extra_org in self.affiliation_counts:
+                    if extra_org in self.affiliation_counts and extra_org not in shown:
                         orgs_to_show.append((extra_org, self.affiliation_counts[extra_org]))
+                        shown.add(extra_org)
         else:
             orgs_to_show = list(self.affiliation_counts.items())[:10]
 
@@ -651,6 +652,18 @@ class GraphMLVisualizer:
                        label=f"{org} ({count})", lw=0,
                        markerfacecolor=color, markersize=8)
             )
+
+        # top10+others: one gray entry for the developers of every affiliation not listed
+        if self.config.legend_type == 'top10+others':
+            listed = {org for org, _ in orgs_to_show}
+            others = sum(count for org, count in self.affiliation_counts.items()
+                         if org not in listed and org in active_affiliations)
+            if others > 0:
+                legend_elements.append(
+                    Line2D([0], [0], marker='o', color='gray', label=f"others ({others})", lw=0,
+                           markerfacecolor='gray', markersize=8)
+                )
+
         # Position legend based on location
         if self.config.legend_location == 'outside_center_right':
             fig.subplots_adjust(right=0.7)
@@ -675,7 +688,14 @@ class GraphMLVisualizer:
                 frameon=False,
                 prop={'size': 8}
             )
-        else:  # Default to center right
+        elif self.config.legend_location in ('upper_left', 'center_left', 'lower_left'):
+            ax.legend(
+                handles=legend_elements,
+                loc=self.config.legend_location.replace('_', ' '),  # e.g. 'upper left'
+                frameon=False,
+                prop={'size': 8}
+            )
+        else:  # center_right
             ax.legend(
                 handles=legend_elements,
                 loc='center right',
@@ -840,9 +860,10 @@ def parse_arguments() -> VisualizationConfig:
 
     parser.add_argument(
         "-lt", "--legend-type",
-        choices=['top5', 'top10', 'top20', 'top10+1', 'top10+others'],
+        choices=['top5', 'top10', 'top20', 'top10+others'],
         default='top10',
-        help="Type of legend to display"
+        help="Type of legend to display: the top 5, 10 or 20 affiliations; "
+             "top10+others adds the -le organizations and one gray 'others' entry for the rest"
     )
 
     parser.add_argument(
@@ -855,13 +876,6 @@ def parse_arguments() -> VisualizationConfig:
         "-s", "--save-graphml",
         action="store_true",
         help="Save filtered graph as new GraphML file"
-    )
-
-    parser.add_argument(
-        "-g", "--github",
-        type=str,
-        dest="github_token",
-        help="GitHub API token for affiliation resolution (not implemented)"
     )
 
     args = parser.parse_args()
@@ -906,7 +920,6 @@ def parse_arguments() -> VisualizationConfig:
         plot=args.plot,
         save_graphml=args.save_graphml,
         verbose=args.verbose,
-        github_token=args.github_token,
     )
 
 

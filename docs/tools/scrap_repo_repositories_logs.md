@@ -42,10 +42,7 @@ The step that would write a Git log per release (`get_git_logs_for_each_release`
 |---|---|---|
 | `input_dir` | The local Git repository to process. Required. If it is not a folder, the tool stops with "Input directory does not exist" and exit code 1. If it is a folder but not a Git repository, the tool logs "Not a git repository" and exits with code 1. | none (required) |
 | `-h`, `--help` | Show the help message and exit. | |
-| `--years [START_YEAR [END_YEAR ...]]` | Meant to limit processing to a range of years. The values are only checked (integers, start not after end, between 1970 and 2100) and then not used. Exactly two years are expected: with one year the tool fails with an `IndexError`; with more than two, the extra values are ignored. | not set |
 | `--releases [RELEASE ...]` | Meant to process only the listed releases. When it is given with at least one name, the tool does nothing after checking that `input_dir` is a Git repository: all the work is in the branch that runs when `--releases` is not given. | not set (all branches) |
-| `--output-dir OUTPUT_DIR` | Meant as the folder for processed files. Not used by the code. | `processed` |
-| `--dry-run` | Meant to show what would be done without changes. Not used by the code: the branch checkouts still happen. | off |
 | `--verbose`, `-v` | Log level: none gives warnings only, `-v` gives info messages, `-vv` (or more) gives debug messages and also prints the branch list after each cleaning step. | `0` |
 
 ## Examples
@@ -66,7 +63,7 @@ The same, with info messages:
 
 ## Notes and limitations
 
-- Experimental and unfinished. `--years`, `--output-dir` and `--dry-run` have no effect, and `--releases` only turns the processing off.
+- Experimental and unfinished. `--releases` only turns the processing off. There is no dry-run mode: the tool always checks out every branch, so run it on a clone you do not mind changing.
 - The tool changes the repository: it runs `git checkout` for every branch, so the repository is left on the first branch of the list. Do not run it on a repository with uncommitted work.
 - The tool does not clone or fetch. It works only with the remote branches the local clone already knows.
 - If a checkout fails, the error is printed and the tool goes on with the next command, so the dates come from whatever is checked out.

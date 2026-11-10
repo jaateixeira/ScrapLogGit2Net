@@ -50,7 +50,6 @@ All counts and lists are computed after the filters (`-t`, `-f`) are applied, ex
 | `-v`, `--verbose` | Print the configuration, each node removed by a filter, each `alum` affiliation renamed to `alum.mit.edu`, and up to 20 more organizations after the top 10. | off |
 | `-t`, `--top-firms-only` | Keep only nodes whose organization is in the top-firms list. | off |
 | `-f`, `--filter-by-org` | Remove nodes whose organization is in the filter-firms list. | off |
-| `-c`, `--color-map` | JSON file mapping firms/organizations to colors. The file is loaded, but the colors are not used anywhere in the report: this option has no effect on the output. | none |
 | `-o`, `--output` | Output file name prefix; `.xls` is appended. It can include a directory. | input file name without extension |
 | `--top-firms` | Comma-separated list that replaces the default top-firms list. Only used together with `-t`. | `google,microsoft,ibm,amazon,intel,amd,nvidia,arm,meta,bytedance` |
 | `--filter-firms` | Comma-separated list that replaces the default filter-firms list. Only used together with `-f`. | `users,tensorflow,gmail` |

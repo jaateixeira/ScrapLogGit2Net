@@ -64,11 +64,10 @@ The tool also prints to the terminal: the initial node, edge and isolate counts;
 | `-a AFFILIATION_ALIAS_IN_CONFIG_FILE`, `--affiliation-alias-in-config-file AFFILIATION_ALIAS_IN_CONFIG_FILE` | INI file with an `[aliases]` section that renames affiliations (see [Input](#input)). An alias for `jp` is handled specially: the new affiliation is `ADIT`, `Panasonic` or `Fujitsu` depending on the e-mail; other `jp` e-mails are left unchanged with a warning. | none |
 | `-p`, `--plot` | Show the figure in a window instead of saving PNG and PDF files. | off (save files) |
 | `-l`, `--legend` | Add a legend. Each entry shows an affiliation and its node count after filtering. | off |
-| `-ll {upper_right,upper_left,center_right,center_left,lower_right,lower_left,outside_center_right}`, `--legend-location ...` | Legend position. Only `outside_center_right`, `upper_right` and `lower_right` are handled separately. `upper_left`, `center_left`, `lower_left` and `center_right` all place the legend at the center right inside the plot. | `outside_center_right` |
-| `-lt {top5,top10,top20,top10+1,top10+others}`, `--legend-type ...` | Which affiliations the legend lists: the top 5, 10 or 20 by node count after filtering. `top10+1` and `top10+others` behave the same: the top 10 plus the organizations given with `-le`. | `top10` |
-| `-le LEGEND_EXTRA_ORGANIZATIONS`, `--legend-extra-organizations LEGEND_EXTRA_ORGANIZATIONS` | Comma-separated list of extra affiliations to add to the legend. Used only with `-lt top10+1` or `-lt top10+others`; ignored otherwise. | none |
+| `-ll {upper_right,upper_left,center_right,center_left,lower_right,lower_left,outside_center_right}`, `--legend-location ...` | Legend position. `outside_center_right` places it outside the plot, to the right; the other six place it inside the plot at that position. | `outside_center_right` |
+| `-lt {top5,top10,top20,top10+others}`, `--legend-type ...` | Which affiliations the legend lists: the top 5, 10 or 20 by node count after filtering. `top10+others` lists the top 10, then the organizations given with `-le`, then one gray `others (N)` entry, where N is the number of developers of all other affiliations. | `top10` |
+| `-le LEGEND_EXTRA_ORGANIZATIONS`, `--legend-extra-organizations LEGEND_EXTRA_ORGANIZATIONS` | Comma-separated list of extra affiliations to add to the legend after the top 10. An affiliation already in the top 10 is not listed twice. Used only with `-lt top10+others`; ignored otherwise. | none |
 | `-s`, `--save-graphml` | Also save the filtered graph as a new GraphML file (see [Output](#output)). | off |
-| `-g GITHUB_TOKEN`, `--github GITHUB_TOKEN` | Not implemented. The value is accepted and stored but has no effect. | none |
 
 Filters are applied in this order: `-oi`, `-oo`, `-on`, `-ot`. Affiliation names must match exactly (case-sensitive).
 
@@ -108,8 +107,6 @@ Keep only the top 5 organizations, gray out the others, and list the top 5 in th
 - With `-ns centrality-score`, a node with no edges has degree centrality 0 and is drawn with size 0, so it is not visible.
 - Random colors and the spring layout change on each run. Use `-c` and `-nl circular` for repeatable figures.
 - Alias keys in the `-a` file are read with Python `configparser`, which converts keys to lower case. An affiliation that contains upper-case letters will not match any alias.
-- If an organization given with `-le` is already in the top 10, it appears twice in the legend.
-- `-g/--github` does nothing.
 - An older document, `docs/formatAndViz-nofi-GraphML-documentation.md`, describes this tool under its old name.
 
 [Back to the README](../../README.md#executable-toolsscripts)
