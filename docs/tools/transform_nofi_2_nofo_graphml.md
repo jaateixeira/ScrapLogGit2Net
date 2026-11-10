@@ -33,7 +33,7 @@ Default file name, written to the current working directory:
 - The input file name without its folder, with `.graphML` removed and `-transformed-to-nofo.graphML` added. For example, `test-data/5-pentagon-with-star.graphML` gives `5-pentagon-with-star-transformed-to-nofo.graphML`.
 - If that file already exists, a counter is added: `5-pentagon-with-star-transformed-to-nofo(1).graphML`, then `(2)`, and so on. Existing files are not overwritten.
 - If the input name already contains `-transformed-to-nofo`, that part is removed first, so it is not repeated.
-- The `.graphML` removal is case-sensitive. An input ending in `.graphml` keeps that ending, for example `x.graphml-transformed-to-nofo.graphML`.
+- The `.graphML` ending is recognised in any case: an input `x.graphml` also gives `x-transformed-to-nofo.graphML`.
 
 The console shows tables with the number of nodes, edges and isolates before and after removing isolates, and the number of organizations and inter-organizational relationships.
 
@@ -47,7 +47,7 @@ The console shows tables with the number of nodes, edges and isolates before and
 | `-t`, `--top-firms-only` | Not implemented. The tool prints "ERROR: Filtering by top firms not implemented yet" and stops with exit code 1. | off |
 | `-f`, `--filter-by-org` | Not implemented. The tool prints "ERROR: Filtering by organizations not implemented yet" and stops with exit code 1. | off |
 | `-s`, `--show` | After saving, run the organizations visualizer (`python -m scraplog.viz.nofo_visualizer <output file> --show`) on the result. | off |
-| `-o OUTFILE`, `--outfile OUTFILE` | Output file name. If it does not end in `.graphML` (case-sensitive), `.graphML` is added: `-o two-orgs` gives `two-orgs.graphML`, and `-o tf-orgs.graphml` gives `tf-orgs.graphml.graphML`. An existing file with this name is overwritten. | see Output |
+| `-o OUTFILE`, `--outfile OUTFILE` | Output file name. If it does not end in `.graphML` (in any case), `.graphML` is added: `-o two-orgs` gives `two-orgs.graphML`, and `-o tf-orgs.graphml` is kept as `tf-orgs.graphml`. An existing file with this name is overwritten. | see Output |
 
 ## Examples
 

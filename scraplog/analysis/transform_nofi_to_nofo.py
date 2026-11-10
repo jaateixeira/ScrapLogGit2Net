@@ -197,15 +197,17 @@ def save_network(
         Path to saved file
     """
     if output_file is None and input_file is not None:
-        base_name = os.path.basename(input_file).replace('.graphML', '')
+        base_name = os.path.basename(input_file)
+        if base_name.lower().endswith('.graphml'):  # .graphML, .graphml, ... (any case)
+            base_name = base_name[:-len('.graphml')]
         base_name = base_name.replace('-transformed-to-nofo', '')
         transformed_file_name = determine_file_name(f"{base_name}-transformed-to-nofo")
     elif output_file is None:
         transformed_file_name = determine_file_name("network-transformed-to-nofo")
     else:
         transformed_file_name = output_file
-        # Ensure .graphML extension
-        if not transformed_file_name.endswith('.graphML'):
+        # Ensure a .graphML extension; an existing one in any case (e.g. .graphml) is kept
+        if not transformed_file_name.lower().endswith('.graphml'):
             transformed_file_name += '.graphML'
 
     logger.info(f"Saving network to {transformed_file_name}")
