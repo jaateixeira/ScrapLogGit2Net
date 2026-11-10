@@ -1,5 +1,6 @@
 # file to export VCS (CVS,SVN, GIT) SNA data to the graphml format used by visone and gephi
 import sys
+from xml.sax.saxutils import escape  # &, < and > in values (e.g. an e-mail like tom&jerry@acme.com)
 #import sys
 
 #from __future__ import absolute_import
@@ -41,7 +42,7 @@ def addNode(nodeId, atributes):
         key = "d"+str(atribute[0])
         value = atribute[1]
 
-        res += '\t<data key="'+key+'">'+value+'</data>\n'
+        res += '\t<data key="'+key+'">'+escape(value)+'</data>\n'
     
     res+='\t</node>\n' 
     return res 
@@ -76,7 +77,7 @@ def addEdgeWithAttributes(edgeId, nodeIdFrom, nodeIdTo, atributes):
 
     res = '\t<edge id="'+str(edgeId)+'" source="'+ str(nodeIdFrom)+'" target="'+ str(nodeIdTo)+'">\n'
     for key_id, value in atributes:
-        res += '\t\t<data key="d'+str(key_id)+'">'+str(value)+'</data>\n'
+        res += '\t\t<data key="d'+str(key_id)+'">'+escape(str(value))+'</data>\n'
     res += '\t</edge>\n'
     return res
 
