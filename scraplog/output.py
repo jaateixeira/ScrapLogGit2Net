@@ -150,9 +150,9 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
             output_static_uw_graph_with_affiliation = enrich_graph_with_affiliation(output_static_uw_graph,state.affiliations)
 
+            # Written once. state.dev_to_dev_network (built from the aggregated co-edits) used to be
+            # written to the same file right after; it is the same graph, so the output is unchanged.
             export_log_data.create_graphml_file(output_static_uw_graph_with_affiliation, graphml_filename)
-            #nx.write_graphml(output_static_uw_graph_with_affiliation, graphml_filename)
-            export_log_data.create_graphml_file(state.dev_to_dev_network, graphml_filename)
 
         else:
             print_error("Unknown network type at writing graphml files")
