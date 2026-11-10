@@ -169,7 +169,7 @@ class GraphMLVisualizer:
 
     def apply_affiliation_aliases(self) -> None:
         """Apply affiliation aliases from config file."""
-        if not self.config.affiliation_alias_in_config_file or not self.graph:
+        if not self.config.affiliation_alias_in_config_file or self.graph is None:
             return
 
         try:
@@ -203,7 +203,7 @@ class GraphMLVisualizer:
 
     def normalize_affiliations(self) -> None:
         """Normalize common affiliation patterns."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         normalized_count = 0
@@ -222,7 +222,7 @@ class GraphMLVisualizer:
 
     def analyze_affiliations(self) -> None:
         """Count affiliations in the graph."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         self.affiliation_counts = {}
@@ -257,7 +257,7 @@ class GraphMLVisualizer:
         table.add_column("Node Count", style="yellow")
         table.add_column("Percentage", style="cyan")
 
-        total_nodes = len(self.graph.nodes()) if self.graph else 0
+        total_nodes = len(self.graph.nodes()) if self.graph is not None else 0
         for i, (org, count) in enumerate(list(self.affiliation_counts.items())[:20], 1):
             percentage = (count / total_nodes * 100) if total_nodes > 0 else 0
             table.add_row(str(i), org, str(count), f"{percentage:.1f}%")
@@ -266,7 +266,7 @@ class GraphMLVisualizer:
 
     def reanalyze_affiliations_after_filtering(self) -> None:
         """Recompute affiliation counts from the filtered graph after filtering."""
-        if not self.filtered_graph:
+        if self.filtered_graph is None:
             return
 
         self.affiliation_counts = {}
@@ -300,7 +300,7 @@ class GraphMLVisualizer:
 
     def filter_graph(self) -> None:
         """Apply all configured filters to the graph."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         console.print("[bold cyan]Applying filters...[/bold cyan]")
@@ -328,7 +328,7 @@ class GraphMLVisualizer:
 
     def _filter_by_organizations(self, org_list: List[str], keep: bool = True) -> None:
         """Filter nodes by organization list."""
-        if not self.filtered_graph:
+        if self.filtered_graph is None:
             return
 
         operation = "Keeping only" if keep else "Removing"
@@ -349,7 +349,7 @@ class GraphMLVisualizer:
 
     def _filter_by_organizations_and_neighbours(self, org_list: List[str]) -> None:
         """Filter to keep only specified organizations and their neighbours."""
-        if not self.filtered_graph:
+        if self.filtered_graph is None:
             return
 
         console.print(f"[cyan]Keeping organizations and their neighbours: {org_list}[/cyan]")
@@ -377,7 +377,7 @@ class GraphMLVisualizer:
 
     def _filter_top_organizations(self) -> None:
         """Filter to keep only top organizations."""
-        if not self.filtered_graph or not self.top_organizations:
+        if self.filtered_graph is None or not self.top_organizations:
             return
 
         console.print(f"[cyan]Keeping top {len(self.top_organizations)} organizations[/cyan]")
@@ -396,7 +396,7 @@ class GraphMLVisualizer:
 
     def _print_filtering_results(self) -> None:
         """Print filtering results."""
-        if not self.filtered_graph:
+        if self.filtered_graph is None:
             return
 
         console.print("\n[bold cyan]Filtering Results:[/bold cyan]")
@@ -431,7 +431,7 @@ class GraphMLVisualizer:
 
     def calculate_centralities(self) -> None:
         """Calculate centrality measures."""
-        if not self.filtered_graph:
+        if self.filtered_graph is None:
             return
 
         console.print("[bold cyan]Calculating centrality measures...[/bold cyan]")
@@ -460,7 +460,7 @@ class GraphMLVisualizer:
 
     def get_node_colors(self) -> List[Any]:
         """Get colors for all nodes based on coloring strategy."""
-        if not self.filtered_graph:
+        if self.filtered_graph is None:
             return []
 
         colors = []
@@ -505,7 +505,7 @@ class GraphMLVisualizer:
 
     def get_node_sizes(self) -> List[float]:
         """Calculate node sizes based on centrality."""
-        if not self.filtered_graph:
+        if self.filtered_graph is None:
             return []
 
         if self.config.node_sizing_strategy == 'all-equal':
@@ -519,7 +519,7 @@ class GraphMLVisualizer:
 
     def calculate_layout(self) -> None:
         """Calculate node positions based on layout algorithm."""
-        if not self.filtered_graph:
+        if self.filtered_graph is None:
             return
 
         console.print(f"[cyan]Calculating {self.config.network_layout} layout...[/cyan]")
@@ -534,7 +534,7 @@ class GraphMLVisualizer:
 
     def create_visualization(self) -> None:
         """Create and display/save the visualization."""
-        if not self.filtered_graph or not self.pos:
+        if self.filtered_graph is None or not self.pos:
             return
 
         console.print("[bold cyan]Creating visualization...[/bold cyan]")
@@ -700,7 +700,7 @@ class GraphMLVisualizer:
 
     def save_filtered_graphml(self) -> None:
         """Save filtered graph as GraphML file."""
-        if not self.filtered_graph or not self.config.save_graphml:
+        if self.filtered_graph is None or not self.config.save_graphml:
             return
 
         console.print("[bold cyan]Saving filtered GraphML...[/bold cyan]")

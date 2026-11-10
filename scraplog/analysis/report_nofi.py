@@ -67,7 +67,7 @@ class GraphMLReporter:
 
     def _validate_graph(self) -> None:
         """Validate the loaded graph has required attributes."""
-        if not self.graph:
+        if self.graph is None:
             raise ValueError("Graph not loaded")
 
         if self.graph.number_of_nodes() == 0:
@@ -93,7 +93,7 @@ class GraphMLReporter:
 
     def normalize_affiliations(self) -> None:
         """Normalize affiliation domains that represent the same organization."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         changes_made = False
@@ -115,7 +115,7 @@ class GraphMLReporter:
 
     def filter_by_organizations(self) -> None:
         """Filter graph based on organization lists."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         original_node_count = self.graph.number_of_nodes()
@@ -134,7 +134,7 @@ class GraphMLReporter:
 
     def _filter_organizations(self, org_list: List[str], exclude: bool = True) -> None:
         """Internal method to filter nodes by organization."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         operation = "Excluding" if exclude else "Including only"
@@ -155,7 +155,7 @@ class GraphMLReporter:
 
     def calculate_statistics(self) -> None:
         """Calculate comprehensive graph statistics."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         logger.info("Calculating graph statistics...")
@@ -178,7 +178,7 @@ class GraphMLReporter:
 
     def calculate_centralities(self) -> None:
         """Calculate centrality measures for nodes."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         logger.info("Calculating centrality measures...")
@@ -196,7 +196,7 @@ class GraphMLReporter:
 
     def analyze_organizations(self) -> None:
         """Analyze organizations in the graph."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         logger.info("Analyzing organizations...")
@@ -218,7 +218,7 @@ class GraphMLReporter:
 
     def calculate_edge_analysis(self) -> Dict[str, Any]:
         """Calculate edge analysis by organization."""
-        if not self.graph:
+        if self.graph is None:
             return {}
 
         logger.info("Analyzing edges by organization...")
@@ -271,7 +271,7 @@ class GraphMLReporter:
         if self.stats['isolates']:
             console.print("\n[bold yellow]Isolated nodes:[/bold yellow]")
             for isolate in self.stats['isolates']:
-                data = self.graph.nodes[isolate] if self.graph else {}
+                data = self.graph.nodes[isolate] if self.graph is not None else {}
                 console.print(f"  • {isolate}: {data.get('e-mail', 'N/A')} @ {data.get('affiliation', 'N/A')}")
 
     def print_organization_analysis(self) -> None:
@@ -318,7 +318,7 @@ class GraphMLReporter:
         table.add_column("Affiliation", style="yellow")
 
         for i, (node_id, centrality) in enumerate(self.centralities, 1):
-            affiliation = self.graph.nodes[node_id].get('affiliation', 'unknown') if self.graph else 'unknown'
+            affiliation = self.graph.nodes[node_id].get('affiliation', 'unknown') if self.graph is not None else 'unknown'
             table.add_row(
                 str(i),
                 node_id,
@@ -330,7 +330,7 @@ class GraphMLReporter:
 
     def export_to_excel(self) -> str:
         """Export all analysis to Excel file."""
-        if not self.graph:
+        if self.graph is None:
             raise ValueError("No graph data to export")
 
         logger.info("Exporting to Excel...")
@@ -408,14 +408,14 @@ class GraphMLReporter:
         sheet.write(0, 2, "Affiliation")
 
         for i, (node_id, centrality) in enumerate(self.centralities, 1):
-            affiliation = self.graph.nodes[node_id].get('affiliation', 'unknown') if self.graph else 'unknown'
+            affiliation = self.graph.nodes[node_id].get('affiliation', 'unknown') if self.graph is not None else 'unknown'
             sheet.write(i, 0, str(node_id))
             sheet.write(i, 1, centrality)
             sheet.write(i, 2, affiliation)
 
     def _export_nodes_to_excel(self, workbook: xlwt.Workbook) -> None:
         """Export node list to Excel sheet."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         sheet = workbook.add_sheet("Nodes")
@@ -546,6 +546,10 @@ def main() -> None:
         reporter.load_color_map()
         reporter.normalize_affiliations()
         reporter.filter_by_organizations()
+        if reporter.graph.number_of_nodes() == 0:
+            console.print("\n❌ [bold red]Error: no nodes left after filtering[/bold red]")
+            console.print("   Check the organization names given to -oi or -oo.")
+            sys.exit(1)
 
         # Perform analysis
         reporter.calculate_statistics()

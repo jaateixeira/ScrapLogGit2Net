@@ -103,7 +103,8 @@ Keep only the top 5 organizations, gray out the others, and list the top 5 in th
 ## Notes and limitations
 
 - **Tk is required.** The module imports `tkinter` at start-up, even when you pass `infile`. Without a working Tk library the tool fails before parsing any option, including `--help` (for example `ImportError: libtk8.6.so: cannot open shared object file`). On Debian or Ubuntu, Tk usually comes with the `python3-tk` package.
-- **Empty result after filtering.** The code is meant to stop with "Graph is empty after filtering!" and status 1. This check does not work: when the filters remove every node, the tool saves no files, still prints "Visualization completed successfully!" and exits with status 0. For example, `-oo nosuch` on the sample file behaves this way. Check the "Filtering Results" table and the saved files.
+- **Empty result after filtering.** When the filters remove every node (for example `-oo nosuch` on the sample file), the tool prints the "Filtering Results" table and "Graph is empty after filtering!", saves no files and exits with status 1.
+- **Images differ between runs.** Affiliations without a color in the color map get random colors, so two runs on the same input can give different PNG and PDF files.
 - With `-ns centrality-score`, a node with no edges has degree centrality 0 and is drawn with size 0, so it is not visible.
 - Random colors and the spring layout change on each run. Use `-c` and `-nl circular` for repeatable figures.
 - Alias keys in the `-a` file are read with Python `configparser`, which converts keys to lower case. An affiliation that contains upper-case letters will not match any alias.
