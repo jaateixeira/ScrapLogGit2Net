@@ -79,7 +79,7 @@ Limit the report to the top 5 organizations and the top 3 individuals:
 - Organization names in `-oi` and `-oo` must match the `affiliation` value exactly, including case. For example, `-oi Rijksmuseum` does not remove nodes with affiliation `rijksmuseum`.
 - `-oi` and `-oo` can be combined. `-oi` is applied first, then `-oo`.
 - Before filtering, an affiliation of exactly `alum` is renamed to `alum.mit.edu`.
-- If the filters remove every node, the tool stops with the error `No graph data to export` and exit code 1. No report is written.
+- If the filters remove every node, the tool prints `Error: no nodes left after filtering`, writes no report and exits with code 1.
 - The tool also accepts a network of organizations (for example a file from `transform_nofi_2_nofo_graphml.py`), but such nodes have no `affiliation`, so the organization ranking is empty and every affiliation shows as `unknown`.
 - Degree centrality is the only centrality measure computed.
 - The output is written in the legacy Excel 97-2003 `.xls` format (library `xlwt`).

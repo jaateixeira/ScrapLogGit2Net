@@ -282,7 +282,7 @@ class NetworkVisualizer:
 
     def _print_graph_details(self) -> None:
         """Print detailed graph information (verbose mode only)."""
-        if not self.graph:
+        if self.graph is None:
             return
 
         logger.debug("Graph as dict of dicts:")
@@ -345,7 +345,7 @@ class NetworkVisualizer:
 
     def get_node_colors(self) -> List[Any]:
         """Get colors for all nodes based on coloring strategy."""
-        if not self.graph:
+        if self.graph is None:
             return []
 
         colors = []
@@ -375,7 +375,7 @@ class NetworkVisualizer:
 
     def get_node_sizes(self) -> List[float]:
         """Calculate node sizes based on centrality."""
-        if not self.degree_centrality or not self.graph:
+        if not self.degree_centrality or self.graph is None:
             return [100] * self.graph.number_of_nodes()
 
         if self.config.node_sizing_strategy == 'all-equal':
@@ -387,7 +387,7 @@ class NetworkVisualizer:
 
     def get_edge_thickness(self) -> List[float]:
         """Calculate edge thickness based on weights."""
-        if not self.graph:
+        if self.graph is None:
             return []
 
         thickness = []
@@ -400,7 +400,7 @@ class NetworkVisualizer:
 
     def get_layout_positions(self) -> Dict[str, Tuple[float, float]]:
         """Calculate node positions based on layout algorithm."""
-        if not self.graph:
+        if self.graph is None:
             return {}
 
         if self.config.network_layout == 'circular':
@@ -415,7 +415,7 @@ class NetworkVisualizer:
         """Create legend elements for the plot with enhanced information, sorted by number of contributors."""
         elements = []
 
-        if not self.graph:
+        if self.graph is None:
             return elements
 
         # Create a list of tuples (org_id, contributor_count, display_label, color)
@@ -440,7 +440,7 @@ class NetworkVisualizer:
                 label = org_id
                 # Try to get contributor count from node attributes if available
                 contributors = 0
-                if self.graph and org_id in self.graph.nodes:
+                if self.graph is not None and org_id in self.graph.nodes:
                     # You might have contributor data stored in node attributes
                     contributors = self.graph.nodes[org_id].get('contributors', 0)
 
@@ -468,7 +468,7 @@ class NetworkVisualizer:
 
     def add_focal_firm_highlight(self, ax: plt.Axes) -> None:
         """Add a highlight circle around the focal firm."""
-        if not self.config.focal_firm or not self.graph:
+        if not self.config.focal_firm or self.graph is None:
             return
 
         if self.config.focal_firm not in self.graph.nodes():
