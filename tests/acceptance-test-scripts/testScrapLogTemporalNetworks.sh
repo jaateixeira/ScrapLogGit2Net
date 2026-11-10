@@ -1,4 +1,7 @@
 #!/bin/bash
+# Stop early, with install instructions, if a needed system tool is missing
+source "$(dirname "${BASH_SOURCE[0]}")/require_tools.sh"
+require_tools xmllint unzip
 echo "Is scrapLogTemporalNetworks.py doing what is supposed to do in temporal networks mode?"
 echo "This tests scrapLog.py by executing it against input files in ./test-data/"
 echo "The input test files are:"

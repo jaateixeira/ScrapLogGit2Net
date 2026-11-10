@@ -1,4 +1,7 @@
 #!/bin/bash
+# Stop early, with install instructions, if a needed system tool is missing
+source "$(dirname "${BASH_SOURCE[0]}")/../require_tools.sh"
+require_tools xmllint unzip
 # =============================================================================
 # test_syntetic_data_msr2027.sh
 # Acceptance test on the synthetic project of the MSR 2027 tool paper

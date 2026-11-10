@@ -1,4 +1,7 @@
 #!/bin/bash
+# Stop early, with install instructions, if a needed system tool is missing
+source "$(dirname "${BASH_SOURCE[0]}")/../require_tools.sh"
+require_tools xmllint
 # =============================================================================
 # test_extension_filtering.sh
 # Tests the --include-extensions (-ie) and --exclude-extensions (-xe)

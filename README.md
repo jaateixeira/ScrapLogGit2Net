@@ -527,9 +527,9 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   bash tests/acceptance-test-scripts/ExtensionFiltering/test_extension_filtering.sh
   bash tests/acceptance-test-scripts/syntetic_data_msr2027/test_syntetic_data_msr2027.sh
   ```
-  They need `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`.
+  They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command.
 
-As of November 2026 there are 218 unit tests in 16 files (212 run, 6 are skipped because they describe planned features) and 26 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh` and 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks). A fourth script, `test-nofi-2-nofo-transformer.sh` (3 cases), is not run automatically while the GraphML schema it validates against (graphml.graphdrawing.org) is offline.
+As of November 2026 there are 251 unit tests in 23 files (245 run, 6 are skipped because they describe planned features) and 26 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh` and 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks). A fourth script, `test-nofi-2-nofo-transformer.sh` (3 cases), is not run automatically while the GraphML schema it validates against (graphml.graphdrawing.org) is offline.
 
 Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 

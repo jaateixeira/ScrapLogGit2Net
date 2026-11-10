@@ -1,4 +1,7 @@
 #!/bin/bash
+# Stop early, with install instructions, if a needed system tool is missing
+source "$(dirname "${BASH_SOURCE[0]}")/require_tools.sh"
+require_tools xmllint
 echo "Is transform_nofi_2_nofo_graphml.py  doing what is supposed to do?"
 echo "This tests ./transform_nofi_2_nofo_graphml.py executing it against graphML test files in ./test-data/"
 echo "Part of the ScrapLogGit2Net open-source project"
