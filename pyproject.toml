@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scraplog-git2net"
-version = "0.1.0"
+version = "1.1.0"
 description = "Transform Git logs into collaboration networks"
 authors = [{name = "Jose Teixeira"}]
 readme = "README.md"
