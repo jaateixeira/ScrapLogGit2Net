@@ -502,7 +502,7 @@ def get_commit_dates_for_release(repo_path: Path, release_branch: str) -> Tuple[
         console.print("Failed to Git Checkout")
         console.print("Problematic CMD:")
         console.print(check_out_cmd)
-        sys.exit()
+        sys.exit(1)
     except Exception as e:  # Catch-all for o
         # then errors
         console.print(f"[bold yellow]{e} occurred:[/bold yellow]", style="bold red")
@@ -980,7 +980,7 @@ def main():
         else:
             logger.error("Not a git repository")
 
-            sys.exit()
+            sys.exit(1)
 
         if not args.releases:
 

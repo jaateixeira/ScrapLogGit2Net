@@ -308,6 +308,30 @@ def test_save_network_filename_collision(sample_individual_network, tmp_path):
         os.chdir(original_cwd)
 
 
+# The .graphML suffix used to be checked case-sensitively:
+# -o x.graphml gave x.graphml.graphML, and input x.graphml gave x.graphml-transformed-to-nofo.graphML
+@pytest.mark.parametrize("output_name,expected", [
+    ("tf-orgs.graphml", "tf-orgs.graphml"),
+    ("tf-orgs.GraphML", "tf-orgs.GraphML"),
+    ("tf-orgs.graphML", "tf-orgs.graphML"),
+    ("tf-orgs", "tf-orgs.graphML"),
+])
+def test_save_network_output_suffix_any_case(sample_individual_network, tmp_path, output_name, expected):
+    saved_file = transform_module.save_network(sample_individual_network, output_file=str(tmp_path / output_name))
+
+    assert saved_file == str(tmp_path / expected)
+    assert os.path.exists(saved_file)
+
+
+@pytest.mark.parametrize("input_name", ["net.graphml", "net.GRAPHML", "net.graphML"])
+def test_save_network_auto_name_input_suffix_any_case(sample_individual_network, tmp_path, monkeypatch, input_name):
+    monkeypatch.chdir(tmp_path)
+
+    saved_file = transform_module.save_network(sample_individual_network, input_file=input_name)
+
+    assert saved_file == "net-transformed-to-nofo.graphML"
+
+
 # Test determine_file_name function
 def test_determine_file_name_new_file(tmp_path):
     """Test with non-existent file."""

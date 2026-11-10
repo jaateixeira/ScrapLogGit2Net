@@ -201,7 +201,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
         if state.strict_validation:
             print_error("No parsed change log entries to process")
             logger.error("No parsed change log entries to process")
-            sys.exit()
+            sys.exit(1)
         return None
 
     # Warn about non-default resolution (performance impact)

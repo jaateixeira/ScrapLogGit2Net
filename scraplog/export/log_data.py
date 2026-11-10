@@ -32,7 +32,7 @@ def clearDotsAndAts(contribEmail):
  
     if pattern.search(contribEmail) is None:
         print ("ERROR Contributor have an invalidName")
-        exit()
+        sys.exit(1)
 
     tmp = re.sub(r'\.', 'DOT', contribEmail)
     tmp = re.sub(r'\@', 'AT', tmp)
@@ -204,7 +204,7 @@ def createAtributesByCoreFileCSV(logData , outFileName):
             atribWriter.writerow([email, 'other'])
         else:
             print ("ERROR writing atributes grouped by company")
-            exit()
+            sys.exit(1)
 
     csvfile.close()
 
@@ -214,7 +214,10 @@ def createAtributesByCoreFileCSV(logData , outFileName):
 # Must be readable by Visone
 def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
                         out_file_name: Path,
-                        verbose=True) -> None:
+                        verbose=True,
+                        weighted: bool = False) -> None:
+    """Write a network of individuals to GraphML: numeric node IDs with e-mail, color and
+    affiliation attributes. With weighted=True, each edge also gets its 'weight' attribute."""
     # iterator for nAf  
 
     # Accept both string and Path
@@ -287,10 +290,10 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
         
     if len(out_file_name.name) < 5 :
         print_fatal_error("\tERROR outfilename must be a long string. More than 5 characters !")
-        exit()
+        sys.exit(1)
     if out_file_name.suffix.lower() != ".graphml":
         print_fatal_error("\tERROR outfilename must finish with .graphml extension")
-        exit()
+        sys.exit(1)
 
     # open the export file 
 
@@ -308,6 +311,8 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
     gfile.writelines(export_graphml_format.setNodeAntributeKey(0,"e-mail","string"))
     gfile.writelines(export_graphml_format.setNodeAntributeKey(1,"color","string"))
     gfile.writelines(export_graphml_format.setNodeAntributeKey(2,"affiliation","string"))
+    if weighted:
+        gfile.writelines(export_graphml_format.setEdgeAttributeKey(3,"weight","long"))
     
 
     # Open grapth 
@@ -355,13 +360,17 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
         
         
         #print(exportGraphml.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
-        gfile.writelines(export_graphml_format.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
+        if weighted:
+            weight = network_with_affiliation_attributes.edges[edge]['weight']
+            gfile.writelines(export_graphml_format.addEdgeWithAttributes("e"+str(nTup),nodeIdFrom,nodeIdTo,[(3, weight)]))
+        else:
+            gfile.writelines(export_graphml_format.addEdge("e"+str(nTup),nodeIdFrom,nodeIdTo))
         nTup+=1
 
         if edge[0] == edge[1]:
             print ("\t ERROR arc between the same mail/node/developer")
             print(("\t edge=["+str(edge)+"]"))
-            sys.exit()            
+            sys.exit(1)            
     
     # Close grapth
     gfile.writelines(export_graphml_format.graph_closer)

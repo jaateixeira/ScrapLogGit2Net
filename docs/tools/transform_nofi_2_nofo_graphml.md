@@ -1,6 +1,6 @@
 # transform_nofi_2_nofo_graphml.py
 
-`transform_nofi_2_nofo_graphml.py` turns a network of individuals (nofi) into a weighted network of organizations (nofo). Two organizations are connected when developers from them are connected. The edge weight is the number of developer-to-developer edges between the two organizations. Edges between developers of the same organization are ignored. Use it on the unweighted network written by `scrapLog.py`.
+`transform_nofi_2_nofo_graphml.py` turns a network of individuals (nofi) into a weighted network of organizations (nofo). Two organizations are connected when developers from them are connected. The edge weight is the number of developer-to-developer edges between the two organizations. Edges between developers of the same organization are ignored. Use it on the unweighted or weighted network written by `scrapLog.py`.
 
 ## Run it
 
@@ -18,9 +18,9 @@ transform-nofi-2-nofo <network file> [options]
 
 ## Input
 
-A GraphML network of individuals. Every node must have an `affiliation` attribute. The unweighted network from `scrapLog.py` (`<log>.NetworkFile.graphML`) has one.
+A GraphML network of individuals. Every node must have an `affiliation` attribute. The unweighted (`<log>.NetworkFile.graphML`) and weighted (`<log>.WeightedNetwork.graphML`) networks from `scrapLog.py` both have one.
 
-The weighted network from `scrapLog.py` (`<log>.WeightedNetwork.graphML`) has no `affiliation` attribute. With that file the tool fails with a `KeyError` and exit code 1.
+The developer-level `weight` of a weighted input is not used: each developer pair counts once, so the weighted and unweighted networks of the same log give the same network of organizations.
 
 Isolated nodes are listed in a table and removed before the transformation.
 
@@ -33,7 +33,7 @@ Default file name, written to the current working directory:
 - The input file name without its folder, with `.graphML` removed and `-transformed-to-nofo.graphML` added. For example, `test-data/5-pentagon-with-star.graphML` gives `5-pentagon-with-star-transformed-to-nofo.graphML`.
 - If that file already exists, a counter is added: `5-pentagon-with-star-transformed-to-nofo(1).graphML`, then `(2)`, and so on. Existing files are not overwritten.
 - If the input name already contains `-transformed-to-nofo`, that part is removed first, so it is not repeated.
-- The `.graphML` removal is case-sensitive. An input ending in `.graphml` keeps that ending, for example `x.graphml-transformed-to-nofo.graphML`.
+- The `.graphML` ending is recognised in any case: an input `x.graphml` also gives `x-transformed-to-nofo.graphML`.
 
 The console shows tables with the number of nodes, edges and isolates before and after removing isolates, and the number of organizations and inter-organizational relationships.
 
@@ -47,7 +47,7 @@ The console shows tables with the number of nodes, edges and isolates before and
 | `-t`, `--top-firms-only` | Not implemented. The tool prints "ERROR: Filtering by top firms not implemented yet" and stops with exit code 1. | off |
 | `-f`, `--filter-by-org` | Not implemented. The tool prints "ERROR: Filtering by organizations not implemented yet" and stops with exit code 1. | off |
 | `-s`, `--show` | After saving, run the organizations visualizer (`python -m scraplog.viz.nofo_visualizer <output file> --show`) on the result. | off |
-| `-o OUTFILE`, `--outfile OUTFILE` | Output file name. If it does not end in `.graphML` (case-sensitive), `.graphML` is added: `-o two-orgs` gives `two-orgs.graphML`, and `-o tf-orgs.graphml` gives `tf-orgs.graphml.graphML`. An existing file with this name is overwritten. | see Output |
+| `-o OUTFILE`, `--outfile OUTFILE` | Output file name. If it does not end in `.graphML` (in any case), `.graphML` is added: `-o two-orgs` gives `two-orgs.graphML`, and `-o tf-orgs.graphml` is kept as `tf-orgs.graphml`. An existing file with this name is overwritten. | see Output |
 
 ## Examples
 
@@ -72,7 +72,7 @@ Verbose run with a chosen output name. This writes `two-orgs.graphML`:
 
 ## Notes and limitations
 
-- The input must have an `affiliation` attribute on every node. Use the unweighted network from `scrapLog.py`, not the weighted one.
+- The input must have an `affiliation` attribute on every node.
 - An organization whose developers only work with each other has no inter-organizational edge, so it is not a node in the output.
 - `-t` and `-f` are not implemented and stop the tool.
 - With `-s`, the exit code of the visualizer is not checked. The transformation reports success even if the visualizer fails. The visualizer is called with `--show`, which (per its help text) shows the visualization instead of saving it.

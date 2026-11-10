@@ -164,7 +164,7 @@ def enrich_graph_with_affiliation(
 
     if graph is None:
         print_fatal_error("The input did not led to the creation of a valid network ")
-        sys.exit()
+        sys.exit(1)
 
     missing = [node for node in graph.nodes() if node not in affiliation_map]
     if missing:

@@ -47,7 +47,7 @@ All output files are written to the current working directory, unless `-o` gives
 | Network type (`-t`) | Default output file | Content |
 |---|---|---|
 | `inter_individual_graph_unweighted` (default) | `<log>.NetworkFile.graphML` | Undirected GraphML. Each node has the attributes `e-mail`, `color` and `affiliation`. |
-| `inter_individual_graph_weighted` | `<log>.WeightedNetwork.graphML` | Undirected GraphML. Node IDs are emails. Each edge has a `weight` attribute. Nodes have no `affiliation` attribute. |
+| `inter_individual_graph_weighted` | `<log>.WeightedNetwork.graphML` | Undirected GraphML, laid out like the unweighted file (each node has `e-mail`, `color` and `affiliation`). Each edge also has a `weight` attribute. |
 | `inter_individual_graph_temporal` | `<log>.temporal.graphml.zip` | A zip archive (written with networkx-temporal) holding `<log>.temporal.graphml`. Node IDs are emails. There is one edge per time-stamped co-edit, with a `time` attribute such as `2024-01-06T04:03:16-08:00`. |
 | `inter_individual_weighted_LOC_temporal`, `inter_individual_graph_weighted_SUM_LOC` | none | Not exported (see Options). |
 
@@ -76,7 +76,7 @@ Other output:
 | `-a AGGREGATE_EMAIL_PREFIXES`, `--aggregate-email-prefixes AGGREGATE_EMAIL_PREFIXES` | JSON file mapping the organization part of email domains to an organization name, for example `{"gmail": "google", "googlemail": "google"}`. A key must equal the organization part exactly (case-insensitive; subdomains are removed first, so `us.gmail.com` gives `gmail`), and the name is written in lower case. A missing file only gives a warning; invalid JSON stops the tool. | not set |
 | `-t TYPE`, `--type-of-network TYPE` | Type of network: `inter_individual_graph_unweighted`, `inter_individual_graph_weighted`, `inter_individual_graph_temporal`, `inter_individual_weighted_LOC_temporal` or `inter_individual_graph_weighted_SUM_LOC`. The two LOC types are accepted but not exported: the run ends with an "Unknown network type" error and exit code 1, with or without `-o`. | `inter_individual_graph_unweighted` |
 | `-tntr N`, `--temporal-network-time-resolution N` | Time resolution of the temporal network, in seconds. Only `1` is implemented. Any other value stops the tool with "Temporal network time resolution N is not implemented yet" and exit code 1. | `1` |
-| `-o OUTPUT_FILE`, `--output-file OUTPUT_FILE` | Write the network to this file name instead of the default name. The name is used as given; no extension is added. For the temporal type the file is a zip archive whatever its name. | see Output |
+| `-o OUTPUT_FILE`, `--output-file OUTPUT_FILE` | Write the network to this file name instead of the default name. The name is used as given; no extension is added. For the unweighted and weighted types it must end in `.graphml` (in any case); otherwise the tool stops with "outfilename must finish with .graphml extension", writes no file and exits with code 1. For the temporal type the file is a zip archive whatever its name. | see Output |
 | `-v`, `--verbose` | Verbosity. `-v` gives verbose output; `-vv` gives very verbose output. `-vvv` (or more) turns on neither mode, so it prints as much as no `-v`. | off |
 | `-d`, `--debug` | Debug mode. The tool stops after each step and asks on the terminal whether to inspect the processing state and whether to continue. Answering no to "continue" ends the run. Do not use it in scripts. | off |
 | `-st`, `--strict` | Strict validation. The only check it affects is a block that does not start with a `==` header (text before the first header). With `-st` this raises a `ValueError`; without it, the tool prints a warning and then stops anyway. Both cases end with exit code 1. | off |
@@ -110,7 +110,8 @@ Build a temporal network from a small test log. This writes `tensorFlowGitLog-te
 ## Notes and limitations
 
 - Only developers with at least one co-edit become nodes. A developer whose files nobody else edited is not in the network.
-- With the default unweighted type, a log with no co-edits prints "FATAL ERROR: The input did not led to the creation of a valid network" and writes no file, but the exit code is 0. Check the output file exists (for example with `test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN`).
+- With the default unweighted type, a log with no co-edits prints "FATAL ERROR: The input did not led to the creation of a valid network", writes no file and exits with code 1 (for example with `test-data/TensorFlow/tensorFlowGitLog-3-commits-0-edges.IN`).
+- With the weighted type, a log with no co-edits prints "FATAL ERROR: Network have less than two nodes !", writes no file and exits with code 1.
 - With `-fe`, the tool prints the tip "The filtering based on only happen when creating the graphml network output file." In fact the commits are dropped while parsing, for every network type.
 - `-l` is not implemented, `-tntr` only accepts `1`, and the two LOC network types are not exported.
 - `-d` waits for answers on standard input.

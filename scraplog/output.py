@@ -125,8 +125,11 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
                 inspect(output_static_w_graph)
                 show_weighted_edges(output_static_w_graph)
 
-            #nx.write_graphml(output_static_w_graph, graphml_filename)
-            nx.write_graphml(output_static_w_graph, graphml_filename,edge_id_from_attribute='weight')
+            # Same layout as the unweighted file (numeric IDs; e-mail, color and affiliation
+            # attributes), plus the weight of each edge. The edge IDs used to be the weights,
+            # which repeat, and the nodes had no attributes.
+            output_static_w_graph_with_affiliation = enrich_graph_with_affiliation(output_static_w_graph, state.affiliations)
+            export_log_data.create_graphml_file(output_static_w_graph_with_affiliation, graphml_filename, weighted=True)
 
 
         elif state.network_type == 'inter_individual_graph_unweighted':
