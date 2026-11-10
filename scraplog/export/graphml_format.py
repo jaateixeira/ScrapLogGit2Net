@@ -23,7 +23,7 @@ def setNodeAntributeKey(id, attrName, attrType):
 
     if attrType != "string":
         print ("Not supported GRAPHML node atribute type")
-        sys.exit()
+        sys.exit(1)
     
     res = '<key id="d'+str(id)+'" for="node" attr.name="'+attrName+'" attr.type="'+attrType+'"> \n' 
 
@@ -51,7 +51,7 @@ def addEdge(edgeId,nodeIdFrom,nodeIdTo):
 
     if edgeId[0] != 'e':
         print ("edgeid mist start with e: ie. e0, e12")
-        sys.exit()
+        sys.exit(1)
     
     return  '\t<edge id="'+str(edgeId)+'" source="'+ str(nodeIdFrom)+'" target="'+ str(nodeIdTo)+'"/>\n'
 
@@ -63,7 +63,7 @@ def setEdgeAttributeKey(id, attrName, attrType):
 
     if attrType not in ("int", "long", "float", "double", "string"):
         print ("Not supported GRAPHML edge atribute type")
-        sys.exit()
+        sys.exit(1)
 
     return '<key id="d'+str(id)+'" for="edge" attr.name="'+attrName+'" attr.type="'+attrType+'"/>\n'
 
@@ -72,7 +72,7 @@ def addEdgeWithAttributes(edgeId, nodeIdFrom, nodeIdTo, atributes):
 
     if edgeId[0] != 'e':
         print ("edgeid mist start with e: ie. e0, e12")
-        sys.exit()
+        sys.exit(1)
 
     res = '\t<edge id="'+str(edgeId)+'" source="'+ str(nodeIdFrom)+'" target="'+ str(nodeIdTo)+'">\n'
     for key_id, value in atributes:

@@ -40,7 +40,7 @@ The step that would write a Git log per release (`get_git_logs_for_each_release`
 
 | Option | Meaning | Default |
 |---|---|---|
-| `input_dir` | The local Git repository to process. Required. If it is not a folder, the tool stops with "Input directory does not exist" and exit code 1. If it is a folder but not a Git repository, the tool logs "Not a git repository" and exits with code 0. | none (required) |
+| `input_dir` | The local Git repository to process. Required. If it is not a folder, the tool stops with "Input directory does not exist" and exit code 1. If it is a folder but not a Git repository, the tool logs "Not a git repository" and exits with code 1. | none (required) |
 | `-h`, `--help` | Show the help message and exit. | |
 | `--years [START_YEAR [END_YEAR ...]]` | Meant to limit processing to a range of years. The values are only checked (integers, start not after end, between 1970 and 2100) and then not used. Exactly two years are expected: with one year the tool fails with an `IndexError`; with more than two, the extra values are ignored. | not set |
 | `--releases [RELEASE ...]` | Meant to process only the listed releases. When it is given with at least one name, the tool does nothing after checking that `input_dir` is a Git repository: all the work is in the branch that runs when `--releases` is not given. | not set (all branches) |
