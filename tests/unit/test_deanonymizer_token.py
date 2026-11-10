@@ -3,8 +3,8 @@ deanonymize_github_users.py used to print the GitHub token in full: a debug
 line `github_token=<token>` on every run, and `config={'token': '<token>'}`
 when checking the configuration. Only a short masked prefix may be shown.
 
-Runs in a subprocess in tmp_path, because importing the module creates
-github_cache.sqlite in the current directory. No network call is made: the
+Runs in a subprocess in tmp_path, so nothing the tool writes lands in the
+repository. No network call is made: the
 API check and the rate-limit table are replaced by stubs.
 
 Run with:

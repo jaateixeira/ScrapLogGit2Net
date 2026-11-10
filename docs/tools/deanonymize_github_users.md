@@ -44,7 +44,7 @@ If no token is found, the tool prints the ways to provide one, points to `https:
 
 - The corrected network as GraphML. If you do not give `output`, the name is the input path with its extension replaced by `.out.graphml`, in the same directory. For example, `test-data/net.graphML` gives `test-data/net.out.graphml`. An existing file with that name is overwritten.
 - The input file is not changed.
-- A cache file `github_cache.sqlite` in the current working directory (see [Notes and limitations](#notes-and-limitations)).
+- A cache of GitHub API responses next to the output file: the output path with its extension replaced by `.github_cache.sqlite` (for example `test-data/net.out.github_cache.sqlite`). It is created when processing starts, not for `--help` or when the token check fails. Change its location with `--cache-file`, or turn it off with `--no-cache` (see [Notes and limitations](#notes-and-limitations)).
 - Terminal output: a line for every node checked, a table with the GitHub profile data of each user looked up, and each user's organizations.
 
 ### What is changed
@@ -67,6 +67,9 @@ If GitHub returns an error for a user (for example, the user does not exist), a 
 | `-h`, `--help` | Show the help message and exit. | |
 | `--config CONFIG` | Path to an INI file with a `[github]` section and a `token` key. Used only when `GITHUB_TOKEN` is not set. If the token is not found there, `config.ini` in the current directory is tried. | none (then `config.ini`) |
 | `--skip-api-test` | Do not test the token before processing. Without this option, the tool first calls the GitHub API to check the token (it stops with status 1 if the token is invalid) and prints a table of your rate limits. | off (test runs) |
+| `--cache-file CACHE_FILE` | SQLite file for cached GitHub API responses. | `<output without extension>.github_cache.sqlite` |
+| `--no-cache` | Do not cache GitHub API responses. | off (cache on) |
+| `--no-wait` | When the GitHub rate limit is exhausted, stop with status 1 instead of waiting for it to reset. | off (wait, at most 3 times) |
 
 ## Examples
 
@@ -93,9 +96,9 @@ Show the help text:
 
 ## Notes and limitations
 
-- **The token is not printed.** When it checks the configuration, the tool shows only the first 8 characters of the token followed by `...`. The HTTP cache (`github_cache.sqlite`) does not store the `Authorization` header by default.
-- **Rate limits.** Each noreply user costs at least two API calls (profile and organizations). If GitHub reports that the rate limit is exceeded during processing, the tool sleeps for one hour and then tries again. A large network can take a long time.
-- **Caching.** Results are kept in memory per e-mail address during a run, so each address is looked up once. HTTP responses from the `requests` library are also cached in `github_cache.sqlite` in the current working directory, and cached entries expire after one hour. This file is created on start-up, even when you run only `--help`.
+- **The token is not printed.** When it checks the configuration, the tool shows only the first 8 characters of the token followed by `...`. The HTTP cache does not store the `Authorization` header by default.
+- **Rate limits.** Each noreply user costs at least two API calls (profile and organizations). If GitHub reports that the rate limit is exhausted during processing, the tool prints how long it will wait and waits until the reset time GitHub gives (plus 5 seconds; one hour if GitHub gives none), then tries again. After 3 waits for the same user, or at once with `--no-wait`, it stops with status 1 and writes no output file. Responses already received stay in the HTTP cache for one hour, so a rerun within that hour does not request them again. A large network can take a long time.
+- **Caching.** Results are kept in memory per e-mail address during a run, so each address is looked up once. GitHub API responses are also cached in an SQLite file (see [Output](#output)), and cached entries expire after one hour. The token check and the rate-limit table at start-up are never cached.
 - Only public profile data is used. Users who hide their e-mail, company or organization memberships stay unchanged.
 - The first organization listed by GitHub is taken as the affiliation. It may not be the user's employer.
 - The output is written as an undirected graph. Graph-level attributes of the input file are not copied.

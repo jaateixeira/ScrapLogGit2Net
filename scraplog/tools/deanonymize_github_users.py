@@ -11,6 +11,7 @@ import argparse
 import networkx as nx
 from typing import Tuple, Optional, Dict, Any, List
 import time
+from datetime import datetime, timedelta
 from pathlib import Path
 
 # Rich and loguru imports
@@ -48,12 +49,27 @@ import requests
 import configparser
 import requests_cache
 from github import Github, GithubException, RateLimitExceededException
+from urllib3.util.retry import Retry
 
 # For validating a GraphML File
 import xml.etree.ElementTree as ET
 
-# Set up requests-cache
-requests_cache.install_cache('github_cache', expire_after=3600)
+# The HTTP cache is installed by main() when processing starts (install_http_cache), not on import.
+CACHE_EXPIRE_SECONDS = 3600
+
+# How often to wait for GitHub's rate limit to reset before giving up.
+MAX_RATE_LIMIT_WAITS = 3
+# Wait used when GitHub does not say when the limit resets.
+DEFAULT_RATE_LIMIT_WAIT_SECONDS = 3600
+# Margin after the reset time, as it is not clear when in that second the reset occurs.
+RATE_LIMIT_MARGIN_SECONDS = 5
+# Retries for server errors only. PyGithub's default retry also waits silently for rate-limit
+# resets; with this one, rate limits raise RateLimitExceededException and are handled below.
+GITHUB_RETRY = Retry(total=3, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
+
+
+class RateLimitStop(Exception):
+    """Raised when the GitHub rate limit is exhausted and the tool will not wait (any longer)."""
 
 # Global dictionary for caching user affiliations
 already_known_user_affiliations: Dict[str, Tuple[str, str]] = {}
@@ -377,10 +393,43 @@ def get_user_organizations(username: str, github_token: str) -> List[str]:
         return []
 
 
+def default_cache_file(output_file: str) -> str:
+    """The HTTP cache file used when --cache-file is not given: next to the output file."""
+    return f"{os.path.splitext(output_file)[0]}.github_cache.sqlite"
+
+
+def install_http_cache(cache_file: str) -> None:
+    """Cache GitHub API responses (requests and PyGithub) in the SQLite file cache_file."""
+    requests_cache.install_cache(cache_file, backend='sqlite', expire_after=CACHE_EXPIRE_SECONDS)
+    console.print(f"HTTP cache: {cache_file}")
+
+
+def rate_limit_wait_seconds(headers: Optional[Dict[str, str]], now: Optional[float] = None) -> float:
+    """
+    Seconds to wait before retrying after a rate-limit error, from the response headers:
+    Retry-After (secondary rate limits) or X-RateLimit-Reset (primary rate limit, epoch seconds).
+    Falls back to one hour when GitHub gives neither.
+    """
+    lowered = {key.lower(): value for key, value in (headers or {}).items()}
+    if lowered.get('retry-after', '').isdigit():
+        return float(lowered['retry-after']) + RATE_LIMIT_MARGIN_SECONDS
+    if lowered.get('x-ratelimit-reset', '').isdigit():
+        now = time.time() if now is None else now
+        return max(0.0, int(lowered['x-ratelimit-reset']) - now) + RATE_LIMIT_MARGIN_SECONDS
+    return float(DEFAULT_RATE_LIMIT_WAIT_SECONDS)
+
+
+def _wait(seconds: float) -> None:
+    """Sleep while the rate limit resets (a separate function so tests can replace it)."""
+    time.sleep(seconds)
+
+
 def deanonymize_github_user_with_cache_and_pygithub(
         email: str,
         github_token: str,
-        already_known_user_affiliations: Dict[str, Tuple[str, str]]
+        already_known_user_affiliations: Dict[str, Tuple[str, str]],
+        wait_on_rate_limit: bool = True,
+        max_waits: int = MAX_RATE_LIMIT_WAITS
 ) -> Tuple[str, str]:
     """
     De-anonymizes a GitHub user using PyGithub with caching.
@@ -389,9 +438,14 @@ def deanonymize_github_user_with_cache_and_pygithub(
         email: GitHub noreply email
         github_token: GitHub API token
         already_known_user_affiliations: Cache dictionary
+        wait_on_rate_limit: wait for GitHub's rate limit to reset (False: stop at once)
+        max_waits: how many times to wait before giving up
 
     Returns:
         Tuple of (email, affiliation)
+
+    Raises:
+        RateLimitStop: the rate limit is exhausted and waiting is off or was tried max_waits times
     """
     logger.info(f"Deanonymizing GitHub user for email: {email}")
 
@@ -401,9 +455,6 @@ def deanonymize_github_user_with_cache_and_pygithub(
     if email in already_known_user_affiliations:
         logger.info(f"Key {email} already exists in cache. Skipping API call.")
         return already_known_user_affiliations[email]
-
-    github_email = "unknown-by-GitHub"
-    github_affiliation = "unknown-by-github"
 
     # Extract the username from the email address
     try:
@@ -415,7 +466,36 @@ def deanonymize_github_user_with_cache_and_pygithub(
         raise ValueError("Unable to extract GitHub username from the email address.")
 
     # Use PyGithub to retrieve user information
-    g = Github(github_token)
+    g = Github(github_token, retry=GITHUB_RETRY)
+    waits = 0
+    while True:
+        try:
+            github_email, github_affiliation = _query_github_user(g, username)
+            break
+        except RateLimitExceededException as e:
+            if not wait_on_rate_limit:
+                raise RateLimitStop("GitHub API rate limit exhausted (--no-wait given).") from e
+            if waits >= max_waits:
+                raise RateLimitStop(f"GitHub API rate limit still exhausted after {max_waits} waits.") from e
+            waits += 1
+            seconds = rate_limit_wait_seconds(e.headers)
+            resume = datetime.now() + timedelta(seconds=seconds)
+            logger.warning(f"GitHub API rate limit exhausted. Waiting {seconds / 60:.0f} min, "
+                           f"until {resume:%H:%M:%S} (wait {waits} of {max_waits})...")
+            _wait(seconds)
+            logger.info("Resuming API requests...")
+
+    already_known_user_affiliations[email] = (github_email, github_affiliation)
+    return (github_email, github_affiliation)
+
+
+def _query_github_user(g: Github, username: str) -> Tuple[str, str]:
+    """
+    Look up a GitHub user's public e-mail and affiliation (company, or first organization).
+    Returns the "unknown" values when the API gives an error other than a rate limit.
+    """
+    github_email = "unknown-by-GitHub"
+    github_affiliation = "unknown-by-github"
     try:
         user = g.get_user(username)
         logger.debug(f"Successfully retrieved information for GitHub user: {username}")
@@ -439,17 +519,10 @@ def deanonymize_github_user_with_cache_and_pygithub(
             github_affiliation = organizations[0]
 
     except RateLimitExceededException:
-        logger.warning("API rate limit exceeded. Sleeping for one hour...")
-        time.sleep(3600)
-        logger.info("Resuming API requests...")
-        # Retry after sleep
-        return deanonymize_github_user_with_cache_and_pygithub(
-            email, github_token, already_known_user_affiliations
-        )
+        raise
     except GithubException as e:
         logger.warning(f"Unexpected API error: {e}")
 
-    already_known_user_affiliations[email] = (github_email, github_affiliation)
     return (github_email, github_affiliation)
 
 
@@ -521,7 +594,8 @@ def copy_graph_with_attributes(source_graph: nx.Graph) -> nx.Graph:
 def iterate_graph(
         input_file: str,
         output_file: str,
-        github_token: str
+        github_token: str,
+        wait_on_rate_limit: bool = True
         ) -> None:
     """
     Process GraphML file to deanonymize GitHub emails.
@@ -530,6 +604,7 @@ def iterate_graph(
         input_file: Path to input GraphML file
         output_file: Path to output GraphML file
         github_token: GitHub API token
+        wait_on_rate_limit: wait for GitHub's rate limit to reset (False: stop at once)
 
     """
     logger.info(f"Iterating network: {input_file} -> {output_file}")
@@ -568,7 +643,8 @@ def iterate_graph(
             new_email, new_affiliation = deanonymize_github_user_with_cache_and_pygithub(
                 old_email,
                 github_token,
-                already_known_user_affiliations
+                already_known_user_affiliations,
+                wait_on_rate_limit=wait_on_rate_limit
             )
 
             logger.info(f"Updating node={node} with email={new_email} and affiliation={new_affiliation}")
@@ -628,6 +704,26 @@ def main() -> None:
         help='Skip GitHub API access test (not recommended)'
     )
 
+    parser.add_argument(
+        '--cache-file',
+        type=str,
+        default=None,
+        help='SQLite file for cached GitHub API responses (default: <output without extension>.github_cache.sqlite).'
+    )
+
+    parser.add_argument(
+        '--no-cache',
+        action='store_true',
+        help='Do not cache GitHub API responses.'
+    )
+
+    parser.add_argument(
+        '--no-wait',
+        action='store_true',
+        help=f'Stop with exit code 1 when the GitHub rate limit is exhausted, instead of waiting for it to reset '
+             f'(at most {MAX_RATE_LIMIT_WAITS} times).'
+    )
+
     args = parser.parse_args()
 
     # Validate input file
@@ -655,13 +751,22 @@ def main() -> None:
         console.print(f"[red]Configuration/API error: {e}[/red]")
         sys.exit(1)
 
-    # Process the graph
-    iterate_graph(
-        input_file=args.input,
-        output_file=args.output,
-        github_token=github_token,
+    # Installed after the token check, so the check and the rate-limit table are never cached
+    if not args.no_cache:
+        install_http_cache(args.cache_file or default_cache_file(args.output))
 
-    )
+    # Process the graph
+    try:
+        iterate_graph(
+            input_file=args.input,
+            output_file=args.output,
+            github_token=github_token,
+            wait_on_rate_limit=not args.no_wait,
+        )
+    except RateLimitStop as e:
+        console.print(f"[red]{e} No output written. Run again later; "
+                      f"responses already received are in the HTTP cache for one hour.[/red]")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

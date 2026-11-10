@@ -51,7 +51,7 @@ def test_nofi_report_shows_emails(tmp_path):
 DEANONYMIZE = """
 import networkx as nx
 import scraplog.tools.deanonymize_github_users as d
-d.deanonymize_github_user_with_cache_and_pygithub = lambda email, token, known: ("dev@nvidia.com", "NVIDIA")
+d.deanonymize_github_user_with_cache_and_pygithub = lambda email, token, known, **kw: ("dev@nvidia.com", "NVIDIA")
 d.iterate_graph("in.graphml", "out.graphml", "no-token")
 g = nx.read_graphml("out.graphml")
 print(sorted((n, dict(sorted(a.items()))) for n, a in g.nodes(data=True)))
@@ -65,7 +65,7 @@ def test_deanonymizer_replaces_the_e_mail_attribute(tmp_path):
     g.add_edge("1", "2")
     nx.write_graphml(g, tmp_path / "in.graphml")
 
-    # a subprocess in tmp_path: importing the module creates github_cache.sqlite in the current directory
+    # a subprocess in tmp_path, so nothing the tool writes lands in the repository
     result = subprocess.run([sys.executable, "-c", DEANONYMIZE],
                             cwd=tmp_path, capture_output=True, text=True, env=ENV)
 
