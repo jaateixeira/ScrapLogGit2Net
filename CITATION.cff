@@ -16,8 +16,7 @@ authors:
     affiliation: "University of Jyväskylä"
     orcid: "https://orcid.org/0000-0002-7195-4157"
 version: "1.1-borba"
-# Concept DOI (all versions). Zenodo gives the v1.1 DOI only after the release is published.
-doi: "10.5281/zenodo.23964329"
+doi: "10.5281/zenodo.24106482"
 date-released: "2026-11-10"
 repository-code: "https://github.com/jaateixeira/ScrapLogGit2Net"
 url: "https://github.com/jaateixeira/ScrapLogGit2Net"

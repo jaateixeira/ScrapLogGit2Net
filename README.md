@@ -511,6 +511,7 @@ If you use ScrapLogGit2Net in your research, please cite the software. GitHub's 
 
 - All versions (resolves to the latest release): [10.5281/zenodo.23964329](https://doi.org/10.5281/zenodo.23964329)
 - Release v1.0 ("alvarinho"): [10.5281/zenodo.23964330](https://doi.org/10.5281/zenodo.23964330)
+- Release v1.1 ("borba"): [10.5281/zenodo.24106482](https://doi.org/10.5281/zenodo.24106482)
 
 The way ScrapLogGit2Net builds networks from git logs is described in:
 
