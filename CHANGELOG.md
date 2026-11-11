@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased
+
+No change to the networks: the same log gives the same GraphML as v1.1-borba.
+
+### Fixes
+
+- `scrapLog.py` writes the unweighted network once. It wrote the same file twice; the content is unchanged.
+- **Repeatable figures.** The nofi and nofo visualizers color organizations that are not in the color map by name instead of at random, and the nofi visualizer's spring layout uses a fixed seed. The same input gives byte-identical PNG and PDF files. Organization colors differ from figures made with v1.1-borba.
+- `deanonymize_github_users.py` creates its HTTP cache when processing starts, next to the output file, instead of in the current directory on import (even for `--help`). On a rate limit it waits until the reset time GitHub sends, at most 3 times, then stops with exit code 1, instead of sleeping one hour at a time without limit.
+
+### New
+
+- `--seed` in both visualizers: seed for the spring layout (default 42).
+- `deanonymize_github_users.py`: `--cache-file`, `--no-cache` and `--no-wait`.
+
+### Development
+
+- 282 unit tests.
+
 ## v1.1-borba (2026-11-10)
 
 ### Changes that affect research results
