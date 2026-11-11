@@ -214,7 +214,7 @@ The types differ in how much information they keep about *how much* and *when* d
 Here `<input>` is the name of the raw changelog file given with `-r`, without its last extension (e.g., `tensorFlowGitLog-first-trimester-2024.IN` gives `tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML`). Use `-o` / `--output-file` to choose another file name.
 
 ## Unweighted inter-individual network (default)
-The simplest and most widely used network: an undirected graph where two developers are connected if they co-edited at least one source-code file during the analyzed period. It does not tell how often or when. It is the right choice for classic Social Network Analysis such as centrality, density, components, and visualization with the `formatFilterAndViz-*` tools.
+The simplest and most widely used network: an undirected graph where two developers are connected if they co-edited at least one source-code file during the analyzed period. It does not tell how often or when. It is the right choice for classic Social Network Analysis such as centrality, density, components, and visualization with `nofi_graphml_network_visualizer.py` and `nofo_graphml_network_visualizer.py`.
 
 ```
 ./scrapLog.py -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN

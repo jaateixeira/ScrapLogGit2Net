@@ -1,17 +1,19 @@
-# ScrapLogGit2Net - formatFilterAndViz-nofi-GraphML.py
+# ScrapLogGit2Net - nofi_graphml_network_visualizer.py
 
-## Documentation of the tool formatFilterAndViz-nofi-GraphML.py for visualizing the network of individual software developers
+> The current reference for this tool, with every option, is [docs/tools/nofi_graphml_network_visualizer.md](tools/nofi_graphml_network_visualizer.md). The tool was called `formatFilterAndViz-nofi-GraphML.py` before.
 
-**formatFilterAndViz-nofi-GraphML.py** is a shell executable Python script for visualizing GraphML files created with the ScrapLogGit2Net tool for modeling inter-individual networks of software developers that collaborate via Git.
+## Documentation of the tool nofi_graphml_network_visualizer.py for visualizing the network of individual software developers
 
-The **formatFilterAndViz-nofi-GraphML.py** executable:  
+**nofi_graphml_network_visualizer.py** is a shell executable Python script for visualizing GraphML files created with the ScrapLogGit2Net tool for modeling inter-individual networks of software developers that collaborate via Git.
+
+The **nofi_graphml_network_visualizer.py** executable:  
 - Formats and visualizes a GraphML file.
 - Plots the network with a circular or spring layout (default: spring).
 - Colorizes nodes according to the affiliation attribute.
 - Sets the size of the nodes according to centralities or all with the same size (default: centralities).
 - Can filter what nodes are visualized according to the organizational affiliation of the developers (aka nodes).
 
-The **formatFilterAndViz-nofi-GraphML.py** visualization tool was developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) in 2024 to speed up the process of modeling and visualizing inter-individual networks created by ScrapLogGit2Net. It is an alternative to importing the GraphML file in network analysis visualization software such as Tulip, Gephi, or Visone. It speeds up the process of obtaining fast network visualizations, bypassing in certain cases the need for specialized network visualization tools.
+The **nofi_graphml_network_visualizer.py** visualization tool was developed by [Jose Apolinário Teixeira](http://users.abo.fi/jteixeir/) in 2024 to speed up the process of modeling and visualizing inter-individual networks created by ScrapLogGit2Net. It is an alternative to importing the GraphML file in network analysis visualization software such as Tulip, Gephi, or Visone. It speeds up the process of obtaining fast network visualizations, bypassing in certain cases the need for specialized network visualization tools.
 
 For more information, see the publication and related websites:
 
@@ -27,15 +29,15 @@ Slow to figure out (i.e., visualize) who works with whom in complex software pro
 
 A world where software co-production analytics put social network visualizations at the side of standard quantitative statistical data in a very fast way.
 
-# **formatFilterAndViz-nofi-GraphML.py** Inputs
+# **nofi_graphml_network_visualizer.py** Inputs
 
 A GraphML file created with ScrapLogGit2Net or another tool. Note that the network needs to be in a specific format that models developers as nodes and associates them with organizations using node attributes.
 
-# **formatFilterAndViz-nofi-GraphML.py** Outputs
+# **nofi_graphml_network_visualizer.py** Outputs
 
 A social network visualization that captures who codes with whom in a repository (note that developers can be affiliated with firms via an affiliation attribute). The script plots the network using Python NetworkX and Python Matplotlib, and it can then be exported to several formats such as PDF and PNG.
 
-# How **formatFilterAndViz-nofi-GraphML.py** works
+# How **nofi_graphml_network_visualizer.py** works
 
 It simply reads the GraphML file and plots it according to the list of parameters passed via the shell.
 
@@ -50,23 +52,19 @@ With the parameters, you can choose:
 - How nodes (i.e., developers) are sized.
 - What organizations/affiliations should be displayed in the legend.
 
-# How to use **formatFilterAndViz-nofi-GraphML.py**
+# How to use **nofi_graphml_network_visualizer.py**
 
 You need basic skills on how to invoke Python scripts in the shell/terminal.  
-Test case scripts are implemented in bash. Knowing the basics of Linux/Unix will help a lot. You do not need to be a programmer to use ScrapLogGit2Net and especially the formatAndViz-nofi-GraphML visualizer, but if you are one, and find it useful, please contribute to the project.
+Test case scripts are implemented in bash. Knowing the basics of Linux/Unix will help a lot. You do not need to be a programmer to use ScrapLogGit2Net and especially the nofi_graphml_network_visualizer visualizer, but if you are one, and find it useful, please contribute to the project.
 
 # Command line options for filtering and formatting the network visualization
 
-TODO:
-
-```
-TODO copy help here
-```
+See [Options](tools/nofi_graphml_network_visualizer.md#options) in the tool's reference page, or run `./nofi_graphml_network_visualizer.py --help`.
 
 # Examples
 
 ```bash
-./formatFilterAndViz-nofi-GraphML.py -svtfl test-data/TensorFlow/icis-2024-wp-networks-graphML/tensorFlowGitLog-2015-git-output-by-Jose.IN.NetworkFile.graphML
+./nofi_graphml_network_visualizer.py -v -l -ot top5 test-data/5-pentagon-with-star.graphML
 ```
 
 # Contributing

@@ -67,9 +67,9 @@ Please use the built-in `globals()` function to access the global scope’s name
 | scrapLog.py                       | G_network_Dev2Dev_singleEdges   | nx.Graph()          | Inter-individual network - edges are unweighted       |
 | scrapLog.py                       | G_network_Dev2Dev_multiEdges    | nx.MultiGraph()     | Inter-individual network - edges can be weighted      |
 | scrapLog.py                       | stats                           | Dictionary (immutable keys) | Keeps statistics of the scraping               |
-| formatFilterAndViz-nofi-GraphML.py| TODO                            | TODO                | TODO                                                  |
-| transform-nofi-2-nofo-GraphML.py  | TODO                            | TODO                | TODO                                                  |
-| formatFilterAndViz-nofo-GraphML.py| TODO                            | TODO                | TODO                                                  |
+| nofi_graphml_network_visualizer.py| TODO                            | TODO                | TODO                                                  |
+| transform_nofi_2_nofo_graphml.py  | TODO                            | TODO                | TODO                                                  |
+| nofo_graphml_network_visualizer.py| TODO                            | TODO                | TODO                                                  |
 
 ## Project Architecture
 

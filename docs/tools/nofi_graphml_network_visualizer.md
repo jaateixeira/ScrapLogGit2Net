@@ -105,6 +105,6 @@ Keep only the top 5 organizations, gray out the others, and list the top 5 in th
 - **Repeatable images.** The same input and options give the same PNG and PDF files: colors come from affiliation names, the spring layout uses a fixed seed and the PDF has no creation date. Two different affiliations can get similar colors; use `-c` to choose them.
 - With `-ns centrality-score`, a node with no edges has degree centrality 0 and is drawn with size 0, so it is not visible.
 - Alias keys in the `-a` file are read with Python `configparser`, which converts keys to lower case. An affiliation that contains upper-case letters will not match any alias.
-- An older document, `docs/formatAndViz-nofi-GraphML-documentation.md`, describes this tool under its old name.
+- An older document, `docs/formatAndViz-nofi-GraphML-documentation.md`, gives background on this tool.
 
 [Back to the README](../../README.md#executable-toolsscripts)
