@@ -69,6 +69,6 @@ The same, with info messages:
 - If a checkout fails, the error is printed and the tool goes on with the next command, so the dates come from whatever is checked out.
 - If a commit date cannot be read, the timeline step stops the tool with exit code 1.
 - The branch cleaning (`agl/`, `sandbox/`, `m/`) is specific to one project.
-- The unused per-release log step needs the external `repo` tool. The code adds a hard-coded path (`/home/apolinex/bin/repo`) to a copy of `PATH` that is never used.
+- The unused per-release log step needs the external `repo` tool in your `PATH`.
 
 [Back to the README](../../README.md#executable-toolsscripts)

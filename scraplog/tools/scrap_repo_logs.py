@@ -33,10 +33,6 @@ import sys
 import os
 
 
-env = os.environ.copy()
-env["PATH"] = "/home/apolinex/bin/repo" + env["PATH"]  # Add repo to PATH
-
-
 import re
 
 import subprocess

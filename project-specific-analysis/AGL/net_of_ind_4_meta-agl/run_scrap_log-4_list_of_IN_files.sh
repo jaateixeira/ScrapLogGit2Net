@@ -10,7 +10,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 
 # Read the scrapLog path from the configuration file
-SCRAPLOG_PATH=$(grep -Po '(?<=^path=).+' "$CONFIG_FILE")
+SCRAPLOG_PATH=$(grep -Po '(?<=^scrapLogpath=).+' "$CONFIG_FILE")
 
 # Check if the scrapLog path is valid
 if [ ! -x "$SCRAPLOG_PATH" ]; then
