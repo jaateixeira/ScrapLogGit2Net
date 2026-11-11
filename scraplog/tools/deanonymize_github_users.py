@@ -55,7 +55,9 @@ from urllib3.util.retry import Retry
 import xml.etree.ElementTree as ET
 
 # The HTTP cache is installed by main() when processing starts (install_http_cache), not on import.
-CACHE_EXPIRE_SECONDS = 3600
+# Cached responses never expire: a rerun (e.g. after a rate-limit stop) reuses them, and one study works
+# from one snapshot of the GitHub profiles. Delete the cache file, or use --no-cache, to fetch again.
+CACHE_EXPIRE_AFTER = requests_cache.NEVER_EXPIRE
 
 # How often to wait for GitHub's rate limit to reset before giving up.
 MAX_RATE_LIMIT_WAITS = 3
@@ -400,7 +402,7 @@ def default_cache_file(output_file: str) -> str:
 
 def install_http_cache(cache_file: str) -> None:
     """Cache GitHub API responses (requests and PyGithub) in the SQLite file cache_file."""
-    requests_cache.install_cache(cache_file, backend='sqlite', expire_after=CACHE_EXPIRE_SECONDS)
+    requests_cache.install_cache(cache_file, backend='sqlite', expire_after=CACHE_EXPIRE_AFTER)
     console.print(f"HTTP cache: {cache_file}")
 
 
@@ -764,8 +766,8 @@ def main() -> None:
             wait_on_rate_limit=not args.no_wait,
         )
     except RateLimitStop as e:
-        console.print(f"[red]{e} No output written. Run again later; "
-                      f"responses already received are in the HTTP cache for one hour.[/red]")
+        reuse = "" if args.no_cache else " Responses already received are kept in the HTTP cache and reused."
+        console.print(f"[red]{e} No output written. Run again later.{reuse}[/red]")
         sys.exit(1)
 
 

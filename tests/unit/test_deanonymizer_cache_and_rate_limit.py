@@ -167,3 +167,18 @@ def test_wait_seconds_from_headers():
     assert rate_limit_wait_seconds({"X-RateLimit-Reset": "1000"}, now=900) == 105
     assert rate_limit_wait_seconds({"X-RateLimit-Reset": "1000"}, now=2000) == 5  # reset already passed
     assert rate_limit_wait_seconds({}) == 3600
+
+
+def test_cached_responses_never_expire(tmp_path):
+    # They expired after one hour, so a rerun after a rate-limit stop (at least an hour later)
+    # fetched everything again.
+    import requests
+    import requests_cache
+    from scraplog.tools.deanonymize_github_users import install_http_cache
+
+    install_http_cache(str(tmp_path / "cache.sqlite"))
+    try:
+        # install_cache makes every requests.Session (PyGithub's too) a cached session
+        assert requests.Session().settings.expire_after == requests_cache.NEVER_EXPIRE
+    finally:
+        requests_cache.uninstall_cache()

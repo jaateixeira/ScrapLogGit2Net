@@ -8,7 +8,7 @@ No change to the networks: the same log gives the same GraphML as v1.1-borba.
 
 - `scrapLog.py` writes the unweighted network once. It wrote the same file twice; the content is unchanged.
 - **Repeatable figures.** The nofi and nofo visualizers color organizations that are not in the color map by name instead of at random, and the nofi visualizer's spring layout uses a fixed seed. The same input gives byte-identical PNG and PDF files. Organization colors differ from figures made with v1.1-borba.
-- `deanonymize_github_users.py` creates its HTTP cache when processing starts, next to the output file, instead of in the current directory on import (even for `--help`). On a rate limit it waits until the reset time GitHub sends, at most 3 times, then stops with exit code 1, instead of sleeping one hour at a time without limit.
+- `deanonymize_github_users.py` creates its HTTP cache when processing starts, next to the output file, instead of in the current directory on import (even for `--help`). On a rate limit it waits until the reset time GitHub sends, at most 3 times, then stops with exit code 1, instead of sleeping one hour at a time without limit. Cached responses no longer expire after one hour, so a rerun reuses them; delete the cache file or use `--no-cache` to fetch fresh data.
 - The reports, the visualizers and the transformer show their current names in usage lines, banners and help (they showed old names such as `formatAndReportGraphML`).
 - No hard-coded `/home/apolinex` paths: `compile_all_git_logs_across_branches.sh` finds its log script next to itself, and the AGL study's `config.cfg` uses paths relative to the repository. `run_scrap_log-4_list_of_IN_files.sh` reads the `scrapLogpath` key it could never find before.
 - Acceptance scripts: the color map used by `test-nofo-viz.sh` and the AGL study (`business_firm_color_dictionary_json/firm_color_dict.json`) is now in the repository, and the nofi visualizer is called by its current name.
@@ -21,7 +21,7 @@ No change to the networks: the same log gives the same GraphML as v1.1-borba.
 
 ### Development
 
-- 282 unit tests.
+- 283 unit tests.
 
 ## v1.1-borba (2026-11-10)
 
