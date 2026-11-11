@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-formatAndReportGraphML - Basic reporter for GraphML files with company analysis.
+formatFilterAndReport-nofo-GraphML.py - Basic reporter for GraphML files with company analysis.
 """
 
 import argparse
@@ -427,7 +427,7 @@ class BasicGraphMLReporter:
 def parse_arguments() -> ReportConfig:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        prog="formatAndReportGraphML",
+        prog="formatFilterAndReport-nofo-GraphML.py",
         description="Basic reporter for GraphML files with company analysis"
     )
 
@@ -491,7 +491,7 @@ def print_banner() -> None:
     """Print application banner."""
     banner = """
 ╔══════════════════════════════════════════════════════════════╗
-║                   formatAndReportGraphML                     ║
+║            formatFilterAndReport-nofo-GraphML.py             ║
 ║          Basic GraphML Analysis and Reporting Tool           ║
 ║       Visualizing company networks since June 2024           ║
 ╚══════════════════════════════════════════════════════════════╝

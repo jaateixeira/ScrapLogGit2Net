@@ -692,7 +692,7 @@ def parse_arguments() -> NetworkConfig:
         return [item.strip() for item in value.split(',') if item.strip()]
 
     parser = argparse.ArgumentParser(
-        prog="formatAndViz-nofo-GraphML.py",
+        prog="nofo_graphml_network_visualizer.py",
         description="Formats and visualizes a graphML file capturing a weighted Network of Organizations"
     )
 
@@ -833,7 +833,7 @@ def print_banner() -> None:
     """Print application banner."""
     banner = """
 ╔════════════════════════════════════════════════════════════════╗
-║ formatAndViz-nofo-GraphML.py                                   ║
+║ nofo_graphml_network_visualizer.py                             ║
 ║ Visualizing weighted networks of organizations since June 2024 ║
 ╚════════════════════════════════════════════════════════════════╝"""
     print_header(banner)

@@ -16,8 +16,6 @@ After `pip install -e .` the same tool is available as a console command:
 nofi-graphml-network-visualizer [options] [infile]
 ```
 
-The help text still shows the old program name `formatFilterAndViz-nofi-GraphML.py`.
-
 ## Input
 
 - One GraphML file, for example one created by `scrapLog.py`. It is read with NetworkX (`networkx.read_graphml`).

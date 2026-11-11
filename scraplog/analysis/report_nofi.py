@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-formatAndReportGraphML - Reporter for GraphML files with comprehensive analysis and reporting.
+formatFilterAndReport-nofi-GraphML.py - Reporter for GraphML files with comprehensive analysis and reporting.
 """
 
 import argparse
@@ -440,7 +440,7 @@ class GraphMLReporter:
 def parse_arguments() -> ReportConfig:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        prog="formatAndReportGraphML",
+        prog="formatFilterAndReport-nofi-GraphML.py",
         description="Comprehensive reporter for GraphML files with organization analysis"
     )
 
@@ -498,7 +498,7 @@ def print_banner() -> None:
     """Print application banner."""
     banner = """
 ╔══════════════════════════════════════════════════════════════╗
-║                   formatAndReportGraphML                     ║
+║            formatFilterAndReport-nofi-GraphML.py             ║
 ║           Comprehensive GraphML Analysis and Reporting       ║
 ╚══════════════════════════════════════════════════════════════╝
     """

@@ -218,7 +218,7 @@ def save_network(
 
 def main() -> None:
     """Main function to orchestrate the transformation."""
-    console.print("\n[bold blue]transform-nofi-2-nofo-GraphML.py[/bold blue] - "
+    console.print("\n[bold blue]transform_nofi_2_nofo_graphml.py[/bold blue] - "
                   "transforming unweighted networks of individuals into weighted networks "
                   "of organizations since June 2024")
     console.print("[bold green]Let's go![/bold green]\n")
@@ -250,7 +250,7 @@ def main() -> None:
     parser.add_argument(
         "-s", "--show",
         action="store_true",
-        help="Shows/plots the result with formatAndViz-nofo-GraphML.py"
+        help="Shows/plots the result with nofo_graphml_network_visualizer.py"
     )
     parser.add_argument(
         "-o", "--outfile",

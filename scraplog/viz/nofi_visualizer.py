@@ -7,7 +7,7 @@
 # nodesize according centralities 
 
 #Example of use verbose,fitering and only top firms with legend
-# ./formatFilterAndViz-nofi-GraphML.py  -svtfl test-data/TensorFlow/icis-2024-wp-networks-graphML/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML 
+# ./nofi_graphml_network_visualizer.py  -svtfl test-data/TensorFlow/icis-2024-wp-networks-graphML/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML 
 
 
 ######################### How it works ##########################################
@@ -758,7 +758,7 @@ class GraphMLVisualizer:
 def parse_arguments() -> VisualizationConfig:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        prog="formatFilterAndViz-nofi-GraphML.py",
+        prog="nofi_graphml_network_visualizer.py",
         description="Formats and visualizes a GraphML file with organizational filtering"
     )
 
@@ -938,7 +938,7 @@ def print_banner() -> None:
     """Print application banner."""
     banner = """
 ╔══════════════════════════════════════════════════════════════╗
-║          formatFilterAndViz-nofi-GraphML.py                  ║
+║              nofi_graphml_network_visualizer.py              ║
 ║     GraphML Visualization with Organizational Filtering      ║
 ╚══════════════════════════════════════════════════════════════╝
     """

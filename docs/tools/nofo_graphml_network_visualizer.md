@@ -16,8 +16,6 @@ After `pip install -e .` the same tool is available as a console command:
 nofo-graphml-network-visualizer [options] file
 ```
 
-The help text still shows the old program name `formatAndViz-nofo-GraphML.py`.
-
 ## Input
 
 - `file`: a GraphML file (required), read with NetworkX (`networkx.read_graphml`). Node IDs are used as organization names. Edges may have a numeric `weight` attribute; a missing weight counts as 1. See `test-data/5-pentagon-with-star-transformed-to-nofo.graphML` for an example.
