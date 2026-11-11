@@ -353,7 +353,7 @@ fi
 
 echo ""
 print_info "TC3: Testing with $TC3FILE"
-cmd="./formatAndViz-nofi-GraphML.py -pl  $TC3FILE"
+cmd="$FFV_NO_FI_GRAPHML_SCRIPT -pl  $TC3FILE"
 echo $cmd
 
 echo ""
