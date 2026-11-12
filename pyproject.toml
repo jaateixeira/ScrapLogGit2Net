@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scraplog-git2net"
-version = "1.1.0"
+dynamic = ["version"]  # from scraplog/_version.py
 description = "Transform Git logs into collaboration networks"
 authors = [{name = "Jose Teixeira"}]
 readme = "README.md"
@@ -47,6 +47,9 @@ nofi-graphml-network-visualizer = "scraplog.viz.nofi_visualizer:main"
 nofo-graphml-network-visualizer = "scraplog.viz.nofo_visualizer:main"
 deanonymize-github-users = "scraplog.tools.deanonymize_github_users:main"
 scrap-repo-repositories-logs = "scraplog.tools.scrap_repo_logs:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "scraplog._version.__version__"}
 
 [tool.setuptools.packages.find]
 include = ["scraplog*"]

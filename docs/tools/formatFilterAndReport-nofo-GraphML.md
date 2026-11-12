@@ -47,6 +47,7 @@ All counts and lists are computed after the filters (`-t`, `-f`) are applied, ex
 |---|---|---|
 | `file` | Path to the GraphML network file (required). | none |
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `-v`, `--verbose` | Print the configuration, each node removed by a filter, each `alum` affiliation renamed to `alum.mit.edu`, and up to 20 more organizations after the top 10. | off |
 | `-t`, `--top-firms-only` | Keep only nodes whose organization is in the top-firms list. | off |
 | `-f`, `--filter-by-org` | Remove nodes whose organization is in the filter-firms list. | off |

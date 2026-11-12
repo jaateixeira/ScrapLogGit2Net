@@ -8,6 +8,8 @@ import sys
 import json
 import math
 import argparse
+
+from scraplog import version_text
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass, field
@@ -29,6 +31,10 @@ from scraplog.utils.unified_console import (console,
 
 # from rich import traceback
 import traceback
+
+
+# Organizations that keep their color with -nc gray-color-to-others-not-in-topn-filter when -tf is not given
+DEFAULT_TOP_N = 10
 
 
 @dataclass
@@ -244,12 +250,7 @@ class NetworkVisualizer:
         n = self.config.filter_by_n_top_central_firms_only
         logger.info(f"Filtering to show top {n} central firms")
 
-        # Sort nodes by centrality (descending)
-        sorted_nodes = sorted(
-            self.degree_centrality.items(),
-            key=lambda item: item[1],
-            reverse=True
-        )
+        sorted_nodes = self.ranked_by_centrality()
 
         # Get top N nodes
         top_n_nodes = [node for node, _ in sorted_nodes[:n]]
@@ -345,6 +346,10 @@ class NetworkVisualizer:
             self.known_org_node_colors = {}
             logger.info("No color map provided, coloring unknown firms by name")
 
+    def ranked_by_centrality(self) -> List[Tuple[Any, float]]:
+        """(node, centrality) pairs, most central first; ties broken by node name, so the order is repeatable."""
+        return sorted((self.degree_centrality or {}).items(), key=lambda item: (-item[1], str(item[0])))
+
     def get_node_colors(self) -> List[Any]:
         """Get colors for all nodes based on coloring strategy."""
         if self.graph is None:
@@ -352,6 +357,11 @@ class NetworkVisualizer:
 
         colors = []
         strategy = self.config.node_coloring_strategy
+
+        # gray-color-to-others-not-in-topn-filter: the N most central organizations keep their color,
+        # N from -tf (default 10, as in the nofi visualizer)
+        top_n = self.config.filter_by_n_top_central_firms_only or DEFAULT_TOP_N
+        top_organizations = {node for node, _ in self.ranked_by_centrality()[:top_n]}
 
         for node in self.graph.nodes():
             if node in self.known_org_node_colors:
@@ -361,6 +371,8 @@ class NetworkVisualizer:
                     color = 'gray'
                 elif strategy == 'random-color-to-unknown-firms':
                     color = organization_color(str(node))
+                elif strategy == 'gray-color-to-others-not-in-topn-filter':
+                    color = organization_color(str(node)) if node in top_organizations else 'gray'
                 else:
                     logger.error(f"Unknown coloring strategy: {strategy}")
                     color = 'gray'
@@ -805,6 +817,8 @@ def parse_arguments() -> NetworkConfig:
         action="store_true",
         help="Add legend to visualization"
     )
+
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     args = parser.parse_args()
 

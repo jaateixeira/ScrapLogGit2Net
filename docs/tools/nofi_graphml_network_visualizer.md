@@ -50,6 +50,7 @@ The tool also prints to the terminal: the initial node, edge and isolate counts;
 |---|---|---|
 | `infile` | The GraphML network file. If omitted, a Tk file dialog opens. | none (file dialog) |
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `-v`, `--verbose` | Print more detail (removed nodes, the first 10 node colors, debug log). Also draws the part of each developer's e-mail before `@` as a node label. | off |
 | `-c COLOR_MAP_FILE`, `--color-map COLOR_MAP_FILE` | JSON file that maps affiliations to colors. Colors in this file are used first, for every coloring strategy. If the file is missing or is not valid JSON, a warning or error is logged and an empty map is used. | none |
 | `-nl {circular,spring}`, `--network-layout {circular,spring}` | Layout algorithm. The spring layout uses the seed from `--seed`, so the same input gives the same positions. | `spring` |
@@ -104,7 +105,7 @@ Keep only the top 5 organizations, gray out the others, and list the top 5 in th
 - **Empty result after filtering.** When the filters remove every node (for example `-oo nosuch` on the sample file), the tool prints the "Filtering Results" table and "Graph is empty after filtering!", saves no files and exits with status 1.
 - **Repeatable images.** The same input and options give the same PNG and PDF files: colors come from affiliation names, the spring layout uses a fixed seed and the PDF has no creation date. Two different affiliations can get similar colors; use `-c` to choose them.
 - With `-ns centrality-score`, a node with no edges has degree centrality 0 and is drawn with size 0, so it is not visible.
-- Alias keys in the `-a` file are read with Python `configparser`, which converts keys to lower case. An affiliation that contains upper-case letters will not match any alias.
+- Affiliations are matched to the alias keys in the `-a` file without regard to case (`NVIDIA` matches the key `nvidia`). The alias names keep their case.
 - An older document, `docs/formatAndViz-nofi-GraphML-documentation.md`, gives background on this tool.
 
 [Back to the README](../../README.md#executable-toolsscripts)

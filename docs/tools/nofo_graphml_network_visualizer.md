@@ -57,11 +57,12 @@ The tool also writes a log file `app.log` (DEBUG level, rotated at 10 MB) in the
 |---|---|---|
 | `file` | The GraphML network file. | required |
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `-n {circular,spring}`, `--network_layout {circular,spring}` | Layout algorithm. The spring layout uses the seed from `--seed`, so the same input gives the same positions. | `spring` |
 | `--seed SEED` | Seed for the spring layout. Change it to get a different arrangement. | `42` |
 | `-v`, `--verbose` | Print debug details (graph contents, centralities, node colors). Also adds the command-line arguments as a title at the top of the figure. | off |
 | `-ns {all-equal,centrality-score}`, `--node_sizing_strategy {all-equal,centrality-score}` | `all-equal`: every node has size 100. `centrality-score`: size is centrality × 2000. Centrality is eigenvector centrality; if that fails, degree centrality is used. | `centrality-score` |
-| `-nc {random-color-to-unknown-firms,gray-color-to-unknown-firms,gray-color-to-others-not-in-topn-filter}`, `--node_coloring_strategy ...` | How to color nodes that are not in the color map. `random-color-to-unknown-firms`: a color derived from the organization name, the same in every run and in both visualizers (the strategy keeps its old name). `gray-color-to-unknown-firms`: gray. `gray-color-to-others-not-in-topn-filter` is accepted but not implemented: the tool logs "Unknown coloring strategy" for each node and colors it gray. | `random-color-to-unknown-firms` |
+| `-nc {random-color-to-unknown-firms,gray-color-to-unknown-firms,gray-color-to-others-not-in-topn-filter}`, `--node_coloring_strategy ...` | How to color nodes that are not in the color map. `random-color-to-unknown-firms`: a color derived from the organization name, the same in every run and in both visualizers (the strategy keeps its old name). `gray-color-to-unknown-firms`: gray. `gray-color-to-others-not-in-topn-filter`: the name-derived color for the N most central organizations, gray for the rest. N comes from `-tf`, or is 10 if `-tf` is not given; ties in centrality are broken by name. With `-tf`, only the top N are drawn, so none is gray. | `random-color-to-unknown-firms` |
 | `-c COLOR_MAP`, `--color_map COLOR_MAP` | JSON file that maps node IDs to colors. If the file is missing or not valid JSON, a warning or error is logged and an empty map is used. | none |
 | `-ff FOCAL_FIRM`, `--focal_firm FOCAL_FIRM` | Node ID of an organization to highlight with a circle. If the node is not in the (filtered) graph, an error is logged and no circle is drawn. | none |
 | `-tf FILTER_BY_N_TOP_CENTRAL_FIRMS_ONLY`, `--filter_by_n_top_central_firms_only FILTER_BY_N_TOP_CENTRAL_FIRMS_ONLY` | Keep only the N most central organizations (integer) and the edges between them. Centrality is computed after the organization filters and computed again after this filter. | none |
@@ -107,7 +108,6 @@ Keep only the two most central organizations and color them gray:
 
 - Output files go next to the input file, not to the current directory. Make sure you can write to that directory.
 - If the organization filters remove every node, the tool prints the filters it used and exits with status 1.
-- `-nc gray-color-to-others-not-in-topn-filter` is not implemented (see [Options](#options)).
 - Edge thickness is `1 + log2(weight)`. A weight below 1 makes the thickness smaller than 1, and a weight of 0 or less causes an error.
 - With `-s`/`-p` and no `-w`, nothing is saved. Showing a window needs a Matplotlib backend with a display.
 - The same input and options give the same PNG and PDF files: colors come from organization names, the spring layout uses a fixed seed and the PDF has no creation date. Two organizations can get similar colors; use `-c` to choose them.

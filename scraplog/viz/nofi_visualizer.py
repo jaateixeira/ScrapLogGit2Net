@@ -30,6 +30,8 @@ with configurable layout, coloring, and node sizing.
 """
 
 import argparse
+
+from scraplog import version_text
 import json
 import os
 import sys
@@ -178,11 +180,13 @@ class GraphMLVisualizer:
             config.read(self.config.affiliation_alias_in_config_file)
 
             if 'aliases' in config:
+                # configparser lower-cases the keys, so affiliations are matched case-insensitively
+                # (like scrapLog's -a); the alias names keep their case.
                 aliases = dict(config['aliases'])
                 console.print(f"[cyan]Applying {len(aliases)} affiliation aliases[/cyan]")
 
                 for node, data in self.graph.nodes(data=True):
-                    affiliation = data.get('affiliation', '')
+                    affiliation = data.get('affiliation', '').lower()
                     if affiliation in aliases:
                         # Special handling for specific cases
                         if affiliation == "jp":
@@ -887,6 +891,8 @@ def parse_arguments() -> VisualizationConfig:
         action="store_true",
         help="Save filtered graph as new GraphML file"
     )
+
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     args = parser.parse_args()
 

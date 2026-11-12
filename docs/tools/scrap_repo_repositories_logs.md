@@ -42,6 +42,7 @@ The step that would write a Git log per release (`get_git_logs_for_each_release`
 |---|---|---|
 | `input_dir` | The local Git repository to process. Required. If it is not a folder, the tool stops with "Input directory does not exist" and exit code 1. If it is a folder but not a Git repository, the tool logs "Not a git repository" and exits with code 1. | none (required) |
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `--releases [RELEASE ...]` | Meant to process only the listed releases. When it is given with at least one name, the tool does nothing after checking that `input_dir` is a Git repository: all the work is in the branch that runs when `--releases` is not given. | not set (all branches) |
 | `--verbose`, `-v` | Log level: none gives warnings only, `-v` gives info messages, `-vv` (or more) gives debug messages and also prints the branch list after each cleaning step. | `0` |
 

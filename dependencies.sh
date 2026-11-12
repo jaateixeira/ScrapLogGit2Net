@@ -10,6 +10,9 @@ apt-get install python3-xlwt
 
 # To validate GraphML XML files 
 apt-get install libxml2-utils
+
+# Tk (tkinter), needed by nofi_graphml_network_visualizer.py
+apt-get install python3-tk
 git clone https://github.com/jaateixeira/business_firm_color_dictionary_json.git
 
 # For cropping the white margins of a pdf output to include in papers 

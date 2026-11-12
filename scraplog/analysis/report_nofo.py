@@ -4,6 +4,8 @@ formatFilterAndReport-nofo-GraphML.py - Basic reporter for GraphML files with co
 """
 
 import argparse
+
+from scraplog import version_text
 import os
 import sys
 from typing import Dict, List, Tuple, Optional, Any, Set
@@ -473,6 +475,8 @@ def parse_arguments() -> ReportConfig:
         type=lambda s: [item.strip() for item in s.split(',')],
         help="Comma-separated list of firms to filter out (overrides default)"
     )
+
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     args = parser.parse_args()
 

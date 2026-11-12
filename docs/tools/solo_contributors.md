@@ -59,6 +59,7 @@ Optionally, it also prints the solo-only developers of each period (`--list-deve
 | Option | Meaning | Default |
 |---|---|---|
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `--log LOG` | The raw Git log to read. Required. If no commit is parsed, the tool prints "ERROR: no commits parsed from LOG" and exits with code 1. | none (required) |
 | `--project PROJECT` | Project label printed in the summary and written to the CSV files. | the log file name without its extension |
 | `--by-email` | Identify developers by email only, instead of `Name <email>`. One person who used several names with the same email then counts once. | off |

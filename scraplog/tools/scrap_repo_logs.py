@@ -44,6 +44,8 @@ import shlex
 
 import argparse
 
+from scraplog import version_text
+
 
 from datetime import datetime
 
@@ -197,6 +199,8 @@ def parse_args() -> argparse.Namespace:
         default=0,
         help='Increase verbosity level (use -v, -vv, -vvv)'
     )
+
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     return parser.parse_args()
 

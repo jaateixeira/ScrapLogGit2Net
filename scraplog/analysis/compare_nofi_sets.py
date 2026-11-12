@@ -22,6 +22,8 @@ Usage:
 """
 
 import argparse
+
+from scraplog import version_text
 import os
 import sys
 import networkx as nx
@@ -83,6 +85,8 @@ Examples:
         action="store_true",
         help="Don't display the plot (only save if --save-plot is specified)"
     )
+
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     return parser.parse_args()
 

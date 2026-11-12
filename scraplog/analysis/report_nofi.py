@@ -4,6 +4,8 @@ formatFilterAndReport-nofi-GraphML.py - Reporter for GraphML files with comprehe
 """
 
 import argparse
+
+from scraplog import version_text
 import os
 import sys
 from typing import Dict, List, Tuple, Optional, Any
@@ -481,6 +483,8 @@ def parse_arguments() -> ReportConfig:
         default=10,
         help="Number of top individuals to report (default: 10)"
     )
+
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     args = parser.parse_args()
 

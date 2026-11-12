@@ -8,6 +8,8 @@ import json
 import sys
 import os
 import argparse
+
+from scraplog import version_text
 import networkx as nx
 from typing import Tuple, Optional, Dict, Any, List
 import time
@@ -725,6 +727,8 @@ def main() -> None:
         help=f'Stop with exit code 1 when the GitHub rate limit is exhausted, instead of waiting for it to reset '
              f'(at most {MAX_RATE_LIMIT_WAITS} times).'
     )
+
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     args = parser.parse_args()
 

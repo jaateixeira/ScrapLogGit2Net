@@ -41,6 +41,7 @@ All counts and lists are computed after the organization filters (`-oi`, `-oo`) 
 |---|---|---|
 | `file` | Path to the GraphML network file (required). | none |
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `-v`, `--verbose` | Print a debug line for each node removed by `-oi` or `-oo`, and for each `alum` affiliation renamed to `alum.mit.edu`. | off |
 | `-oi`, `--org_list_to_ignore` | Comma-separated list of organizations. Developers whose `affiliation` matches one of them are removed. | none |
 | `-oo`, `--org_list_only` | Comma-separated list of organizations. Only developers whose `affiliation` matches one of them are kept. | none |

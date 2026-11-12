@@ -66,6 +66,7 @@ Other output:
 | Option | Meaning | Default |
 |---|---|---|
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `-l LOAD`, `--load LOAD` | Meant to load a change log saved with `-s`. Not implemented: the tool stops with the error "Loading a saved change log (-l) is not implemented yet" and exit code 1. | not set |
 | `-r RAW`, `--raw RAW` | The raw Git log to process. Required. | none (required) |
 | `-s SAVE`, `--save SAVE` | Also save the parsed change log to this file as a Python pickle. It holds a list of `((email, affiliation), [files], timestamp)` entries, after filtering. A missing parent folder is created. | not set |

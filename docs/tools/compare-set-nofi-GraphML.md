@@ -41,6 +41,7 @@ The tool does not use node attributes, so any GraphML network works, including n
 |---|---|---|
 | `files` | GraphML files to analyze (2 to 20). | none (required) |
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `--save-plot` | Save the plot to this file name, for example `metrics.png` or `metrics.pdf`. | not saved |
 | `--output-dir` | Directory for the saved plot. It is created if it does not exist. Only used with `--save-plot`. | current directory |
 | `--dpi` | Resolution of the saved plot. | 100 |

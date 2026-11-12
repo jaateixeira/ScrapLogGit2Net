@@ -43,6 +43,7 @@ The console shows tables with the number of nodes, edges and isolates before and
 |---|---|---|
 | `file` | The GraphML network of individuals to transform. Required. | none (required) |
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `-v`, `--verbose` | Print the input graph, its nodes with their data, each edge being processed, and the nodes and edges of the network of organizations. | off |
 | `-t`, `--top-firms-only` | Not implemented. The tool prints "ERROR: Filtering by top firms not implemented yet" and stops with exit code 1. | off |
 | `-f`, `--filter-by-org` | Not implemented. The tool prints "ERROR: Filtering by organizations not implemented yet" and stops with exit code 1. | off |

@@ -65,6 +65,7 @@ If GitHub returns an error for a user (for example, the user does not exist), a 
 | `input` | Path to the input GraphML file. | required |
 | `output` | Path to the output GraphML file. | `<input without extension>.out.graphml` |
 | `-h`, `--help` | Show the help message and exit. | |
+| `--version` | Show the program name and the ScrapLogGit2Net version, then exit. | |
 | `--config CONFIG` | Path to an INI file with a `[github]` section and a `token` key. Used only when `GITHUB_TOKEN` is not set. If the token is not found there, `config.ini` in the current directory is tried. | none (then `config.ini`) |
 | `--skip-api-test` | Do not test the token before processing. Without this option, the tool first calls the GitHub API to check the token (it stops with status 1 if the token is invalid) and prints a table of your rate limits. | off (test runs) |
 | `--cache-file CACHE_FILE` | SQLite file for cached GitHub API responses. | `<output without extension>.github_cache.sqlite` |

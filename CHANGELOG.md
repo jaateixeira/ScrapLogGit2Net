@@ -13,15 +13,18 @@ No change to the networks: the same log gives the same GraphML as v1.1-borba.
 - No hard-coded `/home/apolinex` paths: `compile_all_git_logs_across_branches.sh` finds its log script next to itself, and the AGL study's `config.cfg` uses paths relative to the repository. `run_scrap_log-4_list_of_IN_files.sh` reads the `scrapLogpath` key it could never find before.
 - Acceptance scripts: the color map used by `test-nofo-viz.sh` and the AGL study (`business_firm_color_dictionary_json/firm_color_dict.json`) is now in the repository, and the nofi visualizer is called by its current name.
 - The README example of a GitHub noreply address uses GitHub's octocat account instead of a real developer's e-mail address.
+- nofi visualizer, `-a`: affiliations are matched to the alias keys without regard to case. `configparser` lower-cases the keys, so an affiliation with capitals (e.g. `NVIDIA`) never matched. This changes figures and `-s` output, not scrapLog's networks.
 
 ### New
 
+- `--version` in every tool. The version is set once, in `scraplog/_version.py`.
+- nofo visualizer: `-nc gray-color-to-others-not-in-topn-filter` is implemented (it colored every node gray and logged an error): the N most central organizations keep their color (N from `-tf`, default 10), the rest are gray.
 - `--seed` in both visualizers: seed for the spring layout (default 42).
 - `deanonymize_github_users.py`: `--cache-file`, `--no-cache` and `--no-wait`.
 
 ### Development
 
-- 283 unit tests.
+- 299 unit tests. Tk (tkinter), needed by the nofi visualizer, is listed with the system packages in `requirements.txt` and the README.
 - The transformer acceptance suite (`test-nofi-2-nofo-transformer.sh`) runs again, in CI too: it validates against a local copy of the GraphML 1.0 schema (`tests/acceptance-test-scripts/graphml-schema/`), because graphml.graphdrawing.org is out of service.
 
 ## v1.1-borba (2026-11-10)

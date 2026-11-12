@@ -14,6 +14,8 @@ Nokia and Apple are then connected with an edge weight of 3.
 import sys
 import os
 import argparse
+
+from scraplog import version_text
 import subprocess
 from collections import defaultdict
 from typing import Optional
@@ -258,6 +260,8 @@ def main() -> None:
         default=None,
         help="Output filename for the transformed network"
     )
+
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     args = parser.parse_args()
 

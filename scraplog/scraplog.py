@@ -5,6 +5,8 @@ to build networks of who works with who in a
 """
 
 import argparse
+
+from scraplog import version_text
 import atexit
 import sys
 import time
@@ -85,6 +87,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('-d', '--debug', action='store_true', help='Enable debug output')
     parser.add_argument('-st', '--strict', action='store_true',
                         help="strict validation mode - fail on validation errors")
+
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     return parser.parse_args()
 

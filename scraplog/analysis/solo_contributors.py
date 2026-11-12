@@ -28,6 +28,8 @@ Usage:
 """
 
 import argparse
+
+from scraplog import version_text
 import csv
 import re
 import sys
@@ -292,6 +294,8 @@ def main():
                         help="Print full Developer – File listing")
     parser.add_argument("--csv",        action="store_true",
                         help="Write summary and detail CSVs alongside the log")
+    parser.add_argument('--version', action='version', version=version_text(parser.prog))
+
     args = parser.parse_args()
 
     commits = parse_log(args.log, by_email=args.by_email)

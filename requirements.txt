@@ -1,8 +1,11 @@
 # ScrapLogGit2Net runtime dependencies (Python 3.12+)
 # Install with:  pip install -r requirements.txt
 #
-# The acceptance tests (tests/acceptance-test-scripts/) also need two system tools.
-# pip cannot install them; use your system's package manager:
+# System packages that pip cannot install; use your system's package manager:
+#   Tk (tkinter)  needed by nofi_graphml_network_visualizer.py, which imports it at start-up (even for --help).
+#                 Debian/Ubuntu: sudo apt install python3-tk   Fedora: sudo dnf install python3-tkinter
+#                 macOS (Homebrew Python): brew install python-tk   Windows and python.org installers include it.
+# The acceptance tests (tests/acceptance-test-scripts/) also need two system tools:
 #   xmllint  Debian/Ubuntu: sudo apt install libxml2-utils   Fedora: sudo dnf install libxml2   macOS: brew install libxml2
 #   unzip    Debian/Ubuntu: sudo apt install unzip           Fedora: sudo dnf install unzip
 # The scripts stop with these instructions if a tool is missing.
