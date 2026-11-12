@@ -18,6 +18,9 @@ test_config
 
 
 
+# GraphML 1.0 schema, a local copy (see graphml-schema/README.md): graphml.graphdrawing.org has been out of service
+GRAPHML_SCHEMA="tests/acceptance-test-scripts/graphml-schema/graphml.xsd"
+
 # Fuction that validates if a fiven XML file is valid 
 validGraphmlXMLfile() {
     # First check if file exists
@@ -27,9 +30,9 @@ validGraphmlXMLfile() {
 	return 
     fi
 
-    if ! xmllint --schema http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd $1 >> /dev/null ; then
+    if ! xmllint --noout --schema "$GRAPHML_SCHEMA" $1 ; then
 	echo -e "\t File $1 is not a valid graphml xml file"
-	echo -e "\t It does no comply with with schema at http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"
+	echo -e "\t It does not comply with the GraphML schema in $GRAPHML_SCHEMA"
 	false 
 	return 
     fi

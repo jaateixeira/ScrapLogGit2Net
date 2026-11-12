@@ -22,6 +22,7 @@ No change to the networks: the same log gives the same GraphML as v1.1-borba.
 ### Development
 
 - 283 unit tests.
+- The transformer acceptance suite (`test-nofi-2-nofo-transformer.sh`) runs again, in CI too: it validates against a local copy of the GraphML 1.0 schema (`tests/acceptance-test-scripts/graphml-schema/`), because graphml.graphdrawing.org is out of service.
 
 ## v1.1-borba (2026-11-10)
 
