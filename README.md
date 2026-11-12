@@ -101,7 +101,7 @@ Next time, you only need to activate the environment again (step 2, second comma
 ## Troubleshooting
 - **`ModuleNotFoundError: No module named 'tkinter'` when importing `networkx_temporal`.** Some `networkx-temporal` 1.4.x releases import `turtle`, which needs Tk. Either install Tk (Debian/Ubuntu: `sudo apt install python3-tk`; Fedora: `sudo dnf install python3-tkinter`; the python.org installers for macOS and Windows already include it) or stay on the 1.3.x series, which ScrapLogGit2Net selects by default.
 - **`python3 -m venv` fails on Debian/Ubuntu.** Install the venv module with `sudo apt install python3-venv`.
-- **Missing system packages on Linux.** See the file `dependencies.sh`.
+- **Missing system packages on Linux.** See the file `dependencies.sh`. It also clones the organization color map (`business_firm_color_dictionary_json`) used by `test-nofo-viz.sh` and the AGL study.
 
 # Quick start
 Once installed, try ScrapLogGit2Net on the TensorFlow git log that comes with the repository (January to March 2024):

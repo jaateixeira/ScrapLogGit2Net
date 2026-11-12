@@ -38,3 +38,6 @@ project-specific-analysis/AGL/**/*.pdf
 project-specific-analysis/AGL/**/*.graphML
 project-specific-analysis/AGL/**/*.IN
 .claude/worktrees/
+
+# Color map, cloned by dependencies.sh from github.com/jaateixeira/business_firm_color_dictionary_json
+business_firm_color_dictionary_json/

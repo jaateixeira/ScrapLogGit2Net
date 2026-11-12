@@ -1,3 +1,10 @@
+# The color map comes from a separate repository (see dependencies.sh).
+if [ ! -f business_firm_color_dictionary_json/firm_color_dict.json ]; then
+    echo "Color map not found. From the repository root, run:" >&2
+    echo "  git clone https://github.com/jaateixeira/business_firm_color_dictionary_json.git" >&2
+    exit 1
+fi
+
 ./nofo_graphml_network_visualizer.py -v --show --legend --color_map business_firm_color_dictionary_json/firm_color_dict.json test-data/5-pentagon-with-star-transformed-to-nofo.graphML
 ./nofo_graphml_network_visualizer.py -v --show --legend test-data/2-org-with-2-developers-each-all-in-inter-firm-cooperation-relationships.graphML-transformed-to-nofo.graphML
 ./nofo_graphml_network_visualizer.py --show --legend --color_map=business_firm_color_dictionary_json/firm_color_dict.json test-data/TensorFlow/tensorFlowGitLog-2015-git-log-outpuyt-by-Jose.IN.NetworkFile.graphML-transformed-to-nofo.graphML
