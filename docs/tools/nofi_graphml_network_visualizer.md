@@ -55,7 +55,7 @@ The tool also prints to the terminal: the initial node, edge and isolate counts;
 | `-c COLOR_MAP_FILE`, `--color-map COLOR_MAP_FILE` | JSON file that maps affiliations to colors. Colors in this file are used first, for every coloring strategy. If the file is missing or is not valid JSON, a warning or error is logged and an empty map is used. | none |
 | `-nl {circular,spring}`, `--network-layout {circular,spring}` | Layout algorithm. The spring layout uses the seed from `--seed`, so the same input gives the same positions. | `spring` |
 | `--seed SEED` | Seed for the spring layout. Change it to get a different arrangement. | `42` |
-| `-ns {all-equal,centrality-score}`, `--node-sizing-strategy {all-equal,centrality-score}` | `all-equal`: every node has size 100. `centrality-score`: size is degree centrality × 100. | `centrality-score` |
+| `-ns {all-equal,centrality-score}`, `--node-sizing-strategy {all-equal,centrality-score}` | `all-equal`: every node has size 100. `centrality-score`: size is degree centrality × 100, at least 10, so nodes with no edges stay visible. | `centrality-score` |
 | `-nc {random-color-to-unknown-firms,gray-color-to-unknown-firms,gray-color-to-others-not-in-topn-filter}`, `--node-coloring-strategy ...` | How to color affiliations that are not in the color map. `random-color-to-unknown-firms`: a color derived from the affiliation name, the same in every run and in both visualizers (the strategy keeps its old name). `gray-color-to-unknown-firms`: gray. `gray-color-to-others-not-in-topn-filter`: the name-derived color for affiliations among the top N organizations, gray for the rest. N comes from `-ot`, or is 10 if `-ot` is not given. | `random-color-to-unknown-firms` |
 | `-oi ORG_LIST_TO_IGNORE`, `--org-list-to-ignore ORG_LIST_TO_IGNORE` | Comma-separated list of affiliations. Developers with these affiliations are removed. | none |
 | `-oo ORG_LIST_ONLY`, `--org-list-only ORG_LIST_ONLY` | Comma-separated list of affiliations. Only developers with these affiliations are kept. | none |
@@ -104,7 +104,6 @@ Keep only the top 5 organizations, gray out the others, and list the top 5 in th
 - **Tk is needed only for the file dialog.** The tool imports `tkinter` only when `infile` is left out. Without a working Tk library it then prints a message and exits with status 1. On Debian or Ubuntu, Tk usually comes with the `python3-tk` package.
 - **Empty result after filtering.** When the filters remove every node (for example `-oo nosuch` on the sample file), the tool prints the "Filtering Results" table and "Graph is empty after filtering!", saves no files and exits with status 1.
 - **Repeatable images.** The same input and options give the same PNG and PDF files: colors come from affiliation names, the spring layout uses a fixed seed and the PDF has no creation date. Two different affiliations can get similar colors; use `-c` to choose them.
-- With `-ns centrality-score`, a node with no edges has degree centrality 0 and is drawn with size 0, so it is not visible.
 - Affiliations are matched to the alias keys in the `-a` file without regard to case (`NVIDIA` matches the key `nvidia`). The alias names keep their case.
 - An older document, `docs/formatAndViz-nofi-GraphML-documentation.md`, gives background on this tool.
 

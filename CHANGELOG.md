@@ -14,6 +14,7 @@ No change to the networks: the same log gives the same GraphML as v1.1-borba.
 - Acceptance scripts call the nofi visualizer by its current name. The color map used by `test-nofo-viz.sh` and the AGL study (`business_firm_color_dictionary_json/firm_color_dict.json`) comes from its own repository, cloned by `dependencies.sh`; the folder is ignored by git, and `test-nofo-viz.sh` says how to get the map if it is missing.
 - The README example of a GitHub noreply address uses GitHub's octocat account instead of a real developer's e-mail address.
 - The nofi visualizer works without Tk (tkinter) when the input file is given, `--help` included. It imported Tk at start-up and failed before parsing any option. Tk is needed only for the file dialog; without it the tool says so and exits with code 1.
+- Nodes with no edges are visible with `-ns centrality-score` (the default) in both visualizers. Their centrality is 0, so they were drawn with size 0. Node sizes now have a minimum of 10; nodes with larger sizes are drawn as before.
 - nofi visualizer, `-a`: affiliations are matched to the alias keys without regard to case. `configparser` lower-cases the keys, so an affiliation with capitals (e.g. `NVIDIA`) never matched. This changes figures and `-s` output, not scrapLog's networks.
 
 ### New
@@ -25,7 +26,7 @@ No change to the networks: the same log gives the same GraphML as v1.1-borba.
 
 ### Development
 
-- 302 unit tests. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
+- 304 unit tests. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
 - The transformer acceptance suite (`test-nofi-2-nofo-transformer.sh`) runs again, in CI too: it validates against a local copy of the GraphML 1.0 schema (`tests/acceptance-test-scripts/graphml-schema/`), because graphml.graphdrawing.org is out of service.
 
 ## v1.1-borba (2026-11-10)

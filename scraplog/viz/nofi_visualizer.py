@@ -47,6 +47,10 @@ from matplotlib.lines import Line2D
 
 from scraplog.viz.colors import organization_color
 
+# With -ns centrality-score, the smallest node size (a tenth of the all-equal size of 100),
+# so nodes with no edges (centrality 0) stay visible.
+MIN_NODE_SIZE = 10
+
 # For logging
 from loguru import logger
 from rich.console import Console
@@ -518,7 +522,8 @@ class GraphMLVisualizer:
         if not self.degree_centrality:
             return [100] * len(self.filtered_graph.nodes())
 
-        return [v * 100 for v in self.degree_centrality.values()]
+        # A node with no edges has centrality 0; the minimum keeps it visible.
+        return [max(v * 100, MIN_NODE_SIZE) for v in self.degree_centrality.values()]
 
     def calculate_layout(self) -> None:
         """Calculate node positions based on layout algorithm."""

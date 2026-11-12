@@ -36,6 +36,10 @@ import traceback
 # Organizations that keep their color with -nc gray-color-to-others-not-in-topn-filter when -tf is not given
 DEFAULT_TOP_N = 10
 
+# With -ns centrality-score, the smallest node size (a tenth of the all-equal size of 100),
+# so nodes with no edges (centrality 0) stay visible.
+MIN_NODE_SIZE = 10
+
 
 @dataclass
 class NetworkConfig:
@@ -397,7 +401,8 @@ class NetworkVisualizer:
 
         # Centrality-based sizing
         custom_factor = 20
-        return [v * custom_factor * 100 for v in self.degree_centrality.values()]
+        # A node with no edges has centrality 0; the minimum keeps it visible.
+        return [max(v * custom_factor * 100, MIN_NODE_SIZE) for v in self.degree_centrality.values()]
 
     def get_edge_thickness(self) -> List[float]:
         """Calculate edge thickness based on weights."""
