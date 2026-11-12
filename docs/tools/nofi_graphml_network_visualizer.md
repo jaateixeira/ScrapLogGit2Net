@@ -22,7 +22,7 @@ nofi-graphml-network-visualizer [options] [infile]
 - The tool reads these node attributes:
   - `affiliation`: used for coloring, filtering and the legend.
   - `e-mail`: shown in the "Top 10 Most Connected Individuals" list. With `-v`, the part before `@` is drawn as the node label.
-- `infile` is optional. If you leave it out, the tool opens a Tk file dialog so you can pick the file. If you cancel the dialog, the tool exits with status 1. If the file does not exist, it exits with status 1.
+- `infile` is optional. If you leave it out, the tool opens a Tk file dialog so you can pick the file. If you cancel the dialog, or Tk is not installed, the tool exits with status 1. If the file does not exist, it exits with status 1.
 - Optional color map (`-c`): a JSON object that maps an affiliation to a Matplotlib color, for example `{"rijksmuseum": "red", "oodi.fi": "#1f77b4"}`.
 - Optional alias file (`-a`): an INI file with an `[aliases]` section. Each key is an affiliation found in the graph and its value is the affiliation to use instead.
 
@@ -73,7 +73,7 @@ Filters are applied in this order: `-oi`, `-oo`, `-on`, `-ot`. Affiliation names
 
 ## Examples
 
-These examples could not be run as written in the environment used to write this page, because it has no Tk library (see [Notes and limitations](#notes-and-limitations)). They were checked only with the `tkinter` module replaced by an empty stub; with that stub, each one exited with status 0 and wrote the files listed.
+These examples give the input file, so they do not need Tk. They were checked in an environment without Tk; each one exited with status 0 and wrote the files listed.
 
 Draw a network with the default settings (writes `5-pentagon-with-star_spring.png` and `5-pentagon-with-star_spring.pdf` in the current directory):
 
@@ -101,7 +101,7 @@ Keep only the top 5 organizations, gray out the others, and list the top 5 in th
 
 ## Notes and limitations
 
-- **Tk is required.** The module imports `tkinter` at start-up, even when you pass `infile`. Without a working Tk library the tool fails before parsing any option, including `--help` (for example `ImportError: libtk8.6.so: cannot open shared object file`). On Debian or Ubuntu, Tk usually comes with the `python3-tk` package.
+- **Tk is needed only for the file dialog.** The tool imports `tkinter` only when `infile` is left out. Without a working Tk library it then prints a message and exits with status 1. On Debian or Ubuntu, Tk usually comes with the `python3-tk` package.
 - **Empty result after filtering.** When the filters remove every node (for example `-oo nosuch` on the sample file), the tool prints the "Filtering Results" table and "Graph is empty after filtering!", saves no files and exits with status 1.
 - **Repeatable images.** The same input and options give the same PNG and PDF files: colors come from affiliation names, the spring layout uses a fixed seed and the PDF has no creation date. Two different affiliations can get similar colors; use `-c` to choose them.
 - With `-ns centrality-score`, a node with no edges has degree centrality 0 and is drawn with size 0, so it is not visible.

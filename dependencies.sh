@@ -11,7 +11,7 @@ apt-get install python3-xlwt
 # To validate GraphML XML files 
 apt-get install libxml2-utils
 
-# Tk (tkinter), needed by nofi_graphml_network_visualizer.py
+# Tk (tkinter), needed by nofi_graphml_network_visualizer.py's file dialog (no input file given)
 apt-get install python3-tk
 git clone https://github.com/jaateixeira/business_firm_color_dictionary_json.git
 

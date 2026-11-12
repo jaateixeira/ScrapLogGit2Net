@@ -9,8 +9,7 @@ Three fixes:
   the others are gray; ties in centrality are broken by name.
 - Every tool has --version.
 
-The nofi visualizer imports tkinter, which is not installed everywhere
-(e.g. CI), so it runs here in a subprocess with a stub tkinter module.
+The nofi visualizer runs here in a subprocess with a stub tkinter module.
 
 Run with:
     pytest tests/unit/test_alias_case_gray_others_version.py -v

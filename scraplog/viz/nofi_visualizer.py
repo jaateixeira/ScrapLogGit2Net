@@ -40,8 +40,6 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any, Set
 from dataclasses import dataclass
 from datetime import datetime
-import tkinter as tk
-from tkinter import filedialog
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -899,6 +897,15 @@ def parse_arguments() -> VisualizationConfig:
     # Handle file input via dialog if not provided
     if not args.infile:
         console.print("[yellow]No input file provided, opening file dialog...[/yellow]")
+        # Tk is imported only here, so the tool works without Tk when infile is given.
+        try:
+            import tkinter as tk
+            from tkinter import filedialog
+        except ImportError as error:
+            console.print(f"[red]The file dialog needs Tk (tkinter), which is not available: {error}. "
+                          "Give the GraphML file as an argument, or install Tk "
+                          "(Debian/Ubuntu: sudo apt install python3-tk).[/red]")
+            sys.exit(1)
         root = tk.Tk()
         root.withdraw()
         input_file = filedialog.askopenfilename(

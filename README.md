@@ -57,7 +57,7 @@ For more information, see the publication and related website:
 
 # Installation
 
-ScrapLogGit2Net needs **Python 3.12 or newer** and **Git**. The network-of-individuals visualizer (`nofi_graphml_network_visualizer.py`) also needs **Tk** (tkinter), which pip cannot install: on Debian/Ubuntu run `sudo apt install python3-tk`, on Fedora `sudo dnf install python3-tkinter`, with Homebrew Python on macOS `brew install python-tk`; the Windows and python.org installers include it. The recommended way to install it is inside a Python virtual environment, so its dependencies do not interfere with other Python projects on your computer.
+ScrapLogGit2Net needs **Python 3.12 or newer** and **Git**. The network-of-individuals visualizer (`nofi_graphml_network_visualizer.py`) needs **Tk** (tkinter) only for its file dialog, when no input file is given. pip cannot install Tk: on Debian/Ubuntu run `sudo apt install python3-tk`, on Fedora `sudo dnf install python3-tkinter`, with Homebrew Python on macOS `brew install python-tk`; the Windows and python.org installers include it. The recommended way to install it is inside a Python virtual environment, so its dependencies do not interfere with other Python projects on your computer.
 
 ## 1. Get the code
 ```
@@ -531,7 +531,7 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   ```
   They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command.
 
-As of November 2026 there are 299 unit tests in 29 files (293 run, 6 are skipped because they describe planned features) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
+As of November 2026 there are 302 unit tests in 30 files (296 run, 6 are skipped because they describe planned features) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
 
 Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 
