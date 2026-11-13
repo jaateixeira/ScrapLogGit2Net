@@ -5,6 +5,10 @@ The color comes from the organization name, so the same organization gets
 the same color in every run, every figure and both visualizers (nofi and
 nofo). Saturation and brightness are kept away from gray, which the
 visualizers use for "others" and unknown organizations.
+
+Each color is chosen without looking at the other organizations in the figure,
+so two organizations can get similar colors. This is a deliberate trade-off
+for stable colors; to choose colors, give the visualizers a color map (-c).
 """
 
 import colorsys
