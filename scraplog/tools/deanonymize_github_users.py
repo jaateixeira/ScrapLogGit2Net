@@ -10,6 +10,7 @@ import os
 import argparse
 
 from scraplog import version_text
+from scraplog.metadata import add_metadata_to_graphml_file, run_metadata
 import networkx as nx
 from typing import Tuple, Optional, Dict, Any, List
 import time
@@ -599,7 +600,8 @@ def iterate_graph(
         input_file: str,
         output_file: str,
         github_token: str,
-        wait_on_rate_limit: bool = True
+        wait_on_rate_limit: bool = True,
+        metadata: dict[str, str] | None = None
         ) -> None:
     """
     Process GraphML file to deanonymize GitHub emails.
@@ -609,6 +611,7 @@ def iterate_graph(
         output_file: Path to output GraphML file
         github_token: GitHub API token
         wait_on_rate_limit: wait for GitHub's rate limit to reset (False: stop at once)
+        metadata: run metadata (see scraplog.metadata), written as graph-level attributes
 
     """
     logger.info(f"Iterating network: {input_file} -> {output_file}")
@@ -660,6 +663,8 @@ def iterate_graph(
     # Write the modified graph to output file
     logger.info(f"Writing output GraphML file: {output_file}")
     nx.write_graphml(G_copy, output_file)
+    if metadata:
+        add_metadata_to_graphml_file(output_file, metadata)
 
     console.print(f"[bold green]Successfully processed graph to {output_file}[/bold green]")
 
@@ -731,6 +736,7 @@ def main() -> None:
     parser.add_argument('--version', action='version', version=version_text(parser.prog))
 
     args = parser.parse_args()
+    options_as_given = dict(vars(args))
 
     # Validate input file
     validate_input_file(args.input)
@@ -761,6 +767,12 @@ def main() -> None:
     if not args.no_cache:
         install_http_cache(args.cache_file or default_cache_file(args.output))
 
+    # A missing input file is reported by iterate_graph
+    # Options that do not change the result (output name, configuration, cache location, waiting) are not recorded
+    metadata = (run_metadata("deanonymize_github_users.py", options_as_given, {"input": args.input},
+                             not_recorded=("output", "config", "skip_api_test", "cache_file", "no_wait"))
+                if os.path.isfile(args.input) else None)
+
     # Process the graph
     try:
         iterate_graph(
@@ -768,6 +780,7 @@ def main() -> None:
             output_file=args.output,
             github_token=github_token,
             wait_on_rate_limit=not args.no_wait,
+            metadata=metadata,
         )
     except RateLimitStop as e:
         reuse = "" if args.no_cache else " Responses already received are kept in the HTTP cache and reused."

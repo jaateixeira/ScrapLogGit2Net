@@ -16,6 +16,7 @@ import os
 import argparse
 
 from scraplog import version_text
+from scraplog.metadata import add_metadata_to_graphml_file, run_metadata
 import subprocess
 from collections import defaultdict
 from typing import Optional
@@ -185,7 +186,8 @@ def remove_isolates(graph: nx.Graph, verbose: bool = False) -> nx.Graph:
 def save_network(
         graph: nx.Graph,
         output_file: Optional[str] = None,
-        input_file: Optional[str] = None
+        input_file: Optional[str] = None,
+        parameters: Optional[dict] = None
 ) -> str:
     """
     Save graph to GraphML file.
@@ -194,6 +196,8 @@ def save_network(
         graph: NetworkX graph to save
         output_file: Output filename (if None, generates automatically)
         input_file: Original input filename (used for auto-naming)
+        parameters: the command-line options; with input_file, recorded in the file
+            as graph-level attributes (see scraplog.metadata)
 
     Returns:
         Path to saved file
@@ -214,6 +218,10 @@ def save_network(
 
     logger.info(f"Saving network to {transformed_file_name}")
     nx.write_graphml_lxml(graph, transformed_file_name)
+    if parameters is not None and input_file is not None:
+        add_metadata_to_graphml_file(transformed_file_name, run_metadata(
+            "transform_nofi_2_nofo_graphml.py", parameters, {"file": input_file},
+            not_recorded=("outfile", "verbose", "show")))
     logger.success(f"File saved successfully: {transformed_file_name}")
     return transformed_file_name
 
@@ -352,7 +360,7 @@ def main() -> None:
     console.print("\n[yellow]Time to save orgG, the inter-organizational network "
                   "with weighted edges into the GraphML format[/yellow]")
 
-    output_file = save_network(org_g, args.outfile, args.file)
+    output_file = save_network(org_g, args.outfile, args.file, parameters=vars(args))
 
     # Display results if requested
     if args.show:

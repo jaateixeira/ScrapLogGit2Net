@@ -28,6 +28,8 @@ Isolated nodes are listed in a table and removed before the transformation.
 
 A GraphML file with one node per organization and an edge attribute `weight` (an integer). Only organizations with at least one inter-organizational edge become nodes. The nodes have no other attributes.
 
+The file also records the version, the options (except `-o`, `-v` and `-s`) and the input file's path and SHA-256, as graph-level attributes `scraplog_tool`, `scraplog_version`, `scraplog_parameters` and `scraplog_inputs`. The input's own attributes are not copied; its SHA-256 links the two files. See [Version and options in every network file](../../README.md#version-and-options-in-every-network-file).
+
 Default file name, written to the current working directory:
 
 - The input file name without its folder, with `.graphML` removed and `-transformed-to-nofo.graphML` added. For example, `test-data/5-pentagon-with-star.graphML` gives `5-pentagon-with-star-transformed-to-nofo.graphML`.

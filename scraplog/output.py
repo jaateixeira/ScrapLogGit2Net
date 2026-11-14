@@ -6,6 +6,8 @@ import argparse
 import sys
 import zipfile
 from pathlib import Path
+from typing import Dict, Optional
+
 import networkx as nx
 import networkx_temporal as tx
 from scraplog.export import log_data as export_log_data
@@ -16,6 +18,7 @@ from scraplog.utils.string_comparators import find_similar_strings
 import traceback  # the standard module (unified_console.traceback is rich.traceback outside PyCharm)
 from scraplog.utils.unified_console import console, inspect, print_info, print_warning, print_error
 from scraplog.coediting import enrich_graph_with_affiliation
+from scraplog.metadata import insert_graphml_metadata, run_metadata
 
 
 def temporal_network_counts(state: ProcessingState) -> tuple[int, int, int, set]:
@@ -70,13 +73,14 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
     # console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
     console.print("=" * 60)
 
-def normalize_zip_timestamps(zip_path: Path) -> None:
+def normalize_zip_timestamps(zip_path: Path, metadata: Optional[Dict[str, str]] = None) -> None:
     """
     Rewrite a zip archive with a fixed timestamp on every entry.
 
     Zip entries record when they were written, so the same network exported
     twice would otherwise give different bytes. Content, compression and
-    file attributes are kept as they are.
+    file attributes are kept as they are. With metadata (see scraplog.metadata),
+    it is added to every GraphML file in the archive.
     """
     with zipfile.ZipFile(zip_path) as archive:
         entries = [(info, archive.read(info)) for info in archive.infolist()]
@@ -86,7 +90,17 @@ def normalize_zip_timestamps(zip_path: Path) -> None:
             fixed_info = zipfile.ZipInfo(info.filename, date_time=(1980, 1, 1, 0, 0, 0))
             fixed_info.compress_type = info.compress_type
             fixed_info.external_attr = info.external_attr
+            if metadata and info.filename.lower().endswith(".graphml"):
+                data = insert_graphml_metadata(data.decode("utf-8"), metadata).encode("utf-8")
             archive.writestr(fixed_info, data)
+
+
+def scraplog_run_metadata(args: argparse.Namespace) -> Dict[str, str]:
+    """Version, options and input-file hashes of this scrapLog run (see scraplog.metadata)."""
+    input_files = {option: getattr(args, option, None)
+                   for option in ("raw", "load", "filter_emails", "filter_files", "aggregate_email_prefixes")}
+    return run_metadata("scrapLog.py", vars(args), input_files,
+                        not_recorded=("output_file", "save", "verbose", "debug"))
 
 
 def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
@@ -107,12 +121,13 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
             print_error("Unknown network type")
             print_info(f"{state.network_type=}")
             sys.exit(1)
+    metadata = scraplog_run_metadata(args)
     try:
         # For temporal networks, ensure complex attributes are string fied for GraphML
         if state.network_type == 'inter_individual_graph_temporal':
             output_static_w_graph : tx.TemporalGraph = state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
             tx.write_graph(output_static_w_graph, graphml_filename)
-            normalize_zip_timestamps(Path(graphml_filename))
+            normalize_zip_timestamps(Path(graphml_filename), metadata)
         elif state.network_type == 'inter_individual_graph_weighted':
             output_static_w_graph: nx.Graph= state.container_of_extracted_networks.dev_to_dev_weighted_network
             #nx.write_graphml(output_temporal_graph, graphml_filename,  named_key_ids='email')
@@ -129,7 +144,8 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
             # attributes), plus the weight of each edge. The edge IDs used to be the weights,
             # which repeat, and the nodes had no attributes.
             output_static_w_graph_with_affiliation = enrich_graph_with_affiliation(output_static_w_graph, state.affiliations)
-            export_log_data.create_graphml_file(output_static_w_graph_with_affiliation, graphml_filename, weighted=True)
+            export_log_data.create_graphml_file(output_static_w_graph_with_affiliation, graphml_filename, weighted=True,
+                                                metadata=metadata)
 
 
         elif state.network_type == 'inter_individual_graph_unweighted':
@@ -152,7 +168,8 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
             # Written once. state.dev_to_dev_network (built from the aggregated co-edits) used to be
             # written to the same file right after; it is the same graph, so the output is unchanged.
-            export_log_data.create_graphml_file(output_static_uw_graph_with_affiliation, graphml_filename)
+            export_log_data.create_graphml_file(output_static_uw_graph_with_affiliation, graphml_filename,
+                                                metadata=metadata)
 
         else:
             print_error("Unknown network type at writing graphml files")

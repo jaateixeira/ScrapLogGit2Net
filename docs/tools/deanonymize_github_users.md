@@ -44,6 +44,7 @@ If no token is found, the tool prints the ways to provide one, points to `https:
 
 - The corrected network as GraphML. If you do not give `output`, the name is the input path with its extension replaced by `.out.graphml`, in the same directory. For example, `test-data/net.graphML` gives `test-data/net.out.graphml`. An existing file with that name is overwritten.
 - The input file is not changed.
+- The output records the version, the options (except `output`, `--config`, `--cache-file`, `--no-wait` and `--skip-api-test`) and the input file's path and SHA-256, as graph-level attributes `scraplog_tool`, `scraplog_version`, `scraplog_parameters` and `scraplog_inputs`. The input's own attributes are not copied; its SHA-256 links the two files. The token is not recorded. See [Version and options in every network file](../../README.md#version-and-options-in-every-network-file).
 - A cache of GitHub API responses next to the output file: the output path with its extension replaced by `.github_cache.sqlite` (for example `test-data/net.out.github_cache.sqlite`). It is created when processing starts, not for `--help` or when the token check fails. Change its location with `--cache-file`, or turn it off with `--no-cache` (see [Notes and limitations](#notes-and-limitations)).
 - Terminal output: a line for every node checked, a table with the GitHub profile data of each user looked up, and each user's organizations.
 

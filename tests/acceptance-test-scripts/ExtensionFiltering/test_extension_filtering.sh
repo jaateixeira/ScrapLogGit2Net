@@ -110,8 +110,10 @@ validate_xml() {
         return 1
     fi
 
+    # Graph-level metadata lines (<data key="scraplog_...">: tool, version, options, input hashes) are
+    # skipped; the patterns describe the network.
     if ! grep -q -F "$(echo "$expected_pattern" | tr -d '[:space:]')" \
-            <(tr -d '[:space:]' < "$xml_file"); then
+            <(grep -v '<data key="scraplog_' "$xml_file" | tr -d '[:space:]'); then
         echo "${RED}Error: Expected XML pattern not found in $xml_file${NC}"
         echo "Expected pattern:"
         echo "$expected_pattern"

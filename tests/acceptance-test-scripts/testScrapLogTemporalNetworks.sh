@@ -87,7 +87,10 @@ validate_xml() {
 
     # Use xmllint to check if the expected pattern exists in the XML
     # Note: xmllint --xpath is limited for complex patterns, so we use grep as a fallback
-    if ! grep -q -F "$(echo "$expected_pattern" | tr -d '[:space:]')" <(tr -d '[:space:]' < "$xml_file"); then
+    # Graph-level metadata lines (<data key="scraplog_...">: tool, version, options, input hashes) are
+    # skipped; the patterns describe the network.
+    if ! grep -q -F "$(echo "$expected_pattern" | tr -d '[:space:]')" \
+            <(grep -v '<data key="scraplog_' "$xml_file" | tr -d '[:space:]'); then
         echo "${RED}Error: Expected XML pattern not found in $xml_file${NC}"
         echo "Debug: Expected pattern:"
         echo "$expected_pattern"

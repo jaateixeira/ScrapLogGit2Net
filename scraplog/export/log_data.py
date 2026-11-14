@@ -19,7 +19,9 @@ from rich import inspect
 
 from scraplog.utils.validators import validate_all_graph_nodes_have_affiliation_attributes, AffiliationValidationError
 
-from typing import Dict
+from typing import Dict, Optional
+
+from scraplog.metadata import graphml_metadata_data, graphml_metadata_keys
 from scraplog.core.types import Email, Affiliation
 
 # Replace '@' and '.' by "AT" and "DOT"
@@ -215,9 +217,11 @@ def createAtributesByCoreFileCSV(logData , outFileName):
 def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
                         out_file_name: Path,
                         verbose=True,
-                        weighted: bool = False) -> None:
+                        weighted: bool = False,
+                        metadata: Optional[Dict[str, str]] = None) -> None:
     """Write a network of individuals to GraphML: numeric node IDs with e-mail, color and
-    affiliation attributes. With weighted=True, each edge also gets its 'weight' attribute."""
+    affiliation attributes. With weighted=True, each edge also gets its 'weight' attribute.
+    metadata (see scraplog.metadata) is written as graph-level attributes."""
     # iterator for nAf  
 
     # Accept both string and Path
@@ -313,10 +317,14 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
     gfile.writelines(export_graphml_format.setNodeAntributeKey(2,"affiliation","string"))
     if weighted:
         gfile.writelines(export_graphml_format.setEdgeAttributeKey(3,"weight","long"))
-    
+    if metadata:
+        gfile.write(graphml_metadata_keys(metadata))
+
 
     # Open grapth 
     gfile.writelines(export_graphml_format.graph_opener)
+    if metadata:
+        gfile.write(graphml_metadata_data(metadata))
     
     # store the nodes id for each email/contributor
     tmpNodeId = {} 

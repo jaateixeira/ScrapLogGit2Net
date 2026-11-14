@@ -248,6 +248,19 @@ git log  ->  temporal network  ->  weighted network  ->  unweighted network
 ## From individuals to organizations
 `scrapLog.py` itself outputs networks of **individuals**. To get a network of **organizations**, in which the weighted edge between two organizations counts the relationships between their developers, pass the GraphML file to `transform_nofi_2_nofo_graphml.py`. Intra-organizational relationships are ignored in that transformation.
 
+## Version and options in every network file
+
+Every network file written by `scrapLog.py` (all three network types), `transform_nofi_2_nofo_graphml.py` and `deanonymize_github_users.py` records how it was made, as graph-level GraphML attributes:
+
+| Attribute | Content |
+|---|---|
+| `scraplog_tool` | The program that wrote the file, e.g. `scrapLog.py`. |
+| `scraplog_version` | The ScrapLogGit2Net version (as shown by `--version`). |
+| `scraplog_parameters` | The options, as JSON. Options that only set the output file name or how much is printed (`-o`, `-s`, `-v`, `-d`; `--outfile`, `--show`; the deanonymizer's output, `--config`, `--cache-file`, `--no-wait`, `--skip-api-test`) are left out. |
+| `scraplog_inputs` | Path (as given) and SHA-256 of each input file: the log, and for scrapLog also the `-fe`, `-ff` and `-a` files when given. |
+
+There is no time stamp, so the same input and options still give byte-identical files. The transformer and the deanonymizer write their own attributes; the SHA-256 of their input links the file to the one it was made from. To read them: `networkx.read_graphml(f).graph["scraplog_version"]` in Python, `igraph::graph_attr(igraph::read_graph(f, format = "graphml"), "scraplog_version")` in R.
+
 ## Design decisions
 
 These choices affect the networks you get, and therefore any measures computed from them.
@@ -531,7 +544,7 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   ```
   They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command.
 
-As of November 2026 there are 304 unit tests in 31 files (298 run, 6 are skipped because they describe planned features) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
+As of November 2026 there are 312 unit tests in 32 files (306 run, 6 are skipped because they describe planned features; 2 more are skipped where `xmllint` is not installed) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
 
 Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 

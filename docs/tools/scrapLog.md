@@ -51,6 +51,8 @@ All output files are written to the current working directory, unless `-o` gives
 | `inter_individual_graph_temporal` | `<log>.temporal.graphml.zip` | A zip archive (written with networkx-temporal) holding `<log>.temporal.graphml`. Node IDs are emails. There is one edge per time-stamped co-edit, with a `time` attribute such as `2024-01-06T04:03:16-08:00`. |
 | `inter_individual_weighted_LOC_temporal`, `inter_individual_graph_weighted_SUM_LOC` | none | Not exported (see Options). |
 
+Every network file also records the scrapLog version, the options and the SHA-256 of the input files (the log and any `-fe`, `-ff` and `-a` file), as graph-level attributes `scraplog_tool`, `scraplog_version`, `scraplog_parameters` and `scraplog_inputs`. `-o`, `-s`, `-v` and `-d` are not recorded, so the same input gives the same bytes under any output name. See [Version and options in every network file](../../README.md#version-and-options-in-every-network-file).
+
 `<log>` is the name of the file given with `-r`, without its folder and its last extension. For example, `test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN` gives `tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML`.
 
 The weighted network is derived from the temporal network. In the test log `tensorFlowGitLog-temporal-3-developers-6-commits-thee-files.IN`, the one developer pair with two time-stamped co-edits gets `weight` 2.
