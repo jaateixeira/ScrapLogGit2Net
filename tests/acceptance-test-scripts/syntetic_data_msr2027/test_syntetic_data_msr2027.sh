@@ -189,11 +189,11 @@ echo ""
 echo "TC3 — temporal network of individuals (9 contacts)"
 TC3_OUT=$TEMP_DIR/syntetic.temporal.graphml.zip
 if run TC3 python scrapLog.py -r "$INPUT" -t inter_individual_graph_temporal -o "$TC3_OUT"; then
-    check_network TC3 "$TC3_OUT" "node ana@alpha.com -
-node bob@alpha.com -
-node cleo@beta.org -
-node dan@beta.org -
-node eli@gamma.io -
+    check_network TC3 "$TC3_OUT" "node ana@alpha.com alpha
+node bob@alpha.com alpha
+node cleo@beta.org beta
+node dan@beta.org beta
+node eli@gamma.io gamma
 edge ana@alpha.com bob@alpha.com 2024-01-08T10:00:00+00:00
 edge ana@alpha.com cleo@beta.org 2024-01-15T10:00:00+00:00
 edge bob@alpha.com cleo@beta.org 2024-01-15T10:00:00+00:00

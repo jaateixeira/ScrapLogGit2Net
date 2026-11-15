@@ -7,6 +7,7 @@ import sys
 import argparse
 import re
 import csv
+import zipfile
 from datetime import *
 from pathlib import Path
 
@@ -389,3 +390,65 @@ def create_graphml_file(network_with_affiliation_attributes :nx.Graph,
     # close the export file 
     gfile.close()
 
+
+
+def temporal_graphml_text(temporal_network: nx.MultiGraph, metadata: Optional[Dict[str, str]] = None) -> str:
+    """GraphML for a temporal network of individuals, laid out like create_graphml_file's output.
+
+    Numeric node IDs (0, 1, ... in e-mail order) with e-mail, color and affiliation attributes,
+    and one edge per time-stamped co-edit with a 'time' attribute (ISO 8601, as in the log).
+    Edge IDs are e0, e1, ... in (source, target, time) order, time by instant. E-mails are not
+    used as IDs because GraphML IDs cannot contain '@', and every edge has its own ID.
+    temporal_network: a plain networkx MultiGraph (see temporal_as_multigraph) whose nodes have
+    their affiliation attribute set (see enrich_graph_with_affiliation).
+    """
+    node_id = {email: i for i, email in enumerate(sorted(temporal_network.nodes()))}
+
+    parts = [export_graphml_format.graphml_header,
+             export_graphml_format.setNodeAntributeKey(0, "e-mail", "string"),
+             export_graphml_format.setNodeAntributeKey(1, "color", "string"),
+             export_graphml_format.setNodeAntributeKey(2, "affiliation", "string"),
+             export_graphml_format.setEdgeAttributeKey(3, "time", "string")]
+    if metadata:
+        parts.append(graphml_metadata_keys(metadata))
+    parts.append(export_graphml_format.graph_opener)
+    if metadata:
+        parts.append(graphml_metadata_data(metadata))
+
+    for email, i in node_id.items():
+        affiliation = temporal_network.nodes[email].get('affiliation') or "unknown"
+        parts.append(export_graphml_format.addNode(i, [(0, email), (1, "turquoise"), (2, affiliation)]))
+
+    def edge_order(edge):
+        source, target, time = edge
+        return source, target, datetime.fromisoformat(time), time
+
+    edges = sorted(((min(node_id[u], node_id[v]), max(node_id[u], node_id[v]), str(time))
+                    for u, v, time in temporal_network.edges(data='time')), key=edge_order)
+    for n, (source, target, time) in enumerate(edges):
+        parts.append(export_graphml_format.addEdgeWithAttributes("e" + str(n), source, target, [(3, time)]))
+
+    parts.append(export_graphml_format.graph_closer)
+    parts.append(export_graphml_format.graphml_closer)
+    return "".join(parts)
+
+
+def temporal_as_multigraph(temporal_network) -> nx.MultiGraph:
+    """The co-edits of a networkx-temporal graph as a plain networkx MultiGraph (one edge per co-edit)."""
+    multigraph = nx.MultiGraph()
+    multigraph.add_edges_from(temporal_network.temporal_edges(data=True))
+    return multigraph
+
+
+def write_temporal_graphml_zip(temporal_network: nx.MultiGraph, zip_file: Path,
+                               metadata: Optional[Dict[str, str]] = None) -> None:
+    """Write temporal_graphml_text to a zip archive holding <zip name without .zip>, e.g.
+    t.temporal.graphml.zip holds t.temporal.graphml (a name without .zip is used as it is). The
+    entry has a fixed date, so the same network gives the same bytes."""
+    name = Path(zip_file).name
+    if name.lower().endswith(".zip"):
+        name = name[:-len(".zip")]
+    entry = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+    entry.external_attr = 0o600 << 16
+    with zipfile.ZipFile(zip_file, "w") as archive:
+        archive.writestr(entry, temporal_graphml_text(temporal_network, metadata).encode("utf-8"))

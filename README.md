@@ -230,7 +230,7 @@ Same nodes and ties as the unweighted network, but each tie carries a `weight` a
 ```
 
 ## Temporal inter-individual network
-Each tie is time-stamped with the moment of the contribution, so you can study how collaboration evolves, for instance with sliding windows or with temporal models. The network is exported as a compressed GraphML file (`.graphml.zip`) using the [networkx-temporal](https://pypi.org/project/networkx-temporal/) package. Edges are stamped with a resolution of one second. The `-tntr` / `--temporal-network-time-resolution` option is reserved for other resolutions, which are not implemented yet: any value other than `1` stops with an error.
+Each tie is time-stamped with the moment of the contribution, so you can study how collaboration evolves, for instance with sliding windows or with temporal models. The network is built with the [networkx-temporal](https://pypi.org/project/networkx-temporal/) package and exported as a zipped GraphML file (`.graphml.zip`), laid out like the other two types (numeric node IDs with `e-mail`, `color` and `affiliation`), with one edge per co-edit and its `time`. Edges are stamped with a resolution of one second. The `-tntr` / `--temporal-network-time-resolution` option is reserved for other resolutions, which are not implemented yet: any value other than `1` stops with an error.
 
 ```
 ./scrapLog.py -r test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN -t inter_individual_graph_temporal
@@ -548,7 +548,7 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   ```
   They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command.
 
-As of November 2026 there are 323 unit tests in 33 files (317 run, 6 are skipped because they describe planned features; 2 more are skipped where `xmllint` is not installed) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
+As of November 2026 there are 327 unit tests in 34 files (321 run, 6 are skipped because they describe planned features; 3 more are skipped where `xmllint` is not installed) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
 
 Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 

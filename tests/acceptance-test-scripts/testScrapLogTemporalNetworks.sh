@@ -126,13 +126,21 @@ else
     unzip -p "$TC1_output_file" > "$XML_FILE"
 
     expected_pattern=$(cat << 'EOF'
-<graph edgedefault="undirected">
-    <node id="dasenov@google.com" />
-    <node id="ddunleavy@google.com" />
-    <edge source="dasenov@google.com" target="ddunleavy@google.com" id="0">
-      <data key="d0">2024-01-03T04:05:02-08:00</data>
-    </edge>
-  </graph>
+<graph id="G" edgedefault="undirected">
+	<node id="0">
+	<data key="d0">dasenov@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="1">
+	<data key="d0">ddunleavy@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<edge id="e0" source="0" target="1">
+		<data key="d3">2024-01-03T04:05:02-08:00</data>
+	</edge>
+</graph>
 EOF
 )
 
@@ -172,13 +180,21 @@ else
     unzip -p "$TC2_output_file" > "$XML_FILE"
 
     expected_pattern=$(cat << 'EOF'
-<graph edgedefault="undirected">
-    <node id="dasenov@google.com" />
-    <node id="ddunleavy@google.com" />
-    <edge source="dasenov@google.com" target="ddunleavy@google.com" id="0">
-      <data key="d0">2024-01-03T04:05:02-08:00</data>
-    </edge>
-  </graph>
+<graph id="G" edgedefault="undirected">
+	<node id="0">
+	<data key="d0">dasenov@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="1">
+	<data key="d0">ddunleavy@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<edge id="e0" source="0" target="1">
+		<data key="d3">2024-01-03T04:05:02-08:00</data>
+	</edge>
+</graph>
 EOF
 )
 
@@ -218,16 +234,24 @@ else
     unzip -p "$TC3_output_file" > "$XML_FILE"
 
     expected_pattern=$(cat << 'EOF'
-<graph edgedefault="undirected">
-    <node id="akuegel@google.com" />
-    <node id="jreiffers@google.com" />
-    <edge source="akuegel@google.com" target="jreiffers@google.com" id="0">
-      <data key="d0">2024-01-06T04:03:16-08:00</data>
-    </edge>
-    <edge source="akuegel@google.com" target="jreiffers@google.com" id="1">
-      <data key="d0">2024-01-08T06:30:42-08:00</data>
-    </edge>
-  </graph>
+<graph id="G" edgedefault="undirected">
+	<node id="0">
+	<data key="d0">akuegel@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="1">
+	<data key="d0">jreiffers@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<edge id="e0" source="0" target="1">
+		<data key="d3">2024-01-06T04:03:16-08:00</data>
+	</edge>
+	<edge id="e1" source="0" target="1">
+		<data key="d3">2024-01-08T06:30:42-08:00</data>
+	</edge>
+</graph>
 EOF
 )
 
@@ -267,48 +291,100 @@ else
     unzip -p "$TC4_output_file" > "$XML_FILE"
 
     expected_pattern=$(cat << 'EOF'
-<graph edgedefault="undirected">
-    <node id="yunlongl@google.com" />
-    <node id="zce@google.com" />
-    <node id="ezhulenev@google.com" />
-    <node id="gunhyun@google.com" />
-    <node id="zixuanjiang@google.com" />
-    <node id="akuegel@google.com" />
-    <node id="ecg@google.com" />
-    <node id="klucke@google.com" />
-    <node id="ske@nvidia.com" />
-    <node id="blakehechtman@google.com" />
-    <node id="tongfei@google.com" />
-    <node id="hebecker@google.com" />
-    <node id="sergeykozub@google.com" />
-    <edge source="yunlongl@google.com" target="zce@google.com" id="0">
-      <data key="d0">2024-04-10T15:25:42-07:00</data>
-    </edge>
-    <edge source="yunlongl@google.com" target="ezhulenev@google.com" id="0">
-      <data key="d0">2024-04-10T23:15:44-07:00</data>
-    </edge>
-    <edge source="yunlongl@google.com" target="ezhulenev@google.com" id="1">
-      <data key="d0">2024-04-11T09:16:48-07:00</data>
-    </edge>
-    <edge source="gunhyun@google.com" target="zixuanjiang@google.com" id="0">
-      <data key="d0">2024-04-10T21:15:29-07:00</data>
-    </edge>
-    <edge source="gunhyun@google.com" target="zixuanjiang@google.com" id="1">
-      <data key="d0">2024-04-10T22:08:55-07:00</data>
-    </edge>
-    <edge source="akuegel@google.com" target="ecg@google.com" id="0">
-      <data key="d0">2024-04-10T23:40:00-07:00</data>
-    </edge>
-    <edge source="klucke@google.com" target="ske@nvidia.com" id="0">
-      <data key="d0">2024-04-11T03:30:07-07:00</data>
-    </edge>
-    <edge source="blakehechtman@google.com" target="tongfei@google.com" id="0">
-      <data key="d0">2024-04-11T09:55:57-07:00</data>
-    </edge>
-    <edge source="hebecker@google.com" target="sergeykozub@google.com" id="0">
-      <data key="d0">2024-04-11T12:29:17-07:00</data>
-    </edge>
-  </graph>
+<graph id="G" edgedefault="undirected">
+	<node id="0">
+	<data key="d0">akuegel@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="1">
+	<data key="d0">blakehechtman@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="2">
+	<data key="d0">ecg@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="3">
+	<data key="d0">ezhulenev@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="4">
+	<data key="d0">gunhyun@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="5">
+	<data key="d0">hebecker@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="6">
+	<data key="d0">klucke@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="7">
+	<data key="d0">sergeykozub@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="8">
+	<data key="d0">ske@nvidia.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">nvidia</data>
+	</node>
+	<node id="9">
+	<data key="d0">tongfei@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="10">
+	<data key="d0">yunlongl@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="11">
+	<data key="d0">zce@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<node id="12">
+	<data key="d0">zixuanjiang@google.com</data>
+	<data key="d1">turquoise</data>
+	<data key="d2">google</data>
+	</node>
+	<edge id="e0" source="0" target="2">
+		<data key="d3">2024-04-10T23:40:00-07:00</data>
+	</edge>
+	<edge id="e1" source="1" target="9">
+		<data key="d3">2024-04-11T09:55:57-07:00</data>
+	</edge>
+	<edge id="e2" source="3" target="10">
+		<data key="d3">2024-04-10T23:15:44-07:00</data>
+	</edge>
+	<edge id="e3" source="3" target="10">
+		<data key="d3">2024-04-11T09:16:48-07:00</data>
+	</edge>
+	<edge id="e4" source="4" target="12">
+		<data key="d3">2024-04-10T21:15:29-07:00</data>
+	</edge>
+	<edge id="e5" source="4" target="12">
+		<data key="d3">2024-04-10T22:08:55-07:00</data>
+	</edge>
+	<edge id="e6" source="5" target="7">
+		<data key="d3">2024-04-11T12:29:17-07:00</data>
+	</edge>
+	<edge id="e7" source="6" target="8">
+		<data key="d3">2024-04-11T03:30:07-07:00</data>
+	</edge>
+	<edge id="e8" source="10" target="11">
+		<data key="d3">2024-04-10T15:25:42-07:00</data>
+	</edge>
+</graph>
 EOF
 )
 

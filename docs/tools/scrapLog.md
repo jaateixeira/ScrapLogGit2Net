@@ -48,7 +48,7 @@ All output files are written to the current working directory, unless `-o` gives
 |---|---|---|
 | `inter_individual_graph_unweighted` (default) | `<log>.NetworkFile.graphML` | Undirected GraphML. Each node has the attributes `e-mail`, `color` and `affiliation`. |
 | `inter_individual_graph_weighted` | `<log>.WeightedNetwork.graphML` | Undirected GraphML, laid out like the unweighted file (each node has `e-mail`, `color` and `affiliation`). Each edge also has a `weight` attribute. |
-| `inter_individual_graph_temporal` | `<log>.temporal.graphml.zip` | A zip archive (written with networkx-temporal) holding `<log>.temporal.graphml`. Node IDs are emails. There is one edge per time-stamped co-edit, with a `time` attribute such as `2024-01-06T04:03:16-08:00`. |
+| `inter_individual_graph_temporal` | `<log>.temporal.graphml.zip` | A zip archive holding `<log>.temporal.graphml` (the archive's name without `.zip`), laid out like the unweighted file: numeric node IDs, each node with `e-mail`, `color` and `affiliation`. There is one edge per time-stamped co-edit, with its own ID (`e0`, `e1`, …) and a `time` attribute such as `2024-01-06T04:03:16-08:00`. Valid under the GraphML schema. |
 | `inter_individual_weighted_LOC_temporal`, `inter_individual_graph_weighted_SUM_LOC` | none | Not exported (see Options). |
 
 Every run also writes an edge list next to the network file: `<log>.NetworkFile.edges.csv`, `<log>.WeightedNetwork.edges.csv` or `<log>.temporal.edges.csv` (with `-o x.graphML`: `x.edges.csv`). One row per pair of developers who co-edited at least one file, sorted by e-mail:

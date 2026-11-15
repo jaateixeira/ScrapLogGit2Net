@@ -18,6 +18,7 @@ from scraplog.utils.string_comparators import find_similar_strings
 import traceback  # the standard module (unified_console.traceback is rich.traceback outside PyCharm)
 from scraplog.utils.unified_console import console, inspect, print_info, print_warning, print_error
 from scraplog.coediting import enrich_graph_with_affiliation
+from scraplog.identity import extract_affiliation_from_email
 from scraplog.metadata import insert_graphml_metadata, run_metadata
 from scraplog.export.edge_list import edge_list_path, edge_list_rows, write_edge_list_csv
 
@@ -127,9 +128,16 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
     try:
         # For temporal networks, ensure complex attributes are string fied for GraphML
         if state.network_type == 'inter_individual_graph_temporal':
-            output_static_w_graph : tx.TemporalGraph = state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
-            tx.write_graph(output_static_w_graph, graphml_filename)
-            normalize_zip_timestamps(Path(graphml_filename), metadata)
+            output_temporal_graph: tx.TemporalGraph = state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
+            # Laid out like the other two network types (numeric node IDs; e-mail, color and affiliation
+            # attributes), with one edge per co-edit and its time. networkx-temporal wrote e-mails as
+            # node IDs and repeated edge IDs, which is not valid GraphML.
+            temporal_multigraph = export_log_data.temporal_as_multigraph(output_temporal_graph)
+            # The temporal pipeline does not fill state.affiliations; same rule as the other types (Q6)
+            temporal_affiliations = {email: extract_affiliation_from_email(email, state)
+                                     for email in temporal_multigraph.nodes()}
+            enrich_graph_with_affiliation(temporal_multigraph, temporal_affiliations)
+            export_log_data.write_temporal_graphml_zip(temporal_multigraph, Path(graphml_filename), metadata)
         elif state.network_type == 'inter_individual_graph_weighted':
             output_static_w_graph: nx.Graph= state.container_of_extracted_networks.dev_to_dev_weighted_network
             #nx.write_graphml(output_temporal_graph, graphml_filename,  named_key_ids='email')

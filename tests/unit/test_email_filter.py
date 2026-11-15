@@ -61,10 +61,9 @@ def developer_pairs(out, network_type):
             xml = out.with_suffix(".xml")
             xml.write_bytes(archive.read(archive.namelist()[0]))
         graph = nx.read_graphml(xml, force_multigraph=True)
-        label = lambda n: n
     else:
         graph = nx.read_graphml(out)
-        label = (lambda n: graph.nodes[n].get("e-mail", n))
+    label = (lambda n: graph.nodes[n].get("e-mail", n))  # every type has numeric IDs and an e-mail attribute
     nodes = {label(n) for n in graph.nodes}
     pairs = {frozenset((label(u), label(v))) for u, v in graph.edges()}
     return nodes, pairs
