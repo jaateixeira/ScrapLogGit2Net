@@ -19,6 +19,7 @@ No change to the networks: the same log gives the same GraphML as v1.1-borba.
 
 ### New
 
+- **Edge-list CSV**: next to every network file, scrapLog writes `<output>.edges.csv` with `source`, `target` (e-mails), `weight` (number of time-stamped co-edits, as in the weighted network), `first_ts`, `last_ts` (as in the log) and `first_ts_utc`, `last_ts_utc`. Rows are sorted; the network files are unchanged.
 - **Every network file records its version, options and inputs**: graph-level GraphML attributes `scraplog_tool`, `scraplog_version`, `scraplog_parameters` and `scraplog_inputs` (SHA-256 of each input file), from scrapLog (all network types), the transformer and the deanonymizer. Nodes, edges and their attributes are unchanged, and the files stay byte-identical for the same input and options. Scripts that compare whole files with files made by v1.1-borba will see the new lines.
 - `--version` in every tool. The version is set once, in `scraplog/_version.py`.
 - nofo visualizer: `-nc gray-color-to-others-not-in-topn-filter` is implemented (it colored every node gray and logged an error): the N most central organizations keep their color (N from `-tf`, default 10), the rest are gray.
@@ -27,7 +28,7 @@ No change to the networks: the same log gives the same GraphML as v1.1-borba.
 
 ### Development
 
-- 312 unit tests. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
+- 323 unit tests. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
 - The transformer acceptance suite (`test-nofi-2-nofo-transformer.sh`) runs again, in CI too: it validates against a local copy of the GraphML 1.0 schema (`tests/acceptance-test-scripts/graphml-schema/`), because graphml.graphdrawing.org is out of service.
 
 ## v1.1-borba (2026-11-10)

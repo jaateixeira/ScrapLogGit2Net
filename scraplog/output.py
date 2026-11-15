@@ -19,6 +19,7 @@ import traceback  # the standard module (unified_console.traceback is rich.trace
 from scraplog.utils.unified_console import console, inspect, print_info, print_warning, print_error
 from scraplog.coediting import enrich_graph_with_affiliation
 from scraplog.metadata import insert_graphml_metadata, run_metadata
+from scraplog.export.edge_list import edge_list_path, edge_list_rows, write_edge_list_csv
 
 
 def temporal_network_counts(state: ProcessingState) -> tuple[int, int, int, set]:
@@ -122,6 +123,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
             print_info(f"{state.network_type=}")
             sys.exit(1)
     metadata = scraplog_run_metadata(args)
+    exported_network = None  # the static network written (unweighted, weighted); None for temporal
     try:
         # For temporal networks, ensure complex attributes are string fied for GraphML
         if state.network_type == 'inter_individual_graph_temporal':
@@ -146,6 +148,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
             output_static_w_graph_with_affiliation = enrich_graph_with_affiliation(output_static_w_graph, state.affiliations)
             export_log_data.create_graphml_file(output_static_w_graph_with_affiliation, graphml_filename, weighted=True,
                                                 metadata=metadata)
+            exported_network = output_static_w_graph_with_affiliation
 
 
         elif state.network_type == 'inter_individual_graph_unweighted':
@@ -170,6 +173,7 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
             # written to the same file right after; it is the same graph, so the output is unchanged.
             export_log_data.create_graphml_file(output_static_uw_graph_with_affiliation, graphml_filename,
                                                 metadata=metadata)
+            exported_network = output_static_uw_graph_with_affiliation
 
         else:
             print_error("Unknown network type at writing graphml files")
@@ -178,9 +182,15 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
 
 
         console.print(f"\n✓ Network exported to GraphML file: {graphml_filename}")
+
+        # The same pairs, with the number of co-edits and the first and last co-edit (see scraplog.export.edge_list)
+        temporal = state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
+        csv_filename = edge_list_path(graphml_filename)
+        write_edge_list_csv(csv_filename, edge_list_rows(temporal.temporal_edges(data="time"), exported_network))
+        console.print(f"✓ Edge list exported to CSV file: {csv_filename}")
         console.print()
     except Exception as e:
-        console.print(f"ERROR exporting to GraphML: {e}")
+        console.print(f"ERROR exporting the network: {e}")
         traceback.print_exc()
         sys.exit(1)
 

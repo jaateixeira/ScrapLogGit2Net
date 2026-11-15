@@ -14,6 +14,7 @@ testResults.tmp
 /*.NetworkFile.graphML
 /*.WeightedNetwork.graphML
 /*.temporal.graphml.zip
+/*.edges.csv
 /*-transformed-to-nofo*.graphML
 
 # Research datasets: archived on Zenodo, not tracked in git (see README, "Research datasets").
@@ -36,6 +37,7 @@ test-data/robot/
 project-specific-analysis/AGL/**/*.png
 project-specific-analysis/AGL/**/*.pdf
 project-specific-analysis/AGL/**/*.graphML
+project-specific-analysis/AGL/**/*.edges.csv
 project-specific-analysis/AGL/**/*.IN
 .claude/worktrees/
 

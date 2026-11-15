@@ -248,6 +248,10 @@ git log  ->  temporal network  ->  weighted network  ->  unweighted network
 ## From individuals to organizations
 `scrapLog.py` itself outputs networks of **individuals**. To get a network of **organizations**, in which the weighted edge between two organizations counts the relationships between their developers, pass the GraphML file to `transform_nofi_2_nofo_graphml.py`. Intra-organizational relationships are ignored in that transformation.
 
+## Edge list (CSV)
+
+Next to every network file, `scrapLog.py` writes `<output>.edges.csv` with the columns `source`, `target` (e-mails), `weight` (number of time-stamped co-edits), `first_ts`, `last_ts` (first and last co-edit as in the log, with the author's UTC offset) and `first_ts_utc`, `last_ts_utc` (the same in UTC). Rows are sorted, so the same input gives the same file. See [`docs/tools/scrapLog.md`](docs/tools/scrapLog.md#output).
+
 ## Version and options in every network file
 
 Every network file written by `scrapLog.py` (all three network types), `transform_nofi_2_nofo_graphml.py` and `deanonymize_github_users.py` records how it was made, as graph-level GraphML attributes:
@@ -544,7 +548,7 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   ```
   They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command.
 
-As of November 2026 there are 312 unit tests in 32 files (306 run, 6 are skipped because they describe planned features; 2 more are skipped where `xmllint` is not installed) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
+As of November 2026 there are 323 unit tests in 33 files (317 run, 6 are skipped because they describe planned features; 2 more are skipped where `xmllint` is not installed) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
 
 Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 

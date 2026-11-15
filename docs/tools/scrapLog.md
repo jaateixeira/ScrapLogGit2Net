@@ -51,6 +51,17 @@ All output files are written to the current working directory, unless `-o` gives
 | `inter_individual_graph_temporal` | `<log>.temporal.graphml.zip` | A zip archive (written with networkx-temporal) holding `<log>.temporal.graphml`. Node IDs are emails. There is one edge per time-stamped co-edit, with a `time` attribute such as `2024-01-06T04:03:16-08:00`. |
 | `inter_individual_weighted_LOC_temporal`, `inter_individual_graph_weighted_SUM_LOC` | none | Not exported (see Options). |
 
+Every run also writes an edge list next to the network file: `<log>.NetworkFile.edges.csv`, `<log>.WeightedNetwork.edges.csv` or `<log>.temporal.edges.csv` (with `-o x.graphML`: `x.edges.csv`). One row per pair of developers who co-edited at least one file, sorted by e-mail:
+
+| Column | Content |
+|---|---|
+| `source`, `target` | The two developers' e-mail addresses (`source` sorts first). |
+| `weight` | Number of time-stamped co-edits of the pair: the `weight` of the weighted network. |
+| `first_ts`, `last_ts` | First and last co-edit, as in the log: ISO 8601 with the author's UTC offset, as in the temporal network (e.g. `2024-01-06T04:03:16-08:00`). |
+| `first_ts_utc`, `last_ts_utc` | The same times converted to UTC (e.g. `2024-01-06T12:03:16+00:00`). |
+
+First and last are chosen by the actual instant, not by the text. The rows are the same for every network type, since all three come from the same time-stamped co-edits. The CSV has no version or options of its own; they are in the network file written with it (see [Version and options in every network file](../../README.md#version-and-options-in-every-network-file)).
+
 Every network file also records the scrapLog version, the options and the SHA-256 of the input files (the log and any `-fe`, `-ff` and `-a` file), as graph-level attributes `scraplog_tool`, `scraplog_version`, `scraplog_parameters` and `scraplog_inputs`. `-o`, `-s`, `-v` and `-d` are not recorded, so the same input gives the same bytes under any output name. See [Version and options in every network file](../../README.md#version-and-options-in-every-network-file).
 
 `<log>` is the name of the file given with `-r`, without its folder and its last extension. For example, `test-data/TensorFlow/tensorFlowGitLog-first-trimester-2024.IN` gives `tensorFlowGitLog-first-trimester-2024.NetworkFile.graphML`.
