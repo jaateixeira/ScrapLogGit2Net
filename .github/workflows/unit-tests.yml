@@ -40,6 +40,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[test]"
 
-      # -rs lists why tests were skipped (planned temporal features, design question 8)
+      # -rs lists why tests were skipped (planned network definitions, docs/planned-network-definitions.md)
       - name: Run unit tests
         run: python -m pytest -rs

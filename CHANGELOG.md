@@ -29,7 +29,7 @@ No change to the networks themselves: the same log gives the same developers, ti
 
 ### Development
 
-- 327 unit tests. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
+- 327 unit tests. The 6 skipped ones specify planned network definitions, now written down with their open questions in `docs/planned-network-definitions.md`. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
 - The transformer acceptance suite (`test-nofi-2-nofo-transformer.sh`) runs again, in CI too: it validates against a local copy of the GraphML 1.0 schema (`tests/acceptance-test-scripts/graphml-schema/`), because graphml.graphdrawing.org is out of service.
 
 ## v1.1-borba (2026-11-10)
