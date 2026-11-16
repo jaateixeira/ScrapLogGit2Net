@@ -19,6 +19,7 @@ from scraplog.parsing import load_file_filter_file, process_changelog_file
 from scraplog.pipeline import execute_data_processing_pipeline
 from scraplog.networks.temporal import parse_duration
 from scraplog.hotspots import MAX_TOP_HOTSPOT_FILES, apply_hotspot_filter
+from scraplog.mailmap import load_mailmap
 
 
 def print_exit_info(start_time: float) -> None:
@@ -93,6 +94,11 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--ignore-files-with-more-than-developers', metavar='N', type=int, default=None,
                         help='ignore files changed by more than N developers, before building the '
                              'networks. Listed in <output>.ignored-files.csv')
+    parser.add_argument('--mailmap', metavar='FILE', type=Path,
+                        help="merge identities with a mailmap file in Git's .mailmap format "
+                             "(Proper Name <proper@e.mail> <commit@e.mail>). The mapped e-mail is the "
+                             "developer's node. Merges and possible duplicates are listed in "
+                             "<output>.identities.csv")
     parser.add_argument('-o', '--output-file', type=Path,
                         help='creates a network/graph graphml file with the given name')
 
@@ -136,6 +142,15 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
             f"Temporal network time resolution {args.temporal_network_time_resolution} is not implemented yet",
             "Only -tntr 1 (one second, the default) is supported. Leave out -tntr.")
         sys.exit(1)
+
+    if args.mailmap is not None:
+        try:
+            state.mailmap = load_mailmap(args.mailmap)
+        except (OSError, ValueError) as error:
+            print_fatal_error(f"Cannot read --mailmap {args.mailmap}: {error}",
+                              "Give a file in Git's .mailmap format, e.g. 'Proper Name <proper@e.mail> <commit@e.mail>'.")
+            sys.exit(1)
+        print_info(f"Mailmap {args.mailmap}: {len(state.mailmap)} entries")
 
     if args.coedit_window is not None:
         try:

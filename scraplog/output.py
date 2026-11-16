@@ -21,6 +21,7 @@ from scraplog.identity import extract_affiliation_from_email
 from scraplog.metadata import run_metadata
 from scraplog.export.edge_list import edge_list_path, edge_list_rows, write_edge_list_csv
 from scraplog.hotspots import write_ignored_files_csv
+from scraplog.identities_report import write_identities_csv
 
 
 def temporal_network_counts(state: ProcessingState) -> tuple[int, int, int, set]:
@@ -78,7 +79,8 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
 def scraplog_run_metadata(args: argparse.Namespace) -> Dict[str, str]:
     """Version, options and input-file hashes of this scrapLog run (see scraplog.metadata)."""
     input_files = {option: getattr(args, option, None)
-                   for option in ("raw", "load", "filter_emails", "filter_files", "aggregate_email_prefixes")}
+                   for option in ("raw", "load", "filter_emails", "filter_files", "aggregate_email_prefixes",
+                                  "mailmap")}
     return run_metadata("scrapLog.py", vars(args), input_files,
                         not_recorded=("output_file", "save", "verbose", "debug"))
 
@@ -175,6 +177,10 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
         write_edge_list_csv(csv_filename, edge_list_rows(temporal.temporal_edges(data="time"), exported_network),
                             metadata)
         console.print(f"✓ Edge list exported to CSV file: {csv_filename}")
+
+        identities_filename = csv_filename.with_name(csv_filename.name[:-len(".edges.csv")] + ".identities.csv")
+        write_identities_csv(identities_filename, state.identity_commits, metadata)
+        console.print(f"✓ Identities (merges and possible duplicates) listed in: {identities_filename}")
 
         if state.ignore_top_hotspot_files or state.max_developers_per_file is not None:
             ignored_filename = csv_filename.with_name(csv_filename.name[:-len(".edges.csv")] + ".ignored-files.csv")

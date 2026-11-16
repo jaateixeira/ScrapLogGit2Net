@@ -4,18 +4,13 @@ Features planned next, in this order. Each one changes who the nodes are or how 
 
 The first two change who the nodes are and affect every analysis, which is why they come first.
 
-## 1. Identity merging
+## 1. Identity merging — done
 
-**What.** One person with several e-mail addresses or names (`john@ibm.com`, `John@gmail.com`, `12345+john@users.noreply.github.com`) becomes one node.
-
-**Why.** Split identities are the most common source of wrong networks in MSR studies: they lower degrees and split ties.
-
-**Design questions.**
-- Sources: Git's `.mailmap` format, an alias file of our own, or both.
-- Automatic heuristics (same name, GitHub noreply user name), or only explicit lists.
-- Which e-mail becomes the node, and which affiliation it gets.
-- How it combines with `-a` (domain aggregation) and the deanonymizer.
-- All merging in one place (`scraplog/identity.py`), with a log of every merge.
+Implemented as `--mailmap FILE` (README, Q10; [scrapLog page](tools/scrapLog.md)). Decisions:
+- Git's `.mailmap` format and matching rules (checked against `git check-mailmap`).
+- No automatic merging: `<output>.identities.csv` lists every identity, its mapping and possible duplicates (same name with other e-mails; e-mails differing only in case).
+- The mapped e-mail is the node and gives the affiliation.
+- `-fe` removes a commit if its original or its mapped e-mail is listed.
 
 ## 2. Bot detection and exclusion
 

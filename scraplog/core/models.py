@@ -1,7 +1,7 @@
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import timedelta
-from typing import List, DefaultDict, Dict, Optional, Set
+from typing import Any, List, DefaultDict, Dict, Optional, Set
 
 import networkx as nx
 import networkx_temporal as tx
@@ -235,6 +235,10 @@ class ProcessingState:
     max_developers_per_file: Optional[int] = None
     # (file, developers, reason) of the files left out, most developers first
     ignored_hotspot_files: list = field(default_factory=list)
+    # --mailmap: maps commit identities to people (scraplog/mailmap.py). None: no merging
+    mailmap: Optional[Any] = None
+    # (original name, original e-mail, name, e-mail) -> commits, for <output>.identities.csv
+    identity_commits: Counter = field(default_factory=Counter)
 
     # Network graph
     dev_to_dev_network: nx.Graph = field(default_factory=nx.Graph)

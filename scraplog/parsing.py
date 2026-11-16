@@ -258,13 +258,26 @@ def process_commit_block(
             return False
 
         commit_time, dev_name, dev_email, dev_affiliation = time_dev_info
+        original_name, original_email = dev_name.strip(), dev_email
+
+        # --mailmap: the person's proper name and e-mail (see scraplog/mailmap.py). The
+        # mapped e-mail is the node and gives the affiliation.
+        if state.mailmap is not None:
+            dev_name, dev_email = state.mailmap.map(original_name, original_email)
+            if dev_email != original_email:
+                dev_affiliation = extract_affiliation_from_email(dev_email, state)
 
         # -fe: drop commits by filtered emails before any network is built, so
-        # filtered developers are absent from every network type
-        if state.email_filtering_mode and dev_email in state.emails_to_filter:
+        # filtered developers are absent from every network type. With --mailmap, the
+        # original and the mapped e-mail are both checked.
+        if state.email_filtering_mode and (dev_email in state.emails_to_filter
+                                           or original_email in state.emails_to_filter):
             state.statistics.n_commits_excluded_by_email_filter += 1
-            state.excluded_emails.add(dev_email)
+            state.excluded_emails.add(original_email)
             return False
+
+        # For the identities report (scraplog/identities_report.py)
+        state.identity_commits[(original_name, original_email, dev_name.strip(), dev_email)] += 1
 
         # Extract files
         changed_files = extract_files_from_block(block[1:], state)

@@ -20,6 +20,7 @@ No change to the networks themselves: the same log gives the same developers, ti
 
 ### New
 
+- **Identity merging with `--mailmap FILE`** (scrapLog): Git's `.mailmap` format and rules; the mapped e-mail is the developer's node and gives the affiliation, and `-fe` matches the original or the mapped e-mail. Every run writes `<output>.identities.csv` (each identity, its mapping, commits, and possible duplicates to check; nothing is merged automatically). The mailmap's SHA-256 is recorded in `scraplog_inputs`.
 - **Ignoring hotspot files** (scrapLog): `--ignore-top-hotspot-files K` (the K files, 0–20, changed by the most developers; ties by path) and `--ignore-files-with-more-than-developers N`. The files are removed from every commit before the networks are built and listed in `<output>.ignored-files.csv`; both options are recorded in `scraplog_parameters`.
 - **`--max-coedits N`** (scrapLog): the upper bound to `--min-coedits`: developer pairs with more than N co-edits (counted after `--coedit-window`) are removed with all their co-edits, e.g. bots or very heavy pairs. No limit by default; recorded in `scraplog_parameters`.
 - **`--min-coedits N`** (scrapLog): keep only developer pairs with at least N time-stamped co-edits, counted after `--coedit-window`; pairs below it are removed with all their co-edits. Default 1 (as before); recorded in `scraplog_parameters`.
@@ -33,7 +34,7 @@ No change to the networks themselves: the same log gives the same developers, ti
 
 ### Development
 
-- 381 unit tests. The GraphML schema checks fail instead of skipping when `xmllint` is missing, and the unit-test workflow installs it. `test-nofi-2-nofo-transformer.sh` exits with code 1 when a case fails (it exited 0), as the other acceptance scripts already did. The skipped ones (6, now 3) specify planned network definitions, now written down with their open questions in `docs/planned-network-definitions.md`. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
+- 389 unit tests. The GraphML schema checks fail instead of skipping when `xmllint` is missing, and the unit-test workflow installs it. `test-nofi-2-nofo-transformer.sh` exits with code 1 when a case fails (it exited 0), as the other acceptance scripts already did. The skipped ones (6, now 3) specify planned network definitions, now written down with their open questions in `docs/planned-network-definitions.md`. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
 - The transformer acceptance suite (`test-nofi-2-nofo-transformer.sh`) runs again, in CI too: it validates against a local copy of the GraphML 1.0 schema (`tests/acceptance-test-scripts/graphml-schema/`), because graphml.graphdrawing.org is out of service.
 
 ## v1.1-borba (2026-11-10)

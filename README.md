@@ -281,6 +281,9 @@ By default a developer is linked to everyone who changed the same file before, h
 ### Q9 · Hotspot files changed by many developers can be ignored
 A file changed by very many developers (a build file, a changelog) links all of them. `--ignore-top-hotspot-files K` ignores the K files (0–20) changed by the most developers, and `--ignore-files-with-more-than-developers N` ignores files changed by more than N developers. The files are removed from every commit before any network is built, and listed in `<output>.ignored-files.csv`. A file's count is the number of distinct developers who changed it; this is not the Degree of Authorship (DOA) score of Fritz et al.
 
+### Q10 · One person with several e-mails is merged only with a mailmap
+A developer is identified by e-mail, so one person who commits from several addresses is several nodes. `--mailmap FILE` merges them, using Git's `.mailmap` format and rules; the mapped e-mail is the node and gives the affiliation. Nothing is merged automatically: `<output>.identities.csv` lists every identity, what it was mapped to, and possible duplicates (the same name with different e-mails, or e-mails differing only in case) to check and add to the mailmap.
+
 # How to use `scrapLog.py`
 You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
 
@@ -504,12 +507,12 @@ Commits that only touch ignored files are skipped. If the filter file is missing
 - **Tested.** Unit and acceptance tests run on GitHub for every push and pull request (see [Testing](#testing)).
 
 ## To implement (volunteers welcome)
-- **Planned next**, in order: identity merging, bot detection, `Co-authored-by` trailers, relational-event export (REM/DyNAM), time-sliced snapshots and lines-of-code weights. Design questions for each are in [docs/roadmap.md](docs/roadmap.md).
+- **Planned next**, in order: bot detection, `Co-authored-by` trailers, relational-event export (REM/DyNAM), time-sliced snapshots and lines-of-code weights. Design questions for each are in [docs/roadmap.md](docs/roadmap.md).
 - Other edge definitions, specified by three skipped unit tests: developer–file (bipartite) and file-dependency networks. They change research results, so open questions must be settled first; see [docs/planned-network-definitions.md](docs/planned-network-definitions.md).
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
 - Account for commits on behalf of organizations using the 'on-behalf-of: @ORG NAME[AT]ORGANIZATION.COM' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-on-behalf-of-an-organization).
 - Possibility to add an argument pointing to a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company).
-- Possibility to add an argument pointing to a file that aggregates different emails used by a different individual (e.g., John uses <John@ibm.com> and <John@gmail.com>).
+- Done with `--mailmap` (Q10): ~~Possibility to add an argument pointing to a file that aggregates different emails used by a different individual (e.g., John uses <John@ibm.com> and <John@gmail.com>).~~
 - Possibility to add an argument pointing to a file that aggregates different emails used by different organizations (e.g., @ibm.com, @linux.vnet.ibm.com, @us.ibm.com, @cn.ibm.com all map IBM).
 - Possibility to export both networks at the individual and organizational level (networks of individuals affiliated with organizations, and networks of organizations) during scraplog execution from Git log data.
 - Possibility to limit analysis to n top contributors (organization with most nodes).
@@ -556,7 +559,7 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   ```
   They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command. Each script exits with code 1 if any test case fails.
 
-As of November 2026 there are 381 unit tests in 38 files (378 run, 3 are skipped because they describe planned network definitions, see [docs/planned-network-definitions.md](docs/planned-network-definitions.md)) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
+As of November 2026 there are 389 unit tests in 39 files (386 run, 3 are skipped because they describe planned network definitions, see [docs/planned-network-definitions.md](docs/planned-network-definitions.md)) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
 
 Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 
