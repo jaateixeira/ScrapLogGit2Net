@@ -17,6 +17,7 @@ from scraplog.identity import load_email_aggregation_config, load_email_filter_f
 from scraplog.output import export_results
 from scraplog.parsing import load_file_filter_file, process_changelog_file
 from scraplog.pipeline import execute_data_processing_pipeline
+from scraplog.networks.temporal import parse_duration
 
 
 def print_exit_info(start_time: float) -> None:
@@ -75,6 +76,10 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('-tntr', '--temporal-network-time-resolution', type=int, default=1,
                         help='Temporal network time resolution in seconds. Only 1 (the default) is '
                              'implemented so far; other values stop with an error')
+    parser.add_argument('--coedit-window', metavar='DURATION',
+                        help='only link developers whose changes to a file are at most this far apart: '
+                             'a number with s, m, h or d (e.g. 30d, 12h, 90m, 3600s; a number alone '
+                             'means seconds). Default: no limit')
     parser.add_argument('-o', '--output-file', type=Path,
                         help='creates a network/graph graphml file with the given name')
 
@@ -118,6 +123,14 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
             f"Temporal network time resolution {args.temporal_network_time_resolution} is not implemented yet",
             "Only -tntr 1 (one second, the default) is supported. Leave out -tntr.")
         sys.exit(1)
+
+    if args.coedit_window is not None:
+        try:
+            state.coedit_window = parse_duration(args.coedit_window)
+        except ValueError as error:
+            print_fatal_error(f"Invalid --coedit-window: {error}",
+                              "Give a positive number with s, m, h or d, e.g. 30d, 12h, 90m or 3600s.")
+            sys.exit(1)
 
     if state.verbose_mode:
         print_info('Verbose mode')

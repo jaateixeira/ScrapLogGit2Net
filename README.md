@@ -275,6 +275,9 @@ The `affiliation` node attribute is always derived from the developer's commit e
 ### Q7 · Developers who never co-edit a file are left out
 Only developers with at least one co-edit become nodes; a developer whose files nobody else edited is not in the network, not even as an isolated node. This holds for the temporal, weighted and unweighted networks. For example, the TensorFlow log for the first trimester of 2024 has 279 authors, of whom 256 co-edited at least one file, so its networks have 256 nodes. Keep this in mind for measures that depend on the number of nodes, such as density or normalized centralities. The same applies to networks of organizations: an organization without inter-organizational ties is not a node. To study developers who work alone, use `solo_contributors.py`.
 
+### Q8 · Co-edits can be limited to a time window
+By default a developer is linked to everyone who changed the same file before, however long ago. With `--coedit-window` (e.g. `--coedit-window 30d`), only to developers whose latest change to that file is at most that long before. See [docs/planned-network-definitions.md](docs/planned-network-definitions.md#implemented-the-co-edit-window---coedit-window).
+
 # How to use `scrapLog.py`
 You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
 
@@ -498,7 +501,7 @@ Commits that only touch ignored files are skipped. If the filter file is missing
 - **Tested.** Unit and acceptance tests run on GitHub for every push and pull request (see [Testing](#testing)).
 
 ## To implement (volunteers welcome)
-- Other edge definitions, specified by six skipped unit tests: co-edits within a time window, a minimum number of interactions, developer–file (bipartite) and file-dependency networks. They change research results, so open questions must be settled first; see [docs/planned-network-definitions.md](docs/planned-network-definitions.md).
+- Other edge definitions, specified by four skipped unit tests: a minimum number of interactions, developer–file (bipartite) and file-dependency networks. They change research results, so open questions must be settled first; see [docs/planned-network-definitions.md](docs/planned-network-definitions.md).
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
 - Account for commits on behalf of organizations using the 'on-behalf-of: @ORG NAME[AT]ORGANIZATION.COM' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-on-behalf-of-an-organization).
 - Possibility to add an argument pointing to a file with REGULAR EXPRESSIONS to capture emails to ignore (e.g., ignoring developers from a given company).
@@ -549,7 +552,7 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   ```
   They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command. Each script exits with code 1 if any test case fails.
 
-As of November 2026 there are 328 unit tests in 34 files (322 run, 6 are skipped because they describe planned network definitions, see [docs/planned-network-definitions.md](docs/planned-network-definitions.md)) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
+As of November 2026 there are 347 unit tests in 35 files (343 run, 4 are skipped because they describe planned network definitions, see [docs/planned-network-definitions.md](docs/planned-network-definitions.md)) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
 
 Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 

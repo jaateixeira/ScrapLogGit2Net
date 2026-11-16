@@ -1,6 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import List, DefaultDict, Dict, Set
+from datetime import timedelta
+from typing import List, DefaultDict, Dict, Optional, Set
 
 import networkx as nx
 import networkx_temporal as tx
@@ -219,6 +220,9 @@ class ProcessingState:
     include_extensions: set[str] = field(default_factory=set)  # e.g. {'.py', '.cpp'}
     exclude_extensions: set[str] = field(default_factory=set)  # e.g. {'.json', '.html'}
     strict_validation: bool = False  # Whether to fail on validation errors
+    # Edge definition: link only to developers whose latest change to the file is at most this
+    # much earlier (--coedit-window). None: no limit (see extract_temporal_network_from_parsed_change_log_entries)
+    coedit_window: Optional[timedelta] = None
 
     # Network graph
     dev_to_dev_network: nx.Graph = field(default_factory=nx.Graph)

@@ -17,6 +17,7 @@ Related unit tests at tests/unit/test_extract_temporal_network_from_parsed_chang
 
 """
 
+import re
 import sys
 from collections import defaultdict
 from typing import Optional, Any
@@ -135,9 +136,24 @@ def aggregate_to_coauthorship_temporal_network( state: ProcessingState, file_col
 
 
 
+_DURATION_UNITS = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+
+
+def parse_duration(text: str) -> timedelta:
+    """'30d', '12h', '90m', '3600s' or '3600' (seconds) -> timedelta. Must be positive."""
+    match = re.fullmatch(r"\s*(\d+)\s*([smhd]?)\s*", str(text))
+    if not match:
+        raise ValueError(f"{text!r} is not a duration such as 30d, 12h, 90m or 3600s")
+    seconds = int(match.group(1)) * _DURATION_UNITS[match.group(2) or "s"]
+    if seconds <= 0:
+        raise ValueError(f"{text!r} must be greater than zero")
+    return timedelta(seconds=seconds)
+
+
 def extract_temporal_network_from_parsed_change_log_entries(
         state: ProcessingState,
-        time_resolution: timedelta = timedelta(seconds=1)
+        time_resolution: timedelta = timedelta(seconds=1),
+        coedit_window: Optional[timedelta] = None
 ) -> Optional[TemporalMultiGraph]:
     """
     Extract a temporal network from parsed changelog entries.
@@ -158,6 +174,11 @@ def extract_temporal_network_from_parsed_change_log_entries(
             - debug_mode: Whether to print debug output
         time_resolution (timedelta): Time window size for graph snapshots.
             Defaults to 1 second. Smaller values create more granular snapshots.
+        coedit_window (timedelta, optional): The edge definition. When a developer commits
+            a file, they are linked to each other developer who changed that file before.
+            With a window, only to those whose latest change to the file is at most
+            coedit_window earlier (boundary included). None (the default): no limit.
+            Each edge has the time of the later commit.
 
     Returns:
         Optional[TemporalGraph]: A temporal graph object if successful and data exists,
@@ -237,6 +258,8 @@ def extract_temporal_network_from_parsed_change_log_entries(
         # Track unique contributors per file (automatically handles duplicates)
         accumulated_history_of_contributors_by_file = defaultdict(set)
         accumulated_history_of_files_by_contributor = defaultdict(set)
+        # file -> {developer: time of their latest change to the file}, for coedit_window
+        latest_change_by_file = defaultdict(dict)
 
         # Example of how to add contributors:
         # accumulated_history_of_files_by_contributor['alice@example.com'].add('src/main.py')
@@ -246,6 +269,7 @@ def extract_temporal_network_from_parsed_change_log_entries(
 
         for developer_info, files, timestamp in sorted_entries:
             developer_email, developer_affiliation = developer_info
+            moment = datetime.strptime(timestamp, '%a %b %d %H:%M:%S %Y %z')
 
             if very_verbose_mode or debug_mode:
                 print_info(
@@ -258,14 +282,19 @@ def extract_temporal_network_from_parsed_change_log_entries(
                 if file in accumulated_history_of_contributors_by_file.keys():
                     # sorted: set order varies between runs; sorting keeps output deterministic
                     for collaborator in sorted(accumulated_history_of_contributors_by_file[file]):
-                        if developer_email != collaborator:
-                            if verbose_mode or very_verbose_mode or debug_mode:
-                                print_key_action(
-                                    f"NEW relational edge u={developer_email} and v= {collaborator}, on {file=} with {timestamp=}")
-                            t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_iso(timestamp),file=file)
+                        if developer_email == collaborator:
+                            continue
+                        if (coedit_window is not None
+                                and moment - latest_change_by_file[file][collaborator] > coedit_window):
+                            continue  # their latest change to this file is outside the window
+                        if verbose_mode or very_verbose_mode or debug_mode:
+                            print_key_action(
+                                f"NEW relational edge u={developer_email} and v= {collaborator}, on {file=} with {timestamp=}")
+                        t_graph.add_edge(developer_email, collaborator, time=git_timestamp_to_iso(timestamp),file=file)
 
                 accumulated_history_of_contributors_by_file[file].add(developer_email)
                 accumulated_history_of_files_by_contributor[developer_email].add(file)
+                latest_change_by_file[file][developer_email] = moment
 
         if debug_mode and ask_yes_or_no_question("Do you want to see accumulated_history_of_contributors_by_file?"):
             print_info(f"{accumulated_history_of_contributors_by_file=}")
@@ -349,7 +378,8 @@ def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
     console.rule("\n")
     print_info(f"Extracting temporal network from parsed change log entries while keeping time and file information")
 
-    temporal_network_with_time_and_file_attributes=extract_temporal_network_from_parsed_change_log_entries(state)
+    temporal_network_with_time_and_file_attributes=extract_temporal_network_from_parsed_change_log_entries(
+        state, coedit_window=state.coedit_window)
 
     print_success(f"Extracted temporal network with (u, v, time, file) edges:")
 
