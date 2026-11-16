@@ -504,6 +504,7 @@ Commits that only touch ignored files are skipped. If the filter file is missing
 - **Tested.** Unit and acceptance tests run on GitHub for every push and pull request (see [Testing](#testing)).
 
 ## To implement (volunteers welcome)
+- **Planned next**, in order: identity merging, bot detection, `Co-authored-by` trailers, relational-event export (REM/DyNAM), time-sliced snapshots and lines-of-code weights. Design questions for each are in [docs/roadmap.md](docs/roadmap.md).
 - Other edge definitions, specified by three skipped unit tests: developer–file (bipartite) and file-dependency networks. They change research results, so open questions must be settled first; see [docs/planned-network-definitions.md](docs/planned-network-definitions.md).
 - Account for co-authorships made explicit with the 'Co-authored-by:' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors). Opens the way for triangulation.
 - Account for commits on behalf of organizations using the 'on-behalf-of: @ORG NAME[AT]ORGANIZATION.COM' string on the trailer of the commit's message [see documentation on https://docs.github.com/en/pull-requests](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-on-behalf-of-an-organization).
