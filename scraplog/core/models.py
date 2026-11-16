@@ -228,6 +228,13 @@ class ProcessingState:
     min_coedits: int = 1
     # ... and at most this many (--max-coedits). None: no upper limit
     max_coedits: Optional[int] = None
+    # Hotspot files left out before building networks (see scraplog/hotspots.py):
+    # the top N files by number of developers (--ignore-top-hotspot-files) and files with more
+    # developers than this (--ignore-files-with-more-than-developers; None: no limit)
+    ignore_top_hotspot_files: int = 0
+    max_developers_per_file: Optional[int] = None
+    # (file, developers, reason) of the files left out, most developers first
+    ignored_hotspot_files: list = field(default_factory=list)
 
     # Network graph
     dev_to_dev_network: nx.Graph = field(default_factory=nx.Graph)

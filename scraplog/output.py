@@ -20,6 +20,7 @@ from scraplog.coediting import enrich_graph_with_affiliation
 from scraplog.identity import extract_affiliation_from_email
 from scraplog.metadata import run_metadata
 from scraplog.export.edge_list import edge_list_path, edge_list_rows, write_edge_list_csv
+from scraplog.hotspots import write_ignored_files_csv
 
 
 def temporal_network_counts(state: ProcessingState) -> tuple[int, int, int, set]:
@@ -174,6 +175,11 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
         write_edge_list_csv(csv_filename, edge_list_rows(temporal.temporal_edges(data="time"), exported_network),
                             metadata)
         console.print(f"✓ Edge list exported to CSV file: {csv_filename}")
+
+        if state.ignore_top_hotspot_files or state.max_developers_per_file is not None:
+            ignored_filename = csv_filename.with_name(csv_filename.name[:-len(".edges.csv")] + ".ignored-files.csv")
+            write_ignored_files_csv(ignored_filename, state.ignored_hotspot_files, metadata)
+            console.print(f"✓ Ignored hotspot files listed in: {ignored_filename}")
         console.print()
     except Exception as e:
         console.print(f"ERROR exporting the network: {e}")

@@ -278,6 +278,9 @@ Only developers with at least one co-edit become nodes; a developer whose files 
 ### Q8 · Co-edits can be limited to a time window, and pairs to a range of co-edits
 By default a developer is linked to everyone who changed the same file before, however long ago. With `--coedit-window` (e.g. `--coedit-window 30d`), only to developers whose latest change to that file is at most that long before. With `--min-coedits N` and `--max-coedits N`, only pairs with at least / at most N co-edits (counted inside the window) are kept, with all their co-edits. See [docs/planned-network-definitions.md](docs/planned-network-definitions.md).
 
+### Q9 · Hotspot files changed by many developers can be ignored
+A file changed by very many developers (a build file, a changelog) links all of them. `--ignore-top-hotspot-files K` ignores the K files (0–20) changed by the most developers, and `--ignore-files-with-more-than-developers N` ignores files changed by more than N developers. The files are removed from every commit before any network is built, and listed in `<output>.ignored-files.csv`. A file's count is the number of distinct developers who changed it; this is not the Degree of Authorship (DOA) score of Fritz et al.
+
 # How to use `scrapLog.py`
 You need basic skills in Git and basic skills on how to invoke Python scripts (test case scripts are implemented in bash). Knowing Python code will also help a lot. You do not need to be a programmer to use ScrapLogGit2Net, but if you are one, and find it useful, please contribute to the project.
 
@@ -552,7 +555,7 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   ```
   They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command. Each script exits with code 1 if any test case fails.
 
-As of November 2026 there are 367 unit tests in 37 files (364 run, 3 are skipped because they describe planned network definitions, see [docs/planned-network-definitions.md](docs/planned-network-definitions.md)) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
+As of November 2026 there are 381 unit tests in 38 files (378 run, 3 are skipped because they describe planned network definitions, see [docs/planned-network-definitions.md](docs/planned-network-definitions.md)) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
 
 Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 

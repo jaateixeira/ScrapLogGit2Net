@@ -18,6 +18,7 @@ from scraplog.output import export_results
 from scraplog.parsing import load_file_filter_file, process_changelog_file
 from scraplog.pipeline import execute_data_processing_pipeline
 from scraplog.networks.temporal import parse_duration
+from scraplog.hotspots import MAX_TOP_HOTSPOT_FILES, apply_hotspot_filter
 
 
 def print_exit_info(start_time: float) -> None:
@@ -86,6 +87,12 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--max-coedits', metavar='N', type=int, default=None,
                         help='only keep developer pairs with at most N time-stamped co-edits '
                              '(counted after --coedit-window). Default: no limit')
+    parser.add_argument('--ignore-top-hotspot-files', metavar='K', type=int, default=0,
+                        help='ignore the K files (0-20) changed by the most developers (ties broken by '
+                             'path), before building the networks. Listed in <output>.ignored-files.csv')
+    parser.add_argument('--ignore-files-with-more-than-developers', metavar='N', type=int, default=None,
+                        help='ignore files changed by more than N developers, before building the '
+                             'networks. Listed in <output>.ignored-files.csv')
     parser.add_argument('-o', '--output-file', type=Path,
                         help='creates a network/graph graphml file with the given name')
 
@@ -149,6 +156,18 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
         sys.exit(1)
     state.max_coedits = args.max_coedits
 
+    if not 0 <= args.ignore_top_hotspot_files <= MAX_TOP_HOTSPOT_FILES:
+        print_fatal_error(f"Invalid --ignore-top-hotspot-files: {args.ignore_top_hotspot_files}",
+                          f"Give a whole number from 0 to {MAX_TOP_HOTSPOT_FILES}.")
+        sys.exit(1)
+    state.ignore_top_hotspot_files = args.ignore_top_hotspot_files
+
+    if args.ignore_files_with_more_than_developers is not None and args.ignore_files_with_more_than_developers < 1:
+        print_fatal_error(f"Invalid --ignore-files-with-more-than-developers: {args.ignore_files_with_more_than_developers}",
+                          "Give a whole number of at least 1.")
+        sys.exit(1)
+    state.max_developers_per_file = args.ignore_files_with_more_than_developers
+
     if state.verbose_mode:
         print_info('Verbose mode')
 
@@ -207,6 +226,17 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
             sys.exit(1)
 
 
+def report_ignored_hotspot_files(ignored) -> None:
+    """Print the hotspot files left out (see scraplog/hotspots.py)."""
+    table = Table(title=f"Ignored hotspot files ({len(ignored)})")
+    table.add_column("File")
+    table.add_column("Developers", justify="right")
+    table.add_column("Reason")
+    for file, developers, reason in ignored:
+        table.add_row(file, str(developers), reason)
+    console.print(table)
+
+
 def main() -> None:
     start_time = time.time()
     atexit.register(print_exit_info, start_time)
@@ -217,6 +247,8 @@ def main() -> None:
     args = parse_arguments()
     setup_processing_state(state, args)
     process_changelog_file(state, args)
+    if state.ignore_top_hotspot_files or state.max_developers_per_file is not None:
+        report_ignored_hotspot_files(apply_hotspot_filter(state))
     execute_data_processing_pipeline(state)
     export_results(state, args)
 
