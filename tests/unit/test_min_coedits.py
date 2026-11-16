@@ -21,7 +21,7 @@ import networkx as nx
 import networkx_temporal as tx
 import pytest
 
-from scraplog.networks.temporal import keep_pairs_with_min_coedits
+from scraplog.networks.temporal import keep_pairs_by_coedit_count
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ENV = {"PYTHONPATH": str(PROJECT_ROOT), "PATH": "", "COLUMNS": "200"}
@@ -45,20 +45,20 @@ def pairs(network):
 
 
 def test_pairs_below_the_minimum_are_dropped_with_all_their_co_edits():
-    assert pairs(keep_pairs_with_min_coedits(NETWORK, 2)) == [
+    assert pairs(keep_pairs_by_coedit_count(NETWORK, 2)) == [
         ("a", "b", "2024-01-01T00:00:00+00:00"), ("a", "b", "2024-01-03T00:00:00+00:00"),
         ("a", "b", "2024-01-06T00:00:00+00:00"),
         ("a", "c", "2024-01-04T00:00:00+00:00"), ("a", "c", "2024-01-05T00:00:00+00:00")]
 
 
 def test_developers_left_without_co_edits_are_not_nodes():
-    kept = keep_pairs_with_min_coedits(NETWORK, 3)
+    kept = keep_pairs_by_coedit_count(NETWORK, 3)
     assert {n for u, v, _ in kept.temporal_edges(data=True) for n in (u, v)} == {"a", "b"}
     assert all("c" not in snapshot.nodes() for snapshot in kept)
 
 
 def test_minimum_one_keeps_everything():
-    assert pairs(keep_pairs_with_min_coedits(NETWORK, 1)) == pairs(NETWORK)
+    assert pairs(keep_pairs_by_coedit_count(NETWORK, 1)) == pairs(NETWORK)
 
 
 # --- scrapLog ---------------------------------------------------------------------------------

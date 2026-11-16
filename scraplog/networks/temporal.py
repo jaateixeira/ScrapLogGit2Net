@@ -356,13 +356,15 @@ def extract_temporal_network_from_parsed_change_log_entries(
         return None
 
 
-def keep_pairs_with_min_coedits(coauthorship_network: TemporalMultiGraph, min_coedits: int) -> TemporalMultiGraph:
-    """The edge definition's minimum (--min-coedits): keep only developer pairs with at least
-    min_coedits time-stamped co-edits, with all of their co-edits.
+def keep_pairs_by_coedit_count(coauthorship_network: TemporalMultiGraph, min_coedits: int = 1,
+                               max_coedits: Optional[int] = None) -> TemporalMultiGraph:
+    """The edge definition's bounds (--min-coedits, --max-coedits): keep only developer pairs
+    with at least min_coedits and, if max_coedits is given, at most max_coedits time-stamped
+    co-edits, with all of their co-edits.
 
     coauthorship_network has one edge per (pair, time), as made by
     aggregate_to_coauthorship_temporal_network (after any --coedit-window), so a pair's
-    count is its weight in the weighted network. Pairs below the minimum are removed with
+    count is its weight in the weighted network. Pairs outside the bounds are removed with
     all their co-edits, and developers left without co-edits are not nodes. Kept pairs keep
     every co-edit, so their weight and first and last times are unchanged.
     """
@@ -373,7 +375,8 @@ def keep_pairs_with_min_coedits(coauthorship_network: TemporalMultiGraph, min_co
 
     kept: TemporalMultiGraph = tx.TemporalMultiGraph()
     for u, v, data in edges:  # same order as before, for deterministic output
-        if counts[(min(u, v), max(u, v))] >= min_coedits:
+        count = counts[(min(u, v), max(u, v))]
+        if count >= min_coedits and (max_coedits is None or count <= max_coedits):
             kept.add_edge(u, v, **data)
     return kept
 
@@ -416,9 +419,11 @@ def extract_coauthorship_temporal_network_from_parsed_change_log_entries(
     coauthorship_temporal_network: TemporalMultiGraph = aggregate_to_coauthorship_temporal_network(state,
         temporal_network_with_time_and_file_attributes)
 
-    if state.min_coedits > 1:
-        coauthorship_temporal_network = keep_pairs_with_min_coedits(coauthorship_temporal_network, state.min_coedits)
-        print_info(f"Kept developer pairs with at least {state.min_coedits} co-edits (--min-coedits)")
+    if state.min_coedits > 1 or state.max_coedits is not None:
+        coauthorship_temporal_network = keep_pairs_by_coedit_count(
+            coauthorship_temporal_network, state.min_coedits, state.max_coedits)
+        print_info(f"Kept developer pairs with {state.min_coedits} to {state.max_coedits or 'any number of'} "
+                   f"co-edits (--min-coedits, --max-coedits)")
 
     print_success(f"Aggregated temporal network with (u, v, time) edges:")
     console.print("\n")

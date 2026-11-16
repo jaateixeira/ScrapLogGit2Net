@@ -29,6 +29,8 @@ Decided and implemented (the planned `min_interactions` test is replaced by `tes
 
 This answers open question 3.
 
+`--max-coedits N` is the upper bound: pairs with more than *N* co-edits (also counted after the window) are removed the same way, e.g. to leave out bot accounts or very heavy pairs. No upper limit by default; a maximum below `--min-coedits` stops with an error.
+
 ## The planned definitions
 
 | Test | Definition | What the test expects |

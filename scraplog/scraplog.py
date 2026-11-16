@@ -83,6 +83,9 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--min-coedits', metavar='N', type=int, default=1,
                         help='only keep developer pairs with at least N time-stamped co-edits '
                              '(counted after --coedit-window). Default: 1 (every pair)')
+    parser.add_argument('--max-coedits', metavar='N', type=int, default=None,
+                        help='only keep developer pairs with at most N time-stamped co-edits '
+                             '(counted after --coedit-window). Default: no limit')
     parser.add_argument('-o', '--output-file', type=Path,
                         help='creates a network/graph graphml file with the given name')
 
@@ -139,6 +142,12 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
         print_fatal_error(f"Invalid --min-coedits: {args.min_coedits}", "Give a whole number of at least 1.")
         sys.exit(1)
     state.min_coedits = args.min_coedits
+
+    if args.max_coedits is not None and args.max_coedits < args.min_coedits:
+        print_fatal_error(f"Invalid --max-coedits: {args.max_coedits}",
+                          f"Give a whole number of at least --min-coedits ({args.min_coedits}).")
+        sys.exit(1)
+    state.max_coedits = args.max_coedits
 
     if state.verbose_mode:
         print_info('Verbose mode')
