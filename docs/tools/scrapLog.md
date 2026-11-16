@@ -60,7 +60,7 @@ Every run also writes an edge list next to the network file: `<log>.NetworkFile.
 | `first_ts`, `last_ts` | First and last co-edit, as in the log: ISO 8601 with the author's UTC offset, as in the temporal network (e.g. `2024-01-06T04:03:16-08:00`). |
 | `first_ts_utc`, `last_ts_utc` | The same times converted to UTC (e.g. `2024-01-06T12:03:16+00:00`). |
 
-First and last are chosen by the actual instant, not by the text. The rows are the same for every network type, since all three come from the same time-stamped co-edits. The CSV has no version or options of its own; they are in the network file written with it (see [Version and options in every network file](../../README.md#version-and-options-in-every-network-file)).
+First and last are chosen by the actual instant, not by the text. The rows are the same for every network type, since all three come from the same time-stamped co-edits. Before the column names, `#` lines record the tool, version, options and input hashes, the same as the network file (see [Version and options in every network file](../../README.md#version-and-options-in-every-network-file)).
 
 Every network file also records the scrapLog version, the options and the SHA-256 of the input files (the log and any `-fe`, `-ff` and `-a` file), as graph-level attributes `scraplog_tool`, `scraplog_version`, `scraplog_parameters` and `scraplog_inputs`. `-o`, `-s`, `-v` and `-d` are not recorded, so the same input gives the same bytes under any output name. See [Version and options in every network file](../../README.md#version-and-options-in-every-network-file).
 

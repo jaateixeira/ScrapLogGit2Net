@@ -42,7 +42,7 @@ def graphml_in(zip_path):
 def test_temporal_graphml_is_valid(tmp_path):
     xmllint = shutil.which("xmllint")
     if xmllint is None:
-        pytest.skip("xmllint is not installed")
+        pytest.fail("xmllint is needed for the GraphML schema check (Debian/Ubuntu: sudo apt install libxml2-utils)")
     temporal_network(tmp_path)
     _, data = graphml_in(tmp_path / "t.temporal.graphml.zip")
     (tmp_path / "t.temporal.graphml").write_bytes(data)
@@ -78,7 +78,8 @@ def test_same_co_edits_as_the_edge_list(tmp_path):
     for u, v in g.edges():
         pair = tuple(sorted((email[u], email[v])))
         counts[pair] = counts.get(pair, 0) + 1
-    rows = (tmp_path / "t.temporal.edges.csv").read_text().splitlines()[1:]
+    rows = [line for line in (tmp_path / "t.temporal.edges.csv").read_text().splitlines()
+            if not line.startswith("#")][1:]
     assert counts == {(r.split(",")[0], r.split(",")[1]): int(r.split(",")[2]) for r in rows}
 
 

@@ -19,7 +19,6 @@ from pathlib import Path
 import networkx as nx
 
 from scraplog.export import log_data as export_log_data
-from scraplog.output import normalize_zip_timestamps
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -66,19 +65,21 @@ def test_graphml_export_sorts_nodes_and_edges(tmp_path):
     assert pairs == sorted(pairs)
 
 
-def test_normalize_zip_timestamps(tmp_path):
+def test_temporal_zip_has_a_fixed_date(tmp_path):
+    # Zip entries record when they were written; a fixed date keeps the bytes identical
+    network = nx.MultiGraph()
+    network.add_edge("a@x.org", "b@x.org", time="2024-01-02T03:04:05+00:00")
+    nx.set_node_attributes(network, "x", "affiliation")
     archives = []
-    for i, date_time in enumerate([(2024, 1, 2, 3, 4, 5), (2025, 6, 7, 8, 9, 10)]):
-        path = tmp_path / f"network{i}.zip"
-        with zipfile.ZipFile(path, "w") as archive:
-            info = zipfile.ZipInfo("network.graphml", date_time=date_time)
-            archive.writestr(info, "<graphml/>")
-        normalize_zip_timestamps(path)
+    for i in range(2):
+        path = tmp_path / f"run{i}" / "net.temporal.graphml.zip"
+        path.parent.mkdir()
+        export_log_data.write_temporal_graphml_zip(network, path)
         archives.append(path)
 
     assert archives[0].read_bytes() == archives[1].read_bytes()
     with zipfile.ZipFile(archives[0]) as archive:
-        assert archive.read("network.graphml") == b"<graphml/>"
+        assert archive.namelist() == ["net.temporal.graphml"]
         assert archive.infolist()[0].date_time == (1980, 1, 1, 0, 0, 0)
 
 

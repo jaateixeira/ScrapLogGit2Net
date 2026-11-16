@@ -5,7 +5,7 @@
 #   Tk (tkinter)  needed only by nofi_graphml_network_visualizer.py's file dialog (when no input file is given).
 #                 Debian/Ubuntu: sudo apt install python3-tk   Fedora: sudo dnf install python3-tkinter
 #                 macOS (Homebrew Python): brew install python-tk   Windows and python.org installers include it.
-# The acceptance tests (tests/acceptance-test-scripts/) also need two system tools:
+# The acceptance tests (tests/acceptance-test-scripts/) also need two system tools (xmllint also for three unit tests):
 #   xmllint  Debian/Ubuntu: sudo apt install libxml2-utils   Fedora: sudo dnf install libxml2   macOS: brew install libxml2
 #   unzip    Debian/Ubuntu: sudo apt install unzip           Fedora: sudo dnf install unzip
 # The scripts stop with these instructions if a tool is missing.

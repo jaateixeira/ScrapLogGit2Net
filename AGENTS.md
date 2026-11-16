@@ -36,7 +36,7 @@ This file is for any coding agent or LLM (Mistral, DeepSeek, Gemma, Qwen, Llama,
 
 ## Commands
 - Install: `pip install -e ".[test]"` (dependencies are declared in both `pyproject.toml` and `requirements.txt`; keep them in sync)
-- Test: `python -m pytest -q` (unit tests in `tests/unit/`)
+- Test: `python -m pytest -q` (unit tests in `tests/unit/`; the GraphML schema checks need `xmllint`)
 - Acceptance tests (run from repo root; need `xmllint`): `bash tests/acceptance-test-scripts/testScrapLog.sh`, `testScrapLogTemporalNetworks.sh`, `ExtensionFiltering/test_extension_filtering.sh`
 - Lint/format: none configured
 - Make input: `git log --pretty=format:"==%an;%ae;%ad==" --name-only > <name>.IN`
@@ -44,7 +44,7 @@ This file is for any coding agent or LLM (Mistral, DeepSeek, Gemma, Qwen, Llama,
 
 ## Conventions
 - Python 3.12+, type hints, small pure functions; I/O at the edges.
-- pandas/networkx for graphs. Export GraphML and edge-list CSV (source, target, weight, first_ts, last_ts).
+- pandas/networkx for graphs. Export GraphML and edge-list CSV (source, target, weight, first_ts, last_ts, first_ts_utc, last_ts_utc; `#` header lines with tool, version, parameters and input hashes).
 - Large repos: stream the git log; do not load it all into memory.
 - Never commit data dumps, tokens, or cloned repos. Keep them in `.gitignore`.
 

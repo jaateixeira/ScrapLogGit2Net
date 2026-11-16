@@ -20,7 +20,7 @@ No change to the networks themselves: the same log gives the same developers, ti
 
 ### New
 
-- **Edge-list CSV**: next to every network file, scrapLog writes `<output>.edges.csv` with `source`, `target` (e-mails), `weight` (number of time-stamped co-edits, as in the weighted network), `first_ts`, `last_ts` (as in the log) and `first_ts_utc`, `last_ts_utc`. Rows are sorted; the network files are unchanged.
+- **Edge-list CSV**: next to every network file, scrapLog writes `<output>.edges.csv` with `source`, `target` (e-mails), `weight` (number of time-stamped co-edits, as in the weighted network), `first_ts`, `last_ts` (as in the log) and `first_ts_utc`, `last_ts_utc`. Rows are sorted; the network files are unchanged. `#` lines before the column names record the tool, version, options and input hashes; read with `pandas.read_csv(f, comment="#")` or R `read.csv(f, comment.char = "#")`.
 - **Every network file records its version, options and inputs**: graph-level GraphML attributes `scraplog_tool`, `scraplog_version`, `scraplog_parameters` and `scraplog_inputs` (SHA-256 of each input file), from scrapLog (all network types), the transformer and the deanonymizer. Nodes, edges and their attributes are unchanged, and the files stay byte-identical for the same input and options. Scripts that compare whole files with files made by v1.1-borba will see the new lines.
 - `--version` in every tool. The version is set once, in `scraplog/_version.py`.
 - nofo visualizer: `-nc gray-color-to-others-not-in-topn-filter` is implemented (it colored every node gray and logged an error): the N most central organizations keep their color (N from `-tf`, default 10), the rest are gray.
@@ -29,7 +29,7 @@ No change to the networks themselves: the same log gives the same developers, ti
 
 ### Development
 
-- 327 unit tests. The 6 skipped ones specify planned network definitions, now written down with their open questions in `docs/planned-network-definitions.md`. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
+- 328 unit tests. The GraphML schema checks fail instead of skipping when `xmllint` is missing, and the unit-test workflow installs it. `test-nofi-2-nofo-transformer.sh` exits with code 1 when a case fails (it exited 0), as the other acceptance scripts already did. The 6 skipped ones specify planned network definitions, now written down with their open questions in `docs/planned-network-definitions.md`. Tk (tkinter), needed by the nofi visualizer's file dialog, is listed with the system packages in `requirements.txt` and the README.
 - The transformer acceptance suite (`test-nofi-2-nofo-transformer.sh`) runs again, in CI too: it validates against a local copy of the GraphML 1.0 schema (`tests/acceptance-test-scripts/graphml-schema/`), because graphml.graphdrawing.org is out of service.
 
 ## v1.1-borba (2026-11-10)

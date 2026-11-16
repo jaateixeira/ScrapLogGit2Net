@@ -4,9 +4,8 @@ Exporting networks to files and printing the processing summary.
 
 import argparse
 import sys
-import zipfile
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict
 
 import networkx as nx
 import networkx_temporal as tx
@@ -19,7 +18,7 @@ import traceback  # the standard module (unified_console.traceback is rich.trace
 from scraplog.utils.unified_console import console, inspect, print_info, print_warning, print_error
 from scraplog.coediting import enrich_graph_with_affiliation
 from scraplog.identity import extract_affiliation_from_email
-from scraplog.metadata import insert_graphml_metadata, run_metadata
+from scraplog.metadata import run_metadata
 from scraplog.export.edge_list import edge_list_path, edge_list_rows, write_edge_list_csv
 
 
@@ -74,28 +73,6 @@ def print_processing_summary(state: ProcessingState, in_work_file: Path, out_gra
         f"Similar affiliation strings: 0.8 threshold {find_similar_strings(affiliations)}")
     # console.print(f"Similar affiliation strings: 0.6 threshold {find_similar_strings(set(state.affiliations.values()),0.6)}")
     console.print("=" * 60)
-
-def normalize_zip_timestamps(zip_path: Path, metadata: Optional[Dict[str, str]] = None) -> None:
-    """
-    Rewrite a zip archive with a fixed timestamp on every entry.
-
-    Zip entries record when they were written, so the same network exported
-    twice would otherwise give different bytes. Content, compression and
-    file attributes are kept as they are. With metadata (see scraplog.metadata),
-    it is added to every GraphML file in the archive.
-    """
-    with zipfile.ZipFile(zip_path) as archive:
-        entries = [(info, archive.read(info)) for info in archive.infolist()]
-
-    with zipfile.ZipFile(zip_path, 'w') as archive:
-        for info, data in entries:
-            fixed_info = zipfile.ZipInfo(info.filename, date_time=(1980, 1, 1, 0, 0, 0))
-            fixed_info.compress_type = info.compress_type
-            fixed_info.external_attr = info.external_attr
-            if metadata and info.filename.lower().endswith(".graphml"):
-                data = insert_graphml_metadata(data.decode("utf-8"), metadata).encode("utf-8")
-            archive.writestr(fixed_info, data)
-
 
 def scraplog_run_metadata(args: argparse.Namespace) -> Dict[str, str]:
     """Version, options and input-file hashes of this scrapLog run (see scraplog.metadata)."""
@@ -194,7 +171,8 @@ def export_results(state: ProcessingState, args: argparse.Namespace) -> None:
         # The same pairs, with the number of co-edits and the first and last co-edit (see scraplog.export.edge_list)
         temporal = state.container_of_extracted_networks.coauthorship_temporal_network_with_time_attributes
         csv_filename = edge_list_path(graphml_filename)
-        write_edge_list_csv(csv_filename, edge_list_rows(temporal.temporal_edges(data="time"), exported_network))
+        write_edge_list_csv(csv_filename, edge_list_rows(temporal.temporal_edges(data="time"), exported_network),
+                            metadata)
         console.print(f"✓ Edge list exported to CSV file: {csv_filename}")
         console.print()
     except Exception as e:

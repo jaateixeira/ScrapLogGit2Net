@@ -145,7 +145,7 @@ def test_metadata_is_escaped(tmp_path):
 def test_scraplog_output_with_metadata_is_valid_graphml(log, network_type, output):
     xmllint = shutil.which("xmllint")
     if xmllint is None:
-        pytest.skip("xmllint is not installed")
+        pytest.fail("xmllint is needed for the GraphML schema check (Debian/Ubuntu: sudo apt install libxml2-utils)")
     schema = PROJECT_ROOT / "tests" / "acceptance-test-scripts" / "graphml-schema" / "graphml.xsd"
 
     run(log, PROJECT_ROOT / "scrapLog.py", "-r", "t.IN", "-t", network_type)

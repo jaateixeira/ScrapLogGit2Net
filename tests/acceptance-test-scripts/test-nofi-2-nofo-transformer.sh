@@ -49,7 +49,7 @@ if ! validGraphmlXMLfile $ValidGraphmlXMLfile ; then
    echo "Error: $ValidGraphmlXMLfile should be a valid graphml xml file according to schema"
    echo "Error: Unit test for validGraphmlXMLfile() did not pass"
    false 
-   exit 
+   exit 1
 fi
 
 
@@ -64,8 +64,7 @@ if ! command_exists $commandThatExists ; then
    echo "Error: $commandThatExists should be installed"
    echo "Error: Unit test for exists() did not pass"
    false 
-   exit 
-
+   exit 1
 fi 
 
 echo -e "\t\t command_exists() passed test"
@@ -114,8 +113,7 @@ if grep -e "$escaped_string" "$TEST_NOI_FILE" ; then
     echo -e "\n\t" $escaped_string "is in the output inter-individual network as expected \n"
 else 
        echo "ERROR" $escaped_string "shouled be in " "$TEST_NOI_FILE"
-       exit
-       
+       exit 1
 fi 
 
 
@@ -139,14 +137,14 @@ if command_exists grep; then
   echo -e '\t\t grep exists!'
 else
     echo 'ERROR: Your system does not have grep'
-    exit 
+    exit 1
 fi
 
 if command_exists xmllint; then
   echo -e '\t\t xmllint exists!'
 else
     echo 'ERROR Your system does not have xmllint'
-    exit
+    exit 1
 fi
 
 
@@ -167,7 +165,7 @@ print_info "TEST CASE 1 file: $TC1FILE"
 
 if [ ! -f "$TC1FILE" ]; then
     echo "$TC1FILE does not exist."
-    exit 
+    exit 1
 fi
 
 
@@ -219,7 +217,7 @@ echo ""
 
 if ! validGraphmlXMLfile $TC1OUTFILE ; then
     echo "ERROR: $TC1OUTFILE is not a valid XML graphML file"
-    exit 
+    exit 1
 fi
 
 
@@ -232,7 +230,7 @@ echo ""
 
 if [ ! -f "$TC1OUTFILE" ]; then
     echo "ERROR: $TC1OUTFILE does not exist."
-    exit 
+    exit 1
 fi
 
 
@@ -246,8 +244,7 @@ if grep -q \<data\ key=\"d0\"\>1\<\/data\>  "$TC1OUTFILE" ; then
 else
        print_error "TESTCASE 1 did not pass"
        echo $expectedString should be in $TC1OUTFILE
-       exit
-       
+       exit 1
 fi 
 
 
@@ -265,7 +262,7 @@ TC2FILE=test-data/2-org-with-2-developers-each-all-in-inter-firm-cooperation-rel
 
 if [ ! -f "$TC2FILE" ]; then
     print_error "$TC2FILE does not exist."
-    exit 
+    exit 1
 fi
 
 
@@ -304,7 +301,7 @@ echo ""
 
 if ! validGraphmlXMLfile $TC2OUTFILE ; then
     echo "ERROR: $TC2OUTFILE is not a valid XML graphML file"
-    exit 
+    exit 1
 fi
 
 
@@ -317,7 +314,7 @@ echo ""
 
 if [ ! -f "$TC2OUTFILE" ]; then
     echo "ERROR: $TC2OUTFILE does not exist."
-    exit 
+    exit 1
 fi
 
 
@@ -329,10 +326,9 @@ if grep -q \<data\ key=\"d0\"\>3\<\/data\>  "$TC2OUTFILE" ; then
     echo -e "\t" $expectedString "is in the output inter-org network as expected"
     sleep 1
 else
-        print_error"TESTCASE 2 did not pass"
+        print_error "TESTCASE 2 did not pass"
        echo $expectedString should be in $TC2OUTFILE
-       exit
-       
+       exit 1
 fi 
 
 sleep 1
@@ -350,7 +346,7 @@ TC3FILE=test-data/5-pentagon-with-star.graphML
 
 if [ ! -f "$TC3FILE" ]; then
     echo "ERROR $TC3FILE does not exist."
-    exit 
+    exit 1
 fi
 
 
@@ -387,7 +383,7 @@ echo ""
 
 if ! validGraphmlXMLfile $TC3OUTFILE ; then
     echo "ERROR: $TC3OUTFILE is not a valid XML graphML file"
-    exit 
+    exit 1
 fi
 
 
@@ -400,7 +396,7 @@ echo ""
 
 if [ ! -f "$TC3OUTFILE" ]; then
     echo "ERROR: $TC3OUTFILE does not exist."
-    exit 
+    exit 1
 fi
 
 
@@ -418,8 +414,7 @@ else
     
        print_error "TESTCASE 3 did not pass"
        echo $expectedString should be in $TC3OUTFILE
-       exit
-       
+       exit 1
 fi 
 
 

@@ -19,12 +19,22 @@ gives a byte-identical file. All three network types come from the same
 time-stamped co-edits, so the rows are the same for every type; for the
 unweighted and weighted networks they are limited to the edges of the
 exported network.
+
+Before the column names, '#' lines record how the file was made, as in the
+network file (see scraplog.metadata):
+
+    # scraplog_tool: scrapLog.py
+    # scraplog_version: 1.1.0
+    # scraplog_parameters: {...}
+    # scraplog_inputs: {...}
+
+Read it with pandas.read_csv(f, comment="#") or, in R, read.csv(f, comment.char = "#").
 """
 
 import csv
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 import networkx as nx
 
@@ -86,8 +96,12 @@ def edge_list_rows(coedits: Iterable[Tuple[str, str, str]],
     return rows
 
 
-def write_edge_list_csv(path: Union[str, Path], rows: Iterable[Row]) -> None:
+def write_edge_list_csv(path: Union[str, Path], rows: Iterable[Row],
+                        metadata: Optional[Mapping[str, str]] = None) -> None:
+    """Write the rows, after '# name: value' lines for the metadata (if any) and the column names."""
     with open(path, "w", newline="", encoding="utf-8") as f:
+        for name, value in (metadata or {}).items():
+            f.write(f"# {name}: {value}\n")
         writer = csv.writer(f, lineterminator="\n")
         writer.writerow(COLUMNS)
         writer.writerows(rows)

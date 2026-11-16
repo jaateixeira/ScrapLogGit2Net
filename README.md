@@ -250,7 +250,7 @@ git log  ->  temporal network  ->  weighted network  ->  unweighted network
 
 ## Edge list (CSV)
 
-Next to every network file, `scrapLog.py` writes `<output>.edges.csv` with the columns `source`, `target` (e-mails), `weight` (number of time-stamped co-edits), `first_ts`, `last_ts` (first and last co-edit as in the log, with the author's UTC offset) and `first_ts_utc`, `last_ts_utc` (the same in UTC). Rows are sorted, so the same input gives the same file. See [`docs/tools/scrapLog.md`](docs/tools/scrapLog.md#output).
+Next to every network file, `scrapLog.py` writes `<output>.edges.csv` with the columns `source`, `target` (e-mails), `weight` (number of time-stamped co-edits), `first_ts`, `last_ts` (first and last co-edit as in the log, with the author's UTC offset) and `first_ts_utc`, `last_ts_utc` (the same in UTC). Before the column names, `#` lines record the tool, version, options and input hashes, as in the network file; read it with `pandas.read_csv(f, comment="#")` or, in R, `read.csv(f, comment.char = "#")`. Rows are sorted, so the same input gives the same file. See [`docs/tools/scrapLog.md`](docs/tools/scrapLog.md#output).
 
 ## Version and options in every network file
 
@@ -539,7 +539,7 @@ The way ScrapLogGit2Net builds networks from git logs is described in:
 # Testing
 Install the test dependencies first (`python -m pip install -e ".[test]"`), then run from the repository root:
 
-- **Unit tests:** `python -m pytest`. Add `-rs` to see why some tests are skipped (planned features).
+- **Unit tests:** `python -m pytest`. Add `-rs` to see why some tests are skipped (planned features). Three tests check the GraphML files against the schema with `xmllint` and fail if it is not installed.
 - **Acceptance tests:** bash scripts that run the tools on the small logs in `test-data/` and check the networks they produce:
   ```
   bash tests/acceptance-test-scripts/testScrapLog.sh
@@ -547,9 +547,9 @@ Install the test dependencies first (`python -m pip install -e ".[test]"`), then
   bash tests/acceptance-test-scripts/ExtensionFiltering/test_extension_filtering.sh
   bash tests/acceptance-test-scripts/syntetic_data_msr2027/test_syntetic_data_msr2027.sh
   ```
-  They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command.
+  They need two system tools that pip cannot install: `xmllint` (Debian/Ubuntu: `sudo apt install libxml2-utils`) and `unzip`. If one is missing, the scripts stop at the start with the install command. Each script exits with code 1 if any test case fails.
 
-As of November 2026 there are 327 unit tests in 34 files (321 run, 6 are skipped because they describe planned network definitions, see [docs/planned-network-definitions.md](docs/planned-network-definitions.md); 3 more are skipped where `xmllint` is not installed) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
+As of November 2026 there are 328 unit tests in 34 files (322 run, 6 are skipped because they describe planned network definitions, see [docs/planned-network-definitions.md](docs/planned-network-definitions.md)) and 29 acceptance test cases: 12 in `testScrapLog.sh`, 4 in `testScrapLogTemporalNetworks.sh`, 5 in `test_extension_filtering.sh`, 5 in `test_syntetic_data_msr2027.sh` (the synthetic example of the MSR 2027 paper, checked against hand-computed networks) and 3 in `test-nofi-2-nofo-transformer.sh`. The transformer's output is validated against a local copy of the GraphML schema, because graphml.graphdrawing.org is out of service.
 
 Both the unit tests and the four acceptance scripts run on GitHub Actions for every push and every pull request into `main` (see the badges at the top). See [tests/test_guide.md](tests/test_guide.md) for how to write new tests.
 

@@ -17,6 +17,8 @@ from pathlib import Path
 import networkx as nx
 import pytest
 
+from scraplog import __version__
+
 from scraplog.export.edge_list import edge_list_path, edge_list_rows
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -87,7 +89,13 @@ def test_scraplog_writes_the_edge_list_next_to_the_network(tmp_path, network_typ
     first = (tmp_path / csv_file).read_bytes()
     scraplog(tmp_path, "-r", "t.IN", "-t", network_type)
 
-    assert (tmp_path / csv_file).read_text() == THREE_DEVELOPERS
+    text = (tmp_path / csv_file).read_text()
+    header = [line for line in text.splitlines() if line.startswith("#")]
+    assert [line.split(":")[0] for line in header] == [
+        "# scraplog_tool", "# scraplog_version", "# scraplog_parameters", "# scraplog_inputs"]
+    assert header[1] == f"# scraplog_version: {__version__}"
+    assert network_type in header[2]
+    assert text.split("\n", len(header))[-1] == THREE_DEVELOPERS  # the rows follow the '#' lines
     assert (tmp_path / csv_file).read_bytes() == first  # byte-identical
 
 
@@ -100,9 +108,22 @@ def test_weights_and_pairs_match_the_weighted_network(tmp_path):
     email = nx.get_node_attributes(g, "e-mail")
     weights = {tuple(sorted((email[u], email[v]))): w for u, v, w in g.edges(data="weight")}
     with open(tmp_path / "s.WeightedNetwork.edges.csv", newline="") as f:
-        rows = {(r["source"], r["target"]): int(r["weight"]) for r in csv.DictReader(f)}
+        rows = {(r["source"], r["target"]): int(r["weight"])
+                for r in csv.DictReader(line for line in f if not line.startswith("#"))}
     assert rows == weights
     assert len(rows) == g.number_of_edges() > 0
+
+
+def test_pandas_reads_the_edge_list(tmp_path):
+    pandas = pytest.importorskip("pandas")
+    shutil.copy(TEST_DATA / "TensorFlow" / "tensorFlowGitLog-temporal-3-developers-6-commits-thee-files.IN",
+                tmp_path / "t.IN")
+    scraplog(tmp_path, "-r", "t.IN")
+
+    table = pandas.read_csv(tmp_path / "t.NetworkFile.edges.csv", comment="#")
+
+    assert list(table.columns) == HEADER.strip().split(",")
+    assert table["weight"].tolist() == [2]
 
 
 def test_filtered_developers_are_not_in_the_edge_list(tmp_path):
