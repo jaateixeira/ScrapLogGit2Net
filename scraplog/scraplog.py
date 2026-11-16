@@ -80,6 +80,9 @@ def parse_arguments() -> argparse.Namespace:
                         help='only link developers whose changes to a file are at most this far apart: '
                              'a number with s, m, h or d (e.g. 30d, 12h, 90m, 3600s; a number alone '
                              'means seconds). Default: no limit')
+    parser.add_argument('--min-coedits', metavar='N', type=int, default=1,
+                        help='only keep developer pairs with at least N time-stamped co-edits '
+                             '(counted after --coedit-window). Default: 1 (every pair)')
     parser.add_argument('-o', '--output-file', type=Path,
                         help='creates a network/graph graphml file with the given name')
 
@@ -131,6 +134,11 @@ def setup_processing_state(state: ProcessingState, args: argparse.Namespace) -> 
             print_fatal_error(f"Invalid --coedit-window: {error}",
                               "Give a positive number with s, m, h or d, e.g. 30d, 12h, 90m or 3600s.")
             sys.exit(1)
+
+    if args.min_coedits < 1:
+        print_fatal_error(f"Invalid --min-coedits: {args.min_coedits}", "Give a whole number of at least 1.")
+        sys.exit(1)
+    state.min_coedits = args.min_coedits
 
     if state.verbose_mode:
         print_info('Verbose mode')

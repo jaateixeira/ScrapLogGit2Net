@@ -223,6 +223,9 @@ class ProcessingState:
     # Edge definition: link only to developers whose latest change to the file is at most this
     # much earlier (--coedit-window). None: no limit (see extract_temporal_network_from_parsed_change_log_entries)
     coedit_window: Optional[timedelta] = None
+    # Edge definition: keep only developer pairs with at least this many time-stamped co-edits
+    # (--min-coedits; counted after coedit_window). 1: every pair (see keep_pairs_with_min_coedits)
+    min_coedits: int = 1
 
     # Network graph
     dev_to_dev_network: nx.Graph = field(default_factory=nx.Graph)
