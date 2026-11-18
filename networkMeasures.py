@@ -6,21 +6,20 @@ from __future__ import absolute_import, print_function
 import sys
 
 def validate_connections_format(connections):
-    """Validate the format of the connections list."""
-    if not connections:
-        print("\tWarning - connections list is empty")
+    """Check that each record contains a contributor pair and a filename."""
+    if not isinstance(connections, (list, tuple)):
         return False
 
-    try:
-        ((author1, author2), file_name) = connections[0]
-    except (ValueError, TypeError):
-        print("\tWarning - connections list is in the wrong format")
-        return False
-
-    if len(author1) < 5 or len(author2) < 5 or len(file_name) < 1:
-        print("\tWarning - connections list is in the wrong format")
-        return False
-
+    for connection in connections:
+        if not isinstance(connection, (list, tuple)) or len(connection) != 2:
+            return False
+        authors, filename = connection
+        if not isinstance(authors, (list, tuple)) or len(authors) != 2:
+            return False
+        if not all(isinstance(author, str) and author.strip() for author in authors):
+            return False
+        if not isinstance(filename, str) or not filename.strip():
+            return False
     return True
 
 def get_number_of_networked_nodes(connections):
